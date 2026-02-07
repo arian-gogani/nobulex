@@ -1,0 +1,28 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "Node16",
+    "moduleResolution": "Node16",
+    "declaration": true,
+    "declarationMap": true,
+    "sourceMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "outDir": "dist"
+  },
+  "references": [
+    { "path": "packages/types" },
+    { "path": "packages/crypto" },
+    { "path": "packages/core" },
+    { "path": "packages/store" },
+    { "path": "packages/verifier" },
+    { "path": "packages/sdk" },
+    { "path": "packages/cli" },
+    { "path": "packages/mcp-server" },
+    { "path": "packages/react" },
+    { "path": "packages/evm" }
+  ]
+}

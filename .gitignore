@@ -44,8 +44,17 @@ jspm_packages/
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
-# TypeScript cache
+# TypeScript cache and build artifacts
 *.tsbuildinfo
+*.d.ts.map
+
+# Build output from tsc alongside config files
+vitest.config.d.ts
+vitest.config.js
+vitest.config.js.map
+tsup.config.d.ts
+tsup.config.js
+tsup.config.js.map
 
 # Optional npm cache directory
 .npm

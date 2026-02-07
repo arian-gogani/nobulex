@@ -1,0 +1,26 @@
+{
+  "name": "@stele/cli",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "stele": "./dist/index.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts",
+    "bundle": "tsup src/index.ts --format cjs",
+    "dev": "tsup src/index.ts --format cjs --dts --watch"
+  },
+  "files": ["dist"],
+  "dependencies": {
+    "@stele/crypto": "0.1.0",
+    "@stele/ccl": "0.1.0",
+    "@stele/core": "0.1.0",
+    "@stele/identity": "0.1.0",
+    "@stele/enforcement": "0.1.0",
+    "@stele/proof": "0.1.0",
+    "@stele/reputation": "0.1.0",
+    "@stele/breach": "0.1.0",
+    "@stele/mcp": "0.1.0"
+  }
+}

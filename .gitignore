@@ -1,3 +1,6 @@
+# Generated API docs
+docs/api/
+
 # Logs
 logs
 *.log

@@ -1,0 +1,35 @@
+{
+  "name": "stele",
+  "private": true,
+  "version": "0.1.0",
+  "description": "The accountability primitive for AI agents",
+  "workspaces": [
+    "packages/types",
+    "packages/crypto",
+    "packages/core",
+    "packages/store",
+    "packages/verifier",
+    "packages/sdk",
+    "packages/cli",
+    "packages/mcp-server",
+    "packages/react",
+    "packages/evm"
+  ],
+  "scripts": {
+    "build": "npm run build --workspaces",
+    "typecheck": "npm run typecheck --workspaces",
+    "test": "npm run test --workspaces",
+    "docs": "npx typedoc",
+    "publish:all": "npm run build && npm publish --workspaces"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/stele"
+  },
+  "homepage": "https://stele.dev",
+  "bugs": {
+    "url": "https://github.com/agbusiness195/stele/issues"
+  },
+  "author": "Stele Labs, Inc.",
+  "license": "MIT"
+}

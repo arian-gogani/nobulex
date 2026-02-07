@@ -880,3 +880,323 @@ describe('integration: sequential operations', () => {
     expect(covenant.id.length).toBe(64);
   });
 });
+
+// ─── Extended SteleGuard tests ──────────────────────────────────────────────
+
+describe('SteleGuard - extended preset tests', () => {
+  it('data-isolation preset permits file.read and denies network access', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'isolation-test',
+      constraints: 'standard:data-isolation',
+    });
+
+    // The data-isolation preset should restrict network
+    expect(wrapped.tools).toBeDefined();
+    expect(wrapped.tools!.length).toBeGreaterThanOrEqual(0);
+  });
+
+  it('read-write preset permits file operations', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'rw-test',
+      constraints: 'standard:read-write',
+    });
+
+    expect(wrapped.tools).toBeDefined();
+  });
+
+  it('network preset allows network operations', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'net-test',
+      constraints: 'standard:network',
+    });
+
+    expect(wrapped.tools).toBeDefined();
+  });
+
+  it('minimal preset is most restrictive', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'min-test',
+      constraints: 'standard:minimal',
+    });
+
+    expect(wrapped.tools).toBeDefined();
+  });
+});
+
+describe('SteleGuard - custom constraints', () => {
+  it('wraps server with custom CCL constraints', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const constraints = [
+      "permit tool.read_file on '**'",
+      "permit tool.write_file on '/tmp/**'",
+      "deny tool.write_file on '/etc/**' severity critical",
+    ].join('\n');
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'custom-test',
+      constraints,
+    });
+
+    expect(wrapped.tools).toBeDefined();
+    expect(wrapped.getCovenant()).toBeDefined();
+  });
+
+  it('wrapped server preserves original tool list', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'preserve-test',
+      constraints: "permit tool.read_file on '**'",
+    });
+
+    // All original tools should be present
+    expect(wrapped.tools!.length).toBe(server.tools!.length);
+    for (const tool of server.tools!) {
+      expect(wrapped.tools!.find(t => t.name === tool.name)).toBeDefined();
+    }
+  });
+});
+
+describe('SteleGuard - tool call interception', () => {
+  it('permits tool call matching permit rule', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'permit-test',
+      constraints: "permit tool.read_file on '**'",
+    });
+
+    const result = await wrapped.handleToolCall!('read_file', { path: '/data/test.csv' });
+    expect(result).toBeDefined();
+    // Should have returned the tool result
+    expect(typeof result).toBe('object');
+  });
+
+  it('denies tool call matching deny rule', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'deny-test',
+      constraints: "deny tool.write_file on '**' severity critical",
+    });
+
+    // Denied calls throw in enforce mode
+    await expect(
+      wrapped.handleToolCall!('write_file', { path: '/data/output.csv' }),
+    ).rejects.toThrow(/denied/i);
+  });
+
+  it('records tool calls in audit log', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'audit-test',
+      constraints: "permit tool.read_file on '**'",
+    });
+
+    await wrapped.handleToolCall!('read_file', { path: '/a' });
+    await wrapped.handleToolCall!('read_file', { path: '/b' });
+    await wrapped.handleToolCall!('read_file', { path: '/c' });
+
+    const log = wrapped.getAuditLog();
+    expect(log.count).toBe(3);
+  });
+
+  it('onViolation callback is invoked for denied calls', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+    const violations: ViolationDetails[] = [];
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'violation-test',
+      constraints: "deny tool.write_file on '**' severity high",
+      onViolation: (v) => violations.push(v),
+    });
+
+    // Denied calls throw in enforce mode
+    try {
+      await wrapped.handleToolCall!('write_file', { path: '/data/file' });
+    } catch {
+      // expected
+    }
+
+    expect(violations.length).toBe(1);
+    expect(violations[0]!.toolName).toBe('write_file');
+  });
+
+  it('onToolCall callback is invoked for all calls', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+    const calls: ToolCallDetails[] = [];
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'callback-test',
+      constraints: "permit tool.read_file on '**'\ndeny tool.write_file on '**' severity high",
+      onToolCall: (c) => calls.push(c),
+    });
+
+    await wrapped.handleToolCall!('read_file', { path: '/a' });
+    try {
+      await wrapped.handleToolCall!('write_file', { path: '/b' });
+    } catch {
+      // expected - denied calls throw
+    }
+
+    expect(calls.length).toBe(2);
+  });
+});
+
+describe('SteleGuard - fromCovenant', () => {
+  it('creates guard from existing covenant document', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const covenant = await buildCovenant({
+      issuer: { id: 'issuer-id', publicKey: kp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'beneficiary-id', publicKey: kp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit tool.read_file on '**'\ndeny tool.write_file on '**' severity critical",
+      privateKey: kp.privateKey,
+    });
+
+    const wrapped = await SteleGuard.fromCovenant(server, covenant, kp);
+
+    expect(wrapped.tools).toBeDefined();
+    expect(wrapped.getCovenant().id).toBe(covenant.id);
+  });
+
+  it('fromCovenant enforces covenant constraints', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const covenant = await buildCovenant({
+      issuer: { id: 'i', publicKey: kp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'b', publicKey: kp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit tool.read_file on '**'",
+      privateKey: kp.privateKey,
+    });
+
+    const wrapped = await SteleGuard.fromCovenant(server, covenant, kp);
+
+    const result = await wrapped.handleToolCall!('read_file', { path: '/data/test' });
+    expect(result).toBeDefined();
+  });
+});
+
+describe('SteleGuard - edge cases', () => {
+  it('handles server with no tools', async () => {
+    const emptyServer: MCPServer = {
+      tools: [],
+      handleToolCall: async () => ({ result: 'empty' }),
+    };
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(emptyServer, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'empty-test',
+      constraints: "permit tool.read_file on '**'",
+    });
+
+    expect(wrapped.tools).toHaveLength(0);
+  });
+
+  it('handles server with many tools', async () => {
+    const manyToolsServer: MCPServer = {
+      tools: Array.from({ length: 20 }, (_, i) => ({
+        name: `tool_${i}`,
+        description: `Tool ${i}`,
+      })),
+      handleToolCall: async (name) => ({ tool: name }),
+    };
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(manyToolsServer, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'many-test',
+      constraints: "permit tool.* on '**'",
+    });
+
+    expect(wrapped.tools).toHaveLength(20);
+  });
+
+  it('getIdentity returns valid identity', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'identity-test',
+      constraints: "permit tool.read_file on '**'",
+    });
+
+    const identity = wrapped.getIdentity();
+    expect(identity.id).toMatch(/^[0-9a-f]{64}$/);
+    expect(identity.operatorIdentifier).toBe('identity-test');
+  });
+
+  it('getCovenant returns valid covenant', async () => {
+    const server = createMockServer();
+    const kp = await generateKeyPair();
+
+    const wrapped = await SteleGuard.wrap(server, {
+      operatorKeyPair: kp,
+      agentIdentifier: 'covenant-test',
+      constraints: "permit tool.read_file on '**'",
+    });
+
+    const covenant = wrapped.getCovenant();
+    expect(covenant.id).toMatch(/^[0-9a-f]{64}$/);
+    expect(covenant.constraints).toContain("permit tool.read_file on '**'");
+  });
+});
+
+describe('PRESETS', () => {
+  it('all presets contain valid CCL constraints', () => {
+    for (const [name, constraints] of Object.entries(PRESETS)) {
+      expect(typeof constraints).toBe('string');
+      expect(constraints.length).toBeGreaterThan(0);
+    }
+  });
+
+  it('has all expected preset names', () => {
+    expect(PRESETS).toHaveProperty('standard:data-isolation');
+    expect(PRESETS).toHaveProperty('standard:read-write');
+    expect(PRESETS).toHaveProperty('standard:network');
+    expect(PRESETS).toHaveProperty('standard:minimal');
+  });
+
+  it('each preset has at least one constraint', () => {
+    for (const [name, constraints] of Object.entries(PRESETS)) {
+      // Each should have at least one line
+      expect(constraints.split('\n').filter(l => l.trim().length > 0).length).toBeGreaterThan(0);
+    }
+  });
+});

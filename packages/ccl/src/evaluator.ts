@@ -641,8 +641,22 @@ function serializeRequire(stmt: RequireStatement): string {
   return line;
 }
 
+function bestTimeUnit(seconds: number): { value: number; unit: string } {
+  if (seconds % 86400 === 0 && seconds >= 86400) {
+    return { value: seconds / 86400, unit: 'days' };
+  }
+  if (seconds % 3600 === 0 && seconds >= 3600) {
+    return { value: seconds / 3600, unit: 'hours' };
+  }
+  if (seconds % 60 === 0 && seconds >= 60) {
+    return { value: seconds / 60, unit: 'minutes' };
+  }
+  return { value: seconds, unit: 'seconds' };
+}
+
 function serializeLimit(stmt: LimitStatement): string {
-  let line = `limit ${stmt.action} ${stmt.count} per ${stmt.periodSeconds} seconds`;
+  const { value, unit } = bestTimeUnit(stmt.periodSeconds);
+  let line = `limit ${stmt.action} ${stmt.count} per ${value} ${unit}`;
   if (stmt.severity !== 'high') {
     line += ` severity ${stmt.severity}`;
   }

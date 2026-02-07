@@ -150,8 +150,9 @@ export async function generateComplianceProof(
  * Verification steps:
  * 1. Check proof format (version, required fields)
  * 2. Check public inputs are well-formed (length = 4)
- * 3. Verify public inputs are internally consistent with proof fields
- * 4. Recompute the proof value from public inputs and compare
+ * 3. Audit log commitment is consistent (publicInputs[1] matches auditLogCommitment, covenantId matches)
+ * 4. Constraint commitment matches (publicInputs[2] matches constraintCommitment, entryCount matches)
+ * 5. Proof verifies against verification circuit (recompute and compare)
  *
  * @param proof - The ComplianceProof to verify
  * @returns Detailed verification result
@@ -213,7 +214,7 @@ export async function verifyComplianceProof(
     );
   }
 
-  // --- Step 3: Verify internal consistency ---
+  // --- Step 3: Audit log commitment is consistent ---
 
   if (proof.publicInputs.length === 4) {
     const [piCovenantId, piAuditCommitment, piConstraintCommitment, piEntryCount] =
@@ -230,6 +231,12 @@ export async function verifyComplianceProof(
         `publicInputs[1] (auditLogCommitment) mismatch: expected ${proof.auditLogCommitment}, got ${piAuditCommitment}`
       );
     }
+  }
+
+  // --- Step 4: Constraint commitment matches ---
+
+  if (proof.publicInputs.length === 4) {
+    const [, , piConstraintCommitment, piEntryCount] = proof.publicInputs;
 
     if (piConstraintCommitment !== proof.constraintCommitment) {
       errors.push(
@@ -244,7 +251,7 @@ export async function verifyComplianceProof(
     }
   }
 
-  // --- Step 4: Recompute and verify proof value ---
+  // --- Step 5: Proof verifies against verification circuit ---
 
   if (proof.proofSystem === 'poseidon_hash' && errors.length === 0) {
     try {

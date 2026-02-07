@@ -468,11 +468,11 @@ describe('@stele/identity', () => {
 
       // fork
       const forkRate = computeCarryForward('fork', identity, {});
-      expect(forkRate).toBe(DEFAULT_EVOLUTION_POLICY.minorUpdate);
+      expect(forkRate).toBe(DEFAULT_EVOLUTION_POLICY.operatorTransfer);
 
       // merge
       const mergeRate = computeCarryForward('merge', identity, {});
-      expect(mergeRate).toBe(DEFAULT_EVOLUTION_POLICY.minorUpdate);
+      expect(mergeRate).toBe(Math.min(DEFAULT_EVOLUTION_POLICY.capabilityExpansion, DEFAULT_EVOLUTION_POLICY.modelVersionChange));
     });
 
     it('model family change returns low carry-forward (0.20)', async () => {
@@ -829,7 +829,7 @@ describe('@stele/identity', () => {
 
       for (const key of expectedKeys) {
         expect(DEFAULT_EVOLUTION_POLICY).toHaveProperty(key);
-        expect(typeof (DEFAULT_EVOLUTION_POLICY as Record<string, unknown>)[key]).toBe('number');
+        expect(typeof (DEFAULT_EVOLUTION_POLICY as unknown as Record<string, unknown>)[key]).toBe('number');
       }
     });
 
@@ -895,5 +895,276 @@ describe('@stele/identity', () => {
         );
       }
     });
+  });
+});
+
+describe('identity - lineage signature verification', () => {
+  it('verifyIdentity checks lineage entry signatures', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    const result = await verifyIdentity(identity);
+    expect(result.valid).toBe(true);
+    const sigCheck = result.checks.find(c => c.name === 'lineage_signatures');
+    expect(sigCheck).toBeDefined();
+    expect(sigCheck!.passed).toBe(true);
+  });
+
+  it('detects tampered lineage entry signature', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    // Tamper with lineage entry signature
+    const tampered = { ...identity, lineage: [...identity.lineage] };
+    tampered.lineage[0] = { ...tampered.lineage[0]!, signature: 'deadbeef'.repeat(16) };
+
+    const result = await verifyIdentity(tampered);
+    const sigCheck = result.checks.find(c => c.name === 'lineage_signatures');
+    expect(sigCheck).toBeDefined();
+    expect(sigCheck!.passed).toBe(false);
+  });
+
+  it('verifies lineage signatures through evolution', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    const evolved = await evolveIdentity(identity, {
+      operatorKeyPair: kp,
+      changeType: 'capability_change',
+      description: 'Added write capability',
+      updates: { capabilities: ['file.read', 'file.write'] },
+    });
+
+    const result = await verifyIdentity(evolved);
+    expect(result.valid).toBe(true);
+    const sigCheck = result.checks.find(c => c.name === 'lineage_signatures');
+    expect(sigCheck!.passed).toBe(true);
+  });
+});
+
+describe('identity - fork and merge carry-forward', () => {
+  it('fork uses operatorTransfer rate (0.50)', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    const rate = computeCarryForward('fork', identity, {});
+    expect(rate).toBe(0.50);
+  });
+
+  it('merge uses min of capabilityExpansion and modelVersionChange (0.80)', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    const rate = computeCarryForward('merge', identity, {});
+    expect(rate).toBe(0.80); // min(0.90, 0.80)
+  });
+});
+
+describe('identity - shareAncestor fork detection', () => {
+  it('detects shared ancestor between forked identities', async () => {
+    const kp = await generateKeyPair();
+    const base = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    // Fork A
+    const forkA = await evolveIdentity(base, {
+      operatorKeyPair: kp,
+      changeType: 'fork',
+      description: 'Fork A for analysis',
+      updates: { capabilities: ['file.read', 'data.analysis'] },
+    });
+
+    // Fork B
+    const forkB = await evolveIdentity(base, {
+      operatorKeyPair: kp,
+      changeType: 'fork',
+      description: 'Fork B for writing',
+      updates: { capabilities: ['file.read', 'file.write'] },
+    });
+
+    expect(shareAncestor(forkA, forkB)).toBe(true);
+  });
+
+  it('no shared ancestor between unrelated identities', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+
+    const identity1 = await createIdentity({
+      operatorKeyPair: kp1,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    const identity2 = await createIdentity({
+      operatorKeyPair: kp2,
+      model: { provider: 'openai', modelId: 'gpt-4', attestationType: 'self_reported' },
+      capabilities: ['api.call'],
+      deployment: { runtime: 'container' },
+    });
+
+    expect(shareAncestor(identity1, identity2)).toBe(false);
+  });
+
+  it('detects shared ancestor after multiple evolutions', async () => {
+    const kp = await generateKeyPair();
+    const base = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+
+    const v2 = await evolveIdentity(base, {
+      operatorKeyPair: kp,
+      changeType: 'capability_change',
+      description: 'Added write',
+      updates: { capabilities: ['file.read', 'file.write'] },
+    });
+
+    // Fork from v2
+    const forkA = await evolveIdentity(v2, {
+      operatorKeyPair: kp,
+      changeType: 'fork',
+      description: 'Fork A',
+      updates: {},
+    });
+
+    // Fork from base (earlier)
+    const forkB = await evolveIdentity(base, {
+      operatorKeyPair: kp,
+      changeType: 'fork',
+      description: 'Fork B',
+      updates: {},
+    });
+
+    // forkA has lineage: created, capability_change, fork
+    // forkB has lineage: created, fork
+    // They share the 'created' entry
+    expect(shareAncestor(forkA, forkB)).toBe(true);
+  });
+});
+
+describe('identity - full evolution policy for all 7 change types', () => {
+  it('created returns 1.0', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'test', modelId: 'test', attestationType: 'self_reported' },
+      capabilities: [],
+      deployment: { runtime: 'process' },
+    });
+    expect(computeCarryForward('created', identity, {})).toBe(1.0);
+  });
+
+  it('model_update with same family returns modelVersionChange (0.80)', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', modelVersion: 'v1', attestationType: 'self_reported' },
+      capabilities: [],
+      deployment: { runtime: 'process' },
+    });
+    const rate = computeCarryForward('model_update', identity, {
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', modelVersion: 'v2', attestationType: 'self_reported' }
+    });
+    expect(rate).toBe(0.80);
+  });
+
+  it('model_update with different family returns modelFamilyChange (0.20)', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'anthropic', modelId: 'claude-sonnet-4-5-20250929', attestationType: 'self_reported' },
+      capabilities: [],
+      deployment: { runtime: 'process' },
+    });
+    const rate = computeCarryForward('model_update', identity, {
+      model: { provider: 'openai', modelId: 'gpt-4o', attestationType: 'self_reported' }
+    });
+    expect(rate).toBe(0.20);
+  });
+
+  it('capability_change expansion returns 0.90', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'test', modelId: 'test', attestationType: 'self_reported' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'process' },
+    });
+    const rate = computeCarryForward('capability_change', identity, {
+      capabilities: ['file.read', 'file.write']
+    });
+    expect(rate).toBe(0.90);
+  });
+
+  it('capability_change reduction returns 1.00', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'test', modelId: 'test', attestationType: 'self_reported' },
+      capabilities: ['file.read', 'file.write'],
+      deployment: { runtime: 'process' },
+    });
+    const rate = computeCarryForward('capability_change', identity, {
+      capabilities: ['file.read']
+    });
+    expect(rate).toBe(1.00);
+  });
+
+  it('operator_transfer returns 0.50', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'test', modelId: 'test', attestationType: 'self_reported' },
+      capabilities: [],
+      deployment: { runtime: 'process' },
+    });
+    expect(computeCarryForward('operator_transfer', identity, {})).toBe(0.50);
+  });
+
+  it('custom evolution policy overrides defaults', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      model: { provider: 'test', modelId: 'test', attestationType: 'self_reported' },
+      capabilities: [],
+      deployment: { runtime: 'process' },
+    });
+    const customPolicy = {
+      ...DEFAULT_EVOLUTION_POLICY,
+      operatorTransfer: 0.75,
+    };
+    expect(computeCarryForward('operator_transfer', identity, {}, customPolicy)).toBe(0.75);
   });
 });

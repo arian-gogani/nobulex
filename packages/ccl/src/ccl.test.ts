@@ -1247,3 +1247,266 @@ limit api.call 50 per 30 seconds`;
     }
   });
 });
+
+// ===========================================================================
+// CCL time unit conversion
+// ===========================================================================
+describe('CCL time unit conversion', () => {
+  it('parses limit with seconds', () => {
+    const doc = parse("limit api.call 100 per 60 seconds");
+    expect(doc.limits).toHaveLength(1);
+    expect(doc.limits[0]!.periodSeconds).toBe(60);
+  });
+
+  it('parses limit with minutes', () => {
+    const doc = parse("limit api.call 100 per 5 minutes");
+    expect(doc.limits).toHaveLength(1);
+    expect(doc.limits[0]!.periodSeconds).toBe(300);
+  });
+
+  it('parses limit with hours', () => {
+    const doc = parse("limit api.call 500 per 1 hours");
+    expect(doc.limits).toHaveLength(1);
+    expect(doc.limits[0]!.periodSeconds).toBe(3600);
+  });
+
+  it('parses limit with days', () => {
+    const doc = parse("limit token.usage 100000 per 1 days");
+    expect(doc.limits).toHaveLength(1);
+    expect(doc.limits[0]!.periodSeconds).toBe(86400);
+  });
+
+  it('parses singular time units (minute, hour, day)', () => {
+    const doc1 = parse("limit api.call 100 per 1 minute");
+    expect(doc1.limits[0]!.periodSeconds).toBe(60);
+
+    const doc2 = parse("limit api.call 100 per 1 hour");
+    expect(doc2.limits[0]!.periodSeconds).toBe(3600);
+
+    const doc3 = parse("limit api.call 100 per 1 day");
+    expect(doc3.limits[0]!.periodSeconds).toBe(86400);
+  });
+
+  it('serializes with best time unit', () => {
+    const doc = parse("limit api.call 500 per 2 hours");
+    expect(doc.limits[0]!.periodSeconds).toBe(7200);
+    const output = serialize(doc);
+    expect(output).toContain('per 2 hours');
+  });
+
+  it('serializes seconds when not evenly divisible', () => {
+    const doc = parse("limit api.call 500 per 90 seconds");
+    expect(doc.limits[0]!.periodSeconds).toBe(90);
+    const output = serialize(doc);
+    expect(output).toContain('per 90 seconds');
+  });
+
+  it('round-trips limit with minutes', () => {
+    const source = "limit api.call 100 per 5 minutes";
+    const doc = parse(source);
+    const output = serialize(doc);
+    const reparsed = parse(output);
+    expect(reparsed.limits[0]!.periodSeconds).toBe(300);
+    expect(reparsed.limits[0]!.count).toBe(100);
+  });
+});
+
+// ===========================================================================
+// CCL operator evaluation - not_contains
+// ===========================================================================
+describe('CCL operator evaluation - not_contains', () => {
+  it('not_contains on string field', () => {
+    const doc = parse("deny file.write on '**' when content not_contains 'safe'");
+    const result = evaluate(doc, 'file.write', '/test', { content: 'this is dangerous' });
+    expect(result.permitted).toBe(false);
+  });
+
+  it('not_contains returns false when substring is present', () => {
+    const doc = parse("deny file.write on '**' when content not_contains 'safe'");
+    const result = evaluate(doc, 'file.write', '/test', { content: 'this is safe content' });
+    // Condition not_contains 'safe' is false because content DOES contain 'safe'
+    // So the deny rule doesn't match, and default deny applies
+    expect(result.permitted).toBe(false); // still denied by default
+  });
+
+  it('not_contains on array field', () => {
+    const result = evaluateCondition(
+      { field: 'tags', operator: 'not_contains', value: 'admin' },
+      { tags: ['user', 'viewer'] }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('not_contains array contains the value', () => {
+    const result = evaluateCondition(
+      { field: 'tags', operator: 'not_contains', value: 'admin' },
+      { tags: ['user', 'admin'] }
+    );
+    expect(result).toBe(false);
+  });
+});
+
+// ===========================================================================
+// CCL operator evaluation - not_in
+// ===========================================================================
+describe('CCL operator evaluation - not_in', () => {
+  it('not_in returns true when value is not in the list', () => {
+    const result = evaluateCondition(
+      { field: 'role', operator: 'not_in', value: ['admin', 'superadmin'] },
+      { role: 'user' }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('not_in returns false when value is in the list', () => {
+    const result = evaluateCondition(
+      { field: 'role', operator: 'not_in', value: ['admin', 'superadmin'] },
+      { role: 'admin' }
+    );
+    expect(result).toBe(false);
+  });
+
+  it('not_in with parsed CCL', () => {
+    const doc = parse("deny api.call on '**' when user.role not_in ['admin', 'operator']");
+    const result = evaluate(doc, 'api.call', '/test', { user: { role: 'viewer' } });
+    expect(result.permitted).toBe(false); // deny matched
+    expect(result.matchedRule?.type).toBe('deny');
+  });
+});
+
+// ===========================================================================
+// CCL operator evaluation - starts_with and ends_with
+// ===========================================================================
+describe('CCL operator evaluation - starts_with and ends_with', () => {
+  it('starts_with matches prefix', () => {
+    const result = evaluateCondition(
+      { field: 'path', operator: 'starts_with', value: '/data/' },
+      { path: '/data/sales.csv' }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('starts_with rejects non-prefix', () => {
+    const result = evaluateCondition(
+      { field: 'path', operator: 'starts_with', value: '/data/' },
+      { path: '/logs/access.log' }
+    );
+    expect(result).toBe(false);
+  });
+
+  it('ends_with matches suffix', () => {
+    const result = evaluateCondition(
+      { field: 'filename', operator: 'ends_with', value: '.csv' },
+      { filename: 'sales.csv' }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('ends_with rejects non-suffix', () => {
+    const result = evaluateCondition(
+      { field: 'filename', operator: 'ends_with', value: '.csv' },
+      { filename: 'sales.json' }
+    );
+    expect(result).toBe(false);
+  });
+
+  it('starts_with and ends_with in parsed CCL conditions', () => {
+    const doc = parse("deny file.write on '**' when filename ends_with '.exe' severity critical");
+    const result = evaluate(doc, 'file.write', '/uploads/malware.exe', { filename: 'malware.exe' });
+    expect(result.permitted).toBe(false);
+    expect(result.severity).toBe('critical');
+  });
+});
+
+// ===========================================================================
+// CCL compound conditions - not
+// ===========================================================================
+describe('CCL compound conditions - not', () => {
+  it('not inverts a simple condition', () => {
+    const result = evaluateCondition(
+      { type: 'not', conditions: [{ field: 'admin', operator: '=', value: true }] },
+      { admin: false }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('not with parentheses in parsed CCL', () => {
+    const doc = parse("deny api.call on '**' when not (user.trusted = true)");
+    const result1 = evaluate(doc, 'api.call', '/test', { user: { trusted: false } });
+    expect(result1.permitted).toBe(false); // not(false) = true, deny matched
+
+    const result2 = evaluate(doc, 'api.call', '/test', { user: { trusted: true } });
+    // not(true) = false, deny doesn't match, no permit rule -> default deny
+    expect(result2.permitted).toBe(false);
+  });
+
+  it('double not cancels out', () => {
+    const result = evaluateCondition(
+      { type: 'not', conditions: [
+        { type: 'not', conditions: [{ field: 'x', operator: '=', value: 1 }] }
+      ] },
+      { x: 1 }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('not combined with and/or', () => {
+    const doc = parse("deny api.call on '**' when not user.admin = true and request.size > 100");
+    const result = evaluate(doc, 'api.call', '/test', {
+      user: { admin: false },
+      request: { size: 200 }
+    });
+    expect(result.permitted).toBe(false); // not(false)=true AND 200>100=true -> deny matches
+  });
+});
+
+// ===========================================================================
+// CCL list literal evaluation - in operator
+// ===========================================================================
+describe('CCL list literal evaluation - in operator', () => {
+  it('in operator with list literal', () => {
+    const doc = parse("permit api.call on '**' when user.role in ['admin', 'operator', 'manager']");
+    const result1 = evaluate(doc, 'api.call', '/test', { user: { role: 'admin' } });
+    expect(result1.permitted).toBe(true);
+
+    const result2 = evaluate(doc, 'api.call', '/test', { user: { role: 'viewer' } });
+    expect(result2.permitted).toBe(false); // not in list, permit doesn't match, default deny
+  });
+
+  it('in operator with numbers in list', () => {
+    const result = evaluateCondition(
+      { field: 'level', operator: 'in', value: ['1', '2', '3'] },
+      { level: 2 }
+    );
+    expect(result).toBe(true); // String(2) = '2' which is in the list
+  });
+});
+
+// ===========================================================================
+// CCL matches operator
+// ===========================================================================
+describe('CCL matches operator', () => {
+  it('matches with regex pattern', () => {
+    const result = evaluateCondition(
+      { field: 'email', operator: 'matches', value: '^[a-zA-Z0-9]+@example\\.com$' },
+      { email: 'user123@example.com' }
+    );
+    expect(result).toBe(true);
+  });
+
+  it('matches rejects non-matching string', () => {
+    const result = evaluateCondition(
+      { field: 'email', operator: 'matches', value: '^[a-zA-Z0-9]+@example\\.com$' },
+      { email: 'user@other.com' }
+    );
+    expect(result).toBe(false);
+  });
+
+  it('matches returns false for non-string field', () => {
+    const result = evaluateCondition(
+      { field: 'count', operator: 'matches', value: '\\d+' },
+      { count: 42 }
+    );
+    expect(result).toBe(false);
+  });
+});

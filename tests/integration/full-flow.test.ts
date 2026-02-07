@@ -151,7 +151,7 @@ describe('Stele SDK: Full cross-package integration flow', () => {
           provider: 'anthropic',
           modelId: 'claude-opus-4',
           modelVersion: '2025-04-14',
-          attestationType: 'signed',
+          attestationType: 'provider_signed',
         },
         capabilities: [
           'file.read',

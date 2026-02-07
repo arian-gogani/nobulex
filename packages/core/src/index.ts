@@ -571,13 +571,17 @@ export async function verifyCovenant(
   }
 
   // ── 11. Nonce present ─────────────────────────────────────────────────
-  const nonceOk = typeof doc.nonce === 'string' && doc.nonce.length > 0;
+  // A valid nonce must be a 64-character hex string (32 bytes)
+  const nonceHexRegex = /^[0-9a-f]{64}$/i;
+  const nonceOk = typeof doc.nonce === 'string' && nonceHexRegex.test(doc.nonce);
   checks.push({
     name: 'nonce_present',
     passed: nonceOk,
     message: nonceOk
-      ? 'Nonce is present'
-      : 'Nonce is missing or empty',
+      ? 'Nonce is present and valid (64-char hex)'
+      : typeof doc.nonce !== 'string' || doc.nonce.length === 0
+        ? 'Nonce is missing or empty'
+        : `Nonce is malformed: expected 64-char hex string, got ${doc.nonce.length} chars`,
   });
 
   // ── Aggregate ─────────────────────────────────────────────────────────

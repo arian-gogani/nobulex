@@ -13,12 +13,14 @@ import {
   burnStake,
   createDelegation,
   burnDelegation,
+  coBurnDelegation,
   createEndorsement,
   verifyEndorsement,
   DEFAULT_SCORING_CONFIG,
 } from './index.js';
 import type {
   ExecutionReceipt,
+  ReputationScore,
   Endorsement,
 } from './types.js';
 
@@ -444,14 +446,14 @@ describe('createStake', () => {
     const stake = await createStake(
       agentKp.publicKeyHex,
       fakeHash('covenant-1'),
-      100,
+      0.5,
       agentKp,
     );
 
     expect(stake.id).toBeDefined();
     expect(stake.agentIdentityHash).toBe(agentKp.publicKeyHex);
     expect(stake.covenantId).toBe(fakeHash('covenant-1'));
-    expect(stake.amount).toBe(100);
+    expect(stake.amount).toBe(0.5);
     expect(stake.status).toBe('active');
     expect(stake.stakedAt).toBeDefined();
     expect(stake.signature).toBeDefined();
@@ -468,7 +470,7 @@ describe('releaseStake', () => {
     const stake = await createStake(
       agentKp.publicKeyHex,
       fakeHash('covenant-1'),
-      100,
+      0.5,
       agentKp,
     );
 
@@ -479,7 +481,7 @@ describe('releaseStake', () => {
     expect(typeof released.resolvedAt).toBe('string');
     // Original fields preserved
     expect(released.id).toBe(stake.id);
-    expect(released.amount).toBe(100);
+    expect(released.amount).toBe(0.5);
     expect(released.agentIdentityHash).toBe(stake.agentIdentityHash);
   });
 
@@ -489,7 +491,7 @@ describe('releaseStake', () => {
     const stake = await createStake(
       agentKp.publicKeyHex,
       fakeHash('covenant-1'),
-      100,
+      0.5,
       agentKp,
     );
 
@@ -507,7 +509,7 @@ describe('burnStake', () => {
     const stake = await createStake(
       agentKp.publicKeyHex,
       fakeHash('covenant-1'),
-      100,
+      0.5,
       agentKp,
     );
 
@@ -517,7 +519,7 @@ describe('burnStake', () => {
     expect(burned.resolvedAt).toBeDefined();
     expect(typeof burned.resolvedAt).toBe('string');
     expect(burned.id).toBe(stake.id);
-    expect(burned.amount).toBe(100);
+    expect(burned.amount).toBe(0.5);
   });
 
   it('does not mutate the original stake', async () => {
@@ -526,7 +528,7 @@ describe('burnStake', () => {
     const stake = await createStake(
       agentKp.publicKeyHex,
       fakeHash('covenant-1'),
-      100,
+      0.5,
       agentKp,
     );
 
@@ -548,7 +550,7 @@ describe('createDelegation', () => {
     const delegation = await createDelegation(
       sponsorKp.publicKeyHex,
       protegeKp.publicKeyHex,
-      50,
+      0.5,
       ['compute', 'storage'],
       '2026-12-31T00:00:00.000Z',
       sponsorKp,
@@ -558,7 +560,7 @@ describe('createDelegation', () => {
     expect(delegation.id).toBeDefined();
     expect(delegation.sponsorIdentityHash).toBe(sponsorKp.publicKeyHex);
     expect(delegation.protégéIdentityHash).toBe(protegeKp.publicKeyHex);
-    expect(delegation.riskAmount).toBe(50);
+    expect(delegation.riskAmount).toBe(0.5);
     expect(delegation.scopes).toEqual(['compute', 'storage']);
     expect(delegation.expiresAt).toBe('2026-12-31T00:00:00.000Z');
     expect(delegation.status).toBe('active');
@@ -579,7 +581,7 @@ describe('burnDelegation', () => {
     const delegation = await createDelegation(
       sponsorKp.publicKeyHex,
       protegeKp.publicKeyHex,
-      50,
+      0.5,
       ['compute'],
       '2026-12-31T00:00:00.000Z',
       sponsorKp,
@@ -601,7 +603,7 @@ describe('burnDelegation', () => {
     const delegation = await createDelegation(
       sponsorKp.publicKeyHex,
       protegeKp.publicKeyHex,
-      50,
+      0.5,
       ['compute'],
       '2026-12-31T00:00:00.000Z',
       sponsorKp,
@@ -698,6 +700,184 @@ describe('verifyEndorsement', () => {
     const tampered = { ...endorsement, signature: sig.slice(0, -1) + flipped };
     const valid = await verifyEndorsement(tampered);
     expect(valid).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Endorsement basis validation
+// ---------------------------------------------------------------------------
+
+describe('reputation - endorsement basis validation', () => {
+  it('rejects negative covenantsCompleted', async () => {
+    const kp = await generateKeyPair();
+    await expect(createEndorsement(
+      'endorser-hash', 'endorsed-hash',
+      { covenantsCompleted: -1, breachRate: 0 },
+      ['data'], 0.5, kp
+    )).rejects.toThrow('covenantsCompleted');
+  });
+
+  it('rejects breachRate > 1', async () => {
+    const kp = await generateKeyPair();
+    await expect(createEndorsement(
+      'endorser-hash', 'endorsed-hash',
+      { covenantsCompleted: 10, breachRate: 1.5 },
+      ['data'], 0.5, kp
+    )).rejects.toThrow('breachRate');
+  });
+
+  it('rejects negative breachRate', async () => {
+    const kp = await generateKeyPair();
+    await expect(createEndorsement(
+      'endorser-hash', 'endorsed-hash',
+      { covenantsCompleted: 10, breachRate: -0.1 },
+      ['data'], 0.5, kp
+    )).rejects.toThrow('breachRate');
+  });
+
+  it('rejects averageOutcomeScore > 1', async () => {
+    const kp = await generateKeyPair();
+    await expect(createEndorsement(
+      'endorser-hash', 'endorsed-hash',
+      { covenantsCompleted: 10, breachRate: 0, averageOutcomeScore: 1.5 },
+      ['data'], 0.5, kp
+    )).rejects.toThrow('averageOutcomeScore');
+  });
+
+  it('rejects weight > 1', async () => {
+    const kp = await generateKeyPair();
+    await expect(createEndorsement(
+      'endorser-hash', 'endorsed-hash',
+      { covenantsCompleted: 10, breachRate: 0 },
+      ['data'], 1.5, kp
+    )).rejects.toThrow('weight');
+  });
+
+  it('accepts valid endorsement with all basis fields', async () => {
+    const kp = await generateKeyPair();
+    const endorsement = await createEndorsement(
+      kp.publicKeyHex, 'endorsed-hash',
+      { covenantsCompleted: 50, breachRate: 0.02, averageOutcomeScore: 0.95 },
+      ['data.analysis', 'api.call'], 0.8, kp
+    );
+    expect(endorsement.basis.covenantsCompleted).toBe(50);
+    expect(endorsement.basis.breachRate).toBe(0.02);
+    expect(endorsement.basis.averageOutcomeScore).toBe(0.95);
+    expect(endorsement.weight).toBe(0.8);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Co-burn delegation
+// ---------------------------------------------------------------------------
+
+describe('reputation - co-burn delegation', () => {
+  it('computes sponsor reputation loss on protege breach', async () => {
+    const sponsorKp = await generateKeyPair();
+    const protegeKp = await generateKeyPair();
+
+    const delegation = await createDelegation(
+      sponsorKp.publicKeyHex, protegeKp.publicKeyHex,
+      0.3, ['data.analysis'],
+      new Date(Date.now() + 86400000).toISOString(),
+      sponsorKp, protegeKp
+    );
+
+    const sponsorScore: ReputationScore = {
+      agentIdentityHash: sponsorKp.publicKeyHex,
+      totalExecutions: 100,
+      fulfilled: 95,
+      partial: 3,
+      failed: 2,
+      breached: 0,
+      successRate: 0.98,
+      weightedScore: 0.95,
+      receiptsMerkleRoot: 'abc123',
+      lastUpdatedAt: new Date().toISOString(),
+      currentStake: 0,
+      totalBurned: 0,
+    };
+
+    const result = coBurnDelegation(delegation, sponsorScore);
+    expect(result.burnedDelegation.status).toBe('burned');
+    expect(result.sponsorReputationLoss).toBeCloseTo(0.3 * 0.95); // riskAmount * weightedScore
+    expect(result.newSponsorBurned).toBeCloseTo(0.3 * 0.95);
+  });
+
+  it('accumulates burned reputation across multiple co-burns', async () => {
+    const sponsorKp = await generateKeyPair();
+    const protegeKp = await generateKeyPair();
+
+    const delegation = await createDelegation(
+      sponsorKp.publicKeyHex, protegeKp.publicKeyHex,
+      0.2, ['data'],
+      new Date(Date.now() + 86400000).toISOString(),
+      sponsorKp, protegeKp
+    );
+
+    const sponsorScore: ReputationScore = {
+      agentIdentityHash: sponsorKp.publicKeyHex,
+      totalExecutions: 50,
+      fulfilled: 50,
+      partial: 0,
+      failed: 0,
+      breached: 0,
+      successRate: 1.0,
+      weightedScore: 0.80,
+      receiptsMerkleRoot: 'abc123',
+      lastUpdatedAt: new Date().toISOString(),
+      currentStake: 0,
+      totalBurned: 0.1, // already had some burned
+    };
+
+    const result = coBurnDelegation(delegation, sponsorScore);
+    expect(result.newSponsorBurned).toBeCloseTo(0.1 + 0.2 * 0.80);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Stake validation
+// ---------------------------------------------------------------------------
+
+describe('reputation - stake validation', () => {
+  it('rejects stake amount > 1', async () => {
+    const kp = await generateKeyPair();
+    await expect(createStake('agent-hash', 'covenant-id', 1.5, kp))
+      .rejects.toThrow('amount');
+  });
+
+  it('rejects negative stake amount', async () => {
+    const kp = await generateKeyPair();
+    await expect(createStake('agent-hash', 'covenant-id', -0.1, kp))
+      .rejects.toThrow('amount');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Delegation validation
+// ---------------------------------------------------------------------------
+
+describe('reputation - delegation validation', () => {
+  it('rejects empty scopes', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+    await expect(createDelegation(
+      kp1.publicKeyHex, kp2.publicKeyHex,
+      0.3, [],
+      new Date(Date.now() + 86400000).toISOString(),
+      kp1, kp2
+    )).rejects.toThrow('scope');
+  });
+
+  it('rejects riskAmount > 1', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+    await expect(createDelegation(
+      kp1.publicKeyHex, kp2.publicKeyHex,
+      1.5, ['data'],
+      new Date(Date.now() + 86400000).toISOString(),
+      kp1, kp2
+    )).rejects.toThrow('riskAmount');
   });
 });
 

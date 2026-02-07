@@ -419,6 +419,44 @@ export async function verifyIdentity(
     message: lineageMessage,
   });
 
+  // 4b. Lineage entry signatures ----------------------------------------
+  let lineageSigsOk = true;
+  let lineageSigsMessage = 'All lineage entry signatures are valid';
+
+  for (let i = 0; i < identity.lineage.length; i++) {
+    const entry = identity.lineage[i]!;
+    try {
+      const entryUnsigned: Omit<LineageEntry, 'signature'> = {
+        identityHash: entry.identityHash,
+        changeType: entry.changeType,
+        description: entry.description,
+        timestamp: entry.timestamp,
+        parentHash: entry.parentHash,
+        reputationCarryForward: entry.reputationCarryForward,
+      };
+      const payload = canonicalizeJson(entryUnsigned);
+      const msgBytes = new TextEncoder().encode(payload);
+      const sigBytes = fromHex(entry.signature);
+      const pubBytes = fromHex(identity.operatorPublicKey);
+      const entryValid = await verify(msgBytes, sigBytes, pubBytes);
+      if (!entryValid) {
+        lineageSigsOk = false;
+        lineageSigsMessage = `Lineage entry ${i}: signature verification failed`;
+        break;
+      }
+    } catch {
+      lineageSigsOk = false;
+      lineageSigsMessage = `Lineage entry ${i}: signature verification error`;
+      break;
+    }
+  }
+
+  checks.push({
+    name: 'lineage_signatures',
+    passed: lineageSigsOk,
+    message: lineageSigsMessage,
+  });
+
   // 5. Version matches lineage length -----------------------------------
   const versionOk = identity.version === identity.lineage.length;
   checks.push({
@@ -489,10 +527,12 @@ export function computeCarryForward(
       return policy.operatorTransfer;
 
     case 'fork':
-      return policy.minorUpdate;
+      // Forks create a new lineage branch — moderate carry-forward
+      return policy.operatorTransfer;  // 0.50 — same risk as transfer
 
     case 'merge':
-      return policy.minorUpdate;
+      // Merges combine lineages — use the lower of expansion and version change
+      return Math.min(policy.capabilityExpansion, policy.modelVersionChange);
 
     default:
       return policy.fullRebuild;

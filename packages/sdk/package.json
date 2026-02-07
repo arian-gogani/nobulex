@@ -1,0 +1,36 @@
+{
+  "name": "@stele/sdk",
+  "version": "0.1.0",
+  "description": "TypeScript SDK for embedding Stele into agent frameworks and applications",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@stele/types": "0.1.0",
+    "@stele/crypto": "0.1.0",
+    "@stele/core": "0.1.0",
+    "@stele/store": "0.1.0",
+    "@stele/verifier": "0.1.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/stele",
+    "directory": "packages/sdk"
+  },
+  "homepage": "https://stele.dev",
+  "bugs": {
+    "url": "https://github.com/agbusiness195/stele/issues"
+  },
+  "author": "Stele Labs, Inc.",
+  "license": "MIT"
+}

@@ -52,7 +52,7 @@ async function main() {
     privateKey: parentKey.privateKey,
     chain: {
       parentId: parentCovenant.id,
-      relation: 'delegates_to',
+      relation: 'delegates',
       depth: 1,
     },
   });
@@ -74,7 +74,7 @@ async function main() {
   console.log('Chain narrowing valid:', narrowing.valid);
   if (narrowing.violations.length > 0) {
     for (const v of narrowing.violations) {
-      console.log('  Violation:', v.message);
+      console.log('  Violation:', v.reason);
     }
   }
   console.log('');

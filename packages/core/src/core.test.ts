@@ -238,7 +238,7 @@ describe('@stele/core', () => {
       const reordered: Record<string, unknown> = {};
       const keys = Object.keys(doc).reverse();
       for (const key of keys) {
-        reordered[key] = (doc as Record<string, unknown>)[key];
+        reordered[key] = (doc as unknown as Record<string, unknown>)[key];
       }
 
       const form1 = canonicalForm(doc);

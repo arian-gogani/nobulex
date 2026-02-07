@@ -189,10 +189,12 @@ class Parser {
         periodTok.column,
       );
     }
-    const periodSeconds = parseInt(periodTok.value, 10);
+    const rawPeriod = parseInt(periodTok.value, 10);
     this.advance();
 
-    this.expect('SECONDS', `Expected 'seconds' in limit statement`);
+    const unitTok = this.expect('SECONDS', `Expected time unit (seconds, minutes, hours, days) in limit statement`);
+    const unitMultiplier = timeUnitMultiplier(unitTok.value);
+    const periodSeconds = rawPeriod * unitMultiplier;
 
     let severity: Severity = 'high';
     if (this.check('SEVERITY')) {
@@ -558,6 +560,25 @@ class Parser {
     ) {
       this.pos++;
     }
+  }
+}
+
+function timeUnitMultiplier(unit: string): number {
+  switch (unit.toLowerCase()) {
+    case 'second':
+    case 'seconds':
+      return 1;
+    case 'minute':
+    case 'minutes':
+      return 60;
+    case 'hour':
+    case 'hours':
+      return 3600;
+    case 'day':
+    case 'days':
+      return 86400;
+    default:
+      return 1;
   }
 }
 

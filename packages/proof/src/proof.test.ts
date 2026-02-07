@@ -518,3 +518,68 @@ describe('generateComplianceProof → verifyComplianceProof round-trip', () => {
     expect(proof1.proof).not.toBe(proof2.proof);
   });
 });
+
+// ─── 5-step verification ──────────────────────────────────────────────────────
+
+describe('proof - 5-step verification', () => {
+  it('Step 3: fails when audit log commitment mismatches publicInputs', async () => {
+    const entries: AuditEntryData[] = [{
+      action: 'file.read', resource: '/data/test.csv',
+      outcome: 'EXECUTED', timestamp: new Date().toISOString(),
+      hash: sha256String('entry1'),
+    }];
+
+    const proof = await generateComplianceProof({
+      covenantId: sha256String('covenant'),
+      constraints: "permit file.read on '/data/**'",
+      auditEntries: entries,
+    });
+
+    // Tamper audit log commitment but keep publicInputs in sync
+    const tampered = {
+      ...proof,
+      auditLogCommitment: sha256String('tampered'),
+      publicInputs: [proof.publicInputs[0]!, sha256String('tampered'), proof.publicInputs[2]!, proof.publicInputs[3]!],
+    };
+
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some(e => e.includes('Proof value mismatch'))).toBe(true);
+  });
+
+  it('Step 4: fails when constraint commitment mismatches', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: sha256String('covenant'),
+      constraints: "permit file.read on '/data/**'",
+      auditEntries: [],
+    });
+
+    // Tamper constraint commitment
+    const tampered = {
+      ...proof,
+      constraintCommitment: sha256String('wrong-constraints'),
+      publicInputs: [proof.publicInputs[0]!, proof.publicInputs[1]!, sha256String('wrong-constraints'), proof.publicInputs[3]!],
+    };
+
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('Step 5: proof recomputation detects any tampering', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: sha256String('covenant'),
+      constraints: "permit file.read on '/data/**'",
+      auditEntries: [{
+        action: 'file.read', resource: '/data/test.csv',
+        outcome: 'EXECUTED', timestamp: new Date().toISOString(),
+        hash: sha256String('entry1'),
+      }],
+    });
+
+    // Directly tamper the proof value
+    const tampered = { ...proof, proof: sha256String('garbage') };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+    expect(result.errors.some(e => e.includes('Proof value mismatch'))).toBe(true);
+  });
+});

@@ -516,6 +516,10 @@ export async function createStake(
   amount: number,
   agentKeyPair: KeyPair,
 ): Promise<ReputationStake> {
+  if (amount < 0 || amount > 1) {
+    throw new Error('Stake amount must be between 0 and 1');
+  }
+
   const stakedAt = timestamp();
 
   const content = buildStakeContent({
@@ -603,6 +607,13 @@ export async function createDelegation(
   sponsorKeyPair: KeyPair,
   protégéKeyPair: KeyPair,
 ): Promise<ReputationDelegation> {
+  if (riskAmount < 0 || riskAmount > 1) {
+    throw new Error('Delegation riskAmount must be between 0 and 1');
+  }
+  if (scopes.length === 0) {
+    throw new Error('Delegation must have at least one scope');
+  }
+
   const content = buildDelegationContent({
     sponsorIdentityHash,
     protégéIdentityHash,
@@ -643,6 +654,37 @@ export function burnDelegation(delegation: ReputationDelegation): ReputationDele
   };
 }
 
+/**
+ * Co-burn a delegation and compute the reputation impact on both parties.
+ * When a protege breaches, both the delegation is burned AND the sponsor
+ * loses reputation proportional to riskAmount.
+ *
+ * Returns the burned delegation plus reputation impact details.
+ */
+export function coBurnDelegation(
+  delegation: ReputationDelegation,
+  sponsorScore: ReputationScore,
+): {
+  burnedDelegation: ReputationDelegation;
+  sponsorReputationLoss: number;
+  newSponsorBurned: number;
+} {
+  const burnedDelegation: ReputationDelegation = {
+    ...delegation,
+    status: 'burned',
+  };
+
+  // Sponsor loses reputation proportional to risk amount
+  const sponsorReputationLoss = delegation.riskAmount * sponsorScore.weightedScore;
+  const newSponsorBurned = sponsorScore.totalBurned + sponsorReputationLoss;
+
+  return {
+    burnedDelegation,
+    sponsorReputationLoss,
+    newSponsorBurned,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Endorsements
 // ---------------------------------------------------------------------------
@@ -670,6 +712,24 @@ export async function createEndorsement(
   endorserKeyPair: KeyPair,
 ): Promise<Endorsement> {
   const issuedAt = timestamp();
+
+  // Validate basis
+  if (typeof basis.covenantsCompleted !== 'number' || basis.covenantsCompleted < 0) {
+    throw new Error('Endorsement basis.covenantsCompleted must be a non-negative number');
+  }
+  if (typeof basis.breachRate !== 'number' || basis.breachRate < 0 || basis.breachRate > 1) {
+    throw new Error('Endorsement basis.breachRate must be a number between 0 and 1');
+  }
+  if (basis.averageOutcomeScore !== undefined) {
+    if (typeof basis.averageOutcomeScore !== 'number' || basis.averageOutcomeScore < 0 || basis.averageOutcomeScore > 1) {
+      throw new Error('Endorsement basis.averageOutcomeScore must be a number between 0 and 1');
+    }
+  }
+
+  // Validate weight
+  if (weight < 0 || weight > 1) {
+    throw new Error('Endorsement weight must be between 0 and 1');
+  }
 
   const content = buildEndorsementContent({
     endorserIdentityHash,

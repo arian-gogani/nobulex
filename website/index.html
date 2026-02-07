@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Stele — The Accountability Primitive for AI Agents</title>
+<meta name="description" content="Cryptographic behavioral commitments with trustless verification. Stele is the accountability protocol for autonomous AI agents.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:wght@900&family=Inter:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg: #08080a;
+  --limestone: #e8e4d9;
+  --gold: #c9a227;
+  --mint: #5eead4;
+  --bronze: #2a2a28;
+  --code-bg: #0e0e12;
+}
+
+html {
+  scroll-behavior: smooth;
+  scrollbar-width: thin;
+  scrollbar-color: var(--bronze) var(--bg);
+}
+html::-webkit-scrollbar { width: 6px; }
+html::-webkit-scrollbar-track { background: var(--bg); }
+html::-webkit-scrollbar-thumb { background: var(--bronze); }
+html::-webkit-scrollbar-thumb:hover { background: var(--gold); }
+
+body {
+  background: var(--bg);
+  color: var(--limestone);
+  font-family: 'Inter', sans-serif;
+  font-weight: 400;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Noise overlay */
+.noise {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0.03;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.section-pad {
+  padding: 120px 0;
+}
+
+/* Typography */
+.heading {
+  font-family: 'Inter Tight', sans-serif;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  line-height: 1.1;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  font-weight: 400;
+}
+
+.serif-quote {
+  font-family: 'Instrument Serif', serif;
+  font-style: italic;
+}
+
+/* Reveal animation base */
+.reveal {
+  opacity: 0;
+  transform: translateY(10px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  position: relative;
+}
+
+.hero-line {
+  width: 1px;
+  height: 0;
+  background: var(--gold);
+  margin-bottom: 48px;
+}
+.hero-line.animate {
+  animation: drawLine 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+@keyframes drawLine {
+  to { height: 200px; }
+}
+
+.hero-title {
+  font-size: clamp(32px, 7vw, 96px);
+  min-height: 1.1em;
+}
+.hero-subtitle {
+  font-size: clamp(24px, 5vw, 72px);
+  min-height: 1.1em;
+  margin-top: 8px;
+}
+
+.hero-title .char,
+.hero-subtitle .char {
+  display: inline-block;
+  opacity: 0;
+  color: var(--gold);
+  transition: color 0.6s ease;
+}
+.hero-title .char.carved,
+.hero-subtitle .char.carved {
+  opacity: 1;
+}
+.hero-title .char.settled,
+.hero-subtitle .char.settled {
+  color: var(--limestone);
+}
+
+.hero-tagline {
+  margin-top: 40px;
+  font-size: 14px;
+  color: var(--gold);
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-tagline.visible { opacity: 1; }
+
+.hero-cta {
+  margin-top: 48px;
+  opacity: 0;
+  transition: opacity 1s ease;
+}
+.hero-cta.visible { opacity: 1; }
+
+.btn-gold {
+  display: inline-block;
+  padding: 16px 40px;
+  border: 1px solid var(--gold);
+  border-radius: 0;
+  background: transparent;
+  color: var(--gold);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.btn-gold:hover {
+  background: var(--gold);
+  color: var(--bg);
+}
+
+/* ── SECTION 2: THE PROBLEM ── */
+.problem {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: start;
+}
+
+.problem-heading {
+  font-size: clamp(28px, 4vw, 48px);
+  line-height: 1.15;
+}
+
+.problem-canvas-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+}
+.problem-canvas-wrap canvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.problem-body {
+  grid-column: 1 / -1;
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--limestone);
+  opacity: 0.7;
+  max-width: 720px;
+}
+
+/* ── SECTION 3: THE PROTOCOL ── */
+.protocol-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr;
+  gap: 0;
+  align-items: start;
+}
+
+.protocol-col {
+  text-align: center;
+  padding: 0 24px;
+}
+.protocol-col-header {
+  font-size: clamp(18px, 2.5vw, 24px);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--gold);
+  display: inline-block;
+  margin-bottom: 32px;
+}
+
+.protocol-icon {
+  margin: 0 auto 24px;
+}
+
+.protocol-desc {
+  font-size: 15px;
+  line-height: 1.6;
+  opacity: 0.7;
+}
+
+.protocol-arrow {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 80px;
+  position: relative;
+  height: 200px;
+}
+.protocol-arrow-line {
+  width: 48px;
+  height: 1px;
+  background: var(--bronze);
+  position: relative;
+}
+.protocol-arrow-dot {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  top: -2.5px;
+  animation: flowDot 2s linear infinite;
+}
+@keyframes flowDot {
+  0% { left: 0; opacity: 0; }
+  10% { opacity: 1; }
+  90% { opacity: 1; }
+  100% { left: 100%; opacity: 0; }
+}
+
+/* ── SECTION 4: THE CODE ── */
+.code-heading {
+  font-size: clamp(24px, 4vw, 40px);
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid var(--bronze);
+  padding: 32px;
+  overflow-x: auto;
+}
+
+.code-block pre {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  line-height: 1.8;
+  margin: 0;
+}
+
+.code-line {
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.5s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+  display: block;
+}
+.code-line.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.ck { color: var(--mint); }    /* keyword */
+.cs { color: var(--gold); }    /* string */
+.cc { color: #6a6a5e; }        /* comment */
+.cf { color: var(--mint); }    /* function */
+.cp { color: var(--limestone); } /* plain */
+
+/* ── SECTION 5: THE ARCHITECTURE ── */
+.arch-heading {
+  font-size: clamp(24px, 4vw, 40px);
+  text-align: center;
+  margin-bottom: 64px;
+}
+
+.arch-bar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 16px 0 16px 16px;
+  border-left: 3px solid var(--gold);
+  border-bottom: 1px solid var(--bronze);
+  transition: transform 0.3s ease, border-color 0.3s ease;
+  cursor: default;
+}
+.arch-bar:last-child { border-bottom: none; }
+.arch-bar:hover {
+  transform: translateX(4px);
+  border-left-color: #e0bb3c;
+}
+
+.arch-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 14px;
+  color: var(--gold);
+  white-space: nowrap;
+  min-width: 180px;
+}
+.arch-desc {
+  font-size: 14px;
+  opacity: 0.7;
+}
+
+/* ── SECTION 6: THE NUMBERS ── */
+.numbers {
+  text-align: center;
+}
+
+.stat {
+  margin-bottom: 96px;
+}
+.stat:last-child { margin-bottom: 0; }
+
+.stat-number {
+  font-size: clamp(64px, 15vw, 200px);
+  color: var(--gold);
+  line-height: 1;
+}
+
+.stat-label {
+  margin-top: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--limestone);
+  opacity: 0.6;
+}
+
+/* ── SECTION 7: THE MANIFESTO ── */
+.manifesto-section {
+  text-align: center;
+  padding: 160px 0;
+}
+
+.manifesto-quote {
+  font-size: clamp(24px, 4vw, 48px);
+  line-height: 1.4;
+  max-width: 800px;
+  margin: 0 auto 48px;
+}
+
+.manifesto-link {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--gold);
+  text-decoration: none;
+  transition: opacity 0.3s ease;
+}
+.manifesto-link:hover { opacity: 0.7; }
+
+/* ── FOOTER ── */
+footer {
+  text-align: center;
+  padding: 80px 24px 40px;
+}
+
+.footer-name {
+  font-size: 12px;
+  letter-spacing: 0.3em;
+  color: var(--limestone);
+  opacity: 0.4;
+}
+
+.footer-gh {
+  display: inline-block;
+  margin: 24px 0;
+}
+.footer-gh svg {
+  fill: var(--gold);
+  transition: opacity 0.3s ease;
+}
+.footer-gh:hover svg { opacity: 0.7; }
+
+.footer-tagline {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.6;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+  .section-pad { padding: 80px 0; }
+
+  .problem {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .problem-body { grid-column: 1; }
+
+  .protocol-grid {
+    grid-template-columns: 1fr;
+    gap: 48px;
+  }
+  .protocol-arrow { display: none; }
+  .protocol-col { padding: 0; }
+
+  .arch-bar { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .arch-name { min-width: auto; }
+
+  .stat { margin-bottom: 64px; }
+
+  .manifesto-section { padding: 100px 0; }
+}
+</style>
+</head>
+<body>
+
+<!-- Noise overlay -->
+<svg class="noise" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
+  <filter id="noiseFilter">
+    <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#noiseFilter)"/>
+</svg>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-line" id="heroLine"></div>
+  <h1 class="heading hero-title" id="heroTitle"></h1>
+  <h2 class="heading hero-subtitle" id="heroSubtitle"></h2>
+  <p class="mono hero-tagline" id="heroTagline">Carved in stone · Verified in code</p>
+  <div class="hero-cta" id="heroCta">
+    <a href="./PROTOCOL.md" class="btn-gold">View Protocol →</a>
+  </div>
+</section>
+
+<!-- THE PROBLEM -->
+<section class="section-pad">
+  <div class="container">
+    <div class="problem">
+      <div class="reveal">
+        <h2 class="heading problem-heading">Every AI agent today operates on blind trust</h2>
+      </div>
+      <div class="problem-canvas-wrap reveal">
+        <canvas id="trustCanvas"></canvas>
+      </div>
+      <p class="problem-body reveal">No behavioral commitments. No audit trail. No verification. We are building an autonomous economy on a foundation of <em>trust me.</em></p>
+    </div>
+  </div>
+</section>
+
+<!-- THE PROTOCOL -->
+<section class="section-pad">
+  <div class="container">
+    <div class="protocol-grid">
+      <div class="protocol-col reveal">
+        <h3 class="heading protocol-col-header">Inscribe</h3>
+        <!-- Stele/tablet icon -->
+        <svg class="protocol-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="8" y="4" width="32" height="40" rx="1" stroke="#c9a227" stroke-width="1.5"/>
+          <line x1="14" y1="14" x2="34" y2="14" stroke="#c9a227" stroke-width="1.5"/>
+          <line x1="14" y1="21" x2="34" y2="21" stroke="#c9a227" stroke-width="1.5"/>
+          <line x1="14" y1="28" x2="28" y2="28" stroke="#c9a227" stroke-width="1.5"/>
+        </svg>
+        <p class="protocol-desc">The agent inscribes a signed, immutable commitment declaring its behavioral boundaries before it acts.</p>
+      </div>
+      <div class="protocol-arrow" aria-hidden="true">
+        <div class="protocol-arrow-line">
+          <div class="protocol-arrow-dot"></div>
+        </div>
+      </div>
+      <div class="protocol-col reveal">
+        <h3 class="heading protocol-col-header">Operate</h3>
+        <!-- Gear icon -->
+        <svg class="protocol-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 16a8 8 0 1 0 0 16 8 8 0 0 0 0-16z" stroke="#c9a227" stroke-width="1.5"/>
+          <path d="M24 4v6M24 38v6M4 24h6M38 24h6M9.86 9.86l4.24 4.24M33.9 33.9l4.24 4.24M9.86 38.14l4.24-4.24M33.9 14.1l4.24-4.24" stroke="#c9a227" stroke-width="1.5"/>
+        </svg>
+        <p class="protocol-desc">Every action is logged in a tamper-evident Merkle tree, building a cryptographic record of behavior.</p>
+      </div>
+      <div class="protocol-arrow" aria-hidden="true">
+        <div class="protocol-arrow-line">
+          <div class="protocol-arrow-dot" style="animation-delay: 1s;"></div>
+        </div>
+      </div>
+      <div class="protocol-col reveal">
+        <h3 class="heading protocol-col-header">Verify</h3>
+        <!-- Shield checkmark icon -->
+        <svg class="protocol-icon" width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M24 4L6 12v12c0 11.1 7.7 21.5 18 24 10.3-2.5 18-12.9 18-24V12L24 4z" stroke="#c9a227" stroke-width="1.5"/>
+          <polyline points="16,24 22,30 32,18" stroke="#c9a227" stroke-width="1.5" fill="none"/>
+        </svg>
+        <p class="protocol-desc">Any third party can independently verify compliance. No trust required. The proof stands on its own.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- THE CODE -->
+<section class="section-pad">
+  <div class="container">
+    <h2 class="heading code-heading reveal">Two lines. Full accountability.</h2>
+    <div class="code-block reveal" id="codeBlock">
+      <pre><span class="code-line"><span class="cc">// Before: uncovenanted agent — no commitments, no verification</span></span>
+<span class="code-line"><span class="ck">const</span> <span class="cp">agent = </span><span class="ck">new</span> <span class="cf">Agent</span><span class="cp">(</span><span class="cs">"portfolio-manager"</span><span class="cp">);</span></span>
+<span class="code-line">&nbsp;</span>
+<span class="code-line"><span class="cc">// After: full cryptographic accountability in two lines</span></span>
+<span class="code-line"><span class="ck">import</span> <span class="cp">{ SteleGuard } </span><span class="ck">from</span> <span class="cs">"@stele/sdk"</span><span class="cp">;</span></span>
+<span class="code-line"><span class="ck">const</span> <span class="cp">guarded = </span><span class="ck">await</span> <span class="cf">SteleGuard.wrap</span><span class="cp">(agent, {</span></span>
+<span class="code-line"><span class="cp">  covenant: {</span></span>
+<span class="code-line"><span class="cp">    allow: [</span><span class="cs">"trade.execute"</span><span class="cp">, </span><span class="cs">"portfolio.rebalance"</span><span class="cp">],</span></span>
+<span class="code-line"><span class="cp">    deny:  [</span><span class="cs">"funds.withdraw"</span><span class="cp">, </span><span class="cs">"keys.export"</span><span class="cp">],</span></span>
+<span class="code-line"><span class="cp">    limit: { </span><span class="cs">"trade.value"</span><span class="cp">: </span><span class="cs">"<= 50000 per 24h"</span><span class="cp"> }</span></span>
+<span class="code-line"><span class="cp">  }</span></span>
+<span class="code-line"><span class="cp">});</span></span>
+<span class="code-line">&nbsp;</span>
+<span class="code-line"><span class="cc">// Every action is now inscribed, logged, and independently verifiable</span></span></pre>
+    </div>
+  </div>
+</section>
+
+<!-- THE ARCHITECTURE -->
+<section class="section-pad">
+  <div class="container">
+    <h2 class="heading arch-heading reveal">The Protocol Stack</h2>
+    <div id="archBars">
+      <div class="arch-bar reveal"><span class="arch-name">@stele/crypto</span><span class="arch-desc">Merkle trees, content-addressed hashing, and digital signatures</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/ccl</span><span class="arch-desc">Covenant Constraint Language — parser, evaluator, and circuit compiler</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/core</span><span class="arch-desc">Protocol engine for commitment creation, action logging, and proof generation</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/identity</span><span class="arch-desc">Composite agent identity, lineage chains, and evolution policy</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/enforcement</span><span class="arch-desc">Monitor, CapabilityGate, and tamper-evident audit logs</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/proof</span><span class="arch-desc">ZK proof architecture — Poseidon commitments and circuit generation</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/reputation</span><span class="arch-desc">Execution receipts, trust scoring, staking, and non-transferable personhood</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/breach</span><span class="arch-desc">Breach attestations, trust graph propagation, and severity-mapped degradation</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/mcp</span><span class="arch-desc">Model Context Protocol server exposing Stele tools to any AI agent</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/cli</span><span class="arch-desc">Command-line tools for inspecting, querying, and verifying steles</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- THE NUMBERS -->
+<section class="section-pad">
+  <div class="container numbers">
+    <div class="stat reveal">
+      <div class="heading stat-number">&lt;50ms</div>
+      <div class="stat-label">Verification Latency</div>
+    </div>
+    <div class="stat reveal">
+      <div class="heading stat-number">∞</div>
+      <div class="stat-label">Covenant Permanence</div>
+    </div>
+    <div class="stat reveal">
+      <div class="heading stat-number">0</div>
+      <div class="stat-label">Trust Assumptions</div>
+    </div>
+  </div>
+</section>
+
+<!-- THE MANIFESTO -->
+<section class="manifesto-section">
+  <div class="container">
+    <p class="serif-quote manifesto-quote reveal">The first Covenant has been inscribed.<br>Verify it yourself.</p>
+    <div class="reveal">
+      <a href="./MANIFESTO.md" class="manifesto-link">Read the Manifesto →</a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="heading footer-name">Stele Labs, Inc.</div>
+  <a href="https://github.com/agbusiness195/stele" class="footer-gh" aria-label="GitHub">
+    <svg width="20" height="20" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
+    </svg>
+  </a>
+  <div class="footer-tagline">Carved in stone · Verified in code</div>
+</footer>
+
+<script>
+(function() {
+  'use strict';
+
+  // ── HERO ANIMATION ──
+  const heroLine = document.getElementById('heroLine');
+  const heroTitle = document.getElementById('heroTitle');
+  const heroSubtitle = document.getElementById('heroSubtitle');
+  const heroTagline = document.getElementById('heroTagline');
+  const heroCta = document.getElementById('heroCta');
+
+  const titleText = 'THE ACCOUNTABILITY PRIMITIVE';
+  const subtitleText = 'FOR AI AGENTS';
+
+  function populateChars(el, text) {
+    el.innerHTML = '';
+    for (let i = 0; i < text.length; i++) {
+      const span = document.createElement('span');
+      span.className = 'char';
+      span.textContent = text[i] === ' ' ? '\u00A0' : text[i];
+      el.appendChild(span);
+    }
+  }
+
+  populateChars(heroTitle, titleText);
+  populateChars(heroSubtitle, subtitleText);
+
+  function inscribeChars(el, startDelay) {
+    const chars = el.querySelectorAll('.char');
+    const msPerChar = 3000 / (titleText.length + subtitleText.length);
+    chars.forEach(function(c, i) {
+      setTimeout(function() {
+        c.classList.add('carved');
+        setTimeout(function() { c.classList.add('settled'); }, 300);
+      }, startDelay + i * msPerChar);
+    });
+    return startDelay + chars.length * msPerChar;
+  }
+
+  // Start sequence
+  setTimeout(function() {
+    heroLine.classList.add('animate');
+  }, 200);
+
+  setTimeout(function() {
+    const endTitle = inscribeChars(heroTitle, 0);
+    setTimeout(function() {
+      inscribeChars(heroSubtitle, 0);
+    }, endTitle + 200);
+
+    const totalChars = titleText.length + subtitleText.length;
+    const totalInscribeTime = totalChars * (3000 / totalChars) + 200;
+    setTimeout(function() {
+      heroTagline.classList.add('visible');
+    }, totalInscribeTime + 600);
+    setTimeout(function() {
+      heroCta.classList.add('visible');
+    }, totalInscribeTime + 1200);
+  }, 1900);
+
+  // ── INTERSECTION OBSERVER FOR REVEAL ──
+  var revealObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        revealObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.15 });
+
+  document.querySelectorAll('.reveal').forEach(function(el) {
+    revealObs.observe(el);
+  });
+
+  // ── CODE BLOCK LINE REVEAL ──
+  var codeObs = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var lines = entry.target.querySelectorAll('.code-line');
+        lines.forEach(function(line, i) {
+          setTimeout(function() {
+            line.classList.add('visible');
+          }, i * 200);
+        });
+        codeObs.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.2 });
+
+  var codeBlock = document.getElementById('codeBlock');
+  if (codeBlock) codeObs.observe(codeBlock);
+
+  // ── TRUST NETWORK CANVAS ──
+  var canvas = document.getElementById('trustCanvas');
+  if (canvas) {
+    var ctx = canvas.getContext('2d');
+    var isMobile = window.innerWidth < 768;
+    var PARTICLE_COUNT = isMobile ? 100 : 200;
+    var CONNECTION_DIST = isMobile ? 60 : 80;
+    var particles = [];
+    var canvasActive = false;
+    var animFrame = null;
+    var dpr = window.devicePixelRatio || 1;
+
+    function resizeCanvas() {
+      var rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      canvas.style.width = rect.width + 'px';
+      canvas.style.height = rect.height + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function initParticles() {
+      var rect = canvas.parentElement.getBoundingClientRect();
+      particles = [];
+      for (var i = 0; i < PARTICLE_COUNT; i++) {
+        particles.push({
+          x: Math.random() * rect.width,
+          y: Math.random() * rect.height,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4
+        });
+      }
+    }
+
+    resizeCanvas();
+    initParticles();
+
+    var connectionProgress = 0;
+
+    var canvasObs = new IntersectionObserver(function(entries) {
+      entries.forEach(function(entry) {
+        if (entry.isIntersecting && !canvasActive) {
+          canvasActive = true;
+          drawLoop();
+        } else if (!entry.isIntersecting && canvasActive) {
+          canvasActive = false;
+          if (animFrame) cancelAnimationFrame(animFrame);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    canvasObs.observe(canvas.parentElement);
+
+    var lastTime = 0;
+    var interval = 1000 / 30; // 30fps
+
+    function drawLoop(timestamp) {
+      if (!canvasActive) return;
+      animFrame = requestAnimationFrame(drawLoop);
+
+      if (!timestamp) timestamp = 0;
+      var delta = timestamp - lastTime;
+      if (delta < interval) return;
+      lastTime = timestamp - (delta % interval);
+
+      var rect = canvas.parentElement.getBoundingClientRect();
+      var w = rect.width;
+      var h = rect.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      if (connectionProgress < 1) connectionProgress += 0.005;
+
+      // Update
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 0 || p.x > w) p.vx *= -1;
+        if (p.y < 0 || p.y > h) p.vy *= -1;
+      }
+
+      // Draw connections
+      var maxDist = CONNECTION_DIST;
+      ctx.strokeStyle = 'rgba(201, 162, 39,' + (0.25 * connectionProgress) + ')';
+      ctx.lineWidth = 0.5;
+      for (var i = 0; i < particles.length; i++) {
+        for (var j = i + 1; j < particles.length; j++) {
+          var dx = particles[i].x - particles[j].x;
+          var dy = particles[i].y - particles[j].y;
+          var dist = Math.sqrt(dx * dx + dy * dy);
+          if (dist < maxDist) {
+            var alpha = (1 - dist / maxDist) * connectionProgress;
+            ctx.strokeStyle = 'rgba(201,162,39,' + (alpha * 0.3) + ')';
+            ctx.beginPath();
+            ctx.moveTo(particles[i].x, particles[i].y);
+            ctx.lineTo(particles[j].x, particles[j].y);
+            ctx.stroke();
+          }
+        }
+      }
+
+      // Draw particles
+      for (var i = 0; i < particles.length; i++) {
+        var p = particles[i];
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, 2.5, 0, Math.PI * 2);
+        ctx.fillStyle = '#2a2a28';
+        ctx.fill();
+        ctx.strokeStyle = '#c9a227';
+        ctx.lineWidth = 0.75;
+        ctx.stroke();
+      }
+    }
+
+    window.addEventListener('resize', function() {
+      resizeCanvas();
+      isMobile = window.innerWidth < 768;
+      var newCount = isMobile ? 100 : 200;
+      if (newCount !== PARTICLE_COUNT) {
+        PARTICLE_COUNT = newCount;
+        initParticles();
+      }
+    });
+  }
+})();
+</script>
+</body>
+</html>

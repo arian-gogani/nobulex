@@ -1,0 +1,29 @@
+{
+  "name": "@stele/types",
+  "version": "0.1.0",
+  "description": "Shared TypeScript type definitions and protocol schemas",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc --project tsconfig.json",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/stele",
+    "directory": "packages/types"
+  },
+  "homepage": "https://stele.dev",
+  "bugs": {
+    "url": "https://github.com/agbusiness195/stele/issues"
+  },
+  "author": "Stele Labs, Inc.",
+  "license": "MIT"
+}

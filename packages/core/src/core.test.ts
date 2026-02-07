@@ -11,11 +11,16 @@ import {
   resignCovenant,
   serializeCovenant,
   deserializeCovenant,
+  computeEffectiveConstraints,
+  validateChainNarrowing,
   CovenantBuildError,
+  CovenantVerificationError,
   MemoryChainResolver,
   resolveChain,
   PROTOCOL_VERSION,
   MAX_DOCUMENT_SIZE,
+  MAX_CHAIN_DEPTH,
+  MAX_CONSTRAINTS,
 } from './index';
 
 import type {
@@ -23,6 +28,7 @@ import type {
   CovenantBuilderOptions,
   Issuer,
   Beneficiary,
+  ChainReference,
 } from './index';
 
 // ---------------------------------------------------------------------------
@@ -848,6 +854,1002 @@ describe('@stele/core', () => {
       expect(err.name).toBe('CovenantBuildError');
       expect(err.field).toBe('testField');
       expect(err.message).toBe('test message');
+      expect(err instanceof Error).toBe(true);
+    });
+  });
+
+  // ── buildCovenant edge cases (expanded) ─────────────────────────────────
+
+  describe('buildCovenant edge cases', () => {
+    it('throws for missing beneficiary.id', async () => {
+      const { issuerKeyPair, issuer, beneficiaryKeyPair } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary: { id: '', publicKey: beneficiaryKeyPair.publicKeyHex, role: 'beneficiary' },
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary: { id: '', publicKey: beneficiaryKeyPair.publicKeyHex, role: 'beneficiary' },
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('beneficiary.id');
+      }
+    });
+
+    it('throws for missing beneficiary.publicKey', async () => {
+      const { issuerKeyPair, issuer } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary: { id: 'ben-1', publicKey: '', role: 'beneficiary' },
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary: { id: 'ben-1', publicKey: '', role: 'beneficiary' },
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('beneficiary.publicKey');
+      }
+    });
+
+    it('throws when beneficiary.role is not "beneficiary"', async () => {
+      const { issuerKeyPair, issuer, beneficiaryKeyPair } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary: {
+            id: 'ben-1',
+            publicKey: beneficiaryKeyPair.publicKeyHex,
+            role: 'issuer' as 'beneficiary',
+          },
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary: {
+            id: 'ben-1',
+            publicKey: beneficiaryKeyPair.publicKeyHex,
+            role: 'issuer' as 'beneficiary',
+          },
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('beneficiary.role');
+      }
+    });
+
+    it('throws for chain with missing parentId', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: '', relation: 'delegates', depth: 1 } as ChainReference,
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: '', relation: 'delegates', depth: 1 } as ChainReference,
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('chain.parentId');
+      }
+    });
+
+    it('throws for chain with missing relation', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: 'a'.repeat(64), relation: '' as 'delegates', depth: 1 },
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: 'a'.repeat(64), relation: '' as 'delegates', depth: 1 },
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('chain.relation');
+      }
+    });
+
+    it('throws for chain.depth < 1', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: 'a'.repeat(64), relation: 'delegates', depth: 0 },
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: 'a'.repeat(64), relation: 'delegates', depth: 0 },
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('chain.depth');
+      }
+    });
+
+    it('throws for chain.depth exceeding MAX_CHAIN_DEPTH', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: 'a'.repeat(64), relation: 'delegates', depth: MAX_CHAIN_DEPTH + 1 },
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          chain: { parentId: 'a'.repeat(64), relation: 'delegates', depth: MAX_CHAIN_DEPTH + 1 },
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('chain.depth');
+        expect((err as CovenantBuildError).message).toContain('exceeds maximum');
+      }
+    });
+
+    it('throws for invalid enforcement type', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          enforcement: { type: 'invalid_type' as any, config: {} },
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          enforcement: { type: 'magic' as any, config: {} },
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('enforcement.type');
+      }
+    });
+
+    it('throws for invalid proof type', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      await expect(
+        buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          proof: { type: 'invalid_proof' as any, config: {} },
+        }),
+      ).rejects.toThrow(CovenantBuildError);
+
+      try {
+        await buildCovenant({
+          issuer,
+          beneficiary,
+          constraints: validConstraints(),
+          privateKey: issuerKeyPair.privateKey,
+          proof: { type: 'handshake' as any, config: {} },
+        });
+      } catch (err) {
+        expect((err as CovenantBuildError).field).toBe('proof.type');
+      }
+    });
+
+    it('accepts all valid enforcement types', async () => {
+      const validTypes = ['capability', 'monitor', 'audit', 'bond', 'composite'] as const;
+      for (const enfType of validTypes) {
+        const { doc } = await buildValidCovenant({
+          enforcement: { type: enfType, config: {} },
+        });
+        expect(doc.enforcement?.type).toBe(enfType);
+      }
+    });
+
+    it('accepts all valid proof types', async () => {
+      const validTypes = ['tee', 'capability_manifest', 'audit_log', 'bond_reference', 'zkp', 'composite'] as const;
+      for (const proofType of validTypes) {
+        const { doc } = await buildValidCovenant({
+          proof: { type: proofType, config: {} },
+        });
+        expect(doc.proof?.type).toBe(proofType);
+      }
+    });
+  });
+
+  // ── verifyCovenant: all 11 checks failing independently ─────────────────
+
+  describe('verifyCovenant: each check failing independently', () => {
+    it('check 1 - id_match fails when ID is wrong', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = { ...doc, id: 'b'.repeat(64) };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'id_match');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('mismatch');
+    });
+
+    it('check 2 - signature_valid fails with corrupted signature', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = { ...doc, signature: '00'.repeat(64) };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'signature_valid');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('failed');
+    });
+
+    it('check 3 - not_expired fails when document has expired', async () => {
+      const { doc } = await buildValidCovenant({
+        expiresAt: '2000-01-01T00:00:00.000Z',
+      });
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'not_expired');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('expired');
+    });
+
+    it('check 3 - not_expired passes when no expiresAt is set', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'not_expired');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('No expiry set');
+    });
+
+    it('check 4 - active fails when activatesAt is in the future', async () => {
+      const { doc } = await buildValidCovenant({
+        activatesAt: '2099-01-01T00:00:00.000Z',
+      });
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'active');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('activates at');
+    });
+
+    it('check 4 - active passes when no activatesAt is set', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'active');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('No activation time set');
+    });
+
+    it('check 5 - ccl_parses fails with invalid CCL in constraints', async () => {
+      const { doc } = await buildValidCovenant();
+      // Directly tamper the constraints field (bypasses builder validation)
+      const tampered = { ...doc, constraints: '!!!garbage!!!' };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'ccl_parses');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('CCL parse error');
+    });
+
+    it('check 6 - enforcement_valid fails with unknown enforcement type', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = {
+        ...doc,
+        enforcement: { type: 'nonexistent' as any, config: {} },
+      };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'enforcement_valid');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('Unknown enforcement type');
+    });
+
+    it('check 6 - enforcement_valid passes when no enforcement is set', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'enforcement_valid');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('No enforcement config present');
+    });
+
+    it('check 7 - proof_valid fails with unknown proof type', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = {
+        ...doc,
+        proof: { type: 'handshake' as any, config: {} },
+      };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'proof_valid');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('Unknown proof type');
+    });
+
+    it('check 7 - proof_valid passes when no proof is set', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'proof_valid');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('No proof config present');
+    });
+
+    it('check 8 - chain_depth fails when depth exceeds MAX_CHAIN_DEPTH', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = {
+        ...doc,
+        chain: { parentId: 'a'.repeat(64), relation: 'delegates' as const, depth: MAX_CHAIN_DEPTH + 5 },
+      };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'chain_depth');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('exceeds maximum');
+    });
+
+    it('check 8 - chain_depth passes when no chain is set', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'chain_depth');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('No chain reference present');
+    });
+
+    it('check 9 - document_size passes for normal-sized documents', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'document_size');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('within limit');
+    });
+
+    it('check 10 - countersignatures fails with invalid countersignature', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = {
+        ...doc,
+        countersignatures: [
+          {
+            signerPublicKey: 'aa'.repeat(32),
+            signerRole: 'auditor' as const,
+            signature: 'ff'.repeat(64),
+            timestamp: new Date().toISOString(),
+          },
+        ],
+      };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'countersignatures');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('Invalid countersignature');
+    });
+
+    it('check 10 - countersignatures passes when none present', async () => {
+      const { doc } = await buildValidCovenant();
+
+      const result = await verifyCovenant(doc);
+      const check = result.checks.find((c) => c.name === 'countersignatures');
+      expect(check!.passed).toBe(true);
+      expect(check!.message).toContain('No countersignatures present');
+    });
+
+    it('check 11 - nonce_present fails with malformed nonce (too short)', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = { ...doc, nonce: 'abcdef' };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'nonce_present');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('malformed');
+    });
+
+    it('check 11 - nonce_present fails with non-hex characters', async () => {
+      const { doc } = await buildValidCovenant();
+      // 64 chars but includes non-hex characters
+      const tampered = { ...doc, nonce: 'zzzz' + 'a'.repeat(60) };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'nonce_present');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+    });
+
+    it('check 11 - nonce_present fails when nonce is empty string', async () => {
+      const { doc } = await buildValidCovenant();
+      const tampered = { ...doc, nonce: '' };
+
+      const result = await verifyCovenant(tampered);
+      const check = result.checks.find((c) => c.name === 'nonce_present');
+      expect(check).toBeDefined();
+      expect(check!.passed).toBe(false);
+      expect(check!.message).toContain('missing or empty');
+    });
+
+    it('all 11 checks are always present in the result', async () => {
+      const { doc } = await buildValidCovenant();
+      const result = await verifyCovenant(doc);
+
+      const expectedCheckNames = [
+        'id_match',
+        'signature_valid',
+        'not_expired',
+        'active',
+        'ccl_parses',
+        'enforcement_valid',
+        'proof_valid',
+        'chain_depth',
+        'document_size',
+        'countersignatures',
+        'nonce_present',
+      ];
+
+      expect(result.checks.length).toBe(11);
+      for (const name of expectedCheckNames) {
+        const check = result.checks.find((c) => c.name === name);
+        expect(check).toBeDefined();
+      }
+    });
+  });
+
+  // ── resignCovenant (expanded) ───────────────────────────────────────────
+
+  describe('resignCovenant (expanded)', () => {
+    it('produces a 64-char hex nonce different from the original', async () => {
+      const { doc, issuerKeyPair } = await buildValidCovenant();
+      const resigned = await resignCovenant(doc, issuerKeyPair.privateKey);
+
+      expect(resigned.nonce).toMatch(/^[0-9a-f]{64}$/);
+      expect(resigned.nonce).not.toBe(doc.nonce);
+    });
+
+    it('produces a new valid 64-char hex ID', async () => {
+      const { doc, issuerKeyPair } = await buildValidCovenant();
+      const resigned = await resignCovenant(doc, issuerKeyPair.privateKey);
+
+      expect(resigned.id).toMatch(/^[0-9a-f]{64}$/);
+      expect(resigned.id).not.toBe(doc.id);
+    });
+
+    it('produces a valid 128-char hex signature', async () => {
+      const { doc, issuerKeyPair } = await buildValidCovenant();
+      const resigned = await resignCovenant(doc, issuerKeyPair.privateKey);
+
+      expect(resigned.signature).toMatch(/^[0-9a-f]{128}$/);
+      expect(resigned.signature).not.toBe(doc.signature);
+    });
+
+    it('the resigned document ID matches computeId', async () => {
+      const { doc, issuerKeyPair } = await buildValidCovenant();
+      const resigned = await resignCovenant(doc, issuerKeyPair.privateKey);
+
+      expect(resigned.id).toBe(computeId(resigned));
+    });
+
+    it('re-signing twice produces different nonces each time', async () => {
+      const { doc, issuerKeyPair } = await buildValidCovenant();
+      const resigned1 = await resignCovenant(doc, issuerKeyPair.privateKey);
+      const resigned2 = await resignCovenant(doc, issuerKeyPair.privateKey);
+
+      expect(resigned1.nonce).not.toBe(resigned2.nonce);
+      expect(resigned1.id).not.toBe(resigned2.id);
+    });
+
+    it('preserves all content fields from the original document', async () => {
+      const { doc, issuerKeyPair } = await buildValidCovenant({
+        metadata: { name: 'test', description: 'A test' },
+        enforcement: { type: 'monitor', config: { key: 'val' } },
+      });
+      const resigned = await resignCovenant(doc, issuerKeyPair.privateKey);
+
+      expect(resigned.version).toBe(doc.version);
+      expect(resigned.issuer).toEqual(doc.issuer);
+      expect(resigned.beneficiary).toEqual(doc.beneficiary);
+      expect(resigned.constraints).toBe(doc.constraints);
+      expect(resigned.metadata).toEqual(doc.metadata);
+      expect(resigned.enforcement).toEqual(doc.enforcement);
+    });
+  });
+
+  // ── countersignCovenant (expanded) ──────────────────────────────────────
+
+  describe('countersignCovenant (expanded)', () => {
+    it('multiple countersigners all produce valid, individually verifiable signatures', async () => {
+      const { doc } = await buildValidCovenant();
+      const kp1 = await generateKeyPair();
+      const kp2 = await generateKeyPair();
+      const kp3 = await generateKeyPair();
+
+      let signed = await countersignCovenant(doc, kp1, 'auditor');
+      signed = await countersignCovenant(signed, kp2, 'regulator');
+      signed = await countersignCovenant(signed, kp3, 'operator');
+
+      expect(signed.countersignatures).toHaveLength(3);
+      expect(signed.countersignatures![0]!.signerPublicKey).toBe(kp1.publicKeyHex);
+      expect(signed.countersignatures![1]!.signerPublicKey).toBe(kp2.publicKeyHex);
+      expect(signed.countersignatures![2]!.signerPublicKey).toBe(kp3.publicKeyHex);
+
+      const result = await verifyCovenant(signed);
+      expect(result.valid).toBe(true);
+
+      const csCheck = result.checks.find((c) => c.name === 'countersignatures');
+      expect(csCheck!.passed).toBe(true);
+      expect(csCheck!.message).toContain('3 countersignature(s)');
+    });
+
+    it('each countersignature has a timestamp', async () => {
+      const { doc } = await buildValidCovenant();
+      const kp = await generateKeyPair();
+
+      const signed = await countersignCovenant(doc, kp, 'auditor');
+
+      const cs = signed.countersignatures![0]!;
+      expect(cs.timestamp).toBeTruthy();
+      // Verify it's a valid ISO 8601 date
+      expect(new Date(cs.timestamp).toISOString()).toBe(cs.timestamp);
+    });
+
+    it('countersignatures survive serialization round-trip', async () => {
+      const { doc } = await buildValidCovenant();
+      const kp = await generateKeyPair();
+
+      const signed = await countersignCovenant(doc, kp, 'auditor');
+      const json = serializeCovenant(signed);
+      const restored = deserializeCovenant(json);
+
+      expect(restored.countersignatures).toHaveLength(1);
+      expect(restored.countersignatures![0]!.signerPublicKey).toBe(kp.publicKeyHex);
+
+      const result = await verifyCovenant(restored);
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  // ── Chain operations (expanded) ─────────────────────────────────────────
+
+  describe('resolveChain (expanded)', () => {
+    it('resolves a 4-level deep chain', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      const resolver = new MemoryChainResolver();
+
+      const root = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on 'root'",
+        privateKey: issuerKeyPair.privateKey,
+      });
+      resolver.add(root);
+
+      const level1 = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on 'level1'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: root.id, relation: 'delegates', depth: 1 },
+      });
+      resolver.add(level1);
+
+      const level2 = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on 'level2'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: level1.id, relation: 'restricts', depth: 2 },
+      });
+      resolver.add(level2);
+
+      const level3 = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on 'level3'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: level2.id, relation: 'delegates', depth: 3 },
+      });
+      resolver.add(level3);
+
+      const ancestors = await resolveChain(level3, resolver);
+
+      expect(ancestors).toHaveLength(3);
+      expect(ancestors[0]!.id).toBe(level2.id);
+      expect(ancestors[1]!.id).toBe(level1.id);
+      expect(ancestors[2]!.id).toBe(root.id);
+    });
+
+    it('stops when a parent is not found in the resolver', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      const resolver = new MemoryChainResolver();
+
+      // Build a child referencing a non-existent parent
+      const child = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on 'child'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: 'f'.repeat(64), relation: 'delegates', depth: 1 },
+      });
+      resolver.add(child);
+
+      const ancestors = await resolveChain(child, resolver);
+      expect(ancestors).toHaveLength(0);
+    });
+  });
+
+  // ── computeEffectiveConstraints ─────────────────────────────────────────
+
+  describe('computeEffectiveConstraints', () => {
+    it('merges parent and child constraints via deny-wins semantics', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+
+      const parent = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/**'\ndeny write on '/system/**' severity critical",
+        privateKey: issuerKeyPair.privateKey,
+      });
+
+      const child = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/public'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: parent.id, relation: 'restricts', depth: 1 },
+      });
+
+      const effective = await computeEffectiveConstraints(child, [parent]);
+
+      // The effective constraints should include denies from parent and permits from both
+      expect(effective.denies.length).toBeGreaterThanOrEqual(1);
+      expect(effective.permits.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('works with no ancestors (root document only)', async () => {
+      const { doc } = await buildValidCovenant();
+      const effective = await computeEffectiveConstraints(doc, []);
+
+      expect(effective.permits.length).toBeGreaterThanOrEqual(1);
+    });
+
+    it('merges a chain of 3 documents', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+
+      const grandparent = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/**'\ndeny delete on '/data/**' severity high",
+        privateKey: issuerKeyPair.privateKey,
+      });
+
+      const parent = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/reports/**'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: grandparent.id, relation: 'restricts', depth: 1 },
+      });
+
+      const child = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/reports/2024'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: parent.id, relation: 'restricts', depth: 2 },
+      });
+
+      // ancestors ordered parent-first as resolveChain returns
+      const effective = await computeEffectiveConstraints(child, [parent, grandparent]);
+
+      // Should carry the deny from grandparent through the chain
+      expect(effective.denies.length).toBeGreaterThanOrEqual(1);
+      // Should have permits from all levels
+      expect(effective.permits.length).toBeGreaterThanOrEqual(1);
+    });
+  });
+
+  // ── validateChainNarrowing ──────────────────────────────────────────────
+
+  describe('validateChainNarrowing', () => {
+    it('valid: child narrows parent by permitting a subset', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+
+      const parent = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/**'",
+        privateKey: issuerKeyPair.privateKey,
+      });
+
+      const child = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/public'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: parent.id, relation: 'restricts', depth: 1 },
+      });
+
+      const result = await validateChainNarrowing(child, parent);
+      expect(result.valid).toBe(true);
+      expect(result.violations).toHaveLength(0);
+    });
+
+    it('invalid: child permits something the parent denies', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+
+      const parent = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "deny write on '/system/**' severity critical",
+        privateKey: issuerKeyPair.privateKey,
+      });
+
+      const child = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit write on '/system/config'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: parent.id, relation: 'restricts', depth: 1 },
+      });
+
+      const result = await validateChainNarrowing(child, parent);
+      expect(result.valid).toBe(false);
+      expect(result.violations.length).toBeGreaterThan(0);
+      expect(result.violations[0]!.reason).toContain('denies');
+    });
+
+    it('invalid: child permits a broader scope than parent', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+
+      const parent = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/reports'",
+        privateKey: issuerKeyPair.privateKey,
+      });
+
+      const child = await buildCovenant({
+        issuer,
+        beneficiary,
+        constraints: "permit read on '/data/**'",
+        privateKey: issuerKeyPair.privateKey,
+        chain: { parentId: parent.id, relation: 'restricts', depth: 1 },
+      });
+
+      const result = await validateChainNarrowing(child, parent);
+      expect(result.valid).toBe(false);
+      expect(result.violations.length).toBeGreaterThan(0);
+      expect(result.violations[0]!.reason).toContain('not a subset');
+    });
+  });
+
+  // ── Serialization / deserialization (expanded) ──────────────────────────
+
+  describe('deserializeCovenant (expanded error cases)', () => {
+    it('throws on null JSON', () => {
+      expect(() => deserializeCovenant('null')).toThrow('must be a JSON object');
+    });
+
+    it('throws on a JSON number', () => {
+      expect(() => deserializeCovenant('42')).toThrow('must be a JSON object');
+    });
+
+    it('throws on a JSON string', () => {
+      expect(() => deserializeCovenant('"hello"')).toThrow('must be a JSON object');
+    });
+
+    it('throws when issuer is missing', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'beneficiary' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('issuer');
+    });
+
+    it('throws when issuer has wrong role', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'beneficiary' },
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'beneficiary' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('Invalid issuer');
+    });
+
+    it('throws when beneficiary is missing', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'issuer' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('beneficiary');
+    });
+
+    it('throws when beneficiary has wrong role', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'issuer' },
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'issuer' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('Invalid beneficiary');
+    });
+
+    it('throws when chain is not an object', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'issuer' },
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'beneficiary' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+        chain: 'not-an-object',
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('Invalid chain');
+    });
+
+    it('throws when chain.parentId is not a string', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'issuer' },
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'beneficiary' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+        chain: { parentId: 123, relation: 'delegates', depth: 1 },
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('chain.parentId');
+    });
+
+    it('throws when chain.relation is not a string', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'issuer' },
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'beneficiary' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+        chain: { parentId: 'a'.repeat(64), relation: 99, depth: 1 },
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('chain.relation');
+    });
+
+    it('throws when chain.depth is not a number', () => {
+      const obj = {
+        id: 'a'.repeat(64),
+        version: PROTOCOL_VERSION,
+        issuer: { id: 'i', publicKey: 'pk', role: 'issuer' },
+        beneficiary: { id: 'b', publicKey: 'pk', role: 'beneficiary' },
+        constraints: "permit read on 'x'",
+        nonce: 'a'.repeat(64),
+        createdAt: '2024-01-01T00:00:00.000Z',
+        signature: 'a'.repeat(128),
+        chain: { parentId: 'a'.repeat(64), relation: 'delegates', depth: 'one' },
+      };
+      expect(() => deserializeCovenant(JSON.stringify(obj))).toThrow('chain.depth');
+    });
+
+    it('round-trips a document with chain and optional fields', async () => {
+      const { doc: root } = await buildValidCovenant();
+      const { doc: child } = await buildValidCovenant({
+        chain: { parentId: root.id, relation: 'delegates', depth: 1 },
+        enforcement: { type: 'monitor', config: { interval: 60 } },
+        proof: { type: 'audit_log', config: {} },
+        revocation: { method: 'status_endpoint', endpoint: 'https://example.com/status' },
+        metadata: { name: 'child-cov', tags: ['test', 'demo'] },
+      });
+
+      const json = serializeCovenant(child);
+      const restored = deserializeCovenant(json);
+
+      expect(restored).toEqual(child);
+      expect(restored.chain?.parentId).toBe(root.id);
+      expect(restored.enforcement?.type).toBe('monitor');
+      expect(restored.proof?.type).toBe('audit_log');
+      expect(restored.revocation?.method).toBe('status_endpoint');
+      expect(restored.metadata?.tags).toEqual(['test', 'demo']);
+
+      const result = await verifyCovenant(restored);
+      expect(result.valid).toBe(true);
+    });
+  });
+
+  // ── CovenantVerificationError ───────────────────────────────────────────
+
+  describe('CovenantVerificationError', () => {
+    it('has the correct name and checks properties', () => {
+      const checks = [
+        { name: 'id_match', passed: false, message: 'ID mismatch' },
+        { name: 'signature_valid', passed: true, message: 'Signature OK' },
+      ];
+      const err = new CovenantVerificationError('verification failed', checks);
+      expect(err.name).toBe('CovenantVerificationError');
+      expect(err.message).toBe('verification failed');
+      expect(err.checks).toEqual(checks);
       expect(err instanceof Error).toBe(true);
     });
   });

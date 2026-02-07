@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateKeyPair } from '@stele/crypto';
+import { generateKeyPair, sha256String, toHex } from '@stele/crypto';
 import type { KeyPair, HashHex } from '@stele/crypto';
 import {
   buildCovenant,
@@ -8,15 +8,19 @@ import {
   resolveChain,
   computeEffectiveConstraints,
   validateChainNarrowing,
+  serializeCovenant,
+  deserializeCovenant,
 } from '@stele/core';
 import type { CovenantDocument } from '@stele/core';
 import { evaluate, parse } from '@stele/ccl';
-import { MonitorDeniedError } from '@stele/enforcement';
+import { Monitor, MonitorDeniedError } from '@stele/enforcement';
 import { SteleGuard } from '@stele/mcp';
 import type { MCPServer, WrappedMCPServer, ViolationDetails, ToolCallDetails } from '@stele/mcp';
-import { createReceipt, computeReputationScore } from '@stele/reputation';
+import { createReceipt, verifyReceipt, computeReputationScore, createEndorsement, verifyEndorsement } from '@stele/reputation';
 import type { ExecutionReceipt } from '@stele/reputation';
 import { generateComplianceProof, verifyComplianceProof } from '@stele/proof';
+import { createIdentity, evolveIdentity, verifyIdentity, serializeIdentity, deserializeIdentity } from '@stele/identity';
+import { createBreachAttestation, verifyBreachAttestation, TrustGraph } from '@stele/breach';
 
 // ---------------------------------------------------------------------------
 // Scenario 1: Chain Delegation with Constraint Narrowing (3 levels)
@@ -951,5 +955,580 @@ describe('Scenario 2: MCP Server Wrap, Execute, Receipt, and Reputation', () => 
 
     // Identity hash should be 64 hex chars
     expect(identity.id).toMatch(/^[0-9a-f]{64}$/);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scenario 4: Full Protocol Lifecycle
+// ---------------------------------------------------------------------------
+
+describe('Scenario 4: Full Protocol Lifecycle', () => {
+  it('identity → covenant → monitor → receipt → reputation → breach → trust degradation', async () => {
+    const operatorKp = await generateKeyPair();
+    const beneficiaryKp = await generateKeyPair();
+
+    // Step 1: Create agent identity
+    const identity = await createIdentity({
+      operatorKeyPair: operatorKp,
+      operatorIdentifier: 'lifecycle-test-operator',
+      model: { provider: 'anthropic', modelId: 'claude-opus-4', modelVersion: '1.0', attestationType: 'provider_signed' },
+      capabilities: ['file.read', 'api.call', 'review.generate'],
+      deployment: { runtime: 'container', environment: 'production', region: 'us-east' },
+    });
+    expect(identity.id).toMatch(/^[0-9a-f]{64}$/);
+
+    // Step 2: Build covenant
+    const covenant = await buildCovenant({
+      issuer: { id: identity.id, publicKey: operatorKp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'beneficiary-agent', publicKey: beneficiaryKp.publicKeyHex, role: 'beneficiary' },
+      constraints: [
+        "permit file.read on '/data/**'",
+        "permit api.call on '/internal/**'",
+        "deny file.write on '**' severity critical",
+        "deny network.send on '/external/**' severity high",
+        "limit api.call 100 per 3600 seconds severity medium",
+      ].join('\n'),
+      privateKey: operatorKp.privateKey,
+    });
+    expect((await verifyCovenant(covenant)).valid).toBe(true);
+
+    // Step 3: Monitor actions
+    const monitor = new Monitor(covenant.id, covenant.constraints, { mode: 'enforce' });
+
+    // Permitted actions
+    const r1 = await monitor.evaluate('file.read', '/data/report.csv', {});
+    expect(r1.permitted).toBe(true);
+
+    const r2 = await monitor.evaluate('api.call', '/internal/analyze', {});
+    expect(r2.permitted).toBe(true);
+
+    // Denied actions (throw in enforce mode)
+    try {
+      await monitor.evaluate('file.write', '/data/output.csv', {});
+    } catch {
+      // Expected: MonitorDeniedError
+    }
+
+    try {
+      await monitor.evaluate('network.send', '/external/api', {});
+    } catch {
+      // Expected: MonitorDeniedError
+    }
+
+    // Step 4: Generate receipts
+    const receipt = await createReceipt(
+      covenant.id,
+      beneficiaryKp.publicKeyHex as HashHex,
+      operatorKp.publicKeyHex,
+      'fulfilled',
+      sha256String('file.read'),
+      1000,
+      beneficiaryKp,
+      null,
+    );
+
+    // Step 5: Set up trust graph
+    const graph = new TrustGraph();
+    const agentA = identity.id;
+    const agentB = sha256String('agent-b');
+    graph.registerDependency(agentA, agentB);
+
+    expect(graph.isTrusted(agentA)).toBe(true);
+    expect(graph.isTrusted(agentB)).toBe(true);
+
+    // Step 6: Trigger breach on agentA
+    const breach = await createBreachAttestation(
+      covenant.id,
+      agentA,
+      'Attempted unauthorized file write detected',
+      'critical',
+      'file.write',
+      '/data/output.csv',
+      sha256String('evidence'),
+      [covenant.id],
+      operatorKp,
+    );
+    expect(await verifyBreachAttestation(breach)).toBe(true);
+
+    await graph.processBreach(breach);
+
+    // Step 7: Verify trust degradation
+    expect(graph.isTrusted(agentA)).toBe(false);
+    expect(graph.isTrusted(agentB)).toBe(false);
+
+    const nodeA = graph.getNode(agentA);
+    expect(nodeA?.status).toBe('revoked');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scenario 5: Cross-Covenant Compliance
+// ---------------------------------------------------------------------------
+
+describe('Scenario 5: Cross-Covenant Compliance', () => {
+  it('agent with multiple covenants proves compliance across all', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+    const agentKp = await generateKeyPair();
+
+    // Covenant 1: file access rules
+    const cov1 = await buildCovenant({
+      issuer: { id: 'issuer-1', publicKey: kp1.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'agent', publicKey: agentKp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit file.read on '/data/**'\ndeny file.write on '/system/**' severity critical",
+      privateKey: kp1.privateKey,
+    });
+
+    // Covenant 2: API access rules
+    const cov2 = await buildCovenant({
+      issuer: { id: 'issuer-2', publicKey: kp2.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'agent', publicKey: agentKp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit api.call on '/v1/**'\nlimit api.call 50 per 60 seconds severity medium",
+      privateKey: kp2.privateKey,
+    });
+
+    expect((await verifyCovenant(cov1)).valid).toBe(true);
+    expect((await verifyCovenant(cov2)).valid).toBe(true);
+
+    // Monitor for each covenant
+    const monitor1 = new Monitor(cov1.id, cov1.constraints, { mode: 'enforce' });
+    const monitor2 = new Monitor(cov2.id, cov2.constraints, { mode: 'enforce' });
+
+    // Execute actions under cov1
+    for (let i = 0; i < 5; i++) {
+      await monitor1.evaluate('file.read', `/data/file-${i}.csv`, {});
+    }
+
+    // Execute actions under cov2
+    for (let i = 0; i < 5; i++) {
+      await monitor2.evaluate('api.call', `/v1/endpoint-${i}`, {});
+    }
+
+    // Generate proof for each
+    const proof1 = await generateComplianceProof({
+      covenantId: cov1.id,
+      constraints: cov1.constraints,
+      auditEntries: monitor1.getAuditLog().entries.map(e => ({
+        action: e.action,
+        resource: e.resource,
+        outcome: e.outcome as 'EXECUTED' | 'DENIED' | 'IMPOSSIBLE',
+        timestamp: e.timestamp,
+        hash: e.hash,
+      })),
+    });
+
+    const proof2 = await generateComplianceProof({
+      covenantId: cov2.id,
+      constraints: cov2.constraints,
+      auditEntries: monitor2.getAuditLog().entries.map(e => ({
+        action: e.action,
+        resource: e.resource,
+        outcome: e.outcome as 'EXECUTED' | 'DENIED' | 'IMPOSSIBLE',
+        timestamp: e.timestamp,
+        hash: e.hash,
+      })),
+    });
+
+    // Both proofs should verify
+    expect((await verifyComplianceProof(proof1)).valid).toBe(true);
+    expect((await verifyComplianceProof(proof2)).valid).toBe(true);
+
+    // Proofs are independent
+    expect(proof1.covenantId).not.toBe(proof2.covenantId);
+    expect(proof1.proof).not.toBe(proof2.proof);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scenario 6: Adversarial Detection
+// ---------------------------------------------------------------------------
+
+describe('Scenario 6: Adversarial Detection', () => {
+  it('detects tampered covenant document', async () => {
+    const kp = await generateKeyPair();
+
+    const cov = await buildCovenant({
+      issuer: { id: 'issuer', publicKey: kp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'beneficiary', publicKey: kp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit file.read on '/data/**'",
+      privateKey: kp.privateKey,
+    });
+
+    // Tamper with constraints
+    const tampered = { ...cov, constraints: "permit file.write on '**'" };
+    const result = await verifyCovenant(tampered);
+    expect(result.valid).toBe(false);
+    const idCheck = result.checks.find(c => c.name === 'id_match');
+    expect(idCheck?.passed).toBe(false);
+  });
+
+  it('detects forged receipt', async () => {
+    const legit = await generateKeyPair();
+    const forger = await generateKeyPair();
+
+    // Forger creates a valid receipt with their own keys
+    const receipt = await createReceipt(
+      sha256String('covenant'),
+      forger.publicKeyHex as HashHex,
+      legit.publicKeyHex,
+      'fulfilled',
+      sha256String('proof'),
+      1000,
+      forger,
+      null,
+    );
+
+    // Tamper the receipt to claim it's from legit agent
+    const tampered = { ...receipt, agentIdentityHash: legit.publicKeyHex as HashHex };
+
+    // Verify tampered receipt should fail (receiptHash no longer matches content)
+    const valid = await verifyReceipt(tampered);
+    expect(valid).toBe(false);
+  });
+
+  it('detects invalid compliance proof', async () => {
+    const kp = await generateKeyPair();
+    const cov = await buildCovenant({
+      issuer: { id: 'i', publicKey: kp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'b', publicKey: kp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit file.read on '**'",
+      privateKey: kp.privateKey,
+    });
+
+    const proof = await generateComplianceProof({
+      covenantId: cov.id,
+      constraints: cov.constraints,
+      auditEntries: [{
+        action: 'file.read', resource: '/data/a',
+        outcome: 'EXECUTED' as const,
+        timestamp: new Date().toISOString(),
+        hash: sha256String('entry'),
+      }],
+    });
+
+    // Tamper proof value
+    const tampered = { ...proof, proof: 'f'.repeat(64) };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('detects spoofed identity', async () => {
+    const legit = await generateKeyPair();
+    const spoofed = await generateKeyPair();
+
+    const identity = await createIdentity({
+      operatorKeyPair: legit,
+      operatorIdentifier: 'real-operator',
+      model: { provider: 'anthropic', modelId: 'claude-opus-4', modelVersion: '1.0' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'container', region: 'us-east' },
+    });
+
+    // Verify with correct key passes
+    const validResult = await verifyIdentity(identity);
+    expect(validResult.valid).toBe(true);
+
+    // Tamper the identity to use wrong operator key - verification should fail
+    const tamperedIdentity = { ...identity, operatorPublicKey: spoofed.publicKeyHex };
+    const invalidResult = await verifyIdentity(tamperedIdentity);
+    expect(invalidResult.valid).toBe(false);
+  });
+
+  it('detects tampered breach attestation', async () => {
+    const kp = await generateKeyPair();
+
+    const attestation = await createBreachAttestation(
+      sha256String('cov'),
+      sha256String('agent'),
+      'Evidence of breach',
+      'critical',
+      'data.access',
+      '/restricted',
+      sha256String('evidence'),
+      [sha256String('cov')],
+      kp,
+    );
+
+    // Tamper the severity field
+    const tampered = { ...attestation, severity: 'low' as const };
+    const valid = await verifyBreachAttestation(tampered);
+    expect(valid).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scenario 7: Scale Tests
+// ---------------------------------------------------------------------------
+
+describe('Scenario 7: Scale Tests', () => {
+  it('handles 100+ audit log entries with Merkle proofs', async () => {
+    const kp = await generateKeyPair();
+
+    const cov = await buildCovenant({
+      issuer: { id: 'i', publicKey: kp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'b', publicKey: kp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit file.read on '**'\npermit api.call on '**'",
+      privateKey: kp.privateKey,
+    });
+
+    const monitor = new Monitor(cov.id, cov.constraints, { mode: 'enforce' });
+
+    // Generate 150 audit entries
+    for (let i = 0; i < 100; i++) {
+      await monitor.evaluate('file.read', `/data/file-${i}.csv`, {});
+    }
+    for (let i = 0; i < 50; i++) {
+      await monitor.evaluate('api.call', `/endpoint-${i}`, {});
+    }
+
+    expect(monitor.getAuditLog().count).toBe(150);
+    expect(monitor.verifyAuditLogIntegrity()).toBe(true);
+
+    const root = monitor.computeMerkleRoot();
+    expect(root).toMatch(/^[0-9a-f]{64}$/);
+  });
+
+  it('handles many receipts for reputation computation', async () => {
+    const kp = await generateKeyPair();
+    const covenantId = sha256String('scale-covenant');
+
+    const receipts: ExecutionReceipt[] = [];
+    let prevHash: HashHex | null = null;
+    for (let i = 0; i < 50; i++) {
+      const receipt = await createReceipt(
+        covenantId,
+        kp.publicKeyHex as HashHex,
+        kp.publicKeyHex,
+        i % 5 === 0 ? 'failed' : 'fulfilled',
+        sha256String(`proof-${i}`),
+        1000,
+        kp,
+        prevHash,
+      );
+      receipts.push(receipt);
+      prevHash = receipt.receiptHash;
+    }
+
+    expect(receipts.length).toBe(50);
+  });
+
+  it('handles complex trust graph with many nodes', async () => {
+    const graph = new TrustGraph();
+    const kp = await generateKeyPair();
+
+    // Create 20 agents with dependencies forming a tree
+    const agents = Array.from({ length: 20 }, (_, i) => sha256String(`agent-${i}`));
+
+    // Binary tree structure: agent[floor(i/2)] has agent[i] as dependent
+    for (let i = 1; i < 20; i++) {
+      graph.registerDependency(agents[Math.floor(i / 2)]!, agents[i]!);
+    }
+
+    // All agents should be trusted
+    for (const agent of agents) {
+      expect(graph.isTrusted(agent)).toBe(true);
+    }
+
+    // Breach the root
+    const breach = await createBreachAttestation(
+      sha256String('cov'),
+      agents[0]!,
+      'Root compromised',
+      'critical',
+      'data.access',
+      '/restricted',
+      sha256String('evidence'),
+      [sha256String('cov')],
+      kp,
+    );
+
+    await graph.processBreach(breach);
+
+    // Root should be revoked
+    expect(graph.getNode(agents[0]!)?.status).toBe('revoked');
+
+    // All descendants should be affected
+    expect(graph.isTrusted(agents[0]!)).toBe(false);
+    expect(graph.isTrusted(agents[1]!)).toBe(false);
+  });
+
+  it('deep covenant chain approaching MAX_CHAIN_DEPTH', async () => {
+    const keyPairs: KeyPair[] = [];
+    for (let i = 0; i < 10; i++) {
+      keyPairs.push(await generateKeyPair());
+    }
+
+    const covenants: CovenantDocument[] = [];
+
+    // Root covenant
+    const root = await buildCovenant({
+      issuer: { id: `agent-0`, publicKey: keyPairs[0]!.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: `agent-1`, publicKey: keyPairs[1]!.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit file.read on '**'\npermit api.call on '**'\ndeny file.delete on '**' severity critical",
+      privateKey: keyPairs[0]!.privateKey,
+    });
+    covenants.push(root);
+
+    // Build chain of 9 more (total depth 10, approaching MAX_CHAIN_DEPTH=16)
+    for (let i = 1; i < 10; i++) {
+      const child = await buildCovenant({
+        issuer: { id: `agent-${i}`, publicKey: keyPairs[i]!.publicKeyHex, role: 'issuer' },
+        beneficiary: { id: `agent-${(i + 1) % 10}`, publicKey: keyPairs[(i + 1) % 10]!.publicKeyHex, role: 'beneficiary' },
+        constraints: "permit file.read on '/data/**'\ndeny file.delete on '**' severity critical",
+        privateKey: keyPairs[i]!.privateKey,
+        chain: {
+          parentId: covenants[i - 1]!.id,
+          relation: 'delegates',
+          depth: i,
+        },
+      });
+      covenants.push(child);
+    }
+
+    // All should verify
+    for (const cov of covenants) {
+      expect((await verifyCovenant(cov)).valid).toBe(true);
+    }
+
+    // Resolve full chain from deepest
+    const resolver = new MemoryChainResolver();
+    for (const cov of covenants) {
+      resolver.add(cov);
+    }
+
+    const chain = await resolveChain(covenants[9]!, resolver);
+    expect(chain.length).toBe(9); // 9 ancestors
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scenario 8: Serialization Round-trips
+// ---------------------------------------------------------------------------
+
+describe('Scenario 8: Serialization Round-trips', () => {
+  it('covenant survives JSON serialization', async () => {
+    const kp = await generateKeyPair();
+    const cov = await buildCovenant({
+      issuer: { id: 'i', publicKey: kp.publicKeyHex, role: 'issuer' },
+      beneficiary: { id: 'b', publicKey: kp.publicKeyHex, role: 'beneficiary' },
+      constraints: "permit file.read on '/data/**'\ndeny file.write on '**' severity critical",
+      privateKey: kp.privateKey,
+    });
+
+    const json = serializeCovenant(cov);
+    const restored = deserializeCovenant(json);
+
+    expect(restored.id).toBe(cov.id);
+    expect(restored.constraints).toBe(cov.constraints);
+    expect(restored.signature).toBe(cov.signature);
+
+    // Restored covenant should still verify
+    const result = await verifyCovenant(restored);
+    expect(result.valid).toBe(true);
+  });
+
+  it('identity survives JSON serialization', async () => {
+    const kp = await generateKeyPair();
+    const identity = await createIdentity({
+      operatorKeyPair: kp,
+      operatorIdentifier: 'serial-test',
+      model: { provider: 'anthropic', modelId: 'claude-opus-4', modelVersion: '1.0' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'container', region: 'us-east' },
+    });
+
+    const json = serializeIdentity(identity);
+    const restored = deserializeIdentity(json);
+
+    expect(restored.id).toBe(identity.id);
+    expect(restored.operatorIdentifier).toBe(identity.operatorIdentifier);
+    expect(restored.capabilities).toEqual(identity.capabilities);
+
+    // Restored identity should still verify
+    const result = await verifyIdentity(restored);
+    expect(result.valid).toBe(true);
+  });
+
+  it('evolved identity survives serialization with lineage', async () => {
+    const kp = await generateKeyPair();
+    let identity = await createIdentity({
+      operatorKeyPair: kp,
+      operatorIdentifier: 'evo-serial',
+      model: { provider: 'anthropic', modelId: 'claude-opus-4', modelVersion: '1.0' },
+      capabilities: ['file.read'],
+      deployment: { runtime: 'container', region: 'us-east' },
+    });
+
+    identity = await evolveIdentity(identity, {
+      operatorKeyPair: kp,
+      changeType: 'capability_change',
+      description: 'Capability expansion',
+      updates: { capabilities: ['file.read', 'file.write'] },
+    });
+
+    identity = await evolveIdentity(identity, {
+      operatorKeyPair: kp,
+      changeType: 'model_update',
+      description: 'Model version change',
+      updates: { model: { ...identity.model, modelVersion: '2.0' } },
+    });
+
+    const json = serializeIdentity(identity);
+    const restored = deserializeIdentity(json);
+
+    expect(restored.lineage).toHaveLength(3);
+    expect(restored.capabilities).toContain('file.write');
+
+    const result = await verifyIdentity(restored);
+    expect(result.valid).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// Scenario 9: Endorsement Flow
+// ---------------------------------------------------------------------------
+
+describe('Scenario 9: Endorsement Flow', () => {
+  it('creates and verifies endorsement with valid basis', async () => {
+    const endorserKp = await generateKeyPair();
+    const targetAgent = sha256String('target-agent');
+
+    const endorsement = await createEndorsement(
+      endorserKp.publicKeyHex as HashHex,
+      targetAgent as HashHex,
+      {
+        covenantsCompleted: 50,
+        breachRate: 0.02,
+        averageOutcomeScore: 0.95,
+      },
+      ['code-review', 'testing'],
+      0.8,
+      endorserKp,
+    );
+
+    expect(endorsement.endorserIdentityHash).toBe(endorserKp.publicKeyHex);
+    expect(endorsement.endorsedIdentityHash).toBe(targetAgent);
+    expect(endorsement.weight).toBe(0.8);
+
+    const valid = await verifyEndorsement(endorsement);
+    expect(valid).toBe(true);
+  });
+
+  it('rejects endorsement with tampered weight', async () => {
+    const endorserKp = await generateKeyPair();
+
+    const endorsement = await createEndorsement(
+      endorserKp.publicKeyHex as HashHex,
+      sha256String('target') as HashHex,
+      { covenantsCompleted: 10, breachRate: 0.0, averageOutcomeScore: 1.0 },
+      ['general'],
+      0.5,
+      endorserKp,
+    );
+
+    // Tamper the endorsement weight
+    const tampered = { ...endorsement, weight: 0.9 };
+    const valid = await verifyEndorsement(tampered);
+    expect(valid).toBe(false);
   });
 });

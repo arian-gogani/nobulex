@@ -583,3 +583,433 @@ describe('proof - 5-step verification', () => {
     expect(result.errors.some(e => e.includes('Proof value mismatch'))).toBe(true);
   });
 });
+
+// ─── Extended Poseidon tests ─────────────────────────────────────────────────
+
+describe('poseidonHash - extended', () => {
+  it('handles large field elements near FIELD_PRIME - 1', () => {
+    const maxElement = FIELD_PRIME - 1n;
+    const result = poseidonHash([maxElement]);
+    expect(result).toBeGreaterThanOrEqual(0n);
+    expect(result).toBeLessThan(FIELD_PRIME);
+  });
+
+  it('produces different results for adjacent inputs', () => {
+    const a = poseidonHash([100n]);
+    const b = poseidonHash([101n]);
+    expect(a).not.toBe(b);
+  });
+
+  it('produces different results for zero vs one', () => {
+    const a = poseidonHash([0n]);
+    const b = poseidonHash([1n]);
+    expect(a).not.toBe(b);
+  });
+
+  it('handles many inputs (10 elements)', () => {
+    const inputs = Array.from({ length: 10 }, (_, i) => BigInt(i + 1));
+    const result = poseidonHash(inputs);
+    expect(typeof result).toBe('bigint');
+    expect(result).toBeGreaterThanOrEqual(0n);
+    expect(result).toBeLessThan(FIELD_PRIME);
+  });
+
+  it('handles many inputs (20 elements)', () => {
+    const inputs = Array.from({ length: 20 }, (_, i) => BigInt(i * 7 + 3));
+    const result = poseidonHash(inputs);
+    expect(result).toBeGreaterThanOrEqual(0n);
+    expect(result).toBeLessThan(FIELD_PRIME);
+  });
+
+  it('sponge mode: 3 inputs produces different result than 2 inputs', () => {
+    const a = poseidonHash([1n, 2n]);
+    const b = poseidonHash([1n, 2n, 3n]);
+    expect(a).not.toBe(b);
+  });
+
+  it('is not commutative with 3+ inputs', () => {
+    const a = poseidonHash([1n, 2n, 3n]);
+    const b = poseidonHash([3n, 2n, 1n]);
+    expect(a).not.toBe(b);
+  });
+
+  it('zero input produces a valid field element', () => {
+    const result = poseidonHash([0n]);
+    expect(result).not.toBe(0n); // Hash of zero should not be zero
+    expect(result).toBeLessThan(FIELD_PRIME);
+  });
+
+  it('repeated input produces different from single', () => {
+    const single = poseidonHash([5n]);
+    const doubled = poseidonHash([5n, 5n]);
+    expect(single).not.toBe(doubled);
+  });
+});
+
+// ─── Extended hashToField tests ─────────────────────────────────────────────
+
+describe('hashToField - extended', () => {
+  it('handles all-zero hash', () => {
+    const zeroHash = '0'.repeat(64);
+    const field = hashToField(zeroHash);
+    expect(field).toBe(0n);
+  });
+
+  it('handles all-f hash', () => {
+    const maxHash = 'f'.repeat(64);
+    const field = hashToField(maxHash);
+    expect(field).toBeGreaterThanOrEqual(0n);
+    expect(field).toBeLessThan(FIELD_PRIME);
+  });
+
+  it('preserves ordering for small values', () => {
+    const hash1 = '0'.repeat(63) + '1';
+    const hash2 = '0'.repeat(63) + '2';
+    const field1 = hashToField(hash1);
+    const field2 = hashToField(hash2);
+    expect(field1).toBeLessThan(field2);
+  });
+
+  it('handles hash with mixed case', () => {
+    const lower = sha256String('test');
+    const upper = lower.toUpperCase();
+    // Both should produce the same field element
+    const field1 = hashToField(lower);
+    const field2 = hashToField(upper);
+    expect(field1).toBe(field2);
+  });
+
+  it('produces different fields for different SHA-256 hashes', () => {
+    const fields = new Set<bigint>();
+    for (let i = 0; i < 20; i++) {
+      const hash = sha256String(`input-${i}`);
+      fields.add(hashToField(hash));
+    }
+    expect(fields.size).toBe(20);
+  });
+});
+
+// ─── Extended fieldToHex tests ──────────────────────────────────────────────
+
+describe('fieldToHex - extended', () => {
+  it('converts 1 to zero-padded hex', () => {
+    const hex = fieldToHex(1n);
+    expect(hex).toBe('0'.repeat(63) + '1');
+  });
+
+  it('converts FIELD_PRIME - 1 to a valid hex string', () => {
+    const hex = fieldToHex(FIELD_PRIME - 1n);
+    expect(hex.length).toBe(64);
+    expect(/^[0-9a-f]{64}$/.test(hex)).toBe(true);
+  });
+
+  it('round-trips through hashToField for values within field', () => {
+    const original = 12345n;
+    const hex = fieldToHex(original);
+    const recovered = hashToField(hex);
+    expect(recovered).toBe(original);
+  });
+
+  it('produces lowercase hex', () => {
+    const hex = fieldToHex(0xabcdefn);
+    expect(hex).toBe(hex.toLowerCase());
+  });
+});
+
+// ─── Extended commitment tests ──────────────────────────────────────────────
+
+describe('computeAuditCommitment - extended', () => {
+  it('handles single entry', () => {
+    const entries = [makeAuditEntry('file.read', '/data/a')];
+    const commitment = computeAuditCommitment(entries);
+    expect(commitment).toHaveLength(64);
+    expect(/^[0-9a-f]{64}$/.test(commitment)).toBe(true);
+  });
+
+  it('handles many entries (50)', () => {
+    const entries = Array.from({ length: 50 }, (_, i) =>
+      makeAuditEntry('file.read', `/data/file-${i}`)
+    );
+    const commitment = computeAuditCommitment(entries);
+    expect(commitment).toHaveLength(64);
+  });
+
+  it('handles entries with different outcomes', () => {
+    const entries = [
+      makeAuditEntry('file.read', '/data/a', 'EXECUTED'),
+      makeAuditEntry('file.write', '/system/b', 'DENIED'),
+      makeAuditEntry('network.send', '/api/c', 'IMPOSSIBLE'),
+    ];
+    const commitment = computeAuditCommitment(entries);
+    expect(commitment).toHaveLength(64);
+  });
+
+  it('adding an entry changes the commitment', () => {
+    const entries1 = [makeAuditEntry('file.read', '/data/a')];
+    const entries2 = [...entries1, makeAuditEntry('file.read', '/data/b')];
+    const c1 = computeAuditCommitment(entries1);
+    const c2 = computeAuditCommitment(entries2);
+    expect(c1).not.toBe(c2);
+  });
+});
+
+describe('computeConstraintCommitment - extended', () => {
+  it('handles single constraint', () => {
+    const c = computeConstraintCommitment("permit file.read on '/data/**'");
+    expect(c).toHaveLength(64);
+  });
+
+  it('handles complex multi-line constraints', () => {
+    const constraints = [
+      "permit file.read on '/data/**'",
+      "deny file.write on '/system/**' severity critical",
+      "deny network.send on '**' severity high",
+      "limit api.call on '/external/**' to 100 per 3600 seconds severity medium",
+      "require context.user equals 'admin' for file.delete on '/data/**' severity critical",
+    ].join('\n');
+    const c = computeConstraintCommitment(constraints);
+    expect(c).toHaveLength(64);
+  });
+
+  it('different constraint ordering produces different commitment', () => {
+    const c1 = computeConstraintCommitment("permit file.read on '/a'\ndeny file.write on '/b'");
+    const c2 = computeConstraintCommitment("deny file.write on '/b'\npermit file.read on '/a'");
+    expect(c1).not.toBe(c2);
+  });
+
+  it('whitespace differences produce different commitment', () => {
+    const c1 = computeConstraintCommitment("permit file.read on '/data/**'");
+    const c2 = computeConstraintCommitment("permit  file.read on '/data/**'");
+    expect(c1).not.toBe(c2);
+  });
+});
+
+// ─── Extended proof generation tests ────────────────────────────────────────
+
+describe('generateComplianceProof - extended', () => {
+  it('generates proof with 100 audit entries', async () => {
+    const entries = Array.from({ length: 100 }, (_, i) =>
+      makeAuditEntry('file.read', `/data/file-${i}`)
+    );
+
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    expect(proof.entryCount).toBe(100);
+    expect(proof.publicInputs[3]).toBe('100');
+    expect(proof.auditLogCommitment).toHaveLength(64);
+  });
+
+  it('generates proof with only DENIED entries', async () => {
+    const entries = [
+      makeAuditEntry('file.write', '/system/a', 'DENIED'),
+      makeAuditEntry('file.write', '/system/b', 'DENIED'),
+    ];
+
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    expect(proof.entryCount).toBe(2);
+    const result = await verifyComplianceProof(proof);
+    expect(result.valid).toBe(true);
+  });
+
+  it('generates proof with IMPOSSIBLE entries', async () => {
+    const entries = [makeAuditEntry('network.send', '/external/api', 'IMPOSSIBLE')];
+
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    const result = await verifyComplianceProof(proof);
+    expect(result.valid).toBe(true);
+  });
+
+  it('generatedAt is a valid ISO timestamp', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const date = new Date(proof.generatedAt);
+    expect(date.getTime()).not.toBeNaN();
+    expect(proof.generatedAt.endsWith('Z')).toBe(true);
+  });
+
+  it('proof field is a 64-char hex string', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [makeAuditEntry('file.read', '/data/a')],
+    });
+
+    expect(proof.proof).toHaveLength(64);
+    expect(/^[0-9a-f]{64}$/.test(proof.proof)).toBe(true);
+  });
+});
+
+// ─── Extended verification tests ────────────────────────────────────────────
+
+describe('verifyComplianceProof - extended', () => {
+  it('fails for missing covenantId', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const tampered = { ...proof, covenantId: '' as HashHex };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('fails for negative entryCount', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const tampered = { ...proof, entryCount: -1 };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('fails for missing generatedAt', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const tampered = { ...proof, generatedAt: '' };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('fails for missing proof value', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const tampered = { ...proof, proof: '' };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('fails for publicInputs that is not an array', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const tampered = { ...proof, publicInputs: 'not-an-array' as unknown as string[] };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.valid).toBe(false);
+  });
+
+  it('error messages are descriptive strings', async () => {
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: [],
+    });
+
+    const tampered = { ...proof, version: '99.0' as '1.0' };
+    const result = await verifyComplianceProof(tampered);
+    expect(result.errors.every(e => typeof e === 'string' && e.length > 0)).toBe(true);
+  });
+
+  it('returns correct covenantId and entryCount in result', async () => {
+    const entries = Array.from({ length: 5 }, (_, i) =>
+      makeAuditEntry('file.read', `/data/${i}`)
+    );
+
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    const result = await verifyComplianceProof(proof);
+    expect(result.covenantId).toBe(COVENANT_ID);
+    expect(result.entryCount).toBe(5);
+  });
+});
+
+// ─── Round-trip stress tests ────────────────────────────────────────────────
+
+describe('proof round-trip stress tests', () => {
+  it('verifies proofs with varying entry counts (0 through 20)', async () => {
+    for (let n = 0; n <= 20; n++) {
+      const entries = Array.from({ length: n }, (_, i) =>
+        makeAuditEntry('file.read', `/data/entry-${i}`)
+      );
+
+      const proof = await generateComplianceProof({
+        covenantId: COVENANT_ID,
+        constraints: CONSTRAINTS,
+        auditEntries: entries,
+      });
+
+      const result = await verifyComplianceProof(proof);
+      expect(result.valid).toBe(true);
+      expect(result.entryCount).toBe(n);
+    }
+  });
+
+  it('proofs from same data are identical', async () => {
+    const entries = [makeAuditEntry('file.read', '/data/a')];
+    // Fix timestamps to make deterministic
+    entries[0]!.timestamp = '2025-01-01T00:00:00.000Z';
+    entries[0]!.hash = sha256String('fixed-entry');
+
+    const proof1 = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    const proof2 = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    expect(proof1.proof).toBe(proof2.proof);
+    expect(proof1.auditLogCommitment).toBe(proof2.auditLogCommitment);
+    expect(proof1.constraintCommitment).toBe(proof2.constraintCommitment);
+  });
+
+  it('swapping covenant ID invalidates proof', async () => {
+    const entries = [makeAuditEntry('file.read', '/data/a')];
+
+    const proof = await generateComplianceProof({
+      covenantId: COVENANT_ID,
+      constraints: CONSTRAINTS,
+      auditEntries: entries,
+    });
+
+    // Swap covenant ID
+    const swapped = {
+      ...proof,
+      covenantId: 'b'.repeat(64) as HashHex,
+      publicInputs: ['b'.repeat(64), proof.publicInputs[1]!, proof.publicInputs[2]!, proof.publicInputs[3]!],
+    };
+
+    const result = await verifyComplianceProof(swapped);
+    expect(result.valid).toBe(false);
+  });
+});

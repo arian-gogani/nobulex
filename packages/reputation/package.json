@@ -1,0 +1,19 @@
+{
+  "name": "@stele/reputation",
+  "version": "0.1.0",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "exports": { ".": { "import": "./dist/index.mjs", "require": "./dist/index.js", "types": "./dist/index.d.ts" } },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "bundle": "tsup src/index.ts --format cjs,esm",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+  },
+  "files": ["dist"],
+  "dependencies": {
+    "@stele/crypto": "0.1.0",
+    "@stele/core": "0.1.0",
+    "@stele/identity": "0.1.0"
+  }
+}

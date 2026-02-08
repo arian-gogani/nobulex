@@ -26,7 +26,22 @@
     { "path": "packages/reputation" },
     { "path": "packages/breach" },
     { "path": "packages/mcp" },
-    { "path": "packages/cli" }
+    { "path": "packages/cli" },
+    { "path": "packages/attestation" },
+    { "path": "packages/canary" },
+    { "path": "packages/gametheory" },
+    { "path": "packages/composition" },
+    { "path": "packages/antifragile" },
+    { "path": "packages/negotiation" },
+    { "path": "packages/consensus" },
+    { "path": "packages/robustness" },
+    { "path": "packages/temporal" },
+    { "path": "packages/recursive" },
+    { "path": "packages/alignment" },
+    { "path": "packages/norms" },
+    { "path": "packages/substrate" },
+    { "path": "packages/derivatives" },
+    { "path": "packages/legal" }
   ]
 }
 

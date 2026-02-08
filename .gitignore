@@ -1,13 +1,19 @@
 # Generated API docs
 docs/api/
 
-# tsc --build output in examples and tests
+# tsc --build output in examples, tests, and package src dirs
 examples/**/*.js
 examples/**/*.d.ts
 examples/**/*.js.map
 tests/**/*.js
 tests/**/*.d.ts
 tests/**/*.js.map
+scripts/*.js
+scripts/*.d.ts
+scripts/*.js.map
+packages/*/src/*.js
+packages/*/src/*.d.ts
+packages/*/src/*.js.map
 
 # Logs
 logs

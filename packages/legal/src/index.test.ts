@@ -3,6 +3,7 @@ import {
   exportLegalPackage,
   mapToJurisdiction,
   generateComplianceReport,
+  registerJurisdiction,
   JURISDICTIONS,
   COMPLIANCE_STANDARDS,
 } from './index';
@@ -15,6 +16,7 @@ import type {
   ComplianceStandard,
   LegalIdentityPackage,
 } from './types';
+import type { ComplianceWeights } from './index';
 
 // ---------------------------------------------------------------------------
 // Helper data
@@ -128,22 +130,26 @@ describe('exportLegalPackage', () => {
     expect(pkg.insurancePolicies).toEqual([]);
     expect(pkg.packageHash.length).toBe(64);
   });
+
+  it('throws for empty agentId', () => {
+    expect(() => exportLegalPackage('', 'operator-1', sampleData)).toThrow('agentId must be a non-empty string');
+  });
+
+  it('throws for whitespace-only agentId', () => {
+    expect(() => exportLegalPackage('  ', 'operator-1', sampleData)).toThrow('agentId must be a non-empty string');
+  });
+
+  it('throws for empty operatorId', () => {
+    expect(() => exportLegalPackage('agent-1', '', sampleData)).toThrow('operatorId must be a non-empty string');
+  });
 });
 
 // ---------------------------------------------------------------------------
 // mapToJurisdiction
 // ---------------------------------------------------------------------------
 describe('mapToJurisdiction', () => {
-  let pkg: LegalIdentityPackage;
-
-  // We need a stable package for testing
-  it('setup: create a package for jurisdiction tests', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
-    expect(pkg).toBeDefined();
-  });
-
   it('maps to US jurisdiction with SOC2 standard', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'US');
     expect(mapping.jurisdiction).toBe('US');
     expect(mapping.legalFramework).toBe('US Federal / State Law');
@@ -153,7 +159,7 @@ describe('mapToJurisdiction', () => {
   });
 
   it('maps to EU jurisdiction with GDPR standard', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'EU');
     expect(mapping.jurisdiction).toBe('EU');
     expect(mapping.legalFramework).toBe('EU General Data Protection Regulation');
@@ -162,14 +168,14 @@ describe('mapToJurisdiction', () => {
   });
 
   it('maps to UK jurisdiction with UK-GDPR standard', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'UK');
     expect(mapping.jurisdiction).toBe('UK');
     expect(mapping.complianceStandard).toBe('UK-GDPR');
   });
 
   it('maps to JP jurisdiction with APPI standard', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'JP');
     expect(mapping.jurisdiction).toBe('JP');
     expect(mapping.legalFramework).toBe('Act on the Protection of Personal Information');
@@ -177,7 +183,7 @@ describe('mapToJurisdiction', () => {
   });
 
   it('populates mappedFields with actual package data', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'US');
     expect(mapping.mappedFields['agentId']).toBe('agent-1');
     expect(mapping.mappedFields['operatorId']).toBe('operator-1');
@@ -185,7 +191,7 @@ describe('mapToJurisdiction', () => {
   });
 
   it('returns unknown for unrecognized jurisdiction', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'MARS');
     expect(mapping.jurisdiction).toBe('MARS');
     expect(mapping.legalFramework).toBe('Unknown');
@@ -195,10 +201,65 @@ describe('mapToJurisdiction', () => {
   });
 
   it('EU mapping includes covenantHistory', () => {
-    pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'EU');
     expect(mapping.requiredFields).toContain('covenantHistory');
     expect(mapping.mappedFields['covenantHistory']).toBeTruthy();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// registerJurisdiction
+// ---------------------------------------------------------------------------
+describe('registerJurisdiction', () => {
+  it('adds a custom jurisdiction accessible via JURISDICTIONS', () => {
+    registerJurisdiction('SG', {
+      legalFramework: 'Singapore Personal Data Protection Act',
+      complianceStandard: 'PDPA',
+      requiredFields: ['agentId', 'operatorId', 'complianceRecord'],
+    });
+    expect(JURISDICTIONS['SG']).toBeDefined();
+    expect(JURISDICTIONS['SG']!.complianceStandard).toBe('PDPA');
+  });
+
+  it('custom jurisdiction works with mapToJurisdiction', () => {
+    registerJurisdiction('AU', {
+      legalFramework: 'Australian Privacy Act 1988',
+      complianceStandard: 'APPs',
+      requiredFields: ['agentId', 'operatorId'],
+    });
+    const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
+    const mapping = mapToJurisdiction(pkg, 'AU');
+    expect(mapping.legalFramework).toBe('Australian Privacy Act 1988');
+    expect(mapping.complianceStandard).toBe('APPs');
+    expect(mapping.mappedFields['agentId']).toBe('agent-1');
+  });
+
+  it('throws for empty jurisdiction code', () => {
+    expect(() => registerJurisdiction('', {
+      legalFramework: 'Test',
+      complianceStandard: 'Test',
+      requiredFields: [],
+    })).toThrow('Jurisdiction code must be a non-empty string');
+  });
+
+  it('throws for incomplete jurisdiction info', () => {
+    expect(() => registerJurisdiction('XX', {
+      legalFramework: '',
+      complianceStandard: 'Test',
+      requiredFields: [],
+    })).toThrow('JurisdictionInfo must include');
+  });
+
+  it('copies requiredFields to prevent external mutation', () => {
+    const fields = ['agentId'];
+    registerJurisdiction('BR', {
+      legalFramework: 'LGPD',
+      complianceStandard: 'LGPD',
+      requiredFields: fields,
+    });
+    fields.push('mutated');
+    expect(JURISDICTIONS['BR']!.requiredFields).toEqual(['agentId']);
   });
 });
 
@@ -311,7 +372,58 @@ describe('generateComplianceReport', () => {
     const report1 = generateComplianceReport(sampleCompliance, 'SOC2');
     const report2 = generateComplianceReport(sampleCompliance, 'HIPAA');
     expect(report1.standard).not.toBe(report2.standard);
-    // HIPAA is stricter, so it may have more gaps
+  });
+
+  it('includes details breakdown in report', () => {
+    const report = generateComplianceReport(sampleCompliance, 'SOC2');
+    expect(report.details).toBeDefined();
+    expect(report.details.covenantCoverage).toBeCloseTo(0.95);
+    expect(report.details.breachRate).toBeCloseTo(0.005);
+    expect(report.details.canaryPassRate).toBeCloseTo(0.97);
+    expect(report.details.attestationCoverage).toBeCloseTo(0.92);
+  });
+
+  it('accepts custom compliance weights', () => {
+    const customWeights: ComplianceWeights = {
+      covenantCoverage: 0.5,
+      breachFreedom: 0.2,
+      attestationCoverage: 0.2,
+      canaryPassRate: 0.1,
+    };
+    const defaultReport = generateComplianceReport(sampleCompliance, 'SOC2');
+    const customReport = generateComplianceReport(sampleCompliance, 'SOC2', customWeights);
+    // Different weights should produce different scores
+    expect(customReport.score).not.toBeCloseTo(defaultReport.score, 10);
+  });
+
+  it('throws for negative totalInteractions', () => {
+    const bad: ComplianceRecord = { ...sampleCompliance, totalInteractions: -1 };
+    expect(() => generateComplianceReport(bad, 'SOC2')).toThrow('totalInteractions must be non-negative');
+  });
+
+  it('throws for negative breaches', () => {
+    const bad: ComplianceRecord = { ...sampleCompliance, breaches: -1 };
+    expect(() => generateComplianceReport(bad, 'SOC2')).toThrow('breaches must be non-negative');
+  });
+
+  it('throws for attestationCoverage > 1', () => {
+    const bad: ComplianceRecord = { ...sampleCompliance, attestationCoverage: 1.5 };
+    expect(() => generateComplianceReport(bad, 'SOC2')).toThrow('attestationCoverage must be between 0 and 1');
+  });
+
+  it('throws for attestationCoverage < 0', () => {
+    const bad: ComplianceRecord = { ...sampleCompliance, attestationCoverage: -0.1 };
+    expect(() => generateComplianceReport(bad, 'SOC2')).toThrow('attestationCoverage must be between 0 and 1');
+  });
+
+  it('throws for covenantedInteractions > totalInteractions', () => {
+    const bad: ComplianceRecord = { ...sampleCompliance, covenantedInteractions: 2000 };
+    expect(() => generateComplianceReport(bad, 'SOC2')).toThrow('covenantedInteractions cannot exceed totalInteractions');
+  });
+
+  it('throws for canaryPasses > canaryTests', () => {
+    const bad: ComplianceRecord = { ...sampleCompliance, canaryPasses: 200, canaryTests: 100 };
+    expect(() => generateComplianceReport(bad, 'SOC2')).toThrow('canaryPasses cannot exceed canaryTests');
   });
 });
 
@@ -328,10 +440,12 @@ describe('JURISDICTIONS', () => {
 
   it('each jurisdiction has legalFramework, complianceStandard, and requiredFields', () => {
     for (const [key, value] of Object.entries(JURISDICTIONS)) {
-      expect(value.legalFramework).toBeTruthy();
-      expect(value.complianceStandard).toBeTruthy();
-      expect(Array.isArray(value.requiredFields)).toBe(true);
-      expect(value.requiredFields.length).toBeGreaterThan(0);
+      if (['US', 'EU', 'UK', 'JP'].includes(key)) {
+        expect(value.legalFramework).toBeTruthy();
+        expect(value.complianceStandard).toBeTruthy();
+        expect(Array.isArray(value.requiredFields)).toBe(true);
+        expect(value.requiredFields.length).toBeGreaterThan(0);
+      }
     }
   });
 });

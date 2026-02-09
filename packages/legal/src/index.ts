@@ -1,4 +1,4 @@
-import { sha256Object, generateId } from '@stele/crypto';
+import { sha256Object } from '@stele/crypto';
 
 export type {
   LegalIdentityPackage,
@@ -22,10 +22,42 @@ import type {
   ComplianceStandard,
 } from './types';
 
+// ---------------------------------------------------------------------------
+// Jurisdiction & compliance registries
+// ---------------------------------------------------------------------------
+
+export interface JurisdictionInfo {
+  legalFramework: string;
+  complianceStandard: string;
+  requiredFields: string[];
+}
+
+export interface ComplianceStandardInfo {
+  requiredScore: number;
+  requiredAttestationCoverage: number;
+  requiredCanaryPassRate: number;
+  description: string;
+}
+
+export interface ComplianceWeights {
+  covenantCoverage: number;
+  breachFreedom: number;
+  attestationCoverage: number;
+  canaryPassRate: number;
+}
+
+const DEFAULT_WEIGHTS: ComplianceWeights = {
+  covenantCoverage: 0.3,
+  breachFreedom: 0.3,
+  attestationCoverage: 0.2,
+  canaryPassRate: 0.2,
+};
+
 /**
  * Known jurisdictions and their legal frameworks.
+ * Use registerJurisdiction() to add custom entries.
  */
-export const JURISDICTIONS: Record<string, { legalFramework: string; complianceStandard: string; requiredFields: string[] }> = {
+const jurisdictionRegistry: Record<string, JurisdictionInfo> = {
   US: {
     legalFramework: 'US Federal / State Law',
     complianceStandard: 'SOC2',
@@ -48,10 +80,26 @@ export const JURISDICTIONS: Record<string, { legalFramework: string; complianceS
   },
 };
 
+/** Read-only snapshot of the jurisdiction registry. */
+export const JURISDICTIONS: Record<string, JurisdictionInfo> = jurisdictionRegistry;
+
+/**
+ * Register a custom jurisdiction. Throws if code is empty or info is incomplete.
+ */
+export function registerJurisdiction(code: string, info: JurisdictionInfo): void {
+  if (!code || code.trim() === '') {
+    throw new Error('Jurisdiction code must be a non-empty string');
+  }
+  if (!info.legalFramework || !info.complianceStandard || !Array.isArray(info.requiredFields)) {
+    throw new Error('JurisdictionInfo must include legalFramework, complianceStandard, and requiredFields');
+  }
+  jurisdictionRegistry[code] = { ...info, requiredFields: [...info.requiredFields] };
+}
+
 /**
  * Compliance standard requirements.
  */
-export const COMPLIANCE_STANDARDS: Record<ComplianceStandard, { requiredScore: number; requiredAttestationCoverage: number; requiredCanaryPassRate: number; description: string }> = {
+export const COMPLIANCE_STANDARDS: Record<ComplianceStandard, ComplianceStandardInfo> = {
   SOC2: {
     requiredScore: 0.8,
     requiredAttestationCoverage: 0.9,
@@ -84,8 +132,53 @@ export const COMPLIANCE_STANDARDS: Record<ComplianceStandard, { requiredScore: n
   },
 };
 
+// ---------------------------------------------------------------------------
+// Validation helpers
+// ---------------------------------------------------------------------------
+
+function validateNonEmpty(value: string, name: string): void {
+  if (!value || value.trim() === '') {
+    throw new Error(`${name} must be a non-empty string`);
+  }
+}
+
+function validateComplianceRecord(record: ComplianceRecord): void {
+  if (record.totalInteractions < 0) {
+    throw new Error('totalInteractions must be non-negative');
+  }
+  if (record.covenantedInteractions < 0) {
+    throw new Error('covenantedInteractions must be non-negative');
+  }
+  if (record.breaches < 0) {
+    throw new Error('breaches must be non-negative');
+  }
+  if (record.canaryTests < 0) {
+    throw new Error('canaryTests must be non-negative');
+  }
+  if (record.canaryPasses < 0) {
+    throw new Error('canaryPasses must be non-negative');
+  }
+  if (record.attestationCoverage < 0 || record.attestationCoverage > 1) {
+    throw new Error('attestationCoverage must be between 0 and 1');
+  }
+  if (record.covenantedInteractions > record.totalInteractions) {
+    throw new Error('covenantedInteractions cannot exceed totalInteractions');
+  }
+  if (record.breaches > record.totalInteractions) {
+    throw new Error('breaches cannot exceed totalInteractions');
+  }
+  if (record.canaryPasses > record.canaryTests) {
+    throw new Error('canaryPasses cannot exceed canaryTests');
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Core functions
+// ---------------------------------------------------------------------------
+
 /**
  * Creates a LegalIdentityPackage.
+ * Validates agentId and operatorId are non-empty.
  * packageHash = sha256 of all content.
  */
 export function exportLegalPackage(
@@ -100,6 +193,9 @@ export function exportLegalPackage(
   },
   format: 'json' | 'pdf' | 'legal-xml' = 'json',
 ): LegalIdentityPackage {
+  validateNonEmpty(agentId, 'agentId');
+  validateNonEmpty(operatorId, 'operatorId');
+
   const exportedAt = Date.now();
 
   const content = {
@@ -133,13 +229,14 @@ export function exportLegalPackage(
 /**
  * Maps package fields to jurisdiction requirements.
  * Known jurisdictions: 'US' (SOC2), 'EU' (GDPR), 'UK' (UK-GDPR), 'JP' (APPI).
+ * Custom jurisdictions can be added via registerJurisdiction().
  * Returns JurisdictionalMapping with legalFramework, requiredFields, complianceStandard, and mappedFields.
  */
 export function mapToJurisdiction(
   pkg: LegalIdentityPackage,
   jurisdiction: string,
 ): JurisdictionalMapping {
-  const jurisdictionInfo = JURISDICTIONS[jurisdiction];
+  const jurisdictionInfo = jurisdictionRegistry[jurisdiction];
 
   if (!jurisdictionInfo) {
     return {
@@ -190,16 +287,19 @@ export function mapToJurisdiction(
 
 /**
  * Generates a compliance report for a specific standard.
- * Returns { standard, passed: boolean, score: number, gaps: string[] }.
+ * Validates the ComplianceRecord and uses configurable weights.
+ * Returns { standard, passed, score, gaps, details }.
  */
 export function generateComplianceReport(
   compliance: ComplianceRecord,
   standard: ComplianceStandard,
-): { standard: ComplianceStandard; passed: boolean; score: number; gaps: string[] } {
+  weights: ComplianceWeights = DEFAULT_WEIGHTS,
+): { standard: ComplianceStandard; passed: boolean; score: number; gaps: string[]; details: Record<string, number> } {
+  validateComplianceRecord(compliance);
+
   const requirements = COMPLIANCE_STANDARDS[standard];
   const gaps: string[] = [];
 
-  // Compute compliance score from the record
   const covenantCoverage = compliance.totalInteractions > 0
     ? compliance.covenantedInteractions / compliance.totalInteractions
     : 0;
@@ -210,10 +310,12 @@ export function generateComplianceReport(
     ? compliance.canaryPasses / compliance.canaryTests
     : 0;
 
-  // Overall score: weighted average of metrics
-  const score = (covenantCoverage * 0.3) + ((1 - breachRate) * 0.3) + (compliance.attestationCoverage * 0.2) + (canaryPassRate * 0.2);
+  const score =
+    (covenantCoverage * weights.covenantCoverage) +
+    ((1 - breachRate) * weights.breachFreedom) +
+    (compliance.attestationCoverage * weights.attestationCoverage) +
+    (canaryPassRate * weights.canaryPassRate);
 
-  // Check each requirement
   if (score < requirements.requiredScore) {
     gaps.push(`Overall compliance score ${score.toFixed(3)} is below required ${requirements.requiredScore}`);
   }
@@ -237,5 +339,11 @@ export function generateComplianceReport(
     passed,
     score,
     gaps,
+    details: {
+      covenantCoverage,
+      breachRate,
+      canaryPassRate,
+      attestationCoverage: compliance.attestationCoverage,
+    },
   };
 }

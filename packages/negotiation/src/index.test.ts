@@ -8,8 +8,16 @@ import {
   isExpired,
   fail,
   roundCount,
+  computeNashBargainingSolution,
+  paretoFrontier,
 } from './index.js';
-import type { NegotiationSession, Proposal, NegotiationPolicy } from './types.js';
+import type {
+  NegotiationSession,
+  Proposal,
+  NegotiationPolicy,
+  UtilityFunction,
+  Outcome,
+} from './types.js';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -563,5 +571,307 @@ describe('edge cases', () => {
     });
     const proposal = makeProposal('bob', ['deny:exfiltrate']);
     expect(evaluate(proposal, policy)).toBe('accept');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeNashBargainingSolution
+// ---------------------------------------------------------------------------
+describe('computeNashBargainingSolution', () => {
+  function makeUtility(
+    partyId: string,
+    evalFn: (outcome: Outcome) => number,
+    disagreementValue: number,
+  ): UtilityFunction {
+    return { partyId, evaluate: evalFn, disagreementValue };
+  }
+
+  it('returns null for empty outcomes', () => {
+    const uA = makeUtility('A', () => 1, 0);
+    const uB = makeUtility('B', () => 1, 0);
+    const result = computeNashBargainingSolution([], uA, uB);
+    expect(result).toBeNull();
+  });
+
+  it('returns the single outcome when only one is individually rational', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'] },
+    ];
+    const uA = makeUtility('A', () => 5, 0);
+    const uB = makeUtility('B', () => 3, 0);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    expect(result).not.toBeNull();
+    expect(result!.utilityA).toBe(5);
+    expect(result!.utilityB).toBe(3);
+    expect(result!.nashProduct).toBe(15);
+  });
+
+  it('selects outcome that maximizes Nash product', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+      { constraints: ['c3'], id: 'o3' },
+    ];
+    const uA = makeUtility('A', (o) => {
+      if (o.id === 'o1') return 8;
+      if (o.id === 'o2') return 5;
+      return 3;
+    }, 0);
+    const uB = makeUtility('B', (o) => {
+      if (o.id === 'o1') return 2;
+      if (o.id === 'o2') return 6;
+      return 7;
+    }, 0);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    // o1: 8*2=16, o2: 5*6=30, o3: 3*7=21
+    expect(result).not.toBeNull();
+    expect(result!.outcome.id).toBe('o2');
+    expect(result!.nashProduct).toBe(30);
+  });
+
+  it('respects disagreement values', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', (o) => o.id === 'o1' ? 10 : 6, 4);
+    const uB = makeUtility('B', (o) => o.id === 'o1' ? 3 : 8, 2);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    // o1: (10-4)*(3-2) = 6*1 = 6
+    // o2: (6-4)*(8-2) = 2*6 = 12
+    expect(result).not.toBeNull();
+    expect(result!.outcome.id).toBe('o2');
+    expect(result!.nashProduct).toBe(12);
+  });
+
+  it('excludes outcomes where party A gets less than disagreement value', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', (o) => o.id === 'o1' ? 1 : 5, 3);
+    const uB = makeUtility('B', (o) => o.id === 'o1' ? 10 : 4, 0);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    // o1: A gets 1 < 3 (disagreement) -> excluded
+    // o2: (5-3)*(4-0) = 2*4 = 8
+    expect(result).not.toBeNull();
+    expect(result!.outcome.id).toBe('o2');
+  });
+
+  it('excludes outcomes where party B gets less than disagreement value', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+    ];
+    const uA = makeUtility('A', () => 10, 0);
+    const uB = makeUtility('B', () => 1, 5);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    // B gets 1 < 5 -> excluded
+    expect(result).toBeNull();
+  });
+
+  it('returns null when no outcome is individually rational', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', () => 1, 5);
+    const uB = makeUtility('B', () => 1, 5);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    expect(result).toBeNull();
+  });
+
+  it('handles zero surplus correctly (product is zero)', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', (o) => o.id === 'o1' ? 5 : 5, 5);
+    const uB = makeUtility('B', (o) => o.id === 'o1' ? 3 : 10, 0);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    // o1: (5-5)*(3-0) = 0, o2: (5-5)*(10-0) = 0
+    expect(result).not.toBeNull();
+    expect(result!.nashProduct).toBe(0);
+  });
+
+  it('returns correct utility values for the selected outcome', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'] },
+    ];
+    const uA = makeUtility('A', () => 7, 2);
+    const uB = makeUtility('B', () => 9, 3);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    expect(result!.utilityA).toBe(7);
+    expect(result!.utilityB).toBe(9);
+    expect(result!.nashProduct).toBe((7 - 2) * (9 - 3));
+  });
+
+  it('handles many outcomes efficiently', () => {
+    const outcomes: Outcome[] = Array.from({ length: 100 }, (_, i) => ({
+      constraints: [`c${i}`],
+      id: `o${i}`,
+    }));
+    const uA = makeUtility('A', (o) => {
+      const idx = parseInt(o.id!.slice(1));
+      return 100 - idx;
+    }, 0);
+    const uB = makeUtility('B', (o) => {
+      const idx = parseInt(o.id!.slice(1));
+      return idx;
+    }, 0);
+    const result = computeNashBargainingSolution(outcomes, uA, uB);
+    expect(result).not.toBeNull();
+    // Nash product maximized around where both utilities are balanced
+    expect(result!.nashProduct).toBeGreaterThan(0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// paretoFrontier
+// ---------------------------------------------------------------------------
+describe('paretoFrontier', () => {
+  function makeUtility(
+    partyId: string,
+    evalFn: (outcome: Outcome) => number,
+  ): UtilityFunction {
+    return { partyId, evaluate: evalFn, disagreementValue: 0 };
+  }
+
+  it('returns empty for empty outcomes', () => {
+    const uA = makeUtility('A', () => 1);
+    const result = paretoFrontier([], [uA]);
+    expect(result).toEqual([]);
+  });
+
+  it('returns empty for empty utility functions', () => {
+    const outcomes: Outcome[] = [{ constraints: ['c1'] }];
+    const result = paretoFrontier(outcomes, []);
+    expect(result).toEqual([]);
+  });
+
+  it('single outcome is always Pareto-optimal', () => {
+    const outcomes: Outcome[] = [{ constraints: ['c1'] }];
+    const uA = makeUtility('A', () => 5);
+    const uB = makeUtility('B', () => 3);
+    const result = paretoFrontier(outcomes, [uA, uB]);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.dominated).toBe(false);
+    expect(result[0]!.utilities).toEqual([5, 3]);
+  });
+
+  it('marks dominated outcomes correctly', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', (o) => o.id === 'o1' ? 5 : 3);
+    const uB = makeUtility('B', (o) => o.id === 'o1' ? 5 : 3);
+    const result = paretoFrontier(outcomes, [uA, uB]);
+    const o1 = result.find(r => r.outcome.id === 'o1')!;
+    const o2 = result.find(r => r.outcome.id === 'o2')!;
+    expect(o1.dominated).toBe(false);
+    expect(o2.dominated).toBe(true);
+  });
+
+  it('identifies trade-offs as non-dominated (Pareto frontier)', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    // o1 is better for A, o2 is better for B => neither dominates
+    const uA = makeUtility('A', (o) => o.id === 'o1' ? 8 : 3);
+    const uB = makeUtility('B', (o) => o.id === 'o1' ? 2 : 9);
+    const result = paretoFrontier(outcomes, [uA, uB]);
+    expect(result.every(r => !r.dominated)).toBe(true);
+  });
+
+  it('correctly handles three outcomes with mixed dominance', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+      { constraints: ['c3'], id: 'o3' },
+    ];
+    // o1: (10, 1) -- best for A
+    // o2: (5, 5)  -- moderate for both
+    // o3: (1, 10) -- best for B
+    // None dominates another since there are trade-offs
+    const uA = makeUtility('A', (o) => {
+      if (o.id === 'o1') return 10;
+      if (o.id === 'o2') return 5;
+      return 1;
+    });
+    const uB = makeUtility('B', (o) => {
+      if (o.id === 'o1') return 1;
+      if (o.id === 'o2') return 5;
+      return 10;
+    });
+    const result = paretoFrontier(outcomes, [uA, uB]);
+    const frontier = result.filter(r => !r.dominated);
+    expect(frontier).toHaveLength(3);
+  });
+
+  it('correctly identifies dominated outcome among three', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+      { constraints: ['c3'], id: 'o3' },
+    ];
+    // o1: (10, 5), o2: (3, 3), o3: (5, 10)
+    // o2 is dominated by o1 (10>3, 5>3)
+    const uA = makeUtility('A', (o) => {
+      if (o.id === 'o1') return 10;
+      if (o.id === 'o2') return 3;
+      return 5;
+    });
+    const uB = makeUtility('B', (o) => {
+      if (o.id === 'o1') return 5;
+      if (o.id === 'o2') return 3;
+      return 10;
+    });
+    const result = paretoFrontier(outcomes, [uA, uB]);
+    const o2 = result.find(r => r.outcome.id === 'o2')!;
+    expect(o2.dominated).toBe(true);
+    const frontier = result.filter(r => !r.dominated);
+    expect(frontier).toHaveLength(2);
+  });
+
+  it('handles equal utilities (no strict domination)', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', () => 5);
+    const uB = makeUtility('B', () => 5);
+    const result = paretoFrontier(outcomes, [uA, uB]);
+    // Neither dominates the other (need strictly better in at least one)
+    expect(result.every(r => !r.dominated)).toBe(true);
+  });
+
+  it('utilities array has correct length', () => {
+    const outcomes: Outcome[] = [{ constraints: ['c1'] }];
+    const uA = makeUtility('A', () => 1);
+    const uB = makeUtility('B', () => 2);
+    const uC = makeUtility('C', () => 3);
+    const result = paretoFrontier(outcomes, [uA, uB, uC]);
+    expect(result[0]!.utilities).toEqual([1, 2, 3]);
+  });
+
+  it('works with three-party utility functions', () => {
+    const outcomes: Outcome[] = [
+      { constraints: ['c1'], id: 'o1' },
+      { constraints: ['c2'], id: 'o2' },
+    ];
+    const uA = makeUtility('A', (o) => o.id === 'o1' ? 10 : 1);
+    const uB = makeUtility('B', (o) => o.id === 'o1' ? 1 : 10);
+    const uC = makeUtility('C', (o) => o.id === 'o1' ? 5 : 5);
+    const result = paretoFrontier(outcomes, [uA, uB, uC]);
+    // o1: (10,1,5), o2: (1,10,5) -- neither dominates
+    expect(result.every(r => !r.dominated)).toBe(true);
+  });
+
+  it('preserves the outcome reference in result', () => {
+    const outcome: Outcome = { constraints: ['c1', 'c2'] };
+    const uA = makeUtility('A', () => 5);
+    const result = paretoFrontier([outcome], [uA]);
+    expect(result[0]!.outcome).toBe(outcome);
   });
 });

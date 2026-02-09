@@ -8,6 +8,9 @@ import {
   claimPolicy,
   validatePricingConfig,
   validateReputationData,
+  blackScholesPrice,
+  valueAtRisk,
+  hedgeRatio,
 } from './index';
 import type {
   ReputationData,
@@ -15,7 +18,7 @@ import type {
   TrustFuture,
   AgentInsurancePolicy,
 } from './types';
-import type { PricingConfig } from './index';
+import type { PricingConfig, BlackScholesParams, VaRParams, HedgeRatioParams } from './index';
 
 // ---------------------------------------------------------------------------
 // Helper data
@@ -776,5 +779,367 @@ describe('claimPolicy', () => {
     expect(() => claimPolicy(expiredPolicy, 5000)).toThrow(
       "Policy must be active to claim, current status: 'expired'",
     );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// blackScholesPrice
+// ---------------------------------------------------------------------------
+describe('blackScholesPrice', () => {
+  // Standard test case: S=100, K=100, T=1, r=0.05, sigma=0.2
+  const atTheMoney: BlackScholesParams = {
+    spotPrice: 100,
+    strikePrice: 100,
+    timeToMaturity: 1,
+    riskFreeRate: 0.05,
+    volatility: 0.2,
+    optionType: 'call',
+  };
+
+  it('computes a positive call price for ATM option', () => {
+    const result = blackScholesPrice(atTheMoney);
+    // Known approximate value: ~10.45 for these parameters
+    expect(result.price).toBeGreaterThan(0);
+    expect(result.price).toBeCloseTo(10.45, 0);
+  });
+
+  it('computes d1 and d2 correctly', () => {
+    const result = blackScholesPrice(atTheMoney);
+    // d1 = [ln(100/100) + (0.05 + 0.04/2)*1] / (0.2*1) = [0 + 0.07] / 0.2 = 0.35
+    expect(result.d1).toBeCloseTo(0.35, 2);
+    // d2 = d1 - 0.2 = 0.15
+    expect(result.d2).toBeCloseTo(0.15, 2);
+  });
+
+  it('put-call parity: C - P = S - K*e^(-rT)', () => {
+    const call = blackScholesPrice(atTheMoney);
+    const put = blackScholesPrice({ ...atTheMoney, optionType: 'put' });
+    const parity = call.price - put.price;
+    const expected = 100 - 100 * Math.exp(-0.05 * 1);
+    expect(parity).toBeCloseTo(expected, 2);
+  });
+
+  it('deep in-the-money call is approximately S - K*e^(-rT)', () => {
+    const result = blackScholesPrice({
+      spotPrice: 200,
+      strikePrice: 50,
+      timeToMaturity: 1,
+      riskFreeRate: 0.05,
+      volatility: 0.2,
+      optionType: 'call',
+    });
+    const intrinsic = 200 - 50 * Math.exp(-0.05);
+    expect(result.price).toBeCloseTo(intrinsic, 0);
+  });
+
+  it('deep out-of-the-money call is near zero', () => {
+    const result = blackScholesPrice({
+      spotPrice: 50,
+      strikePrice: 200,
+      timeToMaturity: 0.25,
+      riskFreeRate: 0.05,
+      volatility: 0.2,
+      optionType: 'call',
+    });
+    expect(result.price).toBeCloseTo(0, 2);
+  });
+
+  it('put price is positive for out-of-the-money put', () => {
+    const result = blackScholesPrice({
+      spotPrice: 100,
+      strikePrice: 110,
+      timeToMaturity: 0.5,
+      riskFreeRate: 0.05,
+      volatility: 0.3,
+      optionType: 'put',
+    });
+    expect(result.price).toBeGreaterThan(0);
+  });
+
+  it('higher volatility leads to higher option price', () => {
+    const low = blackScholesPrice({ ...atTheMoney, volatility: 0.1 });
+    const high = blackScholesPrice({ ...atTheMoney, volatility: 0.4 });
+    expect(high.price).toBeGreaterThan(low.price);
+  });
+
+  it('longer maturity leads to higher call price (positive r)', () => {
+    const short = blackScholesPrice({ ...atTheMoney, timeToMaturity: 0.25 });
+    const long = blackScholesPrice({ ...atTheMoney, timeToMaturity: 2 });
+    expect(long.price).toBeGreaterThan(short.price);
+  });
+
+  it('formula contains Black-Scholes derivation', () => {
+    const result = blackScholesPrice(atTheMoney);
+    expect(result.formula).toContain('Black-Scholes');
+    expect(result.formula).toContain('d1');
+    expect(result.formula).toContain('d2');
+    expect(result.formula).toContain('N(d1)');
+  });
+
+  it('N(d1) and N(d2) are between 0 and 1', () => {
+    const result = blackScholesPrice(atTheMoney);
+    expect(result.nd1).toBeGreaterThanOrEqual(0);
+    expect(result.nd1).toBeLessThanOrEqual(1);
+    expect(result.nd2).toBeGreaterThanOrEqual(0);
+    expect(result.nd2).toBeLessThanOrEqual(1);
+  });
+
+  it('throws on spotPrice <= 0', () => {
+    expect(() =>
+      blackScholesPrice({ ...atTheMoney, spotPrice: 0 }),
+    ).toThrow('spotPrice must be > 0');
+  });
+
+  it('throws on strikePrice <= 0', () => {
+    expect(() =>
+      blackScholesPrice({ ...atTheMoney, strikePrice: -1 }),
+    ).toThrow('strikePrice must be > 0');
+  });
+
+  it('throws on timeToMaturity <= 0', () => {
+    expect(() =>
+      blackScholesPrice({ ...atTheMoney, timeToMaturity: 0 }),
+    ).toThrow('timeToMaturity must be > 0');
+  });
+
+  it('throws on volatility <= 0', () => {
+    expect(() =>
+      blackScholesPrice({ ...atTheMoney, volatility: 0 }),
+    ).toThrow('volatility must be > 0');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// valueAtRisk
+// ---------------------------------------------------------------------------
+describe('valueAtRisk', () => {
+  const baseVaR: VaRParams = {
+    portfolioValue: 1000000,
+    expectedReturn: 0.0004, // daily return ~0.04%
+    volatility: 0.02,       // daily volatility 2%
+    confidenceLevel: 0.95,
+    timeHorizonDays: 1,
+  };
+
+  it('computes positive VaR for standard parameters', () => {
+    const result = valueAtRisk(baseVaR);
+    expect(result.valueAtRisk).toBeGreaterThan(0);
+    // At 95% confidence, z ~ 1.645
+    // VaR ~ 1000000 * (1.645 * 0.02 - 0.0004) ~ 32500
+    expect(result.valueAtRisk).toBeCloseTo(32500, -2);
+  });
+
+  it('z-score is approximately 1.645 for 95% confidence', () => {
+    const result = valueAtRisk(baseVaR);
+    expect(result.zScore).toBeCloseTo(1.645, 2);
+  });
+
+  it('z-score is approximately 2.326 for 99% confidence', () => {
+    const result = valueAtRisk({ ...baseVaR, confidenceLevel: 0.99 });
+    expect(result.zScore).toBeCloseTo(2.326, 2);
+  });
+
+  it('higher confidence level leads to higher VaR', () => {
+    const low = valueAtRisk({ ...baseVaR, confidenceLevel: 0.90 });
+    const high = valueAtRisk({ ...baseVaR, confidenceLevel: 0.99 });
+    expect(high.valueAtRisk).toBeGreaterThan(low.valueAtRisk);
+  });
+
+  it('higher volatility leads to higher VaR', () => {
+    const low = valueAtRisk({ ...baseVaR, volatility: 0.01 });
+    const high = valueAtRisk({ ...baseVaR, volatility: 0.05 });
+    expect(high.valueAtRisk).toBeGreaterThan(low.valueAtRisk);
+  });
+
+  it('VaR scales with sqrt of time horizon', () => {
+    const oneDay = valueAtRisk({ ...baseVaR, timeHorizonDays: 1 });
+    const tenDays = valueAtRisk({ ...baseVaR, timeHorizonDays: 10 });
+    // VaR_10 / VaR_1 should be approximately sqrt(10) ~ 3.16
+    // (ignoring the expected return term which is small)
+    const ratio = tenDays.valueAtRisk / oneDay.valueAtRisk;
+    expect(ratio).toBeCloseTo(Math.sqrt(10), 0);
+  });
+
+  it('larger portfolio has proportionally larger VaR', () => {
+    const small = valueAtRisk({ ...baseVaR, portfolioValue: 100000 });
+    const large = valueAtRisk({ ...baseVaR, portfolioValue: 1000000 });
+    expect(large.valueAtRisk / small.valueAtRisk).toBeCloseTo(10, 1);
+  });
+
+  it('VaR is zero when volatility is zero and return is positive', () => {
+    const result = valueAtRisk({
+      portfolioValue: 1000000,
+      expectedReturn: 0.001,
+      volatility: 0,
+      confidenceLevel: 0.95,
+    });
+    expect(result.valueAtRisk).toBe(0);
+  });
+
+  it('varPercentage is VaR divided by portfolio value', () => {
+    const result = valueAtRisk(baseVaR);
+    expect(result.varPercentage).toBeCloseTo(result.valueAtRisk / baseVaR.portfolioValue, 10);
+  });
+
+  it('formula contains VaR derivation text', () => {
+    const result = valueAtRisk(baseVaR);
+    expect(result.formula).toContain('Parametric VaR');
+    expect(result.formula).toContain('z-score');
+    expect(result.formula).toContain('95.0%');
+  });
+
+  it('throws on portfolioValue <= 0', () => {
+    expect(() => valueAtRisk({ ...baseVaR, portfolioValue: 0 })).toThrow(
+      'portfolioValue must be > 0',
+    );
+  });
+
+  it('throws on negative volatility', () => {
+    expect(() => valueAtRisk({ ...baseVaR, volatility: -0.01 })).toThrow(
+      'volatility must be >= 0',
+    );
+  });
+
+  it('throws on confidenceLevel out of range', () => {
+    expect(() => valueAtRisk({ ...baseVaR, confidenceLevel: 0 })).toThrow(
+      'confidenceLevel must be in (0, 1)',
+    );
+    expect(() => valueAtRisk({ ...baseVaR, confidenceLevel: 1 })).toThrow(
+      'confidenceLevel must be in (0, 1)',
+    );
+  });
+
+  it('throws on non-positive timeHorizonDays', () => {
+    expect(() => valueAtRisk({ ...baseVaR, timeHorizonDays: 0 })).toThrow(
+      'timeHorizonDays must be > 0',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// hedgeRatio
+// ---------------------------------------------------------------------------
+describe('hedgeRatio', () => {
+  it('computes correct hedge ratio for perfectly correlated assets', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.15,
+      correlation: 1.0,
+    });
+    // h* = 1.0 * (0.20 / 0.15) = 1.333...
+    expect(result.hedgeRatio).toBeCloseTo(4 / 3, 5);
+    expect(result.hedgeEffectiveness).toBeCloseTo(1.0, 10);
+  });
+
+  it('computes correct hedge ratio for partially correlated assets', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: 0.8,
+    });
+    // h* = 0.8 * (0.20 / 0.25) = 0.64
+    expect(result.hedgeRatio).toBeCloseTo(0.64, 5);
+  });
+
+  it('hedge effectiveness equals rho^2', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: 0.7,
+    });
+    expect(result.hedgeEffectiveness).toBeCloseTo(0.49, 5);
+  });
+
+  it('computes hedge position size when provided', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: 0.8,
+      positionSize: 1000000,
+    });
+    // hedgePosition = 0.64 * 1000000 = 640000
+    expect(result.hedgePositionSize).toBeCloseTo(640000, 0);
+  });
+
+  it('returns null hedge position when positionSize not provided', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: 0.8,
+    });
+    expect(result.hedgePositionSize).toBeNull();
+  });
+
+  it('negative correlation produces negative hedge ratio', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: -0.6,
+    });
+    expect(result.hedgeRatio).toBeLessThan(0);
+    // h* = -0.6 * (0.20 / 0.25) = -0.48
+    expect(result.hedgeRatio).toBeCloseTo(-0.48, 5);
+  });
+
+  it('zero correlation gives zero hedge ratio', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: 0,
+    });
+    expect(result.hedgeRatio).toBe(0);
+    expect(result.hedgeEffectiveness).toBe(0);
+  });
+
+  it('zero asset volatility gives zero hedge ratio', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0,
+      hedgeVolatility: 0.25,
+      correlation: 0.8,
+    });
+    expect(result.hedgeRatio).toBe(0);
+  });
+
+  it('formula contains derivation text', () => {
+    const result = hedgeRatio({
+      assetVolatility: 0.20,
+      hedgeVolatility: 0.25,
+      correlation: 0.8,
+    });
+    expect(result.formula).toContain('Minimum variance hedge ratio');
+    expect(result.formula).toContain('h*');
+    expect(result.formula).toContain('R^2');
+  });
+
+  it('throws on negative assetVolatility', () => {
+    expect(() =>
+      hedgeRatio({ assetVolatility: -0.1, hedgeVolatility: 0.2, correlation: 0.5 }),
+    ).toThrow('assetVolatility must be >= 0');
+  });
+
+  it('throws on hedgeVolatility <= 0', () => {
+    expect(() =>
+      hedgeRatio({ assetVolatility: 0.2, hedgeVolatility: 0, correlation: 0.5 }),
+    ).toThrow('hedgeVolatility must be > 0');
+  });
+
+  it('throws on correlation out of range', () => {
+    expect(() =>
+      hedgeRatio({ assetVolatility: 0.2, hedgeVolatility: 0.2, correlation: 1.5 }),
+    ).toThrow('correlation must be in [-1, 1]');
+    expect(() =>
+      hedgeRatio({ assetVolatility: 0.2, hedgeVolatility: 0.2, correlation: -1.5 }),
+    ).toThrow('correlation must be in [-1, 1]');
+  });
+
+  it('throws on non-positive positionSize', () => {
+    expect(() =>
+      hedgeRatio({
+        assetVolatility: 0.2,
+        hedgeVolatility: 0.2,
+        correlation: 0.5,
+        positionSize: -100,
+      }),
+    ).toThrow('positionSize must be > 0');
   });
 });

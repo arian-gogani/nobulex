@@ -7,8 +7,15 @@ import {
   getDiscrepancies,
   isSigned,
   verifyAttestation,
+  attestationChainVerify,
+  computeAttestationCoverage,
 } from './index';
-import type { ExternalAttestation, ReceiptSummary } from './types';
+import type {
+  ExternalAttestation,
+  ReceiptSummary,
+  AttestationChainLink,
+  AgentAction,
+} from './types';
 
 // ---------------------------------------------------------------------------
 // createAttestation
@@ -408,5 +415,275 @@ describe('getDiscrepancies', () => {
     expect(discs[0]!.field).toBe('interactionHash');
     expect(discs[1]!.field).toBe('inputHash');
     expect(discs[2]!.field).toBe('outputHash');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// attestationChainVerify
+// ---------------------------------------------------------------------------
+describe('attestationChainVerify', () => {
+  it('returns valid for empty chain', async () => {
+    const result = await attestationChainVerify([]);
+    expect(result.valid).toBe(true);
+    expect(result.verifiedLinks).toBe(0);
+    expect(result.totalLinks).toBe(0);
+  });
+
+  it('verifies a single valid link', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1000);
+    const signed = await signAttestation(att, kp.privateKey);
+    const chain: AttestationChainLink[] = [
+      { attestation: signed, attesterPublicKey: kp.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(true);
+    expect(result.verifiedLinks).toBe(1);
+  });
+
+  it('fails on unsigned attestation in chain', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1000);
+    const chain: AttestationChainLink[] = [
+      { attestation: att, attesterPublicKey: kp.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(false);
+    expect(result.brokenAt).toBe(0);
+    expect(result.reason).toContain('not signed');
+  });
+
+  it('fails when signature is invalid', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+    const att = createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1000);
+    const signed = await signAttestation(att, kp1.privateKey);
+    // Use wrong public key for verification
+    const chain: AttestationChainLink[] = [
+      { attestation: signed, attesterPublicKey: kp2.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(false);
+    expect(result.brokenAt).toBe(0);
+    expect(result.reason).toContain('signature verification failed');
+  });
+
+  it('verifies a multi-link chain with proper continuity', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+
+    // Link 1: agent-1 -> counter-1
+    const att1 = createAttestation('agent-1', 'counter-1', '/ep', 'in1', 'out1', 'ix1', 1000);
+    const signed1 = await signAttestation(att1, kp1.privateKey);
+
+    // Link 2: counter-1 -> agent-2 (continues from previous counterparty)
+    const att2 = createAttestation('counter-1', 'agent-2', '/ep', 'in2', 'out2', 'ix2', 2000);
+    const signed2 = await signAttestation(att2, kp2.privateKey);
+
+    const chain: AttestationChainLink[] = [
+      { attestation: signed1, attesterPublicKey: kp1.publicKey },
+      { attestation: signed2, attesterPublicKey: kp2.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(true);
+    expect(result.verifiedLinks).toBe(2);
+    expect(result.totalLinks).toBe(2);
+  });
+
+  it('fails when chain is temporally misordered', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+
+    const att1 = createAttestation('agent-1', 'counter-1', '/ep', 'in1', 'out1', 'ix1', 5000);
+    const signed1 = await signAttestation(att1, kp1.privateKey);
+
+    const att2 = createAttestation('counter-1', 'agent-2', '/ep', 'in2', 'out2', 'ix2', 1000);
+    const signed2 = await signAttestation(att2, kp2.privateKey);
+
+    const chain: AttestationChainLink[] = [
+      { attestation: signed1, attesterPublicKey: kp1.publicKey },
+      { attestation: signed2, attesterPublicKey: kp2.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(false);
+    expect(result.brokenAt).toBe(1);
+    expect(result.reason).toContain('timestamp');
+  });
+
+  it('fails when chain continuity is broken (agentId mismatch)', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+
+    const att1 = createAttestation('agent-1', 'counter-1', '/ep', 'in1', 'out1', 'ix1', 1000);
+    const signed1 = await signAttestation(att1, kp1.privateKey);
+
+    // agent-2 instead of counter-1 breaks continuity
+    const att2 = createAttestation('agent-2', 'counter-2', '/ep', 'in2', 'out2', 'ix2', 2000);
+    const signed2 = await signAttestation(att2, kp2.privateKey);
+
+    const chain: AttestationChainLink[] = [
+      { attestation: signed1, attesterPublicKey: kp1.publicKey },
+      { attestation: signed2, attesterPublicKey: kp2.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(false);
+    expect(result.brokenAt).toBe(1);
+    expect(result.reason).toContain('agentId');
+  });
+
+  it('reports correct verifiedLinks before break', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+
+    const att1 = createAttestation('agent-1', 'counter-1', '/ep', 'in1', 'out1', 'ix1', 1000);
+    const signed1 = await signAttestation(att1, kp1.privateKey);
+
+    // Second link is unsigned
+    const att2 = createAttestation('counter-1', 'agent-2', '/ep', 'in2', 'out2', 'ix2', 2000);
+
+    const chain: AttestationChainLink[] = [
+      { attestation: signed1, attesterPublicKey: kp1.publicKey },
+      { attestation: att2, attesterPublicKey: kp2.publicKey },
+    ];
+    const result = await attestationChainVerify(chain);
+    expect(result.valid).toBe(false);
+    expect(result.verifiedLinks).toBe(1);
+    expect(result.brokenAt).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeAttestationCoverage
+// ---------------------------------------------------------------------------
+describe('computeAttestationCoverage', () => {
+  it('returns 100% coverage for empty actions', () => {
+    const result = computeAttestationCoverage([], []);
+    expect(result.totalActions).toBe(0);
+    expect(result.coveredActions).toBe(0);
+    expect(result.coveragePercentage).toBe(100);
+    expect(result.uncoveredActionIds).toEqual([]);
+  });
+
+  it('returns 0% coverage when no attestations exist', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+      { id: 'a2', agentId: 'agent-1', timestamp: 2000, actionType: 'write' },
+    ];
+    const result = computeAttestationCoverage(actions, []);
+    expect(result.totalActions).toBe(2);
+    expect(result.coveredActions).toBe(0);
+    expect(result.coveragePercentage).toBe(0);
+    expect(result.uncoveredActionIds).toEqual(['a1', 'a2']);
+  });
+
+  it('returns 100% coverage when all actions are attested', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1000),
+    ];
+    const result = computeAttestationCoverage(actions, attestations);
+    expect(result.totalActions).toBe(1);
+    expect(result.coveredActions).toBe(1);
+    expect(result.coveragePercentage).toBe(100);
+    expect(result.uncoveredActionIds).toEqual([]);
+  });
+
+  it('matches attestations within the time window', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 4000),
+    ];
+    // Default window is 5000ms, so 4000 - 1000 = 3000 < 5000 => covered
+    const result = computeAttestationCoverage(actions, attestations);
+    expect(result.coveredActions).toBe(1);
+  });
+
+  it('does not match attestations outside the time window', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 10000),
+    ];
+    // 10000 - 1000 = 9000 > 5000 => not covered
+    const result = computeAttestationCoverage(actions, attestations);
+    expect(result.coveredActions).toBe(0);
+    expect(result.uncoveredActionIds).toEqual(['a1']);
+  });
+
+  it('does not match attestations for different agents', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-2', 'counter-1', '/ep', 'in', 'out', 'ix', 1000),
+    ];
+    const result = computeAttestationCoverage(actions, attestations);
+    expect(result.coveredActions).toBe(0);
+  });
+
+  it('handles partial coverage correctly', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+      { id: 'a2', agentId: 'agent-1', timestamp: 2000, actionType: 'write' },
+      { id: 'a3', agentId: 'agent-1', timestamp: 50000, actionType: 'delete' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1500),
+    ];
+    // a1: |1500-1000| = 500 <= 5000 => covered
+    // a2: |1500-2000| = 500 <= 5000 => covered
+    // a3: |1500-50000| = 48500 > 5000 => not covered
+    const result = computeAttestationCoverage(actions, attestations);
+    expect(result.coveredActions).toBe(2);
+    expect(result.coveragePercentage).toBeCloseTo(66.67, 1);
+    expect(result.uncoveredActionIds).toEqual(['a3']);
+  });
+
+  it('respects custom time window', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1500),
+    ];
+    // With timeWindowMs=100, |1500-1000|=500 > 100 => not covered
+    const result = computeAttestationCoverage(actions, attestations, 100);
+    expect(result.coveredActions).toBe(0);
+  });
+
+  it('throws on negative timeWindowMs', () => {
+    expect(() => computeAttestationCoverage([], [], -1)).toThrow('timeWindowMs must be non-negative');
+  });
+
+  it('handles multiple attestations covering the same action', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in1', 'out1', 'ix1', 1000),
+      createAttestation('agent-1', 'counter-2', '/ep', 'in2', 'out2', 'ix2', 1001),
+    ];
+    const result = computeAttestationCoverage(actions, attestations);
+    // Still counts as 1 covered action
+    expect(result.coveredActions).toBe(1);
+    expect(result.coveragePercentage).toBe(100);
+  });
+
+  it('handles zero time window (exact match only)', () => {
+    const actions: AgentAction[] = [
+      { id: 'a1', agentId: 'agent-1', timestamp: 1000, actionType: 'query' },
+      { id: 'a2', agentId: 'agent-1', timestamp: 2000, actionType: 'write' },
+    ];
+    const attestations: ExternalAttestation[] = [
+      createAttestation('agent-1', 'counter-1', '/ep', 'in', 'out', 'ix', 1000),
+    ];
+    const result = computeAttestationCoverage(actions, attestations, 0);
+    expect(result.coveredActions).toBe(1);
+    expect(result.uncoveredActionIds).toEqual(['a2']);
   });
 });

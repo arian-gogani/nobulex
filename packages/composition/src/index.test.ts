@@ -5,6 +5,8 @@ import {
   validateComposition,
   intersectConstraints,
   findConflicts,
+  decomposeCovenants,
+  compositionComplexity,
 } from './index.js';
 import type { CovenantSummary, CompositionProof } from './types.js';
 
@@ -575,5 +577,222 @@ describe('compose - deny-wins detailed scenarios', () => {
     const types = result.composedConstraints.map(c => c.type);
     expect(types).not.toContain('permit');
     expect(types).toContain('deny');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// decomposeCovenants
+// ---------------------------------------------------------------------------
+
+describe('decomposeCovenants', () => {
+  it('decomposes a single covenant with multiple constraints into individual sub-covenants', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'", "require auth on '**'", 'limit cpu 10 per 60 seconds']),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    expect(decomposed).toHaveLength(3);
+  });
+
+  it('each decomposed sub-covenant references the source covenant', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'", "require auth on '**'"]),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    for (const d of decomposed) {
+      expect(d.sourceCovenantId).toBe('c1');
+    }
+  });
+
+  it('each decomposed sub-covenant carries the correct agent', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'"]),
+      makeCovenant('c2', 'agent-b', ["permit read on '/public'"]),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    const agentA = decomposed.filter(d => d.agentId === 'agent-a');
+    const agentB = decomposed.filter(d => d.agentId === 'agent-b');
+    expect(agentA).toHaveLength(1);
+    expect(agentB).toHaveLength(1);
+  });
+
+  it('assigns correct types to each decomposed constraint', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'", "permit read on '/data'", "require logging on '**'", 'limit api 50 per 60 seconds']),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    const types = decomposed.map(d => d.type);
+    expect(types).toContain('deny');
+    expect(types).toContain('permit');
+    expect(types).toContain('require');
+    expect(types).toContain('limit');
+  });
+
+  it('returns empty array for empty covenants', () => {
+    expect(decomposeCovenants([])).toEqual([]);
+  });
+
+  it('returns empty array for covenants with no constraints', () => {
+    const covenants = [makeCovenant('c1', 'agent-a', [])];
+    expect(decomposeCovenants(covenants)).toEqual([]);
+  });
+
+  it('handles multiple covenants from same agent', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny write on '**'"]),
+      makeCovenant('c2', 'agent-a', ["deny delete on '**'"]),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    expect(decomposed).toHaveLength(2);
+    expect(decomposed[0]!.sourceCovenantId).toBe('c1');
+    expect(decomposed[1]!.sourceCovenantId).toBe('c2');
+  });
+
+  it('each decomposed constraint is valid serialized CCL', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'"]),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    expect(decomposed[0]!.constraint).toContain('deny');
+    expect(decomposed[0]!.constraint).toContain('exfiltrate');
+  });
+
+  it('throws when covenants is not an array', () => {
+    expect(() => decomposeCovenants(null as any)).toThrow('covenants must be an array');
+  });
+
+  it('throws when a covenant is invalid', () => {
+    expect(() => decomposeCovenants([{ id: '', agentId: 'a', constraints: [] }])).toThrow();
+  });
+
+  it('decomposes covenants with conditional constraints', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny write on '**' when risk_level = 'high'"]),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    expect(decomposed).toHaveLength(1);
+    expect(decomposed[0]!.type).toBe('deny');
+    expect(decomposed[0]!.constraint).toContain('deny');
+  });
+
+  it('preserves constraint count across multiple covenants', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny a on '**'", "deny b on '**'"]),
+      makeCovenant('c2', 'agent-b', ["permit c on '**'"]),
+      makeCovenant('c3', 'agent-c', ["require d on '**'", "require e on '**'", "require f on '**'"]),
+    ];
+    const decomposed = decomposeCovenants(covenants);
+    expect(decomposed).toHaveLength(6);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// compositionComplexity
+// ---------------------------------------------------------------------------
+
+describe('compositionComplexity', () => {
+  it('counts total rules correctly', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'", "require auth on '**'"]),
+      makeCovenant('c2', 'agent-b', ['limit cpu 10 per 60 seconds']),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(result.totalRules).toBe(3);
+  });
+
+  it('counts distinct agents', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny x on '**'"]),
+      makeCovenant('c2', 'agent-b', ["deny y on '**'"]),
+      makeCovenant('c3', 'agent-a', ["deny z on '**'"]),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(result.agentCount).toBe(2);
+  });
+
+  it('detects conflicts', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["permit file_access on '**'"]),
+      makeCovenant('c2', 'agent-b', ["deny file_access on '**'"]),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(result.conflictCount).toBe(1);
+  });
+
+  it('returns zero conflicts when none exist', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'"]),
+      makeCovenant('c2', 'agent-b', ["require auth on '**'"]),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(result.conflictCount).toBe(0);
+  });
+
+  it('counts distinct actions and resources', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny write on '/data'", "deny read on '/secret'"]),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(result.distinctActions).toBe(2);
+    expect(result.distinctResources).toBe(2);
+  });
+
+  it('returns all zeros for empty covenants', () => {
+    const result = compositionComplexity([]);
+    expect(result.totalRules).toBe(0);
+    expect(result.agentCount).toBe(0);
+    expect(result.conflictCount).toBe(0);
+    expect(result.score).toBe(0);
+  });
+
+  it('score increases with more rules', () => {
+    const simple = [makeCovenant('c1', 'agent-a', ["deny x on '**'"])];
+    const complex = [
+      makeCovenant('c1', 'agent-a', ["deny x on '**'", "deny y on '**'", "deny z on '**'"]),
+    ];
+    const s1 = compositionComplexity(simple);
+    const s2 = compositionComplexity(complex);
+    expect(s2.score).toBeGreaterThan(s1.score);
+  });
+
+  it('score increases with conflicts', () => {
+    const noConflict = [
+      makeCovenant('c1', 'agent-a', ["deny x on '**'"]),
+      makeCovenant('c2', 'agent-b', ["deny y on '**'"]),
+    ];
+    const withConflict = [
+      makeCovenant('c1', 'agent-a', ["permit x on '**'"]),
+      makeCovenant('c2', 'agent-b', ["deny x on '**'"]),
+    ];
+    const s1 = compositionComplexity(noConflict);
+    const s2 = compositionComplexity(withConflict);
+    expect(s2.score).toBeGreaterThan(s1.score);
+  });
+
+  it('measures condition depth for simple conditions', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny write on '**' when risk_level = 'high'"]),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(result.maxConditionDepth).toBeGreaterThanOrEqual(1);
+  });
+
+  it('produces a numeric score', () => {
+    const covenants = [
+      makeCovenant('c1', 'agent-a', ["deny exfiltrate on '**'"]),
+    ];
+    const result = compositionComplexity(covenants);
+    expect(typeof result.score).toBe('number');
+    expect(result.score).toBeGreaterThan(0);
+  });
+
+  it('throws when covenants is not an array', () => {
+    expect(() => compositionComplexity(null as any)).toThrow('covenants must be an array');
+  });
+
+  it('handles covenants with no constraints gracefully', () => {
+    const covenants = [makeCovenant('c1', 'agent-a', [])];
+    const result = compositionComplexity(covenants);
+    expect(result.totalRules).toBe(0);
+    expect(result.agentCount).toBe(1);
   });
 });

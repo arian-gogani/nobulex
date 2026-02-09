@@ -49,3 +49,20 @@ export interface CovenantState {
   history: EvolutionEvent[];
   lastTransitionAt?: number;
 }
+
+export interface DecayPoint {
+  time: number;
+  value: number;
+}
+
+export interface ViolationRecord {
+  timestamp: number;
+  severity: number;
+}
+
+export interface ExpirationForecastResult {
+  predictedExpirationTime: number;
+  confidence: number;
+  remainingWeight: number;
+  violationTrend: 'accelerating' | 'stable' | 'decelerating';
+}

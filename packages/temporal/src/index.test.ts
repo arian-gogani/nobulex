@@ -5,6 +5,8 @@ import {
   evolve,
   evolutionHistory,
   canEvolve,
+  computeDecaySchedule,
+  expirationForecast,
 } from './index';
 import type {
   EvolutionTrigger,
@@ -12,6 +14,8 @@ import type {
   CovenantState,
   AgentState,
   EvolutionPolicy,
+  DecayPoint,
+  ViolationRecord,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -586,5 +590,223 @@ describe('canEvolve', () => {
     const policy = makePolicy({ transitions });
     const covenant = makeCovenant({ policy, lastTransitionAt: Date.now() - 200 });
     expect(canEvolve(covenant, trigger)).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeDecaySchedule
+// ---------------------------------------------------------------------------
+describe('computeDecaySchedule', () => {
+  it('returns the correct number of steps', () => {
+    const schedule = computeDecaySchedule(1.0, 1.0, 10000, 5);
+    expect(schedule).toHaveLength(5);
+  });
+
+  it('starts at the initial weight', () => {
+    const schedule = computeDecaySchedule(2.0, 1.0, 10000, 10);
+    expect(schedule[0]!.time).toBe(0);
+    expect(schedule[0]!.value).toBeCloseTo(2.0, 10);
+  });
+
+  it('ends at time equal to lifetimeMs', () => {
+    const schedule = computeDecaySchedule(1.0, 1.0, 5000, 10);
+    expect(schedule[schedule.length - 1]!.time).toBeCloseTo(5000, 5);
+  });
+
+  it('values decay monotonically over time', () => {
+    const schedule = computeDecaySchedule(1.0, 2.0, 10000, 20);
+    for (let i = 1; i < schedule.length; i++) {
+      expect(schedule[i]!.value).toBeLessThanOrEqual(schedule[i - 1]!.value);
+    }
+  });
+
+  it('with zero decay rate, values remain constant', () => {
+    const schedule = computeDecaySchedule(1.0, 0, 10000, 5);
+    for (const point of schedule) {
+      expect(point.value).toBeCloseTo(1.0, 10);
+    }
+  });
+
+  it('higher decay rate produces lower final value', () => {
+    const scheduleSlow = computeDecaySchedule(1.0, 0.5, 10000, 10);
+    const scheduleFast = computeDecaySchedule(1.0, 5.0, 10000, 10);
+    const lastSlow = scheduleSlow[scheduleSlow.length - 1]!.value;
+    const lastFast = scheduleFast[scheduleFast.length - 1]!.value;
+    expect(lastFast).toBeLessThan(lastSlow);
+  });
+
+  it('throws on non-positive initialWeight', () => {
+    expect(() => computeDecaySchedule(0, 1.0, 10000, 5)).toThrow('initialWeight must be positive');
+    expect(() => computeDecaySchedule(-1, 1.0, 10000, 5)).toThrow('initialWeight must be positive');
+  });
+
+  it('throws on negative decayRate', () => {
+    expect(() => computeDecaySchedule(1.0, -1.0, 10000, 5)).toThrow('decayRate must be non-negative');
+  });
+
+  it('throws on non-positive lifetimeMs', () => {
+    expect(() => computeDecaySchedule(1.0, 1.0, 0, 5)).toThrow('lifetimeMs must be positive');
+    expect(() => computeDecaySchedule(1.0, 1.0, -100, 5)).toThrow('lifetimeMs must be positive');
+  });
+
+  it('throws on steps less than 2', () => {
+    expect(() => computeDecaySchedule(1.0, 1.0, 10000, 1)).toThrow('steps must be at least 2');
+    expect(() => computeDecaySchedule(1.0, 1.0, 10000, 0)).toThrow('steps must be at least 2');
+  });
+
+  it('time points are evenly spaced', () => {
+    const schedule = computeDecaySchedule(1.0, 1.0, 10000, 5);
+    const expectedStep = 10000 / 4;
+    for (let i = 0; i < schedule.length; i++) {
+      expect(schedule[i]!.time).toBeCloseTo(i * expectedStep, 5);
+    }
+  });
+
+  it('applies correct exponential decay formula', () => {
+    const schedule = computeDecaySchedule(3.0, 2.0, 10000, 3);
+    // At t=0: 3.0 * e^(0) = 3.0
+    expect(schedule[0]!.value).toBeCloseTo(3.0, 10);
+    // At t=5000 (normalized 0.5): 3.0 * e^(-2.0 * 0.5) = 3.0 * e^(-1.0)
+    expect(schedule[1]!.value).toBeCloseTo(3.0 * Math.exp(-1.0), 10);
+    // At t=10000 (normalized 1.0): 3.0 * e^(-2.0 * 1.0) = 3.0 * e^(-2.0)
+    expect(schedule[2]!.value).toBeCloseTo(3.0 * Math.exp(-2.0), 10);
+  });
+
+  it('works with a large number of steps', () => {
+    const schedule = computeDecaySchedule(1.0, 1.0, 10000, 1000);
+    expect(schedule).toHaveLength(1000);
+    expect(schedule[0]!.value).toBeCloseTo(1.0, 10);
+    expect(schedule[999]!.value).toBeLessThan(1.0);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// expirationForecast
+// ---------------------------------------------------------------------------
+describe('expirationForecast', () => {
+  it('returns current time as expiration when weight is already below threshold', () => {
+    // Very high decay rate so weight at currentTime is already tiny
+    const violations: ViolationRecord[] = [
+      { timestamp: 100, severity: 10 },
+      { timestamp: 200, severity: 10 },
+    ];
+    const result = expirationForecast(1.0, 0, violations, 300, 0.1, 0.1);
+    // Total damage = 10*0.1 + 10*0.1 = 2.0, which exceeds initialWeight 1.0
+    expect(result.predictedExpirationTime).toBe(300);
+    expect(result.remainingWeight).toBe(0);
+    expect(result.confidence).toBe(1.0);
+  });
+
+  it('predicts a future expiration time with natural decay only', () => {
+    const violations: ViolationRecord[] = [];
+    const result = expirationForecast(1.0, 5.0, violations, 0, 0.1);
+    expect(result.predictedExpirationTime).toBeGreaterThan(0);
+    expect(result.remainingWeight).toBeCloseTo(1.0, 5);
+  });
+
+  it('violations reduce remaining weight', () => {
+    const noViolations = expirationForecast(1.0, 0, [], 1000, 0.1, 0.05);
+    const withViolations = expirationForecast(
+      1.0, 0,
+      [{ timestamp: 500, severity: 5 }],
+      1000, 0.1, 0.05,
+    );
+    expect(withViolations.remainingWeight).toBeLessThan(noViolations.remainingWeight);
+  });
+
+  it('detects accelerating violation trend', () => {
+    // Violations getting closer together
+    const violations: ViolationRecord[] = [
+      { timestamp: 100, severity: 1 },
+      { timestamp: 200, severity: 1 },
+      { timestamp: 250, severity: 1 },
+      { timestamp: 270, severity: 1 },
+      { timestamp: 280, severity: 1 },
+    ];
+    const result = expirationForecast(1.0, 0, violations, 300, 0.1, 0.01);
+    expect(result.violationTrend).toBe('accelerating');
+  });
+
+  it('detects decelerating violation trend', () => {
+    // Violations getting further apart
+    const violations: ViolationRecord[] = [
+      { timestamp: 100, severity: 1 },
+      { timestamp: 110, severity: 1 },
+      { timestamp: 120, severity: 1 },
+      { timestamp: 200, severity: 1 },
+      { timestamp: 400, severity: 1 },
+    ];
+    const result = expirationForecast(1.0, 0, violations, 500, 0.1, 0.01);
+    expect(result.violationTrend).toBe('decelerating');
+  });
+
+  it('reports stable trend when violation intervals are consistent', () => {
+    const violations: ViolationRecord[] = [
+      { timestamp: 100, severity: 1 },
+      { timestamp: 200, severity: 1 },
+      { timestamp: 300, severity: 1 },
+      { timestamp: 400, severity: 1 },
+    ];
+    const result = expirationForecast(1.0, 0, violations, 500, 0.1, 0.01);
+    expect(result.violationTrend).toBe('stable');
+  });
+
+  it('confidence increases with more violation data', () => {
+    const fewViolations: ViolationRecord[] = [
+      { timestamp: 100, severity: 1 },
+    ];
+    const manyViolations: ViolationRecord[] = [
+      { timestamp: 100, severity: 1 },
+      { timestamp: 200, severity: 1 },
+      { timestamp: 300, severity: 1 },
+      { timestamp: 400, severity: 1 },
+      { timestamp: 500, severity: 1 },
+      { timestamp: 600, severity: 1 },
+      { timestamp: 700, severity: 1 },
+    ];
+    const resultFew = expirationForecast(1.0, 0, fewViolations, 800, 0.1, 0.01);
+    const resultMany = expirationForecast(1.0, 0, manyViolations, 800, 0.1, 0.01);
+    expect(resultMany.confidence).toBeGreaterThan(resultFew.confidence);
+  });
+
+  it('throws on non-positive initialWeight', () => {
+    expect(() => expirationForecast(0, 1.0, [], 1000)).toThrow('initialWeight must be positive');
+  });
+
+  it('throws on negative decayRate', () => {
+    expect(() => expirationForecast(1.0, -1, [], 1000)).toThrow('decayRate must be non-negative');
+  });
+
+  it('throws on threshold >= initialWeight', () => {
+    expect(() => expirationForecast(1.0, 0, [], 1000, 1.0)).toThrow('threshold must be in [0, initialWeight)');
+    expect(() => expirationForecast(1.0, 0, [], 1000, 2.0)).toThrow('threshold must be in [0, initialWeight)');
+  });
+
+  it('throws on negative violationImpact', () => {
+    expect(() => expirationForecast(1.0, 0, [], 1000, 0.1, -1)).toThrow('violationImpact must be non-negative');
+  });
+
+  it('more violations lead to earlier predicted expiration', () => {
+    const fewViolations: ViolationRecord[] = [
+      { timestamp: 100, severity: 2 },
+    ];
+    const manyViolations: ViolationRecord[] = [
+      { timestamp: 100, severity: 2 },
+      { timestamp: 200, severity: 2 },
+      { timestamp: 300, severity: 2 },
+      { timestamp: 400, severity: 2 },
+    ];
+    const resultFew = expirationForecast(1.0, 1.0, fewViolations, 500, 0.1, 0.05);
+    const resultMany = expirationForecast(1.0, 1.0, manyViolations, 500, 0.1, 0.05);
+    expect(resultMany.predictedExpirationTime).toBeLessThanOrEqual(resultFew.predictedExpirationTime);
+  });
+
+  it('remaining weight is never negative', () => {
+    const violations: ViolationRecord[] = [
+      { timestamp: 100, severity: 100 },
+      { timestamp: 200, severity: 100 },
+    ];
+    const result = expirationForecast(1.0, 0, violations, 300, 0.1, 1.0);
+    expect(result.remainingWeight).toBeGreaterThanOrEqual(0);
   });
 });

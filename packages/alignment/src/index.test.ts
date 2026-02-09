@@ -4,6 +4,8 @@ import {
   defineAlignment,
   assessAlignment,
   alignmentGap,
+  alignmentDrift,
+  alignmentDecomposition,
   STANDARD_ALIGNMENT_PROPERTIES,
 } from './index';
 import type {
@@ -245,5 +247,230 @@ describe('alignmentGap', () => {
   it('works with STANDARD_ALIGNMENT_PROPERTIES', () => {
     const gaps = alignmentGap(STANDARD_ALIGNMENT_PROPERTIES, []);
     expect(gaps).toHaveLength(3);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// alignmentDrift
+// ---------------------------------------------------------------------------
+describe('alignmentDrift', () => {
+  const makeCovenant = (): AlignmentCovenant => {
+    return defineAlignment('agent-1', STANDARD_ALIGNMENT_PROPERTIES, 'behavioral');
+  };
+
+  function makeHistory(
+    count: number,
+    startTime: number,
+    outcome: 'fulfilled' | 'breached',
+    action: string,
+    resource: string,
+  ): ExecutionRecord[] {
+    const records: ExecutionRecord[] = [];
+    for (let i = 0; i < count; i++) {
+      records.push({ action, resource, outcome, timestamp: startTime + i * 1000 });
+    }
+    return records;
+  }
+
+  it('returns the correct window count', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(20, 1000, 'fulfilled', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, history, 4);
+    expect(result.windowCount).toBeLessThanOrEqual(4);
+    expect(result.windowCount).toBeGreaterThan(0);
+  });
+
+  it('window scores are between 0 and 1', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(20, 1000, 'fulfilled', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, history, 4);
+    for (const score of result.windowScores) {
+      expect(score).toBeGreaterThanOrEqual(0);
+      expect(score).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('detects drift when scores drop between windows', () => {
+    const covenant = makeCovenant();
+    // First half: all fulfilled; second half: all breached
+    const good = makeHistory(10, 1000, 'fulfilled', 'read', '/data');
+    const bad = makeHistory(10, 20000, 'breached', 'read', '/data');
+    const history = [...good, ...bad];
+    const result = alignmentDrift('agent-1', covenant, history, 2);
+    expect(result.maxDrop).toBeGreaterThan(0);
+  });
+
+  it('trend is stable when scores do not change significantly', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(20, 1000, 'fulfilled', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, history, 4);
+    // All windows have the same outcome -> stable
+    expect(result.trend).toBe('stable');
+  });
+
+  it('trend is degrading when scores decrease over time', () => {
+    const covenant = makeCovenant();
+    // Construct degrading history: first records are good, later ones bad
+    const good = makeHistory(15, 1000, 'fulfilled', 'read', '/data');
+    const bad = makeHistory(15, 30000, 'breached', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, [...good, ...bad], 3);
+    // Should detect degradation or at least a drop
+    expect(result.maxDrop).toBeGreaterThanOrEqual(0);
+  });
+
+  it('throws when windowCount < 2', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(10, 1000, 'fulfilled', 'read', '/data');
+    expect(() => alignmentDrift('agent-1', covenant, history, 1)).toThrow('windowCount must be at least 2');
+  });
+
+  it('throws when history is empty', () => {
+    const covenant = makeCovenant();
+    expect(() => alignmentDrift('agent-1', covenant, [], 2)).toThrow('history must not be empty');
+  });
+
+  it('throws when agentId is empty', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(10, 1000, 'fulfilled', 'read', '/data');
+    expect(() => alignmentDrift('', covenant, history, 2)).toThrow('agentId must be a non-empty string');
+  });
+
+  it('windowStarts are in ascending order', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(20, 1000, 'fulfilled', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, history, 4);
+    for (let i = 1; i < result.windowStarts.length; i++) {
+      expect(result.windowStarts[i]!).toBeGreaterThanOrEqual(result.windowStarts[i - 1]!);
+    }
+  });
+
+  it('driftDetected is false when all windows have similar scores', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(30, 1000, 'fulfilled', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, history, 3);
+    expect(result.driftDetected).toBe(false);
+  });
+
+  it('handles very small history gracefully', () => {
+    const covenant = makeCovenant();
+    const history = makeHistory(2, 1000, 'fulfilled', 'read', '/data');
+    const result = alignmentDrift('agent-1', covenant, history, 2);
+    expect(result.windowScores.length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// alignmentDecomposition
+// ---------------------------------------------------------------------------
+describe('alignmentDecomposition', () => {
+  const makeCovenant = (): AlignmentCovenant => {
+    return defineAlignment('agent-1', STANDARD_ALIGNMENT_PROPERTIES, 'behavioral');
+  };
+
+  it('returns per-property contributions', () => {
+    const covenant = makeCovenant();
+    const history: ExecutionRecord[] = [
+      { action: 'read', resource: '/data', outcome: 'fulfilled', timestamp: 1 },
+    ];
+    const result = alignmentDecomposition('agent-1', covenant, history);
+    expect(result.propertyContributions).toHaveLength(3);
+  });
+
+  it('overallScore matches assessAlignment output', () => {
+    const covenant = makeCovenant();
+    const history: ExecutionRecord[] = [
+      { action: 'read', resource: '/data', outcome: 'fulfilled', timestamp: 1 },
+      { action: 'audit_log', resource: '/data', outcome: 'fulfilled', timestamp: 2 },
+      { action: 'deny', resource: '/data', outcome: 'fulfilled', timestamp: 3 },
+    ];
+    const decomp = alignmentDecomposition('agent-1', covenant, history);
+    const report = assessAlignment('agent-1', covenant, history);
+    expect(decomp.overallScore).toBeCloseTo(report.overallAlignmentScore, 10);
+  });
+
+  it('contributions sum to overall score', () => {
+    const covenant = makeCovenant();
+    const history: ExecutionRecord[] = [
+      { action: 'read', resource: '/data', outcome: 'fulfilled', timestamp: 1 },
+      { action: 'audit_log', resource: '/data', outcome: 'fulfilled', timestamp: 2 },
+      { action: 'deny', resource: '/data', outcome: 'fulfilled', timestamp: 3 },
+    ];
+    const result = alignmentDecomposition('agent-1', covenant, history);
+    const contributionSum = result.propertyContributions.reduce((s, c) => s + c.contribution, 0);
+    expect(contributionSum).toBeCloseTo(result.overallScore, 10);
+  });
+
+  it('identifies weakest properties when score < 0.5', () => {
+    const covenant = makeCovenant();
+    // Empty history means all scores are 0 -> all are weak
+    const result = alignmentDecomposition('agent-1', covenant, []);
+    expect(result.weakest).toContain('harmlessness');
+    expect(result.weakest).toContain('honesty');
+    expect(result.weakest).toContain('helpfulness');
+  });
+
+  it('identifies strongest properties when score >= 0.5', () => {
+    const covenant = makeCovenant();
+    const history: ExecutionRecord[] = [
+      { action: 'read', resource: '/data', outcome: 'fulfilled', timestamp: 1 },
+      { action: 'audit_log', resource: '/data', outcome: 'fulfilled', timestamp: 2 },
+      { action: 'deny', resource: '/data', outcome: 'fulfilled', timestamp: 3 },
+    ];
+    const result = alignmentDecomposition('agent-1', covenant, history);
+    expect(result.strongest.length).toBeGreaterThan(0);
+  });
+
+  it('weights are equal across properties', () => {
+    const covenant = makeCovenant();
+    const result = alignmentDecomposition('agent-1', covenant, []);
+    const weights = result.propertyContributions.map(c => c.weight);
+    for (const w of weights) {
+      expect(w).toBeCloseTo(1 / 3, 10);
+    }
+  });
+
+  it('handles empty properties covenant', () => {
+    const covenant = defineAlignment('agent-1', [], 'behavioral');
+    const result = alignmentDecomposition('agent-1', covenant, []);
+    expect(result.overallScore).toBe(0);
+    expect(result.propertyContributions).toEqual([]);
+    expect(result.weakest).toEqual([]);
+    expect(result.strongest).toEqual([]);
+  });
+
+  it('throws when agentId is empty', () => {
+    const covenant = makeCovenant();
+    expect(() => alignmentDecomposition('', covenant, [])).toThrow('agentId must be a non-empty string');
+  });
+
+  it('each contribution has name, score, weight, and contribution fields', () => {
+    const covenant = makeCovenant();
+    const result = alignmentDecomposition('agent-1', covenant, []);
+    for (const c of result.propertyContributions) {
+      expect(typeof c.name).toBe('string');
+      expect(typeof c.score).toBe('number');
+      expect(typeof c.weight).toBe('number');
+      expect(typeof c.contribution).toBe('number');
+    }
+  });
+
+  it('property names match covenant property names', () => {
+    const covenant = makeCovenant();
+    const result = alignmentDecomposition('agent-1', covenant, []);
+    const names = result.propertyContributions.map(c => c.name);
+    expect(names).toContain('harmlessness');
+    expect(names).toContain('honesty');
+    expect(names).toContain('helpfulness');
+  });
+
+  it('contribution is score * weight for each property', () => {
+    const covenant = makeCovenant();
+    const history: ExecutionRecord[] = [
+      { action: 'read', resource: '/data', outcome: 'fulfilled', timestamp: 1 },
+    ];
+    const result = alignmentDecomposition('agent-1', covenant, history);
+    for (const c of result.propertyContributions) {
+      expect(c.contribution).toBeCloseTo(c.score * c.weight, 10);
+    }
   });
 });

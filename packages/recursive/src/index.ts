@@ -7,6 +7,10 @@ export type {
   TerminationProof,
   TrustBase,
   VerificationEntity,
+  TrustEdge,
+  TransitiveTrustResult,
+  VerifierNode,
+  MinimalVerificationSetResult,
 } from './types';
 
 import type {
@@ -16,6 +20,10 @@ import type {
   TerminationProof,
   TrustBase,
   VerificationEntity,
+  TrustEdge,
+  TransitiveTrustResult,
+  VerifierNode,
+  MinimalVerificationSetResult,
 } from './types';
 
 /**
@@ -336,5 +344,221 @@ export function addLayer(
     recursionDepth: newDepth,
     terminationProof,
     dependsOn,
+  };
+}
+
+/**
+ * Calculate the transitive trust score through a chain of verifiers.
+ *
+ * Given a directed graph of trust edges (from -> to with a trustScore),
+ * computes the effective trust from a source to a target by finding the
+ * path with the highest effective trust. Trust attenuates at each hop:
+ * the effective trust through a path is the product of all edge trust scores
+ * multiplied by attenuationFactor^(hops-1).
+ *
+ * Uses BFS/Dijkstra-like approach to find the best trust path.
+ *
+ * @param edges - Array of trust edges forming the trust graph
+ * @param source - The source node ID
+ * @param target - The target node ID
+ * @param attenuationFactor - Factor by which trust is reduced per hop (0 < factor <= 1)
+ * @returns TransitiveTrustResult with the best path and effective trust, or effectiveTrust=0 if no path exists
+ */
+export function computeTrustTransitivity(
+  edges: TrustEdge[],
+  source: string,
+  target: string,
+  attenuationFactor: number = 0.9,
+): TransitiveTrustResult {
+  if (attenuationFactor <= 0 || attenuationFactor > 1) {
+    throw new Error('attenuationFactor must be in (0, 1]');
+  }
+
+  // Validate trust scores
+  for (const edge of edges) {
+    if (edge.trustScore < 0 || edge.trustScore > 1) {
+      throw new Error(`Invalid trustScore ${edge.trustScore} for edge ${edge.from} -> ${edge.to}`);
+    }
+  }
+
+  if (source === target) {
+    return {
+      from: source,
+      to: target,
+      effectiveTrust: 1.0,
+      path: [source],
+      hops: 0,
+    };
+  }
+
+  // Build adjacency list
+  const adj = new Map<string, { to: string; trustScore: number }[]>();
+  for (const edge of edges) {
+    if (!adj.has(edge.from)) {
+      adj.set(edge.from, []);
+    }
+    adj.get(edge.from)!.push({ to: edge.to, trustScore: edge.trustScore });
+  }
+
+  // BFS/priority-based exploration to find best trust path
+  // State: { node, effectiveTrust, path, hops }
+  interface SearchState {
+    node: string;
+    effectiveTrust: number;
+    path: string[];
+    hops: number;
+  }
+
+  const bestTrust = new Map<string, number>();
+  bestTrust.set(source, 1.0);
+
+  const queue: SearchState[] = [{
+    node: source,
+    effectiveTrust: 1.0,
+    path: [source],
+    hops: 0,
+  }];
+
+  let bestResult: TransitiveTrustResult = {
+    from: source,
+    to: target,
+    effectiveTrust: 0,
+    path: [],
+    hops: 0,
+  };
+
+  while (queue.length > 0) {
+    // Pick the state with highest effective trust
+    let bestIdx = 0;
+    for (let i = 1; i < queue.length; i++) {
+      if (queue[i]!.effectiveTrust > queue[bestIdx]!.effectiveTrust) {
+        bestIdx = i;
+      }
+    }
+    const current = queue.splice(bestIdx, 1)[0]!;
+
+    if (current.node === target) {
+      if (current.effectiveTrust > bestResult.effectiveTrust) {
+        bestResult = {
+          from: source,
+          to: target,
+          effectiveTrust: current.effectiveTrust,
+          path: current.path,
+          hops: current.hops,
+        };
+      }
+      continue;
+    }
+
+    const neighbors = adj.get(current.node) ?? [];
+    for (const neighbor of neighbors) {
+      // Avoid cycles
+      if (current.path.includes(neighbor.to)) continue;
+
+      const hopAttenuation = current.hops > 0 ? attenuationFactor : 1.0;
+      const newTrust = current.effectiveTrust * neighbor.trustScore * hopAttenuation;
+
+      // Only explore if this path is better than what we've found for this node
+      const existingBest = bestTrust.get(neighbor.to) ?? 0;
+      if (newTrust > existingBest) {
+        bestTrust.set(neighbor.to, newTrust);
+        queue.push({
+          node: neighbor.to,
+          effectiveTrust: newTrust,
+          path: [...current.path, neighbor.to],
+          hops: current.hops + 1,
+        });
+      }
+    }
+  }
+
+  return bestResult;
+}
+
+/**
+ * Find the minimal set of verifiers that covers all given constraints.
+ *
+ * This is the set cover problem. We use a greedy approximation:
+ * at each step, pick the verifier that covers the most uncovered constraints.
+ * This gives an O(ln n) approximation to the optimal solution.
+ *
+ * @param verifiers - Array of verifier nodes, each covering some constraints
+ * @param requiredConstraints - The full set of constraints that must be covered
+ * @returns MinimalVerificationSetResult with the selected verifiers and coverage info
+ */
+export function findMinimalVerificationSet(
+  verifiers: VerifierNode[],
+  requiredConstraints: string[],
+): MinimalVerificationSetResult {
+  if (requiredConstraints.length === 0) {
+    return {
+      verifiers: [],
+      coveredConstraints: [],
+      uncoveredConstraints: [],
+    };
+  }
+
+  if (verifiers.length === 0) {
+    return {
+      verifiers: [],
+      coveredConstraints: [],
+      uncoveredConstraints: [...requiredConstraints],
+    };
+  }
+
+  const uncovered = new Set(requiredConstraints);
+  const selectedVerifiers: string[] = [];
+  const coveredConstraints: string[] = [];
+  const remainingVerifiers = verifiers.map(v => ({
+    id: v.id,
+    coveredConstraints: new Set(v.coveredConstraints),
+  }));
+
+  while (uncovered.size > 0) {
+    // Find the verifier that covers the most uncovered constraints
+    let bestVerifier: { id: string; coveredConstraints: Set<string> } | null = null;
+    let bestCoverage = 0;
+
+    for (const verifier of remainingVerifiers) {
+      let coverage = 0;
+      for (const constraint of uncovered) {
+        if (verifier.coveredConstraints.has(constraint)) {
+          coverage++;
+        }
+      }
+      if (coverage > bestCoverage) {
+        bestCoverage = coverage;
+        bestVerifier = verifier;
+      }
+    }
+
+    // No verifier can cover any remaining constraints
+    if (bestCoverage === 0 || !bestVerifier) {
+      break;
+    }
+
+    selectedVerifiers.push(bestVerifier.id);
+
+    // Mark constraints as covered
+    for (const constraint of uncovered) {
+      if (bestVerifier.coveredConstraints.has(constraint)) {
+        coveredConstraints.push(constraint);
+      }
+    }
+    for (const constraint of coveredConstraints) {
+      uncovered.delete(constraint);
+    }
+
+    // Remove the selected verifier from candidates
+    const idx = remainingVerifiers.findIndex(v => v.id === bestVerifier!.id);
+    if (idx >= 0) {
+      remainingVerifiers.splice(idx, 1);
+    }
+  }
+
+  return {
+    verifiers: selectedVerifiers,
+    coveredConstraints,
+    uncoveredConstraints: [...uncovered],
   };
 }

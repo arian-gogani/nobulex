@@ -15,6 +15,7 @@
   "dependencies": {
     "@stele/types": "0.1.0",
     "@stele/crypto": "0.1.0",
+    "@stele/ccl": "0.1.0",
     "@stele/core": "0.1.0"
   },
   "publishConfig": {

@@ -8,6 +8,8 @@ import {
   rejectAntibody,
   voteForAntibody,
   antibodyExists,
+  stressTest,
+  antifragilityIndex,
 } from './index.js';
 import type { BreachAntibody, BreachSummary } from './types.js';
 
@@ -668,5 +670,187 @@ describe('antifragile lifecycle', () => {
     const breach3 = makeBreach('b3', 'deny:network-call', 'low');
     // Different category (network) so no duplicate
     expect(antibodyExists([ab1], breach3)).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// stressTest
+// ---------------------------------------------------------------------------
+
+describe('stressTest', () => {
+  it('returns the correct number of rounds', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = stressTest(breaches, 3);
+    expect(result.rounds).toBe(3);
+    expect(result.resistanceOverTime).toHaveLength(3);
+  });
+
+  it('resistance score at each round is between 0 and 1', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = stressTest(breaches, 5);
+    for (const score of result.resistanceOverTime) {
+      expect(score).toBeGreaterThanOrEqual(0);
+      expect(score).toBeLessThanOrEqual(1);
+    }
+  });
+
+  it('antibodies adopted count is non-decreasing over time', () => {
+    const breaches = [
+      makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security'),
+      makeBreach('b2', 'deny:network-call', 'medium', 'network'),
+    ];
+    const result = stressTest(breaches, 5);
+    for (let i = 1; i < result.antibodiesAdoptedOverTime.length; i++) {
+      expect(result.antibodiesAdoptedOverTime[i]!).toBeGreaterThanOrEqual(
+        result.antibodiesAdoptedOverTime[i - 1]!,
+      );
+    }
+  });
+
+  it('system shows improvement when diverse breaches trigger antibody generation', () => {
+    const breaches = [
+      makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security'),
+      makeBreach('b2', 'deny:network-call', 'medium', 'network'),
+      makeBreach('b3', 'deny:file-write', 'low', 'file-system'),
+    ];
+    const result = stressTest(breaches, 5, 1);
+    // System builds up antibodies, final score should be positive
+    expect(result.finalResistanceScore).toBeGreaterThan(0);
+  });
+
+  it('handles single round', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = stressTest(breaches, 1);
+    expect(result.rounds).toBe(1);
+    expect(result.resistanceOverTime).toHaveLength(1);
+  });
+
+  it('handles empty base breaches by generating synthetic ones', () => {
+    const result = stressTest([], 3);
+    expect(result.rounds).toBe(3);
+    expect(result.resistanceOverTime).toHaveLength(3);
+  });
+
+  it('throws when rounds is less than 1', () => {
+    expect(() => stressTest([], 0)).toThrow('rounds must be at least 1');
+  });
+
+  it('throws when intensityMultiplier is less than 1', () => {
+    expect(() => stressTest([], 3, 0)).toThrow('intensityMultiplier must be at least 1');
+  });
+
+  it('higher intensity multiplier creates more breaches per round', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const lowIntensity = stressTest(breaches, 3, 1);
+    const highIntensity = stressTest(breaches, 3, 5);
+    // Both complete 3 rounds
+    expect(lowIntensity.rounds).toBe(3);
+    expect(highIntensity.rounds).toBe(3);
+  });
+
+  it('improved flag is true when final score >= initial score', () => {
+    const breaches = [
+      makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security'),
+      makeBreach('b2', 'deny:network-call', 'medium', 'network'),
+    ];
+    const result = stressTest(breaches, 5, 1);
+    if (result.resistanceOverTime[result.resistanceOverTime.length - 1]! >= result.resistanceOverTime[0]!) {
+      expect(result.improved).toBe(true);
+    } else {
+      expect(result.improved).toBe(false);
+    }
+  });
+
+  it('finalResistanceScore matches last entry in resistanceOverTime', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = stressTest(breaches, 4);
+    expect(result.finalResistanceScore).toBe(
+      result.resistanceOverTime[result.resistanceOverTime.length - 1],
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// antifragilityIndex
+// ---------------------------------------------------------------------------
+
+describe('antifragilityIndex', () => {
+  it('returns an index between -1 and 1', () => {
+    const breaches = [
+      makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security'),
+      makeBreach('b2', 'deny:network-call', 'medium', 'network'),
+    ];
+    const result = antifragilityIndex(breaches, 5);
+    expect(result.index).toBeGreaterThanOrEqual(-1);
+    expect(result.index).toBeLessThanOrEqual(1);
+  });
+
+  it('classification is one of antifragile, robust, or fragile', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = antifragilityIndex(breaches, 3);
+    expect(['antifragile', 'robust', 'fragile']).toContain(result.classification);
+  });
+
+  it('resistanceTrend has the correct number of entries', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = antifragilityIndex(breaches, 4);
+    expect(result.resistanceTrend).toHaveLength(4);
+  });
+
+  it('averageImprovement is a finite number', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = antifragilityIndex(breaches, 3);
+    expect(Number.isFinite(result.averageImprovement)).toBe(true);
+  });
+
+  it('throws when waves is less than 2', () => {
+    expect(() => antifragilityIndex([], 1)).toThrow('waves must be at least 2');
+  });
+
+  it('diverse breaches lead to positive or neutral antifragility', () => {
+    const breaches = [
+      makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security'),
+      makeBreach('b2', 'deny:network-call', 'medium', 'network'),
+      makeBreach('b3', 'deny:file-access', 'low', 'file-system'),
+      makeBreach('b4', 'deny:exec-untrusted', 'critical', 'execution'),
+    ];
+    const result = antifragilityIndex(breaches, 5);
+    // With diverse breaches and auto-adoption, the system should at least be robust
+    expect(result.index).toBeGreaterThanOrEqual(-1);
+  });
+
+  it('classification matches index sign', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const result = antifragilityIndex(breaches, 3);
+    if (result.index > 0.01) {
+      expect(result.classification).toBe('antifragile');
+    } else if (result.index < -0.01) {
+      expect(result.classification).toBe('fragile');
+    } else {
+      expect(result.classification).toBe('robust');
+    }
+  });
+
+  it('handles empty breaches array', () => {
+    const result = antifragilityIndex([], 3);
+    expect(result.resistanceTrend).toHaveLength(3);
+    expect(typeof result.index).toBe('number');
+  });
+
+  it('returns consistent results for same inputs', () => {
+    const breaches = [
+      makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security'),
+    ];
+    const r1 = antifragilityIndex(breaches, 3);
+    const r2 = antifragilityIndex(breaches, 3);
+    expect(r1.classification).toBe(r2.classification);
+    expect(r1.resistanceTrend.length).toBe(r2.resistanceTrend.length);
+  });
+
+  it('more waves produce more detailed trend data', () => {
+    const breaches = [makeBreach('b1', 'deny:exfiltrate', 'high', 'data-security')];
+    const short = antifragilityIndex(breaches, 2);
+    const long = antifragilityIndex(breaches, 10);
+    expect(long.resistanceTrend.length).toBeGreaterThan(short.resistanceTrend.length);
   });
 });

@@ -5,8 +5,10 @@ import {
   evaluateCanary,
   detectionProbability,
   isExpired,
+  canarySchedule,
+  canaryCorrelation,
 } from './index';
-import type { Canary, ChallengePayload } from './types';
+import type { Canary, ChallengePayload, CanaryResult } from './types';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -436,5 +438,280 @@ describe('isExpired', () => {
     vi.spyOn(Date, 'now').mockReturnValue(now);
     const canary = makeExpiredCanary(1700000000000);
     expect(isExpired(canary)).toBe(true);
+  });
+});
+
+// ===========================================================================
+// canarySchedule
+// ===========================================================================
+describe('canarySchedule', () => {
+  it('returns empty schedule for empty covenants', () => {
+    const result = canarySchedule([]);
+    expect(result.schedule).toEqual([]);
+    expect(result.constraintsCovered).toBe(0);
+    expect(result.covenantsCovered).toBe(0);
+    expect(result.estimatedCoverage).toBe(0);
+  });
+
+  it('schedules all constraints from a single covenant', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["deny file.read on '/secrets'", "permit file.read on '/public'"] },
+    ];
+    const result = canarySchedule(covenants);
+    expect(result.schedule).toHaveLength(2);
+    expect(result.constraintsCovered).toBe(2);
+    expect(result.covenantsCovered).toBe(1);
+  });
+
+  it('prioritizes deny constraints over permit constraints', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["permit file.read on '/public'", "deny file.write on '/secrets'"] },
+    ];
+    const result = canarySchedule(covenants);
+    expect(result.schedule[0]!.constraintTested).toContain('deny');
+  });
+
+  it('spaces deployments across the time window', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["deny a on '/x'", "deny b on '/y'", "deny c on '/z'"] },
+    ];
+    const result = canarySchedule(covenants, 10000);
+    expect(result.schedule[0]!.deployAtOffset).toBe(0);
+    expect(result.schedule[result.schedule.length - 1]!.deployAtOffset).toBe(10000);
+  });
+
+  it('respects maxCanaries limit', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["deny a on '/x'", "deny b on '/y'", "deny c on '/z'", "deny d on '/w'"] },
+    ];
+    const result = canarySchedule(covenants, 3600000, 2);
+    expect(result.schedule).toHaveLength(2);
+  });
+
+  it('covers multiple covenants', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["deny a on '/x'"] },
+      { covenantId: 'cov-2', constraints: ["deny b on '/y'"] },
+      { covenantId: 'cov-3', constraints: ["deny c on '/z'"] },
+    ];
+    const result = canarySchedule(covenants);
+    expect(result.covenantsCovered).toBe(3);
+  });
+
+  it('deduplicates identical constraint-covenant pairs', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["deny a on '/x'", "deny a on '/x'"] },
+    ];
+    const result = canarySchedule(covenants);
+    expect(result.schedule).toHaveLength(1);
+  });
+
+  it('estimatedCoverage is between 0 and 1', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: ["deny a on '/x'", "permit b on '/y'"] },
+    ];
+    const result = canarySchedule(covenants);
+    expect(result.estimatedCoverage).toBeGreaterThanOrEqual(0);
+    expect(result.estimatedCoverage).toBeLessThanOrEqual(1);
+  });
+
+  it('throws when totalDurationMs is zero', () => {
+    expect(() => canarySchedule([], 0)).toThrow('totalDurationMs must be positive');
+  });
+
+  it('throws when totalDurationMs is negative', () => {
+    expect(() => canarySchedule([], -1000)).toThrow('totalDurationMs must be positive');
+  });
+
+  it('handles require and limit constraint types in priority ordering', () => {
+    const covenants = [
+      { covenantId: 'cov-1', constraints: [
+        "permit x on '/a'",
+        'limit api.call 100 per 3600 seconds',
+        "require auth on '/b'",
+        "deny z on '/c'",
+      ]},
+    ];
+    const result = canarySchedule(covenants);
+    // deny should be first, permit should be last
+    expect(result.schedule[0]!.priority).toBeLessThanOrEqual(result.schedule[result.schedule.length - 1]!.priority);
+  });
+
+  it('totalDurationMs in result matches input', () => {
+    const result = canarySchedule(
+      [{ covenantId: 'c1', constraints: ["deny a on '/x'"] }],
+      5000,
+    );
+    expect(result.totalDurationMs).toBe(5000);
+  });
+
+  it('single canary gets deployAtOffset of 0', () => {
+    const result = canarySchedule(
+      [{ covenantId: 'c1', constraints: ["deny a on '/x'"] }],
+    );
+    expect(result.schedule).toHaveLength(1);
+    expect(result.schedule[0]!.deployAtOffset).toBe(0);
+  });
+});
+
+// ===========================================================================
+// canaryCorrelation
+// ===========================================================================
+describe('canaryCorrelation', () => {
+  function makeCanaryResult(passed: boolean): CanaryResult {
+    return {
+      canaryId: 'c1',
+      passed,
+      actualBehavior: passed ? 'deny' : 'permit',
+      detectionTimestamp: Date.now(),
+    };
+  }
+
+  it('returns correlation between -1 and 1', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-2', result: makeCanaryResult(false) },
+      { covenantId: 'cov-3', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-2', breached: true },
+      { covenantId: 'cov-3', breached: false },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.correlation).toBeGreaterThanOrEqual(-1);
+    expect(result.correlation).toBeLessThanOrEqual(1);
+  });
+
+  it('positive correlation when canary failures match breaches', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-2', result: makeCanaryResult(false) },
+      { covenantId: 'cov-3', result: makeCanaryResult(false) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-2', breached: true },
+      { covenantId: 'cov-3', breached: true },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.correlation).toBeGreaterThan(0);
+  });
+
+  it('returns canaryPassRates per covenant', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-1', result: makeCanaryResult(false) },
+      { covenantId: 'cov-2', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-2', breached: false },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.canaryPassRates['cov-1']).toBeCloseTo(0.5, 10);
+    expect(result.canaryPassRates['cov-2']).toBeCloseTo(1.0, 10);
+  });
+
+  it('returns breachRates per covenant', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: true },
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-1', breached: true },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.breachRates['cov-1']).toBeCloseTo(2 / 3, 10);
+  });
+
+  it('returns sampleSize matching number of common covenants', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-2', result: makeCanaryResult(true) },
+      { covenantId: 'cov-3', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-2', breached: false },
+      // cov-3 not in actualBreaches
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.sampleSize).toBe(2);
+  });
+
+  it('meaningful is true when sampleSize >= 3', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-2', result: makeCanaryResult(false) },
+      { covenantId: 'cov-3', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-2', breached: true },
+      { covenantId: 'cov-3', breached: false },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.meaningful).toBe(true);
+  });
+
+  it('meaningful is false when sampleSize < 3', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.meaningful).toBe(false);
+  });
+
+  it('throws when canaryResults is empty', () => {
+    expect(() => canaryCorrelation([], [{ covenantId: 'c1', breached: false }])).toThrow(
+      'canaryResults must not be empty',
+    );
+  });
+
+  it('throws when actualBreaches is empty', () => {
+    expect(() =>
+      canaryCorrelation(
+        [{ covenantId: 'c1', result: makeCanaryResult(true) }],
+        [],
+      ),
+    ).toThrow('actualBreaches must not be empty');
+  });
+
+  it('returns 0 correlation when no common covenants', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-2', breached: true },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.correlation).toBe(0);
+    expect(result.sampleSize).toBe(0);
+  });
+
+  it('handles multiple results per covenant correctly', () => {
+    const canaryResults = [
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-1', result: makeCanaryResult(true) },
+      { covenantId: 'cov-1', result: makeCanaryResult(false) },
+      { covenantId: 'cov-2', result: makeCanaryResult(false) },
+      { covenantId: 'cov-2', result: makeCanaryResult(false) },
+      { covenantId: 'cov-3', result: makeCanaryResult(true) },
+    ];
+    const actualBreaches = [
+      { covenantId: 'cov-1', breached: false },
+      { covenantId: 'cov-2', breached: true },
+      { covenantId: 'cov-3', breached: false },
+    ];
+    const result = canaryCorrelation(canaryResults, actualBreaches);
+    expect(result.sampleSize).toBe(3);
+    expect(result.meaningful).toBe(true);
+    // Higher failure rate at cov-2 matches higher breach rate
+    expect(result.correlation).toBeGreaterThan(0);
   });
 });

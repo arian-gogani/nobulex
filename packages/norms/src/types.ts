@@ -44,3 +44,32 @@ export interface CovenantTemplate {
   constraints: string[];
   sourceNorms: string[];
 }
+
+export interface NormDefinition {
+  id: string;
+  pattern: string;
+  category: string;
+  action: string;
+  resource: string;
+  authority: number;
+  createdAt: number;
+  specificity: number;
+}
+
+export interface NormConflict {
+  normA: NormDefinition;
+  normB: NormDefinition;
+  conflictType: 'direct_contradiction' | 'resource_overlap' | 'action_conflict';
+  description: string;
+}
+
+export interface NormPrecedenceResult {
+  winner: NormDefinition;
+  loser: NormDefinition;
+  reason: string;
+  factors: {
+    specificityDiff: number;
+    recencyDiff: number;
+    authorityDiff: number;
+  };
+}

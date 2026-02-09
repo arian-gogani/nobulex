@@ -25,3 +25,27 @@ export interface NegotiationPolicy {
   maxRounds: number;
   timeoutMs: number;
 }
+
+export interface UtilityFunction {
+  partyId: string;
+  evaluate: (outcome: Outcome) => number;
+  disagreementValue: number;
+}
+
+export interface Outcome {
+  constraints: string[];
+  id?: string;
+}
+
+export interface NashBargainingSolution {
+  outcome: Outcome;
+  utilityA: number;
+  utilityB: number;
+  nashProduct: number;
+}
+
+export interface ParetoOutcome {
+  outcome: Outcome;
+  utilities: number[];
+  dominated: boolean;
+}

@@ -15,6 +15,10 @@ export type {
   CovenantSpec,
   ConstraintSpec,
   RobustnessOptions,
+  FormalVerificationResult,
+  Contradiction,
+  RobustnessScoreResult,
+  RobustnessFactor,
 } from './types';
 
 import type {
@@ -25,6 +29,10 @@ import type {
   CovenantSpec,
   ConstraintSpec,
   RobustnessOptions,
+  FormalVerificationResult,
+  Contradiction,
+  RobustnessScoreResult,
+  RobustnessFactor,
 } from './types';
 
 // ── Defaults ─────────────────────────────────────────────────────────────────
@@ -772,4 +780,238 @@ function generateGenericAdversarialInputs(
   }
 
   return inputs;
+}
+
+// ── formalVerification ────────────────────────────────────────────────────────
+
+/**
+ * Perform symbolic execution of CCL constraints to prove absence of
+ * contradictions.
+ *
+ * Analyzes a covenant's constraints for:
+ * 1. Contradictions: permit-deny pairs with overlapping action/resource patterns
+ * 2. Unreachable rules: permits that are fully shadowed by denies (deny-wins
+ *    means the permit can never fire)
+ *
+ * Uses pattern overlap analysis rather than concrete input evaluation.
+ *
+ * @param covenant - The covenant to verify
+ * @throws {Error} if covenant has no constraints
+ */
+export function formalVerification(covenant: CovenantSpec): FormalVerificationResult {
+  if (!covenant || typeof covenant !== 'object') {
+    throw new Error('covenant must be a non-null object');
+  }
+  if (!covenant.constraints || covenant.constraints.length === 0) {
+    return {
+      consistent: true,
+      contradictions: [],
+      unreachableRules: [],
+      rulesAnalyzed: 0,
+      method: 'symbolic',
+    };
+  }
+
+  const contradictions: Contradiction[] = [];
+  const unreachableRules: string[] = [];
+
+  // Parse all constraints into statements
+  interface ParsedEntry {
+    spec: ConstraintSpec;
+    doc: CCLDocument;
+    serialized: string;
+  }
+  const parsed: ParsedEntry[] = [];
+
+  for (const spec of covenant.constraints) {
+    let doc: CCLDocument;
+    try {
+      doc = parse(spec.rule);
+    } catch {
+      doc = buildDocFromSpec(spec);
+    }
+
+    // Serialize for display
+    let serialized = spec.rule;
+    try {
+      if (doc.statements.length > 0) {
+        const stmt = doc.statements[0]!;
+        if (stmt.type !== 'limit' && 'resource' in stmt) {
+          serialized = `${stmt.type} ${stmt.action} on '${(stmt as PermitDenyStatement).resource}'`;
+        } else if (stmt.type === 'limit') {
+          serialized = `limit ${stmt.action}`;
+        }
+      }
+    } catch {
+      // Keep the original rule text
+    }
+
+    parsed.push({ spec, doc, serialized });
+  }
+
+  // Check for contradictions: permit-deny overlaps
+  for (let i = 0; i < parsed.length; i++) {
+    for (let j = i + 1; j < parsed.length; j++) {
+      const a = parsed[i]!;
+      const b = parsed[j]!;
+
+      // Only permit-deny pairs can contradict
+      if (
+        (a.spec.type === 'permit' && b.spec.type === 'deny') ||
+        (a.spec.type === 'deny' && b.spec.type === 'permit')
+      ) {
+        const aStmt = a.doc.statements[0];
+        const bStmt = b.doc.statements[0];
+
+        if (aStmt && bStmt && aStmt.type !== 'limit' && bStmt.type !== 'limit') {
+          const aS = aStmt as PermitDenyStatement;
+          const bS = bStmt as PermitDenyStatement;
+
+          // Check if action and resource patterns overlap
+          const actionOverlap = matchAction(aS.action, concretizeActionPattern(bS.action)) ||
+                                matchAction(bS.action, concretizeActionPattern(aS.action));
+          const resourceOverlap = matchResource(aS.resource, concretizeResourcePattern(bS.resource)) ||
+                                  matchResource(bS.resource, concretizeResourcePattern(aS.resource));
+
+          if (actionOverlap && resourceOverlap) {
+            const permitRule = a.spec.type === 'permit' ? a : b;
+            const denyRule = a.spec.type === 'deny' ? a : b;
+
+            contradictions.push({
+              ruleA: permitRule.serialized,
+              ruleB: denyRule.serialized,
+              description: `Permit rule "${permitRule.serialized}" conflicts with deny rule "${denyRule.serialized}" ` +
+                `on overlapping action/resource patterns`,
+              severity: denyRule.spec.type === 'deny' ? 'critical' : 'high',
+            });
+
+            // The permit is unreachable because deny-wins
+            if (!unreachableRules.includes(permitRule.serialized)) {
+              unreachableRules.push(permitRule.serialized);
+            }
+          }
+        }
+      }
+    }
+  }
+
+  return {
+    consistent: contradictions.length === 0,
+    contradictions,
+    unreachableRules,
+    rulesAnalyzed: parsed.length,
+    method: 'symbolic',
+  };
+}
+
+// ── robustnessScore ──────────────────────────────────────────────────────────
+
+/**
+ * Produce a single 0-1 score summarizing overall constraint robustness.
+ *
+ * Combines multiple factors:
+ * 1. Consistency (0.3 weight): absence of contradictions from formal verification
+ * 2. Fuzz resilience (0.3 weight): fraction of constraints passing fuzz testing
+ * 3. Coverage (0.2 weight): ratio of constraint types present
+ * 4. Specificity (0.2 weight): how specific (non-wildcard) constraints are
+ *
+ * @param covenant - The covenant to score
+ * @param fuzzIterations - Number of fuzz iterations per constraint (default: 50)
+ */
+export function robustnessScore(
+  covenant: CovenantSpec,
+  fuzzIterations = 50,
+): RobustnessScoreResult {
+  if (!covenant || typeof covenant !== 'object') {
+    throw new Error('covenant must be a non-null object');
+  }
+
+  const recommendations: string[] = [];
+
+  if (covenant.constraints.length === 0) {
+    return {
+      score: 0,
+      factors: [],
+      classification: 'weak',
+      recommendations: ['Add constraints to improve robustness'],
+    };
+  }
+
+  // Factor 1: Consistency (from formal verification)
+  const verification = formalVerification(covenant);
+  const consistencyScore = verification.consistent ? 1.0 :
+    Math.max(0, 1 - (verification.contradictions.length / Math.max(1, verification.rulesAnalyzed)));
+
+  if (!verification.consistent) {
+    recommendations.push(
+      `Resolve ${verification.contradictions.length} contradiction(s) between permit and deny rules`,
+    );
+  }
+
+  // Factor 2: Fuzz resilience
+  const fuzzReport = fuzz(covenant, fuzzIterations);
+  const fuzzScore = fuzzReport.overallRobustness;
+
+  if (fuzzScore < 1.0) {
+    recommendations.push(
+      `Address ${fuzzReport.vulnerabilities.length} vulnerability(ies) found during fuzz testing`,
+    );
+  }
+
+  // Factor 3: Coverage (are multiple constraint types present?)
+  const typeSet = new Set(covenant.constraints.map(c => c.type));
+  const allTypes = ['permit', 'deny', 'require', 'limit'];
+  const coverageScore = typeSet.size / allTypes.length;
+
+  if (coverageScore < 0.75) {
+    const missing = allTypes.filter(t => !typeSet.has(t as ConstraintSpec['type']));
+    recommendations.push(
+      `Consider adding ${missing.join(', ')} constraints for broader coverage`,
+    );
+  }
+
+  // Factor 4: Specificity (fewer wildcards = more specific = more robust)
+  let totalPatterns = 0;
+  let specificPatterns = 0;
+  for (const spec of covenant.constraints) {
+    if (spec.action) {
+      totalPatterns++;
+      if (spec.action !== '**' && spec.action !== '*') specificPatterns++;
+    }
+    if (spec.resource) {
+      totalPatterns++;
+      if (spec.resource !== '**' && spec.resource !== '*') specificPatterns++;
+    }
+  }
+  const specificityScore = totalPatterns > 0 ? specificPatterns / totalPatterns : 0.5;
+
+  if (specificityScore < 0.5) {
+    recommendations.push('Use more specific action/resource patterns instead of wildcards');
+  }
+
+  // Weighted combination
+  const factors: RobustnessFactor[] = [
+    { name: 'consistency', score: consistencyScore, weight: 0.3, contribution: consistencyScore * 0.3 },
+    { name: 'fuzz-resilience', score: fuzzScore, weight: 0.3, contribution: fuzzScore * 0.3 },
+    { name: 'coverage', score: coverageScore, weight: 0.2, contribution: coverageScore * 0.2 },
+    { name: 'specificity', score: specificityScore, weight: 0.2, contribution: specificityScore * 0.2 },
+  ];
+
+  const score = factors.reduce((sum, f) => sum + f.contribution, 0);
+
+  let classification: 'strong' | 'moderate' | 'weak';
+  if (score >= 0.7) {
+    classification = 'strong';
+  } else if (score >= 0.4) {
+    classification = 'moderate';
+  } else {
+    classification = 'weak';
+  }
+
+  return {
+    score,
+    factors,
+    classification,
+    recommendations,
+  };
 }

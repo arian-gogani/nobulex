@@ -9,6 +9,9 @@ export type {
   GovernanceProposal,
   CovenantData,
   CovenantTemplate,
+  NormDefinition,
+  NormConflict,
+  NormPrecedenceResult,
 } from './types';
 
 import type {
@@ -18,6 +21,9 @@ import type {
   GovernanceProposal,
   CovenantData,
   CovenantTemplate,
+  NormDefinition,
+  NormConflict,
+  NormPrecedenceResult,
 } from './types';
 
 /**
@@ -385,5 +391,172 @@ export function generateTemplate(norms: DiscoveredNorm[]): CovenantTemplate {
       `covering categories: ${[...new Set(norms.map((n) => n.category))].join(', ')}`,
     constraints,
     sourceNorms,
+  };
+}
+
+/**
+ * Detect pairs of norms that conflict with each other.
+ *
+ * A conflict is detected when:
+ * 1. Direct contradiction: one norm denies what another permits on the same resource
+ * 2. Resource overlap: two norms target the same resource with different actions
+ *    of opposing types (deny vs permit/require)
+ * 3. Action conflict: two norms with the same action and resource but different
+ *    categories (e.g., one is 'denial' and another is 'permission')
+ *
+ * @param norms - Array of norm definitions to check for conflicts
+ * @returns Array of NormConflict objects describing each detected conflict
+ */
+export function normConflictDetection(norms: NormDefinition[]): NormConflict[] {
+  const conflicts: NormConflict[] = [];
+
+  // Opposing category pairs
+  const opposingCategories: Record<string, string[]> = {
+    'denial': ['permission'],
+    'permission': ['denial'],
+    'requirement': ['denial'],
+  };
+
+  for (let i = 0; i < norms.length; i++) {
+    for (let j = i + 1; j < norms.length; j++) {
+      const normA = norms[i]!;
+      const normB = norms[j]!;
+
+      // Check for direct contradiction: deny vs permit on same resource + action
+      if (
+        normA.resource === normB.resource &&
+        normA.action === normB.action &&
+        (
+          (normA.category === 'denial' && normB.category === 'permission') ||
+          (normA.category === 'permission' && normB.category === 'denial')
+        )
+      ) {
+        conflicts.push({
+          normA,
+          normB,
+          conflictType: 'direct_contradiction',
+          description:
+            `Direct contradiction: "${normA.pattern}" (${normA.category}) vs "${normB.pattern}" (${normB.category}) on resource "${normA.resource}" with action "${normA.action}"`,
+        });
+        continue;
+      }
+
+      // Check for resource overlap: same resource, opposing categories
+      if (
+        normA.resource === normB.resource &&
+        normA.action !== normB.action &&
+        opposingCategories[normA.category]?.includes(normB.category)
+      ) {
+        conflicts.push({
+          normA,
+          normB,
+          conflictType: 'resource_overlap',
+          description:
+            `Resource overlap: "${normA.pattern}" (${normA.category}, action: ${normA.action}) vs "${normB.pattern}" (${normB.category}, action: ${normB.action}) on resource "${normA.resource}"`,
+        });
+        continue;
+      }
+
+      // Check for action conflict: same action, same resource, different opposing categories
+      if (
+        normA.action === normB.action &&
+        normA.resource === normB.resource &&
+        normA.category !== normB.category &&
+        opposingCategories[normA.category]?.includes(normB.category)
+      ) {
+        conflicts.push({
+          normA,
+          normB,
+          conflictType: 'action_conflict',
+          description:
+            `Action conflict: "${normA.pattern}" vs "${normB.pattern}" - same action "${normA.action}" on resource "${normA.resource}" with conflicting categories`,
+        });
+      }
+    }
+  }
+
+  return conflicts;
+}
+
+/**
+ * Resolve a conflict between two norms using a weighted combination of:
+ * 1. Specificity: more specific norms take precedence (higher specificity wins)
+ * 2. Recency: more recent norms take precedence (higher createdAt wins)
+ * 3. Authority: norms from higher-authority sources take precedence (higher authority wins)
+ *
+ * Each factor is weighted:
+ *   - specificity: weight 0.4
+ *   - recency: weight 0.3
+ *   - authority: weight 0.3
+ *
+ * The norm with the higher weighted score wins.
+ *
+ * @param normA - First conflicting norm
+ * @param normB - Second conflicting norm
+ * @returns NormPrecedenceResult identifying the winning norm and reasoning
+ */
+export function normPrecedence(
+  normA: NormDefinition,
+  normB: NormDefinition,
+): NormPrecedenceResult {
+  const SPECIFICITY_WEIGHT = 0.4;
+  const RECENCY_WEIGHT = 0.3;
+  const AUTHORITY_WEIGHT = 0.3;
+
+  // Normalize factors to [-1, 1] range where positive favors A
+  const specificityDiff = normA.specificity - normB.specificity;
+  const maxSpec = Math.max(Math.abs(normA.specificity), Math.abs(normB.specificity), 1);
+  const normalizedSpecificity = specificityDiff / maxSpec;
+
+  const recencyDiff = normA.createdAt - normB.createdAt;
+  const maxRecency = Math.max(Math.abs(normA.createdAt), Math.abs(normB.createdAt), 1);
+  const normalizedRecency = recencyDiff / maxRecency;
+
+  const authorityDiff = normA.authority - normB.authority;
+  const maxAuth = Math.max(Math.abs(normA.authority), Math.abs(normB.authority), 1);
+  const normalizedAuthority = authorityDiff / maxAuth;
+
+  const scoreA =
+    normalizedSpecificity * SPECIFICITY_WEIGHT +
+    normalizedRecency * RECENCY_WEIGHT +
+    normalizedAuthority * AUTHORITY_WEIGHT;
+
+  // Determine winner based on score
+  const aWins = scoreA >= 0;
+
+  const winner = aWins ? normA : normB;
+  const loser = aWins ? normB : normA;
+
+  // Build explanation
+  const reasons: string[] = [];
+  if (specificityDiff !== 0) {
+    reasons.push(
+      `specificity: ${winner.id} (${winner.specificity}) vs ${loser.id} (${loser.specificity})`,
+    );
+  }
+  if (recencyDiff !== 0) {
+    reasons.push(
+      `recency: ${winner.id} (${winner.createdAt}) vs ${loser.id} (${loser.createdAt})`,
+    );
+  }
+  if (authorityDiff !== 0) {
+    reasons.push(
+      `authority: ${winner.id} (${winner.authority}) vs ${loser.id} (${loser.authority})`,
+    );
+  }
+
+  const reason = reasons.length > 0
+    ? `"${winner.pattern}" takes precedence based on: ${reasons.join('; ')}`
+    : `"${winner.pattern}" takes precedence (norms are equal; first listed wins)`;
+
+  return {
+    winner,
+    loser,
+    reason,
+    factors: {
+      specificityDiff,
+      recencyDiff,
+      authorityDiff,
+    },
   };
 }

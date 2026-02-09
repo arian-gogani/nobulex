@@ -40,3 +40,28 @@ export interface VerificationEntity {
   verifierId?: string;
   verifierCovenantId?: string;
 }
+
+export interface TrustEdge {
+  from: string;
+  to: string;
+  trustScore: number;
+}
+
+export interface TransitiveTrustResult {
+  from: string;
+  to: string;
+  effectiveTrust: number;
+  path: string[];
+  hops: number;
+}
+
+export interface VerifierNode {
+  id: string;
+  coveredConstraints: string[];
+}
+
+export interface MinimalVerificationSetResult {
+  verifiers: string[];
+  coveredConstraints: string[];
+  uncoveredConstraints: string[];
+}

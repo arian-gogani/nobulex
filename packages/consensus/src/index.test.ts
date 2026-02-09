@@ -5,6 +5,9 @@ import {
   networkAccountabilityRate,
   tierToMinScore,
   compareTiers,
+  validateConfig,
+  validateProtocolData,
+  validatePolicy,
 } from './index';
 import type {
   AccountabilityScore,
@@ -12,12 +15,236 @@ import type {
   ProtocolData,
   AccountabilityTier,
 } from './types';
+import type { AccountabilityConfig } from './index';
+
+// ---------------------------------------------------------------------------
+// validateConfig
+// ---------------------------------------------------------------------------
+describe('validateConfig', () => {
+  it('accepts valid config', () => {
+    expect(() =>
+      validateConfig({
+        tierThresholds: { exemplary: 0.9, trusted: 0.7, verified: 0.5, basic: 0.3 },
+        componentWeights: {
+          covenantCompleteness: 0.15,
+          complianceHistory: 0.30,
+          stakeRatio: 0.20,
+          attestationCoverage: 0.20,
+          canaryPassRate: 0.15,
+        },
+        minimumCovenants: 3,
+      }),
+    ).not.toThrow();
+  });
+
+  it('accepts empty config', () => {
+    expect(() => validateConfig({})).not.toThrow();
+  });
+
+  it('throws on tier threshold out of range', () => {
+    expect(() =>
+      validateConfig({
+        tierThresholds: { exemplary: 1.5, trusted: 0.7, verified: 0.5, basic: 0.3 },
+      }),
+    ).toThrow("Tier threshold 'exemplary' must be in [0, 1]");
+  });
+
+  it('throws on unordered tier thresholds', () => {
+    expect(() =>
+      validateConfig({
+        tierThresholds: { exemplary: 0.5, trusted: 0.7, verified: 0.5, basic: 0.3 },
+      }),
+    ).toThrow('Tier thresholds must be strictly ordered');
+  });
+
+  it('throws on negative component weight', () => {
+    expect(() =>
+      validateConfig({
+        componentWeights: {
+          covenantCompleteness: -0.1,
+          complianceHistory: 0.35,
+          stakeRatio: 0.25,
+          attestationCoverage: 0.25,
+          canaryPassRate: 0.25,
+        },
+      }),
+    ).toThrow("Component weight 'covenantCompleteness' must be >= 0");
+  });
+
+  it('throws when component weights do not sum to 1.0', () => {
+    expect(() =>
+      validateConfig({
+        componentWeights: {
+          covenantCompleteness: 0.1,
+          complianceHistory: 0.1,
+          stakeRatio: 0.1,
+          attestationCoverage: 0.1,
+          canaryPassRate: 0.1,
+        },
+      }),
+    ).toThrow('Component weights must sum to approximately 1.0');
+  });
+
+  it('throws on minimumCovenants < 1', () => {
+    expect(() => validateConfig({ minimumCovenants: 0 })).toThrow(
+      'minimumCovenants must be >= 1',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// validateProtocolData
+// ---------------------------------------------------------------------------
+describe('validateProtocolData', () => {
+  it('accepts valid data', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: 5,
+        totalInteractions: 100,
+        compliantInteractions: 80,
+        stakeAmount: 500,
+        maxStake: 1000,
+        attestedInteractions: 70,
+        canaryTests: 20,
+        canaryPasses: 18,
+      }),
+    ).not.toThrow();
+  });
+
+  it('throws on negative covenantCount', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: -1,
+        totalInteractions: 100,
+        compliantInteractions: 80,
+        stakeAmount: 500,
+        maxStake: 1000,
+        attestedInteractions: 70,
+        canaryTests: 20,
+        canaryPasses: 18,
+      }),
+    ).toThrow('covenantCount must be >= 0');
+  });
+
+  it('throws when compliantInteractions > totalInteractions', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: 3,
+        totalInteractions: 50,
+        compliantInteractions: 100,
+        stakeAmount: 500,
+        maxStake: 1000,
+        attestedInteractions: 50,
+        canaryTests: 10,
+        canaryPasses: 10,
+      }),
+    ).toThrow('compliantInteractions (100) must be <= totalInteractions (50)');
+  });
+
+  it('throws when canaryPasses > canaryTests', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: 3,
+        totalInteractions: 100,
+        compliantInteractions: 80,
+        stakeAmount: 500,
+        maxStake: 1000,
+        attestedInteractions: 70,
+        canaryTests: 10,
+        canaryPasses: 15,
+      }),
+    ).toThrow('canaryPasses (15) must be <= canaryTests (10)');
+  });
+
+  it('throws on negative stakeAmount', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: 3,
+        totalInteractions: 100,
+        compliantInteractions: 80,
+        stakeAmount: -10,
+        maxStake: 1000,
+        attestedInteractions: 70,
+        canaryTests: 20,
+        canaryPasses: 18,
+      }),
+    ).toThrow('stakeAmount must be >= 0');
+  });
+
+  it('throws on negative maxStake', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: 3,
+        totalInteractions: 100,
+        compliantInteractions: 80,
+        stakeAmount: 500,
+        maxStake: -1,
+        attestedInteractions: 70,
+        canaryTests: 20,
+        canaryPasses: 18,
+      }),
+    ).toThrow('maxStake must be >= 0');
+  });
+
+  it('throws on negative totalInteractions', () => {
+    expect(() =>
+      validateProtocolData({
+        covenantCount: 3,
+        totalInteractions: -1,
+        compliantInteractions: 0,
+        stakeAmount: 500,
+        maxStake: 1000,
+        attestedInteractions: 0,
+        canaryTests: 20,
+        canaryPasses: 18,
+      }),
+    ).toThrow('totalInteractions must be >= 0');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// validatePolicy
+// ---------------------------------------------------------------------------
+describe('validatePolicy', () => {
+  it('accepts valid policy', () => {
+    expect(() =>
+      validatePolicy({
+        minimumTier: 'trusted',
+        minimumScore: 0.7,
+        requireStake: true,
+        requireAttestation: false,
+      }),
+    ).not.toThrow();
+  });
+
+  it('throws on minimumScore > 1', () => {
+    expect(() =>
+      validatePolicy({
+        minimumTier: 'basic',
+        minimumScore: 1.5,
+        requireStake: false,
+        requireAttestation: false,
+      }),
+    ).toThrow('minimumScore must be in [0, 1]');
+  });
+
+  it('throws on minimumScore < 0', () => {
+    expect(() =>
+      validatePolicy({
+        minimumTier: 'basic',
+        minimumScore: -0.1,
+        requireStake: false,
+        requireAttestation: false,
+      }),
+    ).toThrow('minimumScore must be in [0, 1]');
+  });
+});
 
 // ---------------------------------------------------------------------------
 // computeAccountability
 // ---------------------------------------------------------------------------
 describe('computeAccountability', () => {
-  it('returns exemplary tier for perfect data', () => {
+  it('returns exemplary tier for perfect data with default config', () => {
     const data: ProtocolData = {
       covenantCount: 5,
       totalInteractions: 100,
@@ -30,7 +257,7 @@ describe('computeAccountability', () => {
     };
     const result = computeAccountability('agent-1', data);
     expect(result.tier).toBe('exemplary');
-    expect(result.score).toBe(1.0);
+    expect(result.score).toBeCloseTo(1.0, 10);
     expect(result.agentId).toBe('agent-1');
   });
 
@@ -50,7 +277,7 @@ describe('computeAccountability', () => {
     expect(result.score).toBe(0);
   });
 
-  it('caps covenantCompleteness at 1.0 when more than 3 covenants', () => {
+  it('caps covenantCompleteness at 1.0 when more than minimumCovenants', () => {
     const data: ProtocolData = {
       covenantCount: 10,
       totalInteractions: 1,
@@ -65,7 +292,7 @@ describe('computeAccountability', () => {
     expect(result.components.covenantCompleteness).toBe(1.0);
   });
 
-  it('computes partial covenantCompleteness for fewer than 3 covenants', () => {
+  it('computes partial covenantCompleteness for fewer than minimumCovenants', () => {
     const data: ProtocolData = {
       covenantCount: 1,
       totalInteractions: 1,
@@ -110,54 +337,21 @@ describe('computeAccountability', () => {
     expect(result.components.stakeRatio).toBeCloseTo(0.25, 5);
   });
 
-  it('score is average of all five components', () => {
+  it('score is weighted sum of all five components', () => {
     const data: ProtocolData = {
-      covenantCount: 3,
+      covenantCount: 3,   // covenantCompleteness = 1.0
       totalInteractions: 100,
-      compliantInteractions: 80,
+      compliantInteractions: 80,  // complianceHistory = 0.8
       stakeAmount: 600,
-      maxStake: 1000,
-      attestedInteractions: 70,
+      maxStake: 1000,   // stakeRatio = 0.6
+      attestedInteractions: 70,  // attestationCoverage = 0.7
       canaryTests: 20,
-      canaryPasses: 18,
+      canaryPasses: 18,  // canaryPassRate = 0.9
     };
     const result = computeAccountability('agent-avg', data);
-    const expected = (1.0 + 0.8 + 0.6 + 0.7 + 0.9) / 5;
+    // weighted: 0.15*1.0 + 0.30*0.8 + 0.20*0.6 + 0.20*0.7 + 0.15*0.9
+    const expected = 0.15 * 1.0 + 0.30 * 0.8 + 0.20 * 0.6 + 0.20 * 0.7 + 0.15 * 0.9;
     expect(result.score).toBeCloseTo(expected, 5);
-  });
-
-  it('assigns trusted tier for score >= 0.7 and < 0.9', () => {
-    const data: ProtocolData = {
-      covenantCount: 3,
-      totalInteractions: 100,
-      compliantInteractions: 70,
-      stakeAmount: 700,
-      maxStake: 1000,
-      attestedInteractions: 70,
-      canaryTests: 10,
-      canaryPasses: 10,
-    };
-    const result = computeAccountability('agent-trusted', data);
-    expect(result.score).toBeGreaterThanOrEqual(0.7);
-    expect(result.score).toBeLessThan(0.9);
-    expect(result.tier).toBe('trusted');
-  });
-
-  it('assigns basic tier for score >= 0.3 and < 0.5', () => {
-    const data: ProtocolData = {
-      covenantCount: 1,
-      totalInteractions: 100,
-      compliantInteractions: 30,
-      stakeAmount: 100,
-      maxStake: 1000,
-      attestedInteractions: 30,
-      canaryTests: 10,
-      canaryPasses: 5,
-    };
-    const result = computeAccountability('agent-basic', data);
-    expect(result.score).toBeGreaterThanOrEqual(0.3);
-    expect(result.score).toBeLessThan(0.5);
-    expect(result.tier).toBe('basic');
   });
 
   it('handles totalInteractions of zero gracefully (divides by 1)', () => {
@@ -174,6 +368,101 @@ describe('computeAccountability', () => {
     const result = computeAccountability('agent-noint', data);
     expect(result.components.complianceHistory).toBe(0);
     expect(result.components.attestationCoverage).toBe(0);
+  });
+
+  it('uses custom config when provided', () => {
+    const config: AccountabilityConfig = {
+      minimumCovenants: 5,
+      componentWeights: {
+        covenantCompleteness: 0.10,
+        complianceHistory: 0.40,
+        stakeRatio: 0.20,
+        attestationCoverage: 0.15,
+        canaryPassRate: 0.15,
+      },
+    };
+    const data: ProtocolData = {
+      covenantCount: 5,
+      totalInteractions: 100,
+      compliantInteractions: 100,
+      stakeAmount: 1000,
+      maxStake: 1000,
+      attestedInteractions: 100,
+      canaryTests: 50,
+      canaryPasses: 50,
+    };
+    const result = computeAccountability('agent-custom', data, config);
+    expect(result.score).toBe(1.0);
+    expect(result.components.covenantCompleteness).toBe(1.0);
+  });
+
+  it('uses custom minimumCovenants', () => {
+    const config: AccountabilityConfig = { minimumCovenants: 5 };
+    const data: ProtocolData = {
+      covenantCount: 3,
+      totalInteractions: 100,
+      compliantInteractions: 100,
+      stakeAmount: 1000,
+      maxStake: 1000,
+      attestedInteractions: 100,
+      canaryTests: 50,
+      canaryPasses: 50,
+    };
+    const result = computeAccountability('agent-custom', data, config);
+    expect(result.components.covenantCompleteness).toBeCloseTo(3 / 5, 5);
+  });
+
+  it('uses custom tier thresholds', () => {
+    const config: AccountabilityConfig = {
+      tierThresholds: { exemplary: 0.95, trusted: 0.8, verified: 0.6, basic: 0.4 },
+    };
+    const data: ProtocolData = {
+      covenantCount: 5,
+      totalInteractions: 100,
+      compliantInteractions: 100,
+      stakeAmount: 1000,
+      maxStake: 1000,
+      attestedInteractions: 100,
+      canaryTests: 50,
+      canaryPasses: 50,
+    };
+    const result = computeAccountability('agent-thr', data, config);
+    // score = 1.0, exemplary threshold = 0.95, so still exemplary
+    expect(result.tier).toBe('exemplary');
+  });
+
+  it('throws on invalid protocol data', () => {
+    expect(() =>
+      computeAccountability('agent-bad', {
+        covenantCount: -1,
+        totalInteractions: 100,
+        compliantInteractions: 80,
+        stakeAmount: 500,
+        maxStake: 1000,
+        attestedInteractions: 70,
+        canaryTests: 20,
+        canaryPasses: 18,
+      }),
+    ).toThrow('covenantCount must be >= 0');
+  });
+
+  it('throws on invalid config', () => {
+    expect(() =>
+      computeAccountability(
+        'agent-bad',
+        {
+          covenantCount: 3,
+          totalInteractions: 100,
+          compliantInteractions: 80,
+          stakeAmount: 500,
+          maxStake: 1000,
+          attestedInteractions: 70,
+          canaryTests: 20,
+          canaryPasses: 18,
+        },
+        { minimumCovenants: 0 },
+      ),
+    ).toThrow('minimumCovenants must be >= 1');
   });
 });
 
@@ -292,7 +581,7 @@ describe('evaluateCounterparty', () => {
     expect(decision.reason).toContain('attestation');
   });
 
-  it('computes riskAdjustment as 1 - score', () => {
+  it('computes riskAdjustment as 1 - score for allowed counterparty', () => {
     const policy: InteractionPolicy = {
       minimumTier: 'unaccountable',
       minimumScore: 0,
@@ -300,7 +589,48 @@ describe('evaluateCounterparty', () => {
       requireAttestation: false,
     };
     const decision = evaluateCounterparty(policy, exemplaryScore);
+    // For allowed: deficit = 0, so riskAdjustment = 1 - 0.95 = 0.05
     expect(decision.riskAdjustment).toBeCloseTo(1 - 0.95, 5);
+  });
+
+  it('computes higher riskAdjustment for denied counterparty below threshold', () => {
+    const policy: InteractionPolicy = {
+      minimumTier: 'basic',
+      minimumScore: 0.9,
+      requireStake: false,
+      requireAttestation: false,
+    };
+    const decision = evaluateCounterparty(policy, basicScore);
+    // baseRisk = 1 - 0.35 = 0.65, deficit = 0.9 - 0.35 = 0.55
+    // riskAdjustment = min(1, 0.65 + 0.55) = 1.0
+    expect(decision.allowed).toBe(false);
+    expect(decision.riskAdjustment).toBeCloseTo(1.0, 5);
+  });
+
+  it('riskAdjustment includes deficit for near-threshold denial', () => {
+    const nearScore: AccountabilityScore = {
+      agentId: 'near',
+      score: 0.75,
+      components: {
+        covenantCompleteness: 1.0,
+        complianceHistory: 0.8,
+        stakeRatio: 0.7,
+        attestationCoverage: 0.7,
+        canaryPassRate: 0.55,
+      },
+      tier: 'trusted',
+    };
+    const policy: InteractionPolicy = {
+      minimumTier: 'trusted',
+      minimumScore: 0.8,
+      requireStake: false,
+      requireAttestation: false,
+    };
+    const decision = evaluateCounterparty(policy, nearScore);
+    // baseRisk = 1 - 0.75 = 0.25, deficit = 0.8 - 0.75 = 0.05
+    // riskAdjustment = min(1, 0.25 + 0.05) = 0.30
+    expect(decision.allowed).toBe(false);
+    expect(decision.riskAdjustment).toBeCloseTo(0.30, 5);
   });
 
   it('returns the counterparty score in the decision', () => {
@@ -312,6 +642,46 @@ describe('evaluateCounterparty', () => {
     };
     const decision = evaluateCounterparty(policy, basicScore);
     expect(decision.counterpartyScore).toBe(basicScore);
+  });
+
+  it('throws on invalid policy', () => {
+    expect(() =>
+      evaluateCounterparty(
+        {
+          minimumTier: 'basic',
+          minimumScore: 1.5,
+          requireStake: false,
+          requireAttestation: false,
+        },
+        exemplaryScore,
+      ),
+    ).toThrow('minimumScore must be in [0, 1]');
+  });
+
+  it('throws on invalid counterparty score', () => {
+    const badScore: AccountabilityScore = {
+      agentId: 'bad',
+      score: 1.5,
+      components: {
+        covenantCompleteness: 1.0,
+        complianceHistory: 1.0,
+        stakeRatio: 1.0,
+        attestationCoverage: 1.0,
+        canaryPassRate: 1.0,
+      },
+      tier: 'exemplary',
+    };
+    expect(() =>
+      evaluateCounterparty(
+        {
+          minimumTier: 'basic',
+          minimumScore: 0.3,
+          requireStake: false,
+          requireAttestation: false,
+        },
+        badScore,
+      ),
+    ).toThrow('AccountabilityScore.score must be in [0, 1]');
   });
 });
 
@@ -364,24 +734,35 @@ describe('networkAccountabilityRate', () => {
 // tierToMinScore
 // ---------------------------------------------------------------------------
 describe('tierToMinScore', () => {
-  it('returns 0.9 for exemplary', () => {
+  it('returns 0.9 for exemplary (default)', () => {
     expect(tierToMinScore('exemplary')).toBe(0.9);
   });
 
-  it('returns 0.7 for trusted', () => {
+  it('returns 0.7 for trusted (default)', () => {
     expect(tierToMinScore('trusted')).toBe(0.7);
   });
 
-  it('returns 0.5 for verified', () => {
+  it('returns 0.5 for verified (default)', () => {
     expect(tierToMinScore('verified')).toBe(0.5);
   });
 
-  it('returns 0.3 for basic', () => {
+  it('returns 0.3 for basic (default)', () => {
     expect(tierToMinScore('basic')).toBe(0.3);
   });
 
   it('returns 0 for unaccountable', () => {
     expect(tierToMinScore('unaccountable')).toBe(0);
+  });
+
+  it('returns custom threshold when config provided', () => {
+    const config: AccountabilityConfig = {
+      tierThresholds: { exemplary: 0.95, trusted: 0.8, verified: 0.6, basic: 0.4 },
+    };
+    expect(tierToMinScore('exemplary', config)).toBe(0.95);
+    expect(tierToMinScore('trusted', config)).toBe(0.8);
+    expect(tierToMinScore('verified', config)).toBe(0.6);
+    expect(tierToMinScore('basic', config)).toBe(0.4);
+    expect(tierToMinScore('unaccountable', config)).toBe(0);
   });
 });
 

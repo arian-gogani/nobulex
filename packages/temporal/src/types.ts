@@ -30,6 +30,7 @@ export interface EvolutionEvent {
   newConstraints: string[];
   timestamp: number;
   approved: boolean;
+  governanceStatus?: 'approved' | 'pending' | 'rejected';
 }
 
 export interface AgentState {

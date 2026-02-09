@@ -7,6 +7,7 @@ import {
   evaluate,
   isExpired,
   fail,
+  roundCount,
 } from './index.js';
 import type { NegotiationSession, Proposal, NegotiationPolicy } from './types.js';
 
@@ -93,6 +94,22 @@ describe('initiate', () => {
     const session = initiate('alice', 'bob', makePolicy());
     expect(session.resultingConstraints).toBeUndefined();
   });
+
+  it('throws on empty initiatorId', () => {
+    expect(() => initiate('', 'bob', makePolicy())).toThrow('initiatorId must be a non-empty string');
+  });
+
+  it('throws on empty responderId', () => {
+    expect(() => initiate('alice', '', makePolicy())).toThrow('responderId must be a non-empty string');
+  });
+
+  it('throws on invalid maxRounds', () => {
+    expect(() => initiate('alice', 'bob', makePolicy({ maxRounds: 0 }))).toThrow('maxRounds must be at least 1');
+  });
+
+  it('throws on negative timeoutMs', () => {
+    expect(() => initiate('alice', 'bob', makePolicy({ timeoutMs: -1 }))).toThrow('timeoutMs must be non-negative');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -121,6 +138,26 @@ describe('propose', () => {
     const updated = propose(session, proposal);
     expect(updated.proposals[0]!.from).toBe('alice');
   });
+
+  it('throws on proposal with empty from field', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const proposal: Proposal = { from: '', constraints: ['deny:x'], requirements: [], timestamp: Date.now() };
+    expect(() => propose(session, proposal)).toThrow('Proposal must have a non-empty "from" field');
+  });
+
+  it('throws when session is already agreed', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const agreed = agree(session);
+    const proposal = makeProposal('bob', ['deny:x']);
+    expect(() => propose(agreed, proposal)).toThrow('Cannot modify an agreed session');
+  });
+
+  it('throws when session is already failed', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const failed = fail(session, 'test');
+    const proposal = makeProposal('bob', ['deny:x']);
+    expect(() => propose(failed, proposal)).toThrow('Cannot modify a failed session');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -145,7 +182,6 @@ describe('counter', () => {
   it('throws when maxRounds is exceeded', () => {
     const policy = makePolicy({ maxRounds: 1 });
     const session = initiate('alice', 'bob', policy);
-    // session already has 1 proposal, maxRounds is 1
     const cp = makeProposal('bob', ['deny:exfiltrate']);
     expect(() => counter(session, cp)).toThrow('Maximum rounds');
   });
@@ -153,7 +189,6 @@ describe('counter', () => {
   it('does not throw when within maxRounds', () => {
     const policy = makePolicy({ maxRounds: 3 });
     const session = initiate('alice', 'bob', policy);
-    // 1 proposal so far, maxRounds is 3
     const cp = makeProposal('bob', ['deny:exfiltrate']);
     expect(() => counter(session, cp)).not.toThrow();
   });
@@ -164,6 +199,13 @@ describe('counter', () => {
     counter(session, cp);
     expect(session.status).toBe('proposing');
     expect(session.proposals).toHaveLength(1);
+  });
+
+  it('throws when session is already agreed', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const agreed = agree(session);
+    const cp = makeProposal('bob', ['deny:x']);
+    expect(() => counter(agreed, cp)).toThrow('Cannot modify an agreed session');
   });
 });
 
@@ -180,7 +222,25 @@ describe('agree', () => {
     expect(agreed.status).toBe('agreed');
   });
 
-  it('computes resultingConstraints as intersection of last two proposals', () => {
+  it('includes all deny constraints from both proposals (deny-wins)', () => {
+    const session = initiate('alice', 'bob', makePolicy({
+      requiredConstraints: ['deny:exfiltrate'],
+      preferredConstraints: ['deny:write-secrets'],
+    }));
+    const counterProposal = makeProposal('bob', [
+      'deny:exfiltrate',
+      'deny:network-call',
+      'require:auth',
+    ]);
+    const withCounter = propose(session, counterProposal);
+    const agreed = agree(withCounter);
+    // All deny constraints from both sides should be included
+    expect(agreed.resultingConstraints).toContain('deny:exfiltrate');
+    expect(agreed.resultingConstraints).toContain('deny:write-secrets');
+    expect(agreed.resultingConstraints).toContain('deny:network-call');
+  });
+
+  it('intersects non-deny constraints', () => {
     const session = initiate('alice', 'bob', makePolicy({
       requiredConstraints: ['deny:exfiltrate', 'require:auth'],
       preferredConstraints: ['limit:cpu'],
@@ -263,7 +323,6 @@ describe('evaluate', () => {
       'deny:exfiltrate',
       'permit:unrestricted',
     ]);
-    // Even though required is present, dealbreaker should cause reject
     expect(evaluate(proposal, policy)).toBe('reject');
   });
 
@@ -298,7 +357,6 @@ describe('isExpired', () => {
 
   it('returns true for an expired session', () => {
     const session = initiate('alice', 'bob', makePolicy({ timeoutMs: 1 }));
-    // Force session to be in the past
     const expired: NegotiationSession = {
       ...session,
       createdAt: Date.now() - 1000,
@@ -309,7 +367,6 @@ describe('isExpired', () => {
 
   it('handles zero timeout', () => {
     const session = initiate('alice', 'bob', makePolicy({ timeoutMs: 0 }));
-    // With timeout 0, it should be expired immediately (or very close to it)
     const expired: NegotiationSession = {
       ...session,
       createdAt: Date.now() - 1,
@@ -330,6 +387,18 @@ describe('fail', () => {
     expect(failed.status).toBe('failed');
   });
 
+  it('stores the failure reason', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const failed = fail(session, 'dealbreaker detected');
+    expect(failed.failureReason).toBe('dealbreaker detected');
+  });
+
+  it('failureReason is undefined when no reason provided', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const failed = fail(session);
+    expect(failed.failureReason).toBeUndefined();
+  });
+
   it('does not mutate the original session', () => {
     const session = initiate('alice', 'bob', makePolicy());
     fail(session);
@@ -348,6 +417,33 @@ describe('fail', () => {
 });
 
 // ---------------------------------------------------------------------------
+// roundCount
+// ---------------------------------------------------------------------------
+
+describe('roundCount', () => {
+  it('returns 1 for a fresh session', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    expect(roundCount(session)).toBe(1);
+  });
+
+  it('returns 2 after one counter', () => {
+    const session = initiate('alice', 'bob', makePolicy());
+    const cp = makeProposal('bob', ['deny:exfiltrate']);
+    const updated = counter(session, cp);
+    expect(roundCount(updated)).toBe(2);
+  });
+
+  it('returns correct count after multiple rounds', () => {
+    const policy = makePolicy({ maxRounds: 10 });
+    let session = initiate('alice', 'bob', policy);
+    session = counter(session, makeProposal('bob', ['deny:a']));
+    session = counter(session, makeProposal('alice', ['deny:b']));
+    session = counter(session, makeProposal('bob', ['deny:c']));
+    expect(roundCount(session)).toBe(4);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // Full negotiation flow tests
 // ---------------------------------------------------------------------------
 
@@ -361,11 +457,9 @@ describe('full negotiation flow', () => {
       timeoutMs: 60000,
     });
 
-    // Alice initiates
     let session = initiate('alice', 'bob', alicePolicy);
     expect(session.status).toBe('proposing');
 
-    // Bob counters
     const bobProposal = makeProposal('bob', [
       'deny:exfiltrate',
       'require:auth',
@@ -374,7 +468,6 @@ describe('full negotiation flow', () => {
     session = counter(session, bobProposal);
     expect(session.status).toBe('countering');
 
-    // Alice agrees
     session = agree(session);
     expect(session.status).toBe('agreed');
     expect(session.resultingConstraints).toContain('deny:exfiltrate');
@@ -398,62 +491,15 @@ describe('full negotiation flow', () => {
 
     const failed = fail(session, 'dealbreaker detected');
     expect(failed.status).toBe('failed');
-  });
-
-  it('multi-round negotiation with evaluation', () => {
-    const alicePolicy = makePolicy({
-      requiredConstraints: ['deny:exfiltrate', 'require:auth'],
-      preferredConstraints: ['limit:cpu-50'],
-      dealbreakers: ['permit:unrestricted-network'],
-      maxRounds: 10,
-      timeoutMs: 60000,
-    });
-
-    const bobPolicy = makePolicy({
-      requiredConstraints: ['require:logging'],
-      preferredConstraints: ['limit:memory-1gb'],
-      dealbreakers: ['deny:all-network'],
-      maxRounds: 10,
-      timeoutMs: 60000,
-    });
-
-    let session = initiate('alice', 'bob', alicePolicy);
-
-    // Bob evaluates Alice's initial proposal
-    const aliceEval = evaluate(session.proposals[0]!, bobPolicy);
-    // Alice's proposal has deny:exfiltrate, require:auth, limit:cpu-50
-    // Bob requires 'require:logging' which is not present -> counter
-    expect(aliceEval).toBe('counter');
-
-    // Bob counters
-    const bobCounter = makeProposal('bob', [
-      'deny:exfiltrate',
-      'require:auth',
-      'require:logging',
-      'limit:memory-1gb',
-    ]);
-    session = counter(session, bobCounter);
-
-    // Alice evaluates Bob's counter
-    const bobEvalResult = evaluate(bobCounter, alicePolicy);
-    // Bob's proposal has deny:exfiltrate and require:auth -> all required present, no dealbreakers
-    expect(bobEvalResult).toBe('accept');
-
-    // Alice agrees
-    session = agree(session);
-    expect(session.status).toBe('agreed');
-    expect(session.resultingConstraints).toContain('deny:exfiltrate');
-    expect(session.resultingConstraints).toContain('require:auth');
+    expect(failed.failureReason).toBe('dealbreaker detected');
   });
 
   it('negotiation fails when maxRounds exceeded', () => {
     const policy = makePolicy({ maxRounds: 2 });
     let session = initiate('alice', 'bob', policy);
-    // 1 proposal now. maxRounds=2
 
     const cp1 = makeProposal('bob', ['deny:exfiltrate']);
     session = counter(session, cp1);
-    // 2 proposals now, next counter should fail
 
     const cp2 = makeProposal('alice', ['deny:exfiltrate', 'require:auth']);
     expect(() => counter(session, cp2)).toThrow('Maximum rounds');

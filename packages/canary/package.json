@@ -18,6 +18,7 @@
   },
   "files": ["dist"],
   "dependencies": {
+    "@stele/ccl": "0.1.0",
     "@stele/crypto": "0.1.0"
   }
 }

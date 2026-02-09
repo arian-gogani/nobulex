@@ -5,6 +5,7 @@ export interface BreachAntibody {
   category: string;
   status: 'proposed' | 'adopted' | 'rejected';
   adoptionVotes: number;
+  adoptionThreshold: number;
 }
 
 export interface NetworkHealth {

@@ -5,8 +5,79 @@ import {
   minimumDetection,
   expectedCostOfBreach,
   honestyMargin,
+  validateParameters,
 } from './index';
 import type { HonestyParameters } from './types';
+
+// ---------------------------------------------------------------------------
+// validateParameters
+// ---------------------------------------------------------------------------
+describe('validateParameters', () => {
+  it('accepts valid full parameters', () => {
+    expect(() =>
+      validateParameters({
+        stakeAmount: 100,
+        detectionProbability: 0.5,
+        reputationValue: 50,
+        maxViolationGain: 200,
+        coburn: 10,
+      }),
+    ).not.toThrow();
+  });
+
+  it('accepts valid partial parameters', () => {
+    expect(() => validateParameters({ stakeAmount: 0 })).not.toThrow();
+    expect(() => validateParameters({ detectionProbability: 1 })).not.toThrow();
+    expect(() => validateParameters({})).not.toThrow();
+  });
+
+  it('accepts boundary values', () => {
+    expect(() =>
+      validateParameters({
+        stakeAmount: 0,
+        detectionProbability: 0,
+        reputationValue: 0,
+        maxViolationGain: 0,
+        coburn: 0,
+      }),
+    ).not.toThrow();
+    expect(() => validateParameters({ detectionProbability: 1 })).not.toThrow();
+  });
+
+  it('throws on negative stakeAmount', () => {
+    expect(() => validateParameters({ stakeAmount: -1 })).toThrow(
+      'stakeAmount must be >= 0',
+    );
+  });
+
+  it('throws on detectionProbability < 0', () => {
+    expect(() => validateParameters({ detectionProbability: -0.1 })).toThrow(
+      'detectionProbability must be in [0, 1]',
+    );
+  });
+
+  it('throws on detectionProbability > 1', () => {
+    expect(() => validateParameters({ detectionProbability: 1.5 })).toThrow(
+      'detectionProbability must be in [0, 1]',
+    );
+  });
+
+  it('throws on negative reputationValue', () => {
+    expect(() => validateParameters({ reputationValue: -10 })).toThrow(
+      'reputationValue must be >= 0',
+    );
+  });
+
+  it('throws on negative maxViolationGain', () => {
+    expect(() => validateParameters({ maxViolationGain: -5 })).toThrow(
+      'maxViolationGain must be >= 0',
+    );
+  });
+
+  it('throws on negative coburn', () => {
+    expect(() => validateParameters({ coburn: -1 })).toThrow('coburn must be >= 0');
+  });
+});
 
 // ---------------------------------------------------------------------------
 // proveHonesty
@@ -81,7 +152,7 @@ describe('proveHonesty', () => {
     expect(proof.requiredDetection).toBe(0.5);
   });
 
-  it('formula string includes human-readable explanation', () => {
+  it('formula contains structured step-by-step derivation', () => {
     const params: HonestyParameters = {
       stakeAmount: 100,
       detectionProbability: 0.5,
@@ -90,12 +161,16 @@ describe('proveHonesty', () => {
       coburn: 10,
     };
     const proof = proveHonesty(params);
+    // total = 100*0.5 + 50 + 10 = 110
+    expect(proof.formula).toContain('Expected cost of dishonesty:');
     expect(proof.formula).toContain('stake(100)');
     expect(proof.formula).toContain('detection(0.5)');
     expect(proof.formula).toContain('reputation(50)');
     expect(proof.formula).toContain('coburn(10)');
-    expect(proof.formula).toContain('maxGain(200)');
-    expect(proof.formula).toContain('Margin');
+    expect(proof.formula).toContain('= 110');
+    expect(proof.formula).toContain('Maximum gain from violation: 200');
+    expect(proof.formula).toContain('Margin: 110 - 200 = -90');
+    expect(proof.formula).toContain('not dominant');
   });
 
   it('formula indicates dominant strategy when honesty wins', () => {
@@ -107,11 +182,11 @@ describe('proveHonesty', () => {
       coburn: 100,
     };
     const proof = proveHonesty(params);
-    expect(proof.formula).toContain('honesty is the dominant strategy');
-    expect(proof.formula).not.toContain('NOT');
+    expect(proof.formula).toContain('Honesty is dominant strategy');
+    expect(proof.formula).not.toContain('not dominant');
   });
 
-  it('formula indicates NOT dominant strategy when dishonesty wins', () => {
+  it('formula indicates not dominant strategy when dishonesty wins', () => {
     const params: HonestyParameters = {
       stakeAmount: 1,
       detectionProbability: 0.01,
@@ -120,7 +195,58 @@ describe('proveHonesty', () => {
       coburn: 0,
     };
     const proof = proveHonesty(params);
-    expect(proof.formula).toContain('NOT the dominant strategy');
+    expect(proof.formula).toContain('Honesty is not dominant strategy');
+  });
+
+  it('throws on invalid parameters', () => {
+    expect(() =>
+      proveHonesty({
+        stakeAmount: -1,
+        detectionProbability: 0.5,
+        reputationValue: 50,
+        maxViolationGain: 200,
+        coburn: 10,
+      }),
+    ).toThrow('stakeAmount must be >= 0');
+  });
+
+  it('throws on detectionProbability > 1', () => {
+    expect(() =>
+      proveHonesty({
+        stakeAmount: 100,
+        detectionProbability: 1.5,
+        reputationValue: 50,
+        maxViolationGain: 200,
+        coburn: 10,
+      }),
+    ).toThrow('detectionProbability must be in [0, 1]');
+  });
+
+  it('handles maxViolationGain = 0 (honesty always dominates)', () => {
+    const params: HonestyParameters = {
+      stakeAmount: 100,
+      detectionProbability: 0.5,
+      reputationValue: 50,
+      maxViolationGain: 0,
+      coburn: 10,
+    };
+    const proof = proveHonesty(params);
+    // total = 100*0.5 + 50 + 10 = 110, margin = 110 - 0 = 110
+    expect(proof.isDominantStrategy).toBe(true);
+    expect(proof.margin).toBe(110);
+  });
+
+  it('handles all-zero parameters', () => {
+    const params: HonestyParameters = {
+      stakeAmount: 0,
+      detectionProbability: 0,
+      reputationValue: 0,
+      maxViolationGain: 0,
+      coburn: 0,
+    };
+    const proof = proveHonesty(params);
+    expect(proof.margin).toBe(0);
+    expect(proof.isDominantStrategy).toBe(false);
   });
 });
 
@@ -186,6 +312,28 @@ describe('minimumStake', () => {
     expect(high).toBe(1000);
     expect(low).toBe(9000);
   });
+
+  it('throws on negative reputationValue', () => {
+    expect(() =>
+      minimumStake({
+        detectionProbability: 0.5,
+        reputationValue: -10,
+        maxViolationGain: 400,
+        coburn: 50,
+      }),
+    ).toThrow('reputationValue must be >= 0');
+  });
+
+  it('throws on detectionProbability > 1', () => {
+    expect(() =>
+      minimumStake({
+        detectionProbability: 2.0,
+        reputationValue: 10,
+        maxViolationGain: 400,
+        coburn: 50,
+      }),
+    ).toThrow('detectionProbability must be in [0, 1]');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -243,6 +391,28 @@ describe('minimumDetection', () => {
     });
     expect(result).toBe(0);
   });
+
+  it('throws on negative stakeAmount', () => {
+    expect(() =>
+      minimumDetection({
+        stakeAmount: -100,
+        reputationValue: 0,
+        maxViolationGain: 500,
+        coburn: 0,
+      }),
+    ).toThrow('stakeAmount must be >= 0');
+  });
+
+  it('throws on negative maxViolationGain', () => {
+    expect(() =>
+      minimumDetection({
+        stakeAmount: 100,
+        reputationValue: 0,
+        maxViolationGain: -10,
+        coburn: 0,
+      }),
+    ).toThrow('maxViolationGain must be >= 0');
+  });
 });
 
 // ---------------------------------------------------------------------------
@@ -291,6 +461,18 @@ describe('expectedCostOfBreach', () => {
       coburn: 50,
     };
     expect(expectedCostOfBreach(params)).toBe(550);
+  });
+
+  it('throws on invalid parameters', () => {
+    expect(() =>
+      expectedCostOfBreach({
+        stakeAmount: -1,
+        detectionProbability: 0.5,
+        reputationValue: 0,
+        maxViolationGain: 0,
+        coburn: 0,
+      }),
+    ).toThrow('stakeAmount must be >= 0');
   });
 });
 
@@ -352,5 +534,17 @@ describe('honestyMargin', () => {
       coburn: 0,
     };
     expect(honestyMargin(params)).toBe(0);
+  });
+
+  it('throws on negative coburn', () => {
+    expect(() =>
+      honestyMargin({
+        stakeAmount: 100,
+        detectionProbability: 0.5,
+        reputationValue: 0,
+        maxViolationGain: 0,
+        coburn: -5,
+      }),
+    ).toThrow('coburn must be >= 0');
   });
 });

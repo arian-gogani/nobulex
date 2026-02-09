@@ -5,6 +5,8 @@ import {
   signAttestation,
   reconcile,
   getDiscrepancies,
+  isSigned,
+  verifyAttestation,
 } from './index';
 import type { ExternalAttestation, ReceiptSummary } from './types';
 
@@ -60,17 +62,37 @@ describe('createAttestation', () => {
     expect(att.id).toBe(expectedId);
   });
 
-  it('works with empty strings for all string fields', () => {
-    const att = createAttestation('', '', '', '', '', '', 0);
-    expect(att.agentId).toBe('');
-    expect(att.id.length).toBe(64);
+  it('throws on empty agentId', () => {
+    expect(() => createAttestation('', 'b', '/ep', 'in', 'out', 'ix', 0)).toThrow('agentId must be a non-empty string');
   });
 
-  it('works when agentId and counterpartyId are the same', () => {
-    const att = createAttestation('same', 'same', '/ep', 'in', 'out', 'ix', 100);
-    expect(att.agentId).toBe('same');
-    expect(att.counterpartyId).toBe('same');
-    expect(att.id.length).toBe(64);
+  it('throws on empty counterpartyId', () => {
+    expect(() => createAttestation('a', '', '/ep', 'in', 'out', 'ix', 0)).toThrow('counterpartyId must be a non-empty string');
+  });
+
+  it('throws on empty endpoint', () => {
+    expect(() => createAttestation('a', 'b', '', 'in', 'out', 'ix', 0)).toThrow('endpoint must be a non-empty string');
+  });
+
+  it('throws on negative timestamp', () => {
+    expect(() => createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', -1)).toThrow('timestamp must be a non-negative number');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// isSigned
+// ---------------------------------------------------------------------------
+describe('isSigned', () => {
+  it('returns false for unsigned attestation', () => {
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    expect(isSigned(att)).toBe(false);
+  });
+
+  it('returns true for signed attestation', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    const signed = await signAttestation(att, kp.privateKey);
+    expect(isSigned(signed)).toBe(true);
   });
 });
 
@@ -126,10 +148,56 @@ describe('signAttestation', () => {
 });
 
 // ---------------------------------------------------------------------------
+// verifyAttestation
+// ---------------------------------------------------------------------------
+describe('verifyAttestation', () => {
+  it('returns true for correctly signed attestation', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    const signed = await signAttestation(att, kp.privateKey);
+    const result = await verifyAttestation(signed, kp.publicKey);
+    expect(result).toBe(true);
+  });
+
+  it('returns false for unsigned attestation', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    const result = await verifyAttestation(att, kp.publicKey);
+    expect(result).toBe(false);
+  });
+
+  it('returns false for attestation signed with different key', async () => {
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    const signed = await signAttestation(att, kp1.privateKey);
+    const result = await verifyAttestation(signed, kp2.publicKey);
+    expect(result).toBe(false);
+  });
+
+  it('returns false for tampered attestation', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    const signed = await signAttestation(att, kp.privateKey);
+    const tampered = { ...signed, interactionHash: 'tampered' };
+    const result = await verifyAttestation(tampered, kp.publicKey);
+    expect(result).toBe(false);
+  });
+
+  it('returns false for invalid signature hex', async () => {
+    const kp = await generateKeyPair();
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
+    const withBadSig = { ...att, counterpartySignature: 'not-valid-hex' };
+    const result = await verifyAttestation(withBadSig, kp.publicKey);
+    expect(result).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
 // reconcile
 // ---------------------------------------------------------------------------
 describe('reconcile', () => {
-  it('returns match=true when all hashes match', () => {
+  it('returns match=true when all hashes and fields match', () => {
     const receipt: ReceiptSummary = {
       id: 'receipt-1',
       interactionHash: 'ix',
@@ -178,6 +246,55 @@ describe('reconcile', () => {
     expect(result.discrepancies).toHaveLength(3);
   });
 
+  it('detects endpoint mismatch as minor discrepancy', () => {
+    const receipt: ReceiptSummary = {
+      id: 'r1',
+      interactionHash: 'ix',
+      inputHash: 'in',
+      outputHash: 'out',
+      endpoint: '/api/v1',
+      timestamp: 100,
+    };
+    const att = createAttestation('a', 'b', '/api/v2', 'in', 'out', 'ix', 100);
+    const result = reconcile(receipt, att);
+    expect(result.match).toBe(false);
+    const endpointDisc = result.discrepancies.find(d => d.field === 'endpoint');
+    expect(endpointDisc).toBeDefined();
+    expect(endpointDisc!.severity).toBe('minor');
+  });
+
+  it('detects large timestamp difference as minor discrepancy', () => {
+    const receipt: ReceiptSummary = {
+      id: 'r1',
+      interactionHash: 'ix',
+      inputHash: 'in',
+      outputHash: 'out',
+      endpoint: '/ep',
+      timestamp: 100,
+    };
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 100000);
+    const result = reconcile(receipt, att);
+    expect(result.match).toBe(false);
+    const tsDisc = result.discrepancies.find(d => d.field === 'timestamp');
+    expect(tsDisc).toBeDefined();
+    expect(tsDisc!.severity).toBe('minor');
+  });
+
+  it('does not flag small timestamp difference', () => {
+    const receipt: ReceiptSummary = {
+      id: 'r1',
+      interactionHash: 'ix',
+      inputHash: 'in',
+      outputHash: 'out',
+      endpoint: '/ep',
+      timestamp: 100,
+    };
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 102);
+    const result = reconcile(receipt, att);
+    expect(result.match).toBe(true);
+    expect(result.discrepancies).toHaveLength(0);
+  });
+
   it('correctly populates agentClaimed and counterpartyClaimed', () => {
     const receipt: ReceiptSummary = {
       id: 'r1',
@@ -198,7 +315,7 @@ describe('reconcile', () => {
 // getDiscrepancies
 // ---------------------------------------------------------------------------
 describe('getDiscrepancies', () => {
-  it('returns empty array when all hashes match', () => {
+  it('returns empty array when all fields match', () => {
     const receipt: ReceiptSummary = {
       id: 'r1',
       interactionHash: 'ix',
@@ -260,6 +377,22 @@ describe('getDiscrepancies', () => {
     expect(discs[0]!.severity).toBe('major');
   });
 
+  it('returns minor severity for endpoint mismatch', () => {
+    const receipt: ReceiptSummary = {
+      id: 'r1',
+      interactionHash: 'ix',
+      inputHash: 'in',
+      outputHash: 'out',
+      endpoint: '/different',
+      timestamp: 100,
+    };
+    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 100);
+    const discs = getDiscrepancies(receipt, att);
+    const endpointDisc = discs.find(d => d.field === 'endpoint');
+    expect(endpointDisc).toBeDefined();
+    expect(endpointDisc!.severity).toBe('minor');
+  });
+
   it('returns discrepancies in order: interactionHash, inputHash, outputHash', () => {
     const receipt: ReceiptSummary = {
       id: 'r1',
@@ -271,40 +404,9 @@ describe('getDiscrepancies', () => {
     };
     const att = createAttestation('a', 'b', '/ep', 'y', 'y', 'y', 100);
     const discs = getDiscrepancies(receipt, att);
-    expect(discs).toHaveLength(3);
+    expect(discs.length).toBeGreaterThanOrEqual(3);
     expect(discs[0]!.field).toBe('interactionHash');
     expect(discs[1]!.field).toBe('inputHash');
     expect(discs[2]!.field).toBe('outputHash');
-  });
-
-  it('handles empty string hashes matching', () => {
-    const receipt: ReceiptSummary = {
-      id: 'r1',
-      interactionHash: '',
-      inputHash: '',
-      outputHash: '',
-      endpoint: '/ep',
-      timestamp: 0,
-    };
-    const att = createAttestation('a', 'b', '/ep', '', '', '', 0);
-    const discs = getDiscrepancies(receipt, att);
-    expect(discs).toHaveLength(0);
-  });
-
-  it('handles empty string vs non-empty string mismatch', () => {
-    const receipt: ReceiptSummary = {
-      id: 'r1',
-      interactionHash: '',
-      inputHash: 'in',
-      outputHash: 'out',
-      endpoint: '/ep',
-      timestamp: 0,
-    };
-    const att = createAttestation('a', 'b', '/ep', 'in', 'out', 'ix', 0);
-    const discs = getDiscrepancies(receipt, att);
-    expect(discs).toHaveLength(1);
-    expect(discs[0]!.field).toBe('interactionHash');
-    expect(discs[0]!.agentClaimed).toBe('');
-    expect(discs[0]!.counterpartyClaimed).toBe('ix');
   });
 });

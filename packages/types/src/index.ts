@@ -295,3 +295,11 @@ export {
 
 export { Logger, createLogger, defaultLogger, LogLevel } from './logger';
 export type { LogEntry, LogOutput } from './logger';
+
+// ─── Tracing ─────────────────────────────────────────────────────────────────────
+export { Tracer, ActiveSpan, InMemoryCollector, createTracer } from './tracing';
+export type { Span, SpanEvent, SpanStatus, SpanCollector } from './tracing';
+
+// ─── Retry & resilience ──────────────────────────────────────────────────────────
+export { withRetry, CircuitBreaker, HealthChecker } from './retry';
+export type { RetryOptions, CircuitBreakerOptions, CircuitBreakerState, HealthCheck, HealthStatus } from './retry';

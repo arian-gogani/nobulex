@@ -8,6 +8,7 @@ export interface NegotiationSession {
   timeoutMs: number;
   createdAt: number;
   maxRounds: number;
+  failureReason?: string;
 }
 
 export interface Proposal {

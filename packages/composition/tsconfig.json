@@ -7,5 +7,5 @@
     "emitDeclarationOnly": true
   },
   "include": ["src/**/*"],
-  "references": [{ "path": "../crypto" }]
+  "references": [{ "path": "../crypto" }, { "path": "../ccl" }]
 }

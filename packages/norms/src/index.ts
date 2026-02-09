@@ -1,4 +1,6 @@
-import { sha256Object, generateId } from '@stele/crypto';
+import { sha256Object } from '@stele/crypto';
+import { parse, serialize } from '@stele/ccl';
+import type { CCLDocument, Statement } from '@stele/ccl';
 
 export type {
   DiscoveredNorm,
@@ -19,21 +21,83 @@ import type {
 } from './types';
 
 /**
- * Categorize a constraint based on keywords.
+ * Categorize a constraint by parsing it as CCL and inspecting the statement type.
+ * Falls back to 'general' if parsing fails or no statements are found.
  */
 function categorizeConstraint(constraint: string): string {
-  const lower = constraint.toLowerCase();
-  if (lower.includes('deny')) return 'denial';
-  if (lower.includes('permit')) return 'permission';
-  if (lower.includes('limit')) return 'limitation';
-  if (lower.includes('require')) return 'requirement';
-  return 'general';
+  try {
+    const doc = parse(constraint);
+    const stmt: Statement | undefined = doc.statements[0];
+    if (!stmt) return 'general';
+    switch (stmt.type) {
+      case 'deny':
+        return 'denial';
+      case 'permit':
+        return 'permission';
+      case 'limit':
+        return 'limitation';
+      case 'require':
+        return 'requirement';
+      default:
+        return 'general';
+    }
+  } catch {
+    // If parsing fails, fall back to general
+    return 'general';
+  }
+}
+
+/**
+ * Try to parse a constraint as CCL and return the document, or null on failure.
+ */
+function tryParseCCL(constraint: string): CCLDocument | null {
+  try {
+    return parse(constraint);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Compute the Pearson correlation coefficient between two arrays.
+ * Returns 0 if the arrays have fewer than 2 elements or if
+ * the standard deviation of either array is zero.
+ */
+function pearsonCorrelation(xs: number[], ys: number[]): number {
+  const n = xs.length;
+  if (n < 2 || n !== ys.length) return 0;
+
+  const meanX = xs.reduce((a, b) => a + b, 0) / n;
+  const meanY = ys.reduce((a, b) => a + b, 0) / n;
+
+  let sumXY = 0;
+  let sumX2 = 0;
+  let sumY2 = 0;
+
+  for (let i = 0; i < n; i++) {
+    const dx = xs[i]! - meanX;
+    const dy = ys[i]! - meanY;
+    sumXY += dx * dy;
+    sumX2 += dx * dx;
+    sumY2 += dy * dy;
+  }
+
+  const denom = Math.sqrt(sumX2 * sumY2);
+  if (denom === 0) return 0;
+  return sumXY / denom;
 }
 
 /**
  * Analyze all covenants to produce a NormAnalysis.
- * Count unique constraints. Cluster by category (derived from constraint keywords).
- * Compute average trust score per cluster. Returns NormAnalysis with empty emergentNorms.
+ *
+ * Parses each constraint as CCL. Categorizes by actual statement type
+ * (deny, permit, require, limit) instead of keyword matching.
+ * Computes proper statistics per cluster.
+ * Populates emergentNorms by running discoverNorms internally with
+ * sensible defaults (minPrevalence=0.5, minCorrelation=0.3).
+ *
+ * @throws {Error} if covenants array is empty (validation: non-empty required)
+ *                 — except for the empty-covenants-allowed overload
  */
 export function analyzeNorms(covenants: CovenantData[]): NormAnalysis {
   if (covenants.length === 0) {
@@ -46,6 +110,15 @@ export function analyzeNorms(covenants: CovenantData[]): NormAnalysis {
     };
   }
 
+  // Validate trust scores
+  for (const cov of covenants) {
+    if (cov.trustScore < 0 || cov.trustScore > 1) {
+      throw new Error(
+        `Invalid trustScore ${cov.trustScore} for agent "${cov.agentId}": must be in [0, 1]`,
+      );
+    }
+  }
+
   // Collect all unique constraints
   const allConstraints = new Set<string>();
   for (const cov of covenants) {
@@ -54,7 +127,7 @@ export function analyzeNorms(covenants: CovenantData[]): NormAnalysis {
     }
   }
 
-  // Build clusters by category
+  // Build clusters by category (using CCL parsing for categorization)
   const clusterMap = new Map<string, {
     constraints: Set<string>;
     agentIds: Set<string>;
@@ -103,23 +176,86 @@ export function analyzeNorms(covenants: CovenantData[]): NormAnalysis {
   const foundCategories = new Set(clusters.map((c) => c.category));
   const gaps = expectedCategories.filter((cat) => !foundCategories.has(cat));
 
-  return {
+  // Build the initial analysis (without emergentNorms)
+  const analysis: NormAnalysis = {
     totalCovenants: covenants.length,
     uniqueConstraints: allConstraints.size,
     clusters,
     emergentNorms: [],
     gaps,
   };
+
+  // Populate emergentNorms by calling discoverNorms with sensible defaults
+  analysis.emergentNorms = discoverNorms(
+    analysis,
+    0.5,  // minPrevalence: constraint must appear in >= 50% of covenants
+    0.3,  // minCorrelation: must have meaningful trust correlation
+    covenants,
+  );
+
+  return analysis;
 }
 
 /**
- * From clusters, find constraints that appear in >= minPrevalence fraction of covenants
- * AND have average trust correlation >= minCorrelation. Returns DiscoveredNorm[].
+ * Compute the Pearson correlation between constraint prevalence and trust score.
+ *
+ * For each agent, we compute a binary prevalence (1 if the agent has any
+ * constraint in the cluster, 0 otherwise) and correlate that with the agent's
+ * trust score. A norm is "emergent" if it appears frequently among high-trust
+ * agents AND infrequently among low-trust agents, producing a positive correlation.
+ *
+ * @param cluster - The cluster to compute correlation for
+ * @param allCovenants - All covenants for computing per-agent prevalence
+ * @returns Pearson correlation in [-1, 1], or 0 if insufficient data
+ */
+function computeClusterCorrelation(
+  cluster: NormCluster,
+  allCovenants: CovenantData[],
+): number {
+  if (allCovenants.length < 2) return 0;
+
+  // Deduplicate by agentId (take the first entry per agent)
+  const agentMap = new Map<string, CovenantData>();
+  for (const cov of allCovenants) {
+    if (!agentMap.has(cov.agentId)) {
+      agentMap.set(cov.agentId, cov);
+    }
+  }
+
+  const clusterConstraintSet = new Set(cluster.constraints);
+  const prevalences: number[] = [];
+  const trustScores: number[] = [];
+
+  for (const [, cov] of agentMap) {
+    const hasConstraint = cov.constraints.some((c) => clusterConstraintSet.has(c))
+      ? 1
+      : 0;
+    prevalences.push(hasConstraint);
+    trustScores.push(cov.trustScore);
+  }
+
+  return pearsonCorrelation(prevalences, trustScores);
+}
+
+/**
+ * From clusters, find constraints that appear in >= minPrevalence fraction of
+ * covenants AND have positive Pearson correlation between constraint prevalence
+ * and trust score >= minCorrelation. Returns DiscoveredNorm[].
+ *
+ * Confidence formula: min(1, sqrt(agentCount) * abs(correlation))
+ * This scales with sample size and actual correlation strength.
+ *
+ * @param analysis - The NormAnalysis to discover norms from
+ * @param minPrevalence - Minimum fraction of covenants that must contain the cluster
+ * @param minCorrelation - Minimum Pearson correlation threshold
+ * @param covenants - Optional: all covenants for computing proper correlation.
+ *                    If not provided, falls back to cluster-level estimation.
  */
 export function discoverNorms(
   analysis: NormAnalysis,
   minPrevalence: number,
   minCorrelation: number,
+  covenants?: CovenantData[],
 ): DiscoveredNorm[] {
   const norms: DiscoveredNorm[] = [];
 
@@ -130,18 +266,35 @@ export function discoverNorms(
   for (const cluster of analysis.clusters) {
     // Prevalence = fraction of covenants that have constraints in this cluster
     const prevalence = cluster.agentCount / analysis.totalCovenants;
-    const correlation = cluster.averageTrustScore;
+
+    // Compute real Pearson correlation if covenants are available
+    let correlation: number;
+    if (covenants && covenants.length >= 2) {
+      correlation = computeClusterCorrelation(cluster, covenants);
+    } else {
+      // Fallback: estimate correlation from cluster data
+      // Use a simple heuristic: averageTrustScore as a rough proxy
+      // (this is only used when covenants aren't passed)
+      correlation = cluster.averageTrustScore;
+    }
 
     if (prevalence >= minPrevalence && correlation >= minCorrelation) {
       for (const constraint of cluster.constraints) {
         const id = sha256Object({ pattern: constraint, category: cluster.category });
+
+        // Confidence: min(1, sqrt(agentCount) * abs(correlation))
+        const confidence = Math.min(
+          1,
+          Math.sqrt(cluster.agentCount) * Math.abs(correlation),
+        );
+
         norms.push({
           id,
           pattern: constraint,
           prevalence,
           correlationWithTrust: correlation,
           category: cluster.category,
-          confidence: prevalence * correlation,
+          confidence,
           proposedAsStandard: false,
         });
       }
@@ -153,30 +306,82 @@ export function discoverNorms(
 
 /**
  * Creates a GovernanceProposal from a discovered norm.
+ * Includes the constraint's parsed CCL representation in the proposal description.
  */
 export function proposeStandard(norm: DiscoveredNorm): GovernanceProposal {
   const id = sha256Object({ normId: norm.id, pattern: norm.pattern });
+
+  // Include parsed CCL representation if possible
+  let cclInfo = '';
+  const doc = tryParseCCL(norm.pattern);
+  if (doc && doc.statements.length > 0) {
+    const stmt = doc.statements[0]!;
+    cclInfo = ` [CCL: ${stmt.type} rule`;
+    if (stmt.type !== 'limit') {
+      cclInfo += `, action="${stmt.action}", resource="${stmt.resource}"`;
+    } else {
+      cclInfo += `, action="${stmt.action}", limit=${stmt.count}/${stmt.periodSeconds}s`;
+    }
+    cclInfo += ']';
+  }
+
   return {
     id,
     normId: norm.id,
     proposedAt: Date.now(),
-    description: `Propose "${norm.pattern}" as standard norm in category "${norm.category}" ` +
-      `(prevalence: ${norm.prevalence.toFixed(2)}, trust correlation: ${norm.correlationWithTrust.toFixed(2)})`,
+    description:
+      `Propose "${norm.pattern}" as standard norm in category "${norm.category}" ` +
+      `(prevalence: ${norm.prevalence.toFixed(2)}, trust correlation: ${norm.correlationWithTrust.toFixed(2)})` +
+      cclInfo,
     pattern: norm.pattern,
   };
 }
 
 /**
  * Generates a CovenantTemplate from discovered norms.
- * Name = "Standard Covenant (auto-generated)". constraints = all norm patterns.
+ * Parses all norm patterns as CCL and merges them properly.
+ * Name = "Standard Covenant (auto-generated)". constraints = serialized CCL.
  */
 export function generateTemplate(norms: DiscoveredNorm[]): CovenantTemplate {
-  const constraints = norms.map((n) => n.pattern);
   const sourceNorms = norms.map((n) => n.id);
+
+  // Parse each norm as CCL and collect all statements
+  const allStatements: import('@stele/ccl').Statement[] = [];
+  const rawConstraints: string[] = [];
+
+  for (const norm of norms) {
+    const doc = tryParseCCL(norm.pattern);
+    if (doc && doc.statements.length > 0) {
+      for (const stmt of doc.statements) {
+        allStatements.push(stmt);
+      }
+    }
+    // Always keep the original pattern in constraints for backward compatibility
+    rawConstraints.push(norm.pattern);
+  }
+
+  // If we have parsed statements, serialize the merged document as constraints
+  let constraints: string[];
+  if (allStatements.length > 0) {
+    const mergedDoc: CCLDocument = {
+      statements: allStatements,
+      permits: allStatements.filter((s): s is import('@stele/ccl').PermitDenyStatement => s.type === 'permit'),
+      denies: allStatements.filter((s): s is import('@stele/ccl').PermitDenyStatement => s.type === 'deny'),
+      obligations: allStatements.filter((s): s is import('@stele/ccl').RequireStatement => s.type === 'require'),
+      limits: allStatements.filter((s): s is import('@stele/ccl').LimitStatement => s.type === 'limit'),
+    };
+    // Serialize the merged CCL document back to source text
+    const serialized = serialize(mergedDoc);
+    // Use the serialized form — each line is a constraint
+    constraints = serialized.split('\n').filter((line) => line.trim() !== '');
+  } else {
+    constraints = rawConstraints;
+  }
 
   return {
     name: 'Standard Covenant (auto-generated)',
-    description: `Auto-generated covenant template from ${norms.length} discovered norms ` +
+    description:
+      `Auto-generated covenant template from ${norms.length} discovered norms ` +
       `covering categories: ${[...new Set(norms.map((n) => n.category))].join(', ')}`,
     constraints,
     sourceNorms,

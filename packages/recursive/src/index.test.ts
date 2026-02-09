@@ -11,6 +11,7 @@ import type {
   MetaCovenant,
   VerificationEntity,
   MetaTargetType,
+  TrustBase,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -32,9 +33,20 @@ describe('createMetaCovenant', () => {
     expect(mc.recursionDepth).toBe(0);
   });
 
-  it('starts with empty terminationProof', () => {
+  it('populates terminationProof for base case (no dependencies)', () => {
     const mc = createMetaCovenant('reputation', ['c1']);
+    expect(mc.terminationProof).toContain('Base case');
+    expect(mc.terminationProof.length).toBeGreaterThan(0);
+  });
+
+  it('leaves terminationProof empty when dependencies are provided', () => {
+    const mc = createMetaCovenant('monitor', ['c1'], ['dep-1']);
     expect(mc.terminationProof).toBe('');
+  });
+
+  it('stores dependsOn when provided', () => {
+    const mc = createMetaCovenant('monitor', ['c1'], ['dep-1', 'dep-2']);
+    expect(mc.dependsOn).toEqual(['dep-1', 'dep-2']);
   });
 
   it('generates a deterministic id from content', () => {
@@ -134,7 +146,6 @@ describe('verifyRecursively', () => {
     ];
     const results = verifyRecursively(entities, 5);
     expect(results.length).toBeGreaterThanOrEqual(3);
-    // e1 at layer 0, e2 at layer 1, e3 at layer 2
     const layers = results.filter((r) => r.entityId === 'e1' || r.entityId === 'e2' || r.entityId === 'e3');
     expect(layers.length).toBe(3);
   });
@@ -146,7 +157,6 @@ describe('verifyRecursively', () => {
       { id: 'e3', type: 'governance', covenantId: 'cov3' },
     ];
     const results = verifyRecursively(entities, 1);
-    // Should only go up to layer 1 from the root
     const maxLayer = Math.max(...results.map((r) => r.layer));
     expect(maxLayer).toBeLessThanOrEqual(1);
   });
@@ -156,7 +166,6 @@ describe('verifyRecursively', () => {
       { id: 'e1', type: 'monitor', covenantId: 'cov1', verifierId: 'e2', verifierCovenantId: 'cov2' },
       { id: 'e2', type: 'attestor', covenantId: 'cov2', verifierId: 'e1', verifierCovenantId: 'cov1' },
     ];
-    // Should not infinitely loop
     const results = verifyRecursively(entities, 10);
     expect(results.length).toBeLessThanOrEqual(10);
   });
@@ -209,16 +218,62 @@ describe('proveTermination', () => {
     expect(proof.converges).toBe(false);
   });
 
-  it('includes trustAssumption in the proof', () => {
-    const mc = createMetaCovenant('monitor', ['c1']);
-    const proof = proveTermination([mc]);
-    expect(proof.trustAssumption).toBe(trustBase());
+  it('detects cycles via DAG when dependsOn creates a cycle', () => {
+    const mc1: MetaCovenant = {
+      id: 'a',
+      targetType: 'monitor',
+      constraints: ['c1'],
+      recursionDepth: 0,
+      terminationProof: '',
+      dependsOn: ['b'],
+    };
+    const mc2: MetaCovenant = {
+      id: 'b',
+      targetType: 'monitor',
+      constraints: ['c2'],
+      recursionDepth: 0,
+      terminationProof: '',
+      dependsOn: ['a'],
+    };
+    const proof = proveTermination([mc1, mc2]);
+    expect(proof.converges).toBe(false);
+    expect(proof.proof).toContain('Cycle');
   });
 
-  it('proof string describes convergence for valid chain', () => {
+  it('returns converges=true for valid DAG with dependsOn', () => {
+    const base: MetaCovenant = {
+      id: 'base',
+      targetType: 'monitor',
+      constraints: ['c1'],
+      recursionDepth: 0,
+      terminationProof: 'base',
+    };
+    const layer1: MetaCovenant = {
+      id: 'layer1',
+      targetType: 'monitor',
+      constraints: ['c1', 'c2'],
+      recursionDepth: 1,
+      terminationProof: 'layer1',
+      dependsOn: ['base'],
+    };
+    const proof = proveTermination([base, layer1]);
+    expect(proof.converges).toBe(true);
+  });
+
+  it('includes trustAssumption as structured object', () => {
     const mc = createMetaCovenant('monitor', ['c1']);
     const proof = proveTermination([mc]);
-    expect(proof.proof).toContain('terminates');
+    expect(proof.trustAssumption).toHaveProperty('assumptions');
+    expect(proof.trustAssumption).toHaveProperty('cryptographicPrimitives');
+    expect(proof.trustAssumption).toHaveProperty('description');
+    expect(proof.trustAssumption.assumptions.length).toBeGreaterThan(0);
+  });
+
+  it('proof string describes DAG analysis for valid chain', () => {
+    const mc = createMetaCovenant('monitor', ['c1']);
+    const proof = proveTermination([mc]);
+    expect(proof.proof).toContain('DAG analysis');
+    expect(proof.proof).toContain('no cycles detected');
   });
 
   it('proof string describes cycle for invalid chain', () => {
@@ -232,19 +287,38 @@ describe('proveTermination', () => {
 // trustBase
 // ---------------------------------------------------------------------------
 describe('trustBase', () => {
-  it('returns the irreducible trust assumption string', () => {
+  it('returns a structured TrustBase object', () => {
     const tb = trustBase();
-    expect(tb).toBe(
-      'Ed25519 signature unforgeability under discrete log hardness; SHA-256 collision resistance',
-    );
+    expect(tb).toHaveProperty('assumptions');
+    expect(tb).toHaveProperty('cryptographicPrimitives');
+    expect(tb).toHaveProperty('description');
   });
 
-  it('includes Ed25519', () => {
-    expect(trustBase()).toContain('Ed25519');
+  it('includes Ed25519 in assumptions', () => {
+    const tb = trustBase();
+    expect(tb.assumptions.some(a => a.includes('Ed25519'))).toBe(true);
   });
 
-  it('includes SHA-256', () => {
-    expect(trustBase()).toContain('SHA-256');
+  it('includes SHA-256 in assumptions', () => {
+    const tb = trustBase();
+    expect(tb.assumptions.some(a => a.includes('SHA-256'))).toBe(true);
+  });
+
+  it('includes Ed25519 in cryptographicPrimitives', () => {
+    const tb = trustBase();
+    expect(tb.cryptographicPrimitives).toContain('Ed25519');
+  });
+
+  it('includes SHA-256 in cryptographicPrimitives', () => {
+    const tb = trustBase();
+    expect(tb.cryptographicPrimitives).toContain('SHA-256');
+  });
+
+  it('has a non-empty description', () => {
+    const tb = trustBase();
+    expect(tb.description.length).toBeGreaterThan(0);
+    expect(tb.description).toContain('Ed25519');
+    expect(tb.description).toContain('SHA-256');
   });
 });
 
@@ -307,5 +381,27 @@ describe('addLayer', () => {
     const next = addLayer(mc, ['c2']);
     expect(next.id.length).toBe(64);
     expect(/^[0-9a-f]{64}$/.test(next.id)).toBe(true);
+  });
+
+  it('populates terminationProof with layer information', () => {
+    const mc = createMetaCovenant('monitor', ['c1']);
+    const next = addLayer(mc, ['c2']);
+    expect(next.terminationProof).toContain('Layer 1');
+    expect(next.terminationProof).toContain('additional constraints');
+  });
+
+  it('sets dependsOn to include parent id', () => {
+    const mc = createMetaCovenant('monitor', ['c1']);
+    const next = addLayer(mc, ['c2']);
+    expect(next.dependsOn).toBeDefined();
+    expect(next.dependsOn).toContain(mc.id);
+  });
+
+  it('accumulates dependsOn through multiple layers', () => {
+    const mc0 = createMetaCovenant('monitor', ['c1']);
+    const mc1 = addLayer(mc0, ['c2']);
+    const mc2 = addLayer(mc1, ['c3']);
+    expect(mc2.dependsOn).toContain(mc1.id);
+    expect(mc2.dependsOn).toContain(mc0.id);
   });
 });

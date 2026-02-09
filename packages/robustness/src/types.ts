@@ -40,3 +40,12 @@ export interface ConstraintSpec {
   action?: string;
   resource?: string;
 }
+
+export interface RobustnessOptions {
+  /** Maximum input space size for exhaustive testing (default 1000) */
+  exhaustiveThreshold?: number;
+  /** Sample size for statistical testing (default 500) */
+  statisticalSampleSize?: number;
+  /** Target confidence level (default 0.95) */
+  confidenceLevel?: number;
+}

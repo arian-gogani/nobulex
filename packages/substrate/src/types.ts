@@ -36,3 +36,9 @@ export interface AdapterConfig {
   actuators: string[];
   attestation: SubstrateAdapter['attestationMethod'];
 }
+
+export interface SafetyBoundResult {
+  safe: boolean;
+  limitHit: 'hard' | 'soft' | 'none';
+  action?: string;
+}

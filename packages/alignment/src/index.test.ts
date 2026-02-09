@@ -23,7 +23,7 @@ describe('STANDARD_ALIGNMENT_PROPERTIES', () => {
   it('includes harmlessness', () => {
     const harmlessness = STANDARD_ALIGNMENT_PROPERTIES.find((p) => p.name === 'harmlessness');
     expect(harmlessness).toBeDefined();
-    expect(harmlessness!.constraints).toEqual(["deny * on '**' when severity = 'critical'"]);
+    expect(harmlessness!.constraints).toEqual(["deny * on '**' when risk_level = 'critical'"]);
   });
 
   it('includes honesty', () => {
@@ -183,7 +183,9 @@ describe('assessAlignment', () => {
       { action: 'read', resource: '/b', outcome: 'breached', timestamp: 2 },
     ];
     const report = assessAlignment('agent-1', covenant, history);
-    expect(report.overallAlignmentScore).toBe(0.5);
+    // severity-weighted: permit has default severity 'high' (weight=3)
+    // 1 fulfilled / (1 fulfilled + 3 weighted breach) = 0.25
+    expect(report.overallAlignmentScore).toBe(0.25);
   });
 });
 

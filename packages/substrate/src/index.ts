@@ -7,6 +7,7 @@ export type {
   SafetyBound,
   UniversalCovenant,
   AdapterConfig,
+  SafetyBoundResult,
 } from './types';
 
 import type {
@@ -16,46 +17,102 @@ import type {
   SafetyBound,
   UniversalCovenant,
   AdapterConfig,
+  SafetyBoundResult,
 } from './types';
 
+// ---------------------------------------------------------------------------
+// Validation
+// ---------------------------------------------------------------------------
+
+const VALID_SUBSTRATE_TYPES: ReadonlySet<string> = new Set<string>([
+  'ai-agent',
+  'robot',
+  'iot-device',
+  'autonomous-vehicle',
+  'smart-contract',
+  'drone',
+]);
+
+const VALID_OPERATORS: ReadonlySet<string> = new Set<string>([
+  'lt',
+  'gt',
+  'equals',
+  'between',
+]);
+
+function validateSubstrateType(type: string): asserts type is SubstrateType {
+  if (!VALID_SUBSTRATE_TYPES.has(type)) {
+    throw new Error(
+      `Invalid substrate type: "${type}". Valid types: ${[...VALID_SUBSTRATE_TYPES].join(', ')}`,
+    );
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Default constraints per substrate type (valid CCL strings)
+// ---------------------------------------------------------------------------
+
 /**
- * Default constraints per substrate type.
+ * Default constraints per substrate type, using valid CCL constraint strings.
+ *
+ * Each constraint follows one of these CCL patterns:
+ *   - "deny <target> on '<scope>' when <condition>"
+ *   - "limit <resource> <value> per <period>"
+ *   - "require <condition> <operator> <value> per <scope>"
  */
 export const SUBSTRATE_DEFAULTS: Record<SubstrateType, { constraints: string[]; safetyBounds: SafetyBound[] }> = {
   'ai-agent': {
-    constraints: ['response_time lt 5000 ms', 'memory_usage lt 4096 MB'],
+    constraints: [
+      "limit response_time 5000 per 1 request",
+      "limit memory_usage 4096 per 1 instance",
+    ],
     safetyBounds: [
       { property: 'token_rate', hardLimit: 10000, softLimit: 8000, action: 'degrade' },
     ],
   },
   'robot': {
-    constraints: ['force_limit lt 100 N', 'speed lt 2 m/s'],
+    constraints: [
+      "deny force on '**' when force_value > 100",
+      "limit speed 2 per 1 movement",
+    ],
     safetyBounds: [
       { property: 'force', hardLimit: 150, softLimit: 100, action: 'halt' },
       { property: 'speed', hardLimit: 3, softLimit: 2, action: 'halt' },
     ],
   },
   'iot-device': {
-    constraints: ['data_rate lt 1000 kbps', 'power_consumption lt 5 W'],
+    constraints: [
+      "limit data.transmit 1000 per 60 seconds",
+      "limit power.draw 5 per 1 cycle",
+    ],
     safetyBounds: [
       { property: 'temperature', hardLimit: 85, softLimit: 70, action: 'alert' },
     ],
   },
   'autonomous-vehicle': {
-    constraints: ['speed lt 130 km/h', 'following_distance gt 2 s'],
+    constraints: [
+      "limit speed 130 per 1 travel",
+      "require following_distance > 2 per 1 travel",
+    ],
     safetyBounds: [
       { property: 'speed', hardLimit: 150, softLimit: 130, action: 'halt' },
       { property: 'proximity', hardLimit: 0.5, softLimit: 1.0, action: 'halt' },
     ],
   },
   'smart-contract': {
-    constraints: ['gas_limit lt 30000000 wei', 'reentrancy equals 0 bool'],
+    constraints: [
+      "limit gas_usage 30000000 per 1 transaction",
+      "deny reentrancy on '**' when call_depth > 0",
+    ],
     safetyBounds: [
       { property: 'gas_usage', hardLimit: 30000000, softLimit: 25000000, action: 'degrade' },
     ],
   },
   'drone': {
-    constraints: ['altitude lt 120 m', 'geofence between 0 km'],
+    constraints: [
+      "limit altitude 120 per 1 flight",
+      "require geofence within 10 per 1 flight",
+    ],
     safetyBounds: [
       { property: 'altitude', hardLimit: 150, softLimit: 120, action: 'halt' },
       { property: 'battery', hardLimit: 5, softLimit: 15, action: 'alert' },
@@ -63,10 +120,21 @@ export const SUBSTRATE_DEFAULTS: Record<SubstrateType, { constraints: string[]; 
   },
 };
 
+// ---------------------------------------------------------------------------
+// createAdapter
+// ---------------------------------------------------------------------------
+
 /**
  * Creates a SubstrateAdapter from a type and configuration.
+ * Validates that the substrate type is known and capabilities are non-empty.
  */
 export function createAdapter(type: SubstrateType, config: AdapterConfig): SubstrateAdapter {
+  validateSubstrateType(type);
+
+  if (!config.capabilities || config.capabilities.length === 0) {
+    throw new Error('AdapterConfig.capabilities must be a non-empty array');
+  }
+
   return {
     type,
     capabilityManifest: [...config.capabilities],
@@ -75,6 +143,10 @@ export function createAdapter(type: SubstrateType, config: AdapterConfig): Subst
     attestationMethod: config.attestation,
   };
 }
+
+// ---------------------------------------------------------------------------
+// physicalCovenant
+// ---------------------------------------------------------------------------
 
 /**
  * Generates CCL-like constraint strings from physical constraints.
@@ -117,51 +189,34 @@ export function physicalCovenant(
   };
 }
 
+// ---------------------------------------------------------------------------
+// translateCovenant
+// ---------------------------------------------------------------------------
+
 /**
- * Takes abstract covenant constraints and translates them to substrate-specific constraints.
- * For robot: adds force_limit. For drone: adds geofence. For iot-device: adds data_rate.
- * Returns a UniversalCovenant.
+ * Takes abstract covenant constraints and translates them to substrate-specific
+ * constraints by merging with the substrate type's default constraint set.
+ *
+ * Instead of naive string-includes checking, this function builds the constraint
+ * list from the substrate defaults, adding all default constraints that are not
+ * already present (exact-match deduplication).
+ *
+ * Returns a UniversalCovenant with the merged constraints and default safety bounds.
  */
 export function translateCovenant(
   covenantConstraints: string[],
   targetSubstrate: SubstrateType,
 ): UniversalCovenant {
-  const translated = [...covenantConstraints];
-
-  switch (targetSubstrate) {
-    case 'robot':
-      if (!translated.some(c => c.includes('force_limit'))) {
-        translated.push('force_limit lt 100 N');
-      }
-      break;
-    case 'drone':
-      if (!translated.some(c => c.includes('geofence'))) {
-        translated.push('geofence between 0 10 km');
-      }
-      break;
-    case 'iot-device':
-      if (!translated.some(c => c.includes('data_rate'))) {
-        translated.push('data_rate lt 1000 kbps');
-      }
-      break;
-    case 'autonomous-vehicle':
-      if (!translated.some(c => c.includes('speed'))) {
-        translated.push('speed lt 130 km/h');
-      }
-      break;
-    case 'smart-contract':
-      if (!translated.some(c => c.includes('gas_limit'))) {
-        translated.push('gas_limit lt 30000000 wei');
-      }
-      break;
-    case 'ai-agent':
-      if (!translated.some(c => c.includes('response_time'))) {
-        translated.push('response_time lt 5000 ms');
-      }
-      break;
-  }
+  validateSubstrateType(targetSubstrate);
 
   const defaults = SUBSTRATE_DEFAULTS[targetSubstrate];
+
+  // Merge: start with incoming constraints, append defaults not already present
+  const constraintSet = new Set(covenantConstraints);
+  for (const defaultConstraint of defaults.constraints) {
+    constraintSet.add(defaultConstraint);
+  }
+  const translated = [...constraintSet];
 
   const content = {
     substrate: targetSubstrate,
@@ -181,8 +236,13 @@ export function translateCovenant(
   };
 }
 
+// ---------------------------------------------------------------------------
+// checkPhysicalConstraint
+// ---------------------------------------------------------------------------
+
 /**
  * Returns boolean checking if actualValue satisfies the constraint.
+ * Throws for unknown operators to ensure exhaustive handling.
  */
 export function checkPhysicalConstraint(constraint: PhysicalConstraint, actualValue: number): boolean {
   switch (constraint.operator) {
@@ -196,23 +256,42 @@ export function checkPhysicalConstraint(constraint: PhysicalConstraint, actualVa
       const [low, high] = constraint.value as [number, number];
       return actualValue >= low && actualValue <= high;
     }
-    default:
+    default: {
+      const op = (constraint as { operator: string }).operator;
+      if (!VALID_OPERATORS.has(op)) {
+        throw new Error(
+          `Unknown operator: "${op}". Valid operators: ${[...VALID_OPERATORS].join(', ')}`,
+        );
+      }
+      // This should never be reached but satisfies exhaustive checking
       return false;
+    }
   }
 }
 
+// ---------------------------------------------------------------------------
+// checkSafetyBound
+// ---------------------------------------------------------------------------
+
 /**
- * Returns { safe: boolean; action?: string } checking if value is within bounds.
+ * Checks whether actualValue is within the safety bound.
+ *
+ * Returns a SafetyBoundResult that distinguishes between:
+ *   - hard limit hit  (safe: false, limitHit: 'hard')
+ *   - soft limit hit  (safe: true,  limitHit: 'soft')
+ *   - no limit hit    (safe: true,  limitHit: 'none')
+ *
+ * The action field is only present when a limit is hit (soft or hard).
  */
 export function checkSafetyBound(
   bound: SafetyBound,
   actualValue: number,
-): { safe: boolean; action?: string } {
+): SafetyBoundResult {
   if (actualValue > bound.hardLimit) {
-    return { safe: false, action: bound.action };
+    return { safe: false, limitHit: 'hard', action: bound.action };
   }
   if (actualValue > bound.softLimit) {
-    return { safe: true, action: bound.action };
+    return { safe: true, limitHit: 'soft', action: bound.action };
   }
-  return { safe: true };
+  return { safe: true, limitHit: 'none' };
 }

@@ -1,4 +1,6 @@
 import { sha256Object } from '@stele/crypto';
+import { parse, matchAction, matchResource } from '@stele/ccl';
+import type { Statement } from '@stele/ccl';
 
 export type {
   AlignmentProperty,
@@ -15,12 +17,24 @@ import type {
 } from './types';
 
 /**
+ * Severity weights for breach scoring.
+ * Critical breaches count 4x, high 3x, medium 2x, low 1x.
+ */
+const SEVERITY_WEIGHTS: Record<string, number> = {
+  critical: 4,
+  high: 3,
+  medium: 2,
+  low: 1,
+};
+
+/**
  * Standard HHH (Helpful, Honest, Harmless) alignment properties.
+ * All constraints use valid CCL syntax (risk_level instead of reserved 'severity' keyword).
  */
 export const STANDARD_ALIGNMENT_PROPERTIES: AlignmentProperty[] = [
   {
     name: 'harmlessness',
-    constraints: ["deny * on '**' when severity = 'critical'"],
+    constraints: ["deny * on '**' when risk_level = 'critical'"],
     testSuite: 'harmlessness-tests',
     coverageScore: 0,
   },
@@ -40,6 +54,7 @@ export const STANDARD_ALIGNMENT_PROPERTIES: AlignmentProperty[] = [
 
 /**
  * Creates an AlignmentCovenant for an agent.
+ * Validates that agentId is non-empty.
  * id = sha256 of content. constraints = union of all properties' constraints.
  */
 export function defineAlignment(
@@ -47,6 +62,10 @@ export function defineAlignment(
   properties: AlignmentProperty[],
   verificationMethod: 'behavioral' | 'compositional' | 'adversarial' = 'behavioral',
 ): AlignmentCovenant {
+  if (!agentId || agentId.trim() === '') {
+    throw new Error('agentId must be a non-empty string');
+  }
+
   // Build the union of all constraints from all properties
   const constraintSet = new Set<string>();
   for (const prop of properties) {
@@ -75,44 +94,81 @@ export function defineAlignment(
 
 /**
  * Assess how well an agent's execution history matches alignment properties.
- * For each property, compute coverage based on % of relevant actions that were fulfilled (not breached).
- * overallAlignmentScore = average of property coverage scores.
- * gaps = properties where coverage < 0.5.
- * recommendations = suggestions for gap properties.
+ *
+ * Uses real CCL parsing and evaluation:
+ * 1. For each property, parse its constraints as CCL documents
+ * 2. For each execution record, use matchAction/matchResource to check relevance
+ * 3. Apply severity-weighted scoring for breaches
+ *
+ * Severity weights: critical=4x, high=3x, medium=2x, low=1x
+ * coverageScore = fulfilledCount / (fulfilledCount + weightedBreachCount)
+ * overallAlignmentScore = average of property coverage scores
+ * gaps = properties where coverage < 0.5
  */
 export function assessAlignment(
   agentId: string,
   covenant: AlignmentCovenant,
   history: ExecutionRecord[],
 ): AlignmentReport {
+  if (!agentId || agentId.trim() === '') {
+    throw new Error('agentId must be a non-empty string');
+  }
+
+  if (covenant.alignmentProperties.length === 0) {
+    return {
+      agentId,
+      properties: [],
+      overallAlignmentScore: 0,
+      gaps: [],
+      recommendations: [],
+    };
+  }
+
   const propertyScores: AlignmentProperty[] = [];
   const gaps: string[] = [];
   const recommendations: string[] = [];
 
   for (const prop of covenant.alignmentProperties) {
-    // Find relevant actions: actions whose resource or action matches any constraint keyword
-    const relevantRecords = history.filter((record) => {
-      return prop.constraints.some((constraint) => {
-        // A record is relevant to a property if the action or resource relates to the constraint
-        const constraintWords = constraint.toLowerCase().split(/\s+/);
-        const actionLower = record.action.toLowerCase();
-        const resourceLower = record.resource.toLowerCase();
-        // Check if the action or resource relates to constraint keywords
-        return (
-          constraintWords.some((w) => actionLower.includes(w) || resourceLower.includes(w)) ||
-          // Wildcard constraints ('**') match everything
-          constraint.includes('**')
-        );
-      });
-    });
+    // Parse all constraints for this property into CCL statements
+    const allStatements: Statement[] = [];
+    for (const constraintSource of prop.constraints) {
+      try {
+        const doc = parse(constraintSource);
+        allStatements.push(...doc.statements);
+      } catch {
+        // Invalid CCL - skip this constraint silently
+      }
+    }
+
+    let fulfilledCount = 0;
+    let weightedBreachCount = 0;
+    let hasRelevantRecords = false;
+
+    for (const record of history) {
+      // Find the first matching statement for this record
+      for (const stmt of allStatements) {
+        if (stmt.type === 'limit') continue;
+
+        // PermitDenyStatement and RequireStatement both have action, resource, severity
+        if (matchAction(stmt.action, record.action) && matchResource(stmt.resource, record.resource)) {
+          hasRelevantRecords = true;
+          const weight = SEVERITY_WEIGHTS[stmt.severity] ?? 1;
+
+          if (record.outcome === 'fulfilled') {
+            fulfilledCount += 1;
+          } else {
+            weightedBreachCount += weight;
+          }
+          break; // only match the first applicable statement per record
+        }
+      }
+    }
 
     let coverageScore: number;
-    if (relevantRecords.length === 0) {
-      // No relevant records means no evidence of alignment or misalignment
+    if (!hasRelevantRecords) {
       coverageScore = 0;
     } else {
-      const fulfilledCount = relevantRecords.filter((r) => r.outcome === 'fulfilled').length;
-      coverageScore = fulfilledCount / relevantRecords.length;
+      coverageScore = fulfilledCount / (fulfilledCount + weightedBreachCount);
     }
 
     propertyScores.push({

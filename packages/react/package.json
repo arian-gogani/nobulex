@@ -1,7 +1,7 @@
 {
   "name": "@stele/react",
   "version": "0.1.0",
-  "description": "React components for accountability dashboards and stele explorers",
+  "description": "Framework-agnostic reactive primitives for Stele-powered UIs",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -14,11 +14,9 @@
   },
   "dependencies": {
     "@stele/types": "0.1.0",
-    "@stele/sdk": "0.1.0"
-  },
-  "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "@stele/sdk": "0.1.0",
+    "@stele/store": "0.1.0",
+    "@stele/core": "0.1.0"
   },
   "publishConfig": {
     "access": "public"

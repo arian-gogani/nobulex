@@ -26,6 +26,8 @@ export type {
   StoreEventCallback,
 } from './types.js';
 
+export { FileStore } from './file-store';
+
 // ─── Filter helpers ─────────────────────────────────────────────────────────────
 
 /**

@@ -25,5 +25,8 @@
     "url": "https://github.com/agbusiness195/stele/issues"
   },
   "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "license": "MIT",
+  "dependencies": {
+    "@stele/crypto": "0.1.0"
+  }
 }

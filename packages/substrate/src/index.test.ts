@@ -6,6 +6,9 @@ import {
   checkPhysicalConstraint,
   checkSafetyBound,
   SUBSTRATE_DEFAULTS,
+  substrateCompatibility,
+  constraintTranslation,
+  substrateCapabilityMatrix,
 } from './index';
 import type {
   SubstrateType,
@@ -562,6 +565,335 @@ describe('substrate integration', () => {
         expect(covenant.constraints).toContain(defaultConstraint);
       }
       expect(covenant.safetyBounds).toEqual(SUBSTRATE_DEFAULTS[t].safetyBounds);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// substrateCompatibility
+// ---------------------------------------------------------------------------
+describe('substrateCompatibility', () => {
+  const aiAdapter: SubstrateAdapter = {
+    type: 'ai-agent',
+    capabilityManifest: ['text-generation', 'data-processing', 'api-call'],
+    sensorInputs: ['prompt-input'],
+    actuatorOutputs: ['text-output'],
+    attestationMethod: 'signed',
+  };
+
+  const robotAdapter: SubstrateAdapter = {
+    type: 'robot',
+    capabilityManifest: ['navigate', 'grasp', 'api-call'],
+    sensorInputs: ['lidar', 'camera'],
+    actuatorOutputs: ['arm', 'wheels'],
+    attestationMethod: 'hardware-tpm',
+  };
+
+  const iotAdapter: SubstrateAdapter = {
+    type: 'iot-device',
+    capabilityManifest: ['temperature-reading', 'api-call'],
+    sensorInputs: ['thermometer'],
+    actuatorOutputs: ['relay'],
+    attestationMethod: 'sensor-log',
+  };
+
+  const smartContractAdapter: SubstrateAdapter = {
+    type: 'smart-contract',
+    capabilityManifest: ['token-transfer', 'state-management'],
+    sensorInputs: [],
+    actuatorOutputs: [],
+    attestationMethod: 'blockchain',
+  };
+
+  const droneAdapter: SubstrateAdapter = {
+    type: 'drone',
+    capabilityManifest: ['fly', 'photograph', 'api-call'],
+    sensorInputs: ['gps', 'altimeter'],
+    actuatorOutputs: ['rotors', 'gimbal'],
+    attestationMethod: 'hardware-tpm',
+  };
+
+  const vehicleAdapter: SubstrateAdapter = {
+    type: 'autonomous-vehicle',
+    capabilityManifest: ['navigate', 'sensor-fusion'],
+    sensorInputs: ['lidar', 'radar', 'camera'],
+    actuatorOutputs: ['steering', 'throttle', 'brake'],
+    attestationMethod: 'hardware-tpm',
+  };
+
+  it('ai-agent and iot-device are compatible via shared api protocol', () => {
+    const result = substrateCompatibility(aiAdapter, iotAdapter);
+    expect(result.compatible).toBe(true);
+    expect(result.sourceType).toBe('ai-agent');
+    expect(result.targetType).toBe('iot-device');
+  });
+
+  it('ai-agent and robot share api protocol and are compatible', () => {
+    const result = substrateCompatibility(aiAdapter, robotAdapter);
+    expect(result.compatible).toBe(true);
+    expect(result.interactionProtocol).toBe('bridged');
+  });
+
+  it('identifies shared capabilities between adapters', () => {
+    const result = substrateCompatibility(aiAdapter, robotAdapter);
+    expect(result.sharedCapabilities).toContain('api-call');
+  });
+
+  it('robot and drone share sensor-bus protocol', () => {
+    const result = substrateCompatibility(robotAdapter, droneAdapter);
+    expect(result.compatible).toBe(true);
+    expect(result.sharedCapabilities).toContain('api-call');
+  });
+
+  it('two physical substrates require safety interlock constraint', () => {
+    const result = substrateCompatibility(robotAdapter, vehicleAdapter);
+    expect(result.constraints).toContain('require safety_interlock active per 1 interaction');
+  });
+
+  it('cyber to physical interaction requires human oversight', () => {
+    const result = substrateCompatibility(aiAdapter, robotAdapter);
+    expect(result.constraints).toContain('require human_oversight enabled per 1 interaction');
+  });
+
+  it('smart-contract and ai-agent are incompatible (no shared protocols)', () => {
+    const result = substrateCompatibility(smartContractAdapter, aiAdapter);
+    expect(result.compatible).toBe(false);
+    expect(result.interactionProtocol).toBe('incompatible');
+    expect(result.warnings.length).toBeGreaterThan(0);
+  });
+
+  it('same-type compatibility returns direct protocol', () => {
+    const robot2: SubstrateAdapter = {
+      ...robotAdapter,
+      capabilityManifest: ['navigate', 'lift'],
+    };
+    const result = substrateCompatibility(robotAdapter, robot2);
+    expect(result.compatible).toBe(true);
+    expect(result.interactionProtocol).toBe('direct');
+  });
+
+  it('iot-device (hybrid) with any domain is direct', () => {
+    const result = substrateCompatibility(iotAdapter, aiAdapter);
+    expect(result.interactionProtocol).toBe('direct');
+  });
+
+  it('cross-domain bridged interaction includes bridge warning', () => {
+    const result = substrateCompatibility(aiAdapter, robotAdapter);
+    expect(result.warnings.some(w => w.includes('bridge adapter'))).toBe(true);
+    expect(result.constraints).toContain('require bridge_adapter available per 1 interaction');
+  });
+
+  it('throws for invalid source substrate type', () => {
+    const bad = { ...aiAdapter, type: 'invalid' as SubstrateType };
+    expect(() => substrateCompatibility(bad, robotAdapter)).toThrow('Invalid substrate type');
+  });
+
+  it('throws for invalid target substrate type', () => {
+    const bad = { ...robotAdapter, type: 'invalid' as SubstrateType };
+    expect(() => substrateCompatibility(aiAdapter, bad)).toThrow('Invalid substrate type');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// constraintTranslation
+// ---------------------------------------------------------------------------
+describe('constraintTranslation', () => {
+  it('translates a deny constraint for ai-agent as software output-filter', () => {
+    const result = constraintTranslation("deny data.delete on '**' when unauthorized", 'ai-agent');
+    expect(result.constraint).toBe("deny data.delete on '**' when unauthorized");
+    expect(result.targetSubstrate).toBe('ai-agent');
+    expect(result.overallFeasibility).toBe(true);
+    expect(result.rules.length).toBeGreaterThanOrEqual(1);
+    expect(result.rules[0].mechanism).toBe('output-filter');
+    expect(result.rules[0].enforcementLevel).toBe('software');
+  });
+
+  it('translates a deny constraint for smart-contract as require-revert', () => {
+    const result = constraintTranslation("deny reentrancy on '**' when call_depth > 0", 'smart-contract');
+    expect(result.rules[0].mechanism).toBe('require-revert');
+    expect(result.rules[0].enforcementLevel).toBe('contractual');
+  });
+
+  it('translates a deny constraint for robot with hardware interlock and safety monitor', () => {
+    const result = constraintTranslation("deny force on '**' when force_value > 100", 'robot');
+    expect(result.rules.length).toBe(2);
+    expect(result.rules[0].mechanism).toBe('hardware-interlock');
+    expect(result.rules[0].enforcementLevel).toBe('hardware');
+    expect(result.rules[1].mechanism).toBe('safety-monitor');
+  });
+
+  it('translates a limit constraint for ai-agent as rate-limiter with audit-logger', () => {
+    const result = constraintTranslation("limit response_time 5000 per 1 request", 'ai-agent');
+    expect(result.rules.length).toBe(2);
+    expect(result.rules[0].mechanism).toBe('rate-limiter');
+    expect(result.rules[1].mechanism).toBe('audit-logger');
+  });
+
+  it('translates a limit constraint for drone as geofence-limiter', () => {
+    const result = constraintTranslation("limit altitude 120 per 1 flight", 'drone');
+    expect(result.rules[0].mechanism).toBe('geofence-limiter');
+    expect(result.rules[0].enforcementLevel).toBe('hardware');
+  });
+
+  it('translates a require constraint for autonomous-vehicle as sensor-fusion-gate', () => {
+    const result = constraintTranslation("require following_distance > 2 per 1 travel", 'autonomous-vehicle');
+    expect(result.rules[0].mechanism).toBe('sensor-fusion-gate');
+    expect(result.rules[0].enforcementLevel).toBe('hardware');
+  });
+
+  it('translates a require constraint for iot-device as state-check', () => {
+    const result = constraintTranslation("require temperature_ok before transmit", 'iot-device');
+    expect(result.rules[0].mechanism).toBe('state-check');
+    expect(result.rules[0].enforcementLevel).toBe('software');
+  });
+
+  it('returns advisory rule for unparseable constraint', () => {
+    const result = constraintTranslation("some-weird-format", 'ai-agent');
+    expect(result.overallFeasibility).toBe(false);
+    expect(result.rules.length).toBe(1);
+    expect(result.rules[0].mechanism).toBe('manual-review');
+    expect(result.rules[0].enforcementLevel).toBe('advisory');
+    expect(result.rules[0].feasible).toBe(false);
+  });
+
+  it('throws for empty constraint string', () => {
+    expect(() => constraintTranslation('', 'ai-agent')).toThrow('Constraint must be a non-empty string');
+  });
+
+  it('throws for whitespace-only constraint string', () => {
+    expect(() => constraintTranslation('   ', 'ai-agent')).toThrow('Constraint must be a non-empty string');
+  });
+
+  it('throws for invalid substrate type', () => {
+    expect(() => constraintTranslation("deny x", 'invalid' as SubstrateType)).toThrow('Invalid substrate type');
+  });
+
+  it('deny on physical substrate produces safety-monitor secondary rule', () => {
+    const result = constraintTranslation("deny collision on '**' when proximity < 1", 'autonomous-vehicle');
+    const safetyRule = result.rules.find(r => r.mechanism === 'safety-monitor');
+    expect(safetyRule).toBeDefined();
+    expect(safetyRule!.enforcementLevel).toBe('software');
+  });
+
+  it('deny on cyber substrate does NOT produce safety-monitor secondary rule', () => {
+    const result = constraintTranslation("deny data.delete on '**' when unauthorized", 'smart-contract');
+    const safetyRule = result.rules.find(r => r.mechanism === 'safety-monitor');
+    expect(safetyRule).toBeUndefined();
+  });
+
+  it('preserves original constraint in every rule', () => {
+    const constraint = "limit gas_usage 30000000 per 1 transaction";
+    const result = constraintTranslation(constraint, 'smart-contract');
+    for (const rule of result.rules) {
+      expect(rule.originalConstraint).toBe(constraint);
+    }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// substrateCapabilityMatrix
+// ---------------------------------------------------------------------------
+describe('substrateCapabilityMatrix', () => {
+  it('returns a matrix with all 6 substrate types when no filter is given', () => {
+    const matrix = substrateCapabilityMatrix();
+    expect(matrix.substrates).toHaveLength(6);
+    const types = matrix.substrates.map(s => s.substrateType);
+    expect(types).toContain('ai-agent');
+    expect(types).toContain('robot');
+    expect(types).toContain('iot-device');
+    expect(types).toContain('autonomous-vehicle');
+    expect(types).toContain('smart-contract');
+    expect(types).toContain('drone');
+  });
+
+  it('returns the standard set of 10 capabilities', () => {
+    const matrix = substrateCapabilityMatrix();
+    expect(matrix.capabilities).toHaveLength(10);
+    expect(matrix.capabilities).toContain('enforce-rate-limit');
+    expect(matrix.capabilities).toContain('enforce-access-deny');
+    expect(matrix.capabilities).toContain('enforce-physical-bound');
+    expect(matrix.capabilities).toContain('enforce-geofence');
+    expect(matrix.capabilities).toContain('audit-logging');
+  });
+
+  it('each substrate row has entries for all 10 capabilities', () => {
+    const matrix = substrateCapabilityMatrix();
+    for (const row of matrix.substrates) {
+      expect(row.capabilities).toHaveLength(10);
+    }
+  });
+
+  it('ai-agent cannot enforce physical bounds', () => {
+    const matrix = substrateCapabilityMatrix(['ai-agent']);
+    const aiRow = matrix.substrates[0];
+    const physBound = aiRow.capabilities.find(c => c.capability === 'enforce-physical-bound');
+    expect(physBound).toBeDefined();
+    expect(physBound!.supported).toBe(false);
+    expect(physBound!.enforcementLevel).toBe('none');
+  });
+
+  it('robot can enforce physical bounds at hardware level', () => {
+    const matrix = substrateCapabilityMatrix(['robot']);
+    const robotRow = matrix.substrates[0];
+    const physBound = robotRow.capabilities.find(c => c.capability === 'enforce-physical-bound');
+    expect(physBound).toBeDefined();
+    expect(physBound!.supported).toBe(true);
+    expect(physBound!.enforcementLevel).toBe('hardware');
+  });
+
+  it('smart-contract cannot do data-encryption (on-chain data is public)', () => {
+    const matrix = substrateCapabilityMatrix(['smart-contract']);
+    const scRow = matrix.substrates[0];
+    const encryption = scRow.capabilities.find(c => c.capability === 'data-encryption');
+    expect(encryption).toBeDefined();
+    expect(encryption!.supported).toBe(false);
+  });
+
+  it('drone can enforce geofence at hardware level', () => {
+    const matrix = substrateCapabilityMatrix(['drone']);
+    const droneRow = matrix.substrates[0];
+    const geofence = droneRow.capabilities.find(c => c.capability === 'enforce-geofence');
+    expect(geofence).toBeDefined();
+    expect(geofence!.supported).toBe(true);
+    expect(geofence!.enforcementLevel).toBe('hardware');
+  });
+
+  it('filters to only requested substrate types', () => {
+    const matrix = substrateCapabilityMatrix(['ai-agent', 'drone']);
+    expect(matrix.substrates).toHaveLength(2);
+    expect(matrix.substrates[0].substrateType).toBe('ai-agent');
+    expect(matrix.substrates[1].substrateType).toBe('drone');
+  });
+
+  it('throws for invalid substrate type in filter', () => {
+    expect(() => substrateCapabilityMatrix(['invalid' as SubstrateType])).toThrow('Invalid substrate type');
+  });
+
+  it('every capability entry has a non-empty notes field', () => {
+    const matrix = substrateCapabilityMatrix();
+    for (const row of matrix.substrates) {
+      for (const cap of row.capabilities) {
+        expect(cap.notes).toBeTruthy();
+        expect(cap.notes.length).toBeGreaterThan(0);
+      }
+    }
+  });
+
+  it('all substrates support audit-logging', () => {
+    const matrix = substrateCapabilityMatrix();
+    for (const row of matrix.substrates) {
+      const audit = row.capabilities.find(c => c.capability === 'audit-logging');
+      expect(audit).toBeDefined();
+      expect(audit!.supported).toBe(true);
+    }
+  });
+
+  it('all substrates support autonomous-halt', () => {
+    const matrix = substrateCapabilityMatrix();
+    for (const row of matrix.substrates) {
+      const halt = row.capabilities.find(c => c.capability === 'autonomous-halt');
+      expect(halt).toBeDefined();
+      expect(halt!.supported).toBe(true);
     }
   });
 });

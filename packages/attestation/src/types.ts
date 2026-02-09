@@ -32,3 +32,30 @@ export interface ReceiptSummary {
   endpoint: string;
   timestamp: number;
 }
+
+export interface AttestationChainLink {
+  attestation: ExternalAttestation;
+  attesterPublicKey: Uint8Array;
+}
+
+export interface ChainVerificationResult {
+  valid: boolean;
+  verifiedLinks: number;
+  totalLinks: number;
+  brokenAt?: number;
+  reason?: string;
+}
+
+export interface AgentAction {
+  id: string;
+  agentId: string;
+  timestamp: number;
+  actionType: string;
+}
+
+export interface AttestationCoverageResult {
+  totalActions: number;
+  coveredActions: number;
+  coveragePercentage: number;
+  uncoveredActionIds: string[];
+}

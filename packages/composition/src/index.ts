@@ -23,6 +23,8 @@ export type {
   ComposedConstraint,
   SystemProperty,
   CovenantSummary,
+  DecomposedCovenant,
+  CompositionComplexityResult,
 } from './types.js';
 
 import type {
@@ -30,6 +32,8 @@ import type {
   ComposedConstraint,
   SystemProperty,
   CovenantSummary,
+  DecomposedCovenant,
+  CompositionComplexityResult,
 } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -407,4 +411,146 @@ export function findConflicts(
   }
 
   return conflicts;
+}
+
+// ---------------------------------------------------------------------------
+// Condition depth helper
+// ---------------------------------------------------------------------------
+
+/** Recursively compute the depth of a condition tree. */
+function conditionDepth(cond?: Condition | CompoundCondition): number {
+  if (!cond) return 0;
+
+  // Simple (leaf) condition
+  if ('field' in cond && 'operator' in cond && 'value' in cond) {
+    return 1;
+  }
+
+  // Compound condition
+  if ('conditions' in cond) {
+    const compound = cond as CompoundCondition;
+    if (compound.conditions.length === 0) return 1;
+    let maxChild = 0;
+    for (const sub of compound.conditions) {
+      const d = conditionDepth(sub);
+      if (d > maxChild) maxChild = d;
+    }
+    return 1 + maxChild;
+  }
+
+  return 0;
+}
+
+// ---------------------------------------------------------------------------
+// decomposeCovenants
+// ---------------------------------------------------------------------------
+
+/**
+ * Decompose a compound covenant (or set of covenants) into atomic
+ * sub-covenants, each containing exactly one constraint.
+ *
+ * Each returned DecomposedCovenant carries the source covenant ID,
+ * the agent ID, the serialized CCL constraint text, and the constraint type.
+ */
+export function decomposeCovenants(covenants: CovenantSummary[]): DecomposedCovenant[] {
+  if (!Array.isArray(covenants)) {
+    throw new Error('covenants must be an array');
+  }
+  for (const c of covenants) validateCovenant(c);
+
+  const result: DecomposedCovenant[] = [];
+
+  for (const covenant of covenants) {
+    const doc = parseConstraints(covenant.constraints);
+    for (const stmt of doc.statements) {
+      result.push({
+        sourceCovenantId: covenant.id,
+        agentId: covenant.agentId,
+        constraint: serializeOne(stmt),
+        type: stmt.type as DecomposedCovenant['type'],
+      });
+    }
+  }
+
+  return result;
+}
+
+// ---------------------------------------------------------------------------
+// compositionComplexity
+// ---------------------------------------------------------------------------
+
+/**
+ * Measure the complexity of a set of composed covenants.
+ *
+ * Returns:
+ *  - totalRules: count of all statements
+ *  - maxConditionDepth: deepest condition nesting
+ *  - agentCount: number of distinct agents
+ *  - conflictCount: number of permit-deny overlaps
+ *  - distinctActions: number of unique action patterns
+ *  - distinctResources: number of unique resource patterns
+ *  - score: weighted complexity metric
+ *
+ * Score formula:
+ *   score = totalRules
+ *         + 2 * maxConditionDepth
+ *         + 3 * conflictCount
+ *         + 0.5 * distinctActions
+ *         + 0.5 * distinctResources
+ */
+export function compositionComplexity(covenants: CovenantSummary[]): CompositionComplexityResult {
+  if (!Array.isArray(covenants)) {
+    throw new Error('covenants must be an array');
+  }
+  for (const c of covenants) validateCovenant(c);
+
+  const agents = new Set<string>();
+  const actions = new Set<string>();
+  const resources = new Set<string>();
+  let totalRules = 0;
+  let maxDepth = 0;
+
+  for (const covenant of covenants) {
+    agents.add(covenant.agentId);
+    const doc = parseConstraints(covenant.constraints);
+    totalRules += doc.statements.length;
+
+    for (const stmt of doc.statements) {
+      // Extract action
+      actions.add(stmt.action);
+
+      // Extract resource (if present)
+      if (stmt.type !== 'limit' && 'resource' in stmt) {
+        resources.add((stmt as PermitDenyStatement).resource);
+      }
+
+      // Measure condition depth
+      if ('condition' in stmt && stmt.condition) {
+        const depth = conditionDepth(stmt.condition as Condition | CompoundCondition);
+        if (depth > maxDepth) maxDepth = depth;
+      }
+    }
+  }
+
+  const conflictCount = findConflicts(covenants).length;
+  const agentCount = agents.size;
+  const distinctActions = actions.size;
+  const distinctResources = resources.size;
+
+  const score =
+    totalRules +
+    2 * maxDepth +
+    3 * conflictCount +
+    0.5 * distinctActions +
+    0.5 * distinctResources;
+
+  return {
+    totalRules,
+    maxConditionDepth: maxDepth,
+    agentCount,
+    conflictCount,
+    distinctActions,
+    distinctResources,
+    score,
+  };
 }

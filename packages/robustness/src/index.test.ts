@@ -4,6 +4,8 @@ import {
   fuzz,
   generateAdversarialInputs,
   assessSeverity,
+  formalVerification,
+  robustnessScore,
 } from './index';
 import type {
   CovenantSpec,
@@ -312,5 +314,296 @@ describe('generateAdversarialInputs', () => {
     const a = generateAdversarialInputs('same-constraint', 5);
     const b = generateAdversarialInputs('same-constraint', 5);
     expect(a).toEqual(b);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// formalVerification
+// ---------------------------------------------------------------------------
+describe('formalVerification', () => {
+  it('returns consistent=true for non-conflicting constraints', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-1',
+      constraints: [
+        { rule: "deny delete on '/data'", type: 'deny', action: 'delete', resource: '/data' },
+        { rule: "require auth on '/api'", type: 'require', action: 'auth', resource: '/api' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.consistent).toBe(true);
+    expect(result.contradictions).toHaveLength(0);
+  });
+
+  it('detects contradictions between permit and deny on overlapping patterns', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-2',
+      constraints: [
+        { rule: "permit read on '/data'", type: 'permit', action: 'read', resource: '/data' },
+        { rule: "deny read on '/data'", type: 'deny', action: 'read', resource: '/data' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.consistent).toBe(false);
+    expect(result.contradictions.length).toBeGreaterThan(0);
+  });
+
+  it('identifies unreachable permits shadowed by denies', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-3',
+      constraints: [
+        { rule: "permit read on '/data'", type: 'permit', action: 'read', resource: '/data' },
+        { rule: "deny read on '/data'", type: 'deny', action: 'read', resource: '/data' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.unreachableRules.length).toBeGreaterThan(0);
+  });
+
+  it('returns method=symbolic', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-4',
+      constraints: [
+        { rule: 'no-delete', type: 'deny', action: 'delete', resource: '/data' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.method).toBe('symbolic');
+  });
+
+  it('rulesAnalyzed equals number of constraints', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-5',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: 'a', resource: 'b' },
+        { rule: 'r2', type: 'permit', action: 'c', resource: 'd' },
+        { rule: 'r3', type: 'require', action: 'e' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.rulesAnalyzed).toBe(3);
+  });
+
+  it('handles empty constraints gracefully', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-empty',
+      constraints: [],
+    };
+    const result = formalVerification(covenant);
+    expect(result.consistent).toBe(true);
+    expect(result.rulesAnalyzed).toBe(0);
+  });
+
+  it('throws when covenant is null', () => {
+    expect(() => formalVerification(null as any)).toThrow('covenant must be a non-null object');
+  });
+
+  it('no contradiction between deny and require (same type family)', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-6',
+      constraints: [
+        { rule: "deny write on '/data'", type: 'deny', action: 'write', resource: '/data' },
+        { rule: "require audit on '/data'", type: 'require', action: 'audit', resource: '/data' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.consistent).toBe(true);
+  });
+
+  it('contradiction severity is critical for deny-permit conflicts', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-7',
+      constraints: [
+        { rule: "permit exec on '/bin'", type: 'permit', action: 'exec', resource: '/bin' },
+        { rule: "deny exec on '/bin'", type: 'deny', action: 'exec', resource: '/bin' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.contradictions.length).toBeGreaterThan(0);
+    expect(result.contradictions[0]!.severity).toBe('critical');
+  });
+
+  it('contradiction description includes both rule texts', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-8',
+      constraints: [
+        { rule: "permit read on '/secret'", type: 'permit', action: 'read', resource: '/secret' },
+        { rule: "deny read on '/secret'", type: 'deny', action: 'read', resource: '/secret' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.contradictions[0]!.description).toContain('permit');
+    expect(result.contradictions[0]!.description).toContain('deny');
+  });
+
+  it('no contradictions for only-deny constraints', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-9',
+      constraints: [
+        { rule: "deny a on '/x'", type: 'deny', action: 'a', resource: '/x' },
+        { rule: "deny b on '/y'", type: 'deny', action: 'b', resource: '/y' },
+      ],
+    };
+    const result = formalVerification(covenant);
+    expect(result.consistent).toBe(true);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// robustnessScore
+// ---------------------------------------------------------------------------
+describe('robustnessScore', () => {
+  it('returns score between 0 and 1', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-1',
+      constraints: [
+        { rule: 'no-delete', type: 'deny', action: 'delete', resource: '/data' },
+      ],
+    };
+    const result = robustnessScore(covenant, 10);
+    expect(result.score).toBeGreaterThanOrEqual(0);
+    expect(result.score).toBeLessThanOrEqual(1);
+  });
+
+  it('classification is one of strong, moderate, or weak', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-2',
+      constraints: [
+        { rule: 'no-delete', type: 'deny', action: 'delete', resource: '/data' },
+      ],
+    };
+    const result = robustnessScore(covenant, 10);
+    expect(['strong', 'moderate', 'weak']).toContain(result.classification);
+  });
+
+  it('returns factors with name, score, weight, and contribution', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-3',
+      constraints: [
+        { rule: 'no-delete', type: 'deny', action: 'delete', resource: '/data' },
+      ],
+    };
+    const result = robustnessScore(covenant, 10);
+    expect(result.factors.length).toBeGreaterThan(0);
+    for (const f of result.factors) {
+      expect(typeof f.name).toBe('string');
+      expect(typeof f.score).toBe('number');
+      expect(typeof f.weight).toBe('number');
+      expect(typeof f.contribution).toBe('number');
+    }
+  });
+
+  it('factor weights sum to 1.0', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-4',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: 'a', resource: '/x' },
+      ],
+    };
+    const result = robustnessScore(covenant, 10);
+    const totalWeight = result.factors.reduce((s, f) => s + f.weight, 0);
+    expect(totalWeight).toBeCloseTo(1.0, 10);
+  });
+
+  it('score equals sum of contributions', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-5',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: 'a', resource: '/x' },
+        { rule: 'r2', type: 'permit', action: 'b', resource: '/y' },
+      ],
+    };
+    const result = robustnessScore(covenant, 10);
+    const contributionSum = result.factors.reduce((s, f) => s + f.contribution, 0);
+    expect(result.score).toBeCloseTo(contributionSum, 10);
+  });
+
+  it('provides recommendations when issues are found', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-6',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: '**', resource: '**' },
+      ],
+    };
+    const result = robustnessScore(covenant, 10);
+    // With only deny type and wildcards, should recommend broader coverage and specificity
+    expect(result.recommendations.length).toBeGreaterThan(0);
+  });
+
+  it('returns score of 0 for empty constraints', () => {
+    const covenant: CovenantSpec = {
+      id: 'cov-empty',
+      constraints: [],
+    };
+    const result = robustnessScore(covenant);
+    expect(result.score).toBe(0);
+    expect(result.classification).toBe('weak');
+  });
+
+  it('throws when covenant is null', () => {
+    expect(() => robustnessScore(null as any)).toThrow('covenant must be a non-null object');
+  });
+
+  it('higher coverage (more types) leads to better coverage factor', () => {
+    const singleType: CovenantSpec = {
+      id: 'cov-s',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: 'a', resource: '/x' },
+      ],
+    };
+    const multiType: CovenantSpec = {
+      id: 'cov-m',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: 'a', resource: '/x' },
+        { rule: 'r2', type: 'permit', action: 'b', resource: '/y' },
+        { rule: 'r3', type: 'require', action: 'c' },
+        { rule: 'r4', type: 'limit', action: 'd' },
+      ],
+    };
+    const s1 = robustnessScore(singleType, 10);
+    const s2 = robustnessScore(multiType, 10);
+    const s1Coverage = s1.factors.find(f => f.name === 'coverage');
+    const s2Coverage = s2.factors.find(f => f.name === 'coverage');
+    expect(s2Coverage!.score).toBeGreaterThan(s1Coverage!.score);
+  });
+
+  it('specific patterns lead to better specificity factor than wildcards', () => {
+    const wildcardCov: CovenantSpec = {
+      id: 'cov-w',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: '**', resource: '**' },
+      ],
+    };
+    const specificCov: CovenantSpec = {
+      id: 'cov-sp',
+      constraints: [
+        { rule: 'r1', type: 'deny', action: 'file.delete', resource: '/data/important' },
+      ],
+    };
+    const w = robustnessScore(wildcardCov, 10);
+    const s = robustnessScore(specificCov, 10);
+    const wSpec = w.factors.find(f => f.name === 'specificity');
+    const sSpec = s.factors.find(f => f.name === 'specificity');
+    expect(sSpec!.score).toBeGreaterThan(wSpec!.score);
+  });
+
+  it('consistent covenant scores higher on consistency factor than contradictory one', () => {
+    const consistent: CovenantSpec = {
+      id: 'cov-c',
+      constraints: [
+        { rule: "deny read on '/secret'", type: 'deny', action: 'read', resource: '/secret' },
+      ],
+    };
+    const contradictory: CovenantSpec = {
+      id: 'cov-x',
+      constraints: [
+        { rule: "permit read on '/secret'", type: 'permit', action: 'read', resource: '/secret' },
+        { rule: "deny read on '/secret'", type: 'deny', action: 'read', resource: '/secret' },
+      ],
+    };
+    const cResult = robustnessScore(consistent, 10);
+    const xResult = robustnessScore(contradictory, 10);
+    const cConsistency = cResult.factors.find(f => f.name === 'consistency');
+    const xConsistency = xResult.factors.find(f => f.name === 'consistency');
+    expect(cConsistency!.score).toBeGreaterThan(xConsistency!.score);
   });
 });

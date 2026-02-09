@@ -58,3 +58,56 @@ export interface InsuranceRecord {
 }
 
 export type ComplianceStandard = 'SOC2' | 'ISO27001' | 'GDPR' | 'CCPA' | 'HIPAA';
+
+export interface JurisdictionComplianceEntry {
+  jurisdiction: string;
+  standard: string;
+  passed: boolean;
+  score: number;
+  gaps: string[];
+  missingFields: string[];
+}
+
+export interface CrossJurisdictionResult {
+  overallCompliant: boolean;
+  jurisdictions: JurisdictionComplianceEntry[];
+  conflicts: string[];
+  recommendations: string[];
+}
+
+export interface AuditTrailEntry {
+  timestamp: number;
+  eventType: 'covenant-signed' | 'covenant-expired' | 'covenant-revoked' | 'attestation' | 'breach' | 'canary-test' | 'insurance-change' | 'compliance-check';
+  description: string;
+  sourceId: string;
+  metadata: Record<string, unknown>;
+}
+
+export interface AuditTrailExport {
+  agentId: string;
+  generatedAt: number;
+  entries: AuditTrailEntry[];
+  summary: {
+    totalEvents: number;
+    timeRange: { start: number; end: number };
+    eventCounts: Record<string, number>;
+  };
+}
+
+export interface RegulatoryGap {
+  area: string;
+  currentState: string;
+  requiredState: string;
+  severity: 'critical' | 'major' | 'minor';
+  remediation: string;
+}
+
+export interface RegulatoryGapAnalysisResult {
+  targetStandard: ComplianceStandard;
+  currentScore: number;
+  requiredScore: number;
+  gaps: RegulatoryGap[];
+  readinessPercentage: number;
+  criticalGapCount: number;
+  estimatedRemediationEffort: 'low' | 'medium' | 'high';
+}

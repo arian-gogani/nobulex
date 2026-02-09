@@ -5,6 +5,8 @@ export type {
   NetworkHealth,
   GovernanceProposal,
   BreachSummary,
+  StressTestResult,
+  AntifragilityIndexResult,
 } from './types.js';
 
 import type {
@@ -12,6 +14,8 @@ import type {
   NetworkHealth,
   GovernanceProposal,
   BreachSummary,
+  StressTestResult,
+  AntifragilityIndexResult,
 } from './types.js';
 
 // ---------------------------------------------------------------------------
@@ -299,4 +303,141 @@ export function antibodyExists(antibodies: BreachAntibody[], breach: BreachSumma
   return antibodies.some(
     ab => ab.derivedFromBreach === breach.id || ab.category === breachCategory,
   );
+}
+
+/**
+ * Simulate increasing attack intensities and measure system response.
+ *
+ * Each round introduces a batch of breaches (increasing in severity as rounds
+ * progress). After each round, antibodies are generated and automatically
+ * force-adopted. The resistance score is measured at each round.
+ *
+ * An antifragile system should show improving resistance over time as
+ * antibodies accumulate.
+ *
+ * @param baseBreaches - Initial set of breaches to simulate
+ * @param rounds - Number of attack rounds to simulate (default: 5)
+ * @param intensityMultiplier - How many breaches to add each round (default: 2)
+ * @throws {Error} if rounds < 1 or intensityMultiplier < 1
+ */
+export function stressTest(
+  baseBreaches: BreachSummary[],
+  rounds = 5,
+  intensityMultiplier = 2,
+): StressTestResult {
+  if (rounds < 1) {
+    throw new Error('rounds must be at least 1');
+  }
+  if (intensityMultiplier < 1) {
+    throw new Error('intensityMultiplier must be at least 1');
+  }
+
+  const severityProgression: Array<BreachSummary['severity']> = ['low', 'medium', 'high', 'critical'];
+  const resistanceOverTime: number[] = [];
+  const antibodiesAdoptedOverTime: number[] = [];
+  const allBreaches: BreachSummary[] = [];
+  const allAntibodies: BreachAntibody[] = [];
+
+  for (let round = 0; round < rounds; round++) {
+    // Generate breaches for this round with increasing severity
+    const severityIdx = Math.min(round, severityProgression.length - 1);
+    const severity = severityProgression[severityIdx]!;
+    const breachCount = Math.max(1, Math.floor(intensityMultiplier * (round + 1)));
+
+    for (let b = 0; b < breachCount; b++) {
+      // Use base breaches cyclically, escalating severity
+      const baseBreach = baseBreaches.length > 0
+        ? baseBreaches[b % baseBreaches.length]!
+        : { id: `stress-${round}-${b}`, violatedConstraint: `deny:stress-test-${b}`, severity, category: `stress-cat-${b % 3}` };
+
+      const breach: BreachSummary = {
+        id: `stress-${round}-${b}`,
+        violatedConstraint: baseBreach.violatedConstraint,
+        severity,
+        category: baseBreach.category,
+      };
+      allBreaches.push(breach);
+
+      // Generate and auto-adopt antibodies for novel breaches
+      if (!antibodyExists(allAntibodies, breach)) {
+        const antibody = generateAntibody(breach, 0);
+        const adopted = forceAdopt(antibody);
+        allAntibodies.push(adopted);
+      }
+    }
+
+    // Measure health after this round
+    const health = networkHealth(allAntibodies, allBreaches);
+    resistanceOverTime.push(health.resistanceScore);
+    antibodiesAdoptedOverTime.push(health.antibodiesAdopted);
+  }
+
+  const improved = resistanceOverTime.length >= 2 &&
+    resistanceOverTime[resistanceOverTime.length - 1]! >= resistanceOverTime[0]!;
+
+  return {
+    rounds,
+    resistanceOverTime,
+    antibodiesAdoptedOverTime,
+    improved,
+    finalResistanceScore: resistanceOverTime[resistanceOverTime.length - 1] ?? 0,
+  };
+}
+
+/**
+ * Quantify how much stronger the system gets from attacks.
+ *
+ * Runs a stress test simulation and computes an antifragility index from the
+ * trend of resistance scores across attack waves.
+ *
+ * - positive index -> system is antifragile (gets stronger from attacks)
+ * - zero index -> system is robust (unchanged by attacks)
+ * - negative index -> system is fragile (weakened by attacks)
+ *
+ * The index is computed as the average of consecutive resistance score
+ * differences, normalized to [-1, 1].
+ *
+ * @param breaches - Breaches to use as attack patterns
+ * @param waves - Number of attack waves to simulate (default: 5)
+ * @throws {Error} if waves < 2
+ */
+export function antifragilityIndex(
+  breaches: BreachSummary[],
+  waves = 5,
+): AntifragilityIndexResult {
+  if (waves < 2) {
+    throw new Error('waves must be at least 2 to measure trend');
+  }
+
+  const result = stressTest(breaches, waves, 2);
+  const trend = result.resistanceOverTime;
+
+  // Compute successive differences
+  let totalImprovement = 0;
+  for (let i = 1; i < trend.length; i++) {
+    totalImprovement += trend[i]! - trend[i - 1]!;
+  }
+
+  const averageImprovement = totalImprovement / (trend.length - 1);
+
+  // Normalize the index: clamp to [-1, 1]
+  // If average improvement is positive, system is antifragile
+  const rawIndex = averageImprovement * 10; // scale for meaningful range
+  const index = Math.max(-1, Math.min(1, rawIndex));
+
+  let classification: 'antifragile' | 'robust' | 'fragile';
+  if (index > 0.01) {
+    classification = 'antifragile';
+  } else if (index < -0.01) {
+    classification = 'fragile';
+  } else {
+    classification = 'robust';
+  }
+
+  return {
+    index,
+    classification,
+    resistanceTrend: trend,
+    averageImprovement,
+  };
 }

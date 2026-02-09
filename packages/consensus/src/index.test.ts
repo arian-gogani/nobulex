@@ -8,6 +8,9 @@ import {
   validateConfig,
   validateProtocolData,
   validatePolicy,
+  byzantineFaultTolerance,
+  quorumSize,
+  consensusLatency,
 } from './index';
 import type {
   AccountabilityScore,
@@ -15,7 +18,7 @@ import type {
   ProtocolData,
   AccountabilityTier,
 } from './types';
-import type { AccountabilityConfig } from './index';
+import type { AccountabilityConfig, ConsensusProtocol, ConsensusLatencyParams } from './index';
 
 // ---------------------------------------------------------------------------
 // validateConfig
@@ -788,5 +791,314 @@ describe('compareTiers', () => {
 
   it('returns 1 for exemplary vs unaccountable', () => {
     expect(compareTiers('exemplary', 'unaccountable')).toBe(1);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// byzantineFaultTolerance
+// ---------------------------------------------------------------------------
+describe('byzantineFaultTolerance', () => {
+  it('computes max faults for 4 nodes: floor((4-1)/3) = 1', () => {
+    const result = byzantineFaultTolerance(4);
+    expect(result.maxFaultyNodes).toBe(1);
+    expect(result.canTolerate).toBe(true);
+    expect(result.minNodesRequired).toBe(4); // 3*1+1
+  });
+
+  it('computes max faults for 7 nodes: floor((7-1)/3) = 2', () => {
+    const result = byzantineFaultTolerance(7);
+    expect(result.maxFaultyNodes).toBe(2);
+  });
+
+  it('computes max faults for 10 nodes: floor((10-1)/3) = 3', () => {
+    const result = byzantineFaultTolerance(10);
+    expect(result.maxFaultyNodes).toBe(3);
+  });
+
+  it('1 node can tolerate 0 faults', () => {
+    const result = byzantineFaultTolerance(1);
+    expect(result.maxFaultyNodes).toBe(0);
+  });
+
+  it('3 nodes can tolerate 0 faults (3 < 3*1+1=4)', () => {
+    const result = byzantineFaultTolerance(3);
+    expect(result.maxFaultyNodes).toBe(0);
+  });
+
+  it('checks requested fault tolerance (can tolerate)', () => {
+    const result = byzantineFaultTolerance(7, 2);
+    expect(result.canTolerate).toBe(true);
+    expect(result.minNodesRequired).toBe(7); // 3*2+1
+  });
+
+  it('checks requested fault tolerance (cannot tolerate)', () => {
+    const result = byzantineFaultTolerance(4, 2);
+    expect(result.canTolerate).toBe(false);
+    expect(result.minNodesRequired).toBe(7); // 3*2+1
+  });
+
+  it('formula contains BFT constraint text', () => {
+    const result = byzantineFaultTolerance(10);
+    expect(result.formula).toContain('n >= 3f + 1');
+    expect(result.formula).toContain('10');
+  });
+
+  it('n >= 3f+1 property holds for various n', () => {
+    for (const n of [1, 4, 7, 10, 13, 100]) {
+      const result = byzantineFaultTolerance(n);
+      expect(n).toBeGreaterThanOrEqual(3 * result.maxFaultyNodes + 1);
+      // And n < 3*(f+1) + 1 (maximality)
+      if (result.maxFaultyNodes < n - 1) {
+        expect(n).toBeLessThan(3 * (result.maxFaultyNodes + 1) + 1);
+      }
+    }
+  });
+
+  it('throws on non-positive totalNodes', () => {
+    expect(() => byzantineFaultTolerance(0)).toThrow('totalNodes must be a positive integer');
+    expect(() => byzantineFaultTolerance(-1)).toThrow('totalNodes must be a positive integer');
+  });
+
+  it('throws on non-integer totalNodes', () => {
+    expect(() => byzantineFaultTolerance(3.5)).toThrow('totalNodes must be a positive integer');
+  });
+
+  it('throws on negative requestedFaults', () => {
+    expect(() => byzantineFaultTolerance(10, -1)).toThrow(
+      'requestedFaults must be a non-negative integer',
+    );
+  });
+
+  it('throws on non-integer requestedFaults', () => {
+    expect(() => byzantineFaultTolerance(10, 1.5)).toThrow(
+      'requestedFaults must be a non-negative integer',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// quorumSize
+// ---------------------------------------------------------------------------
+describe('quorumSize', () => {
+  it('simple_majority for 10 nodes: floor(10/2)+1 = 6', () => {
+    const result = quorumSize(10, 'simple_majority');
+    expect(result.quorumSize).toBe(6);
+    expect(result.quorumFraction).toBeCloseTo(0.6, 5);
+  });
+
+  it('simple_majority for 7 nodes: floor(7/2)+1 = 4', () => {
+    const result = quorumSize(7, 'simple_majority');
+    expect(result.quorumSize).toBe(4);
+  });
+
+  it('simple_majority for 1 node: 1', () => {
+    const result = quorumSize(1, 'simple_majority');
+    expect(result.quorumSize).toBe(1);
+  });
+
+  it('bft quorum for 10 nodes: floor(20/3)+1 = 7', () => {
+    const result = quorumSize(10, 'bft');
+    expect(result.quorumSize).toBe(7);
+  });
+
+  it('bft quorum for 4 nodes: floor(8/3)+1 = 3', () => {
+    const result = quorumSize(4, 'bft');
+    expect(result.quorumSize).toBe(3);
+  });
+
+  it('two_thirds for 10 nodes: ceil(20/3) = 7', () => {
+    const result = quorumSize(10, 'two_thirds');
+    expect(result.quorumSize).toBe(7);
+  });
+
+  it('two_thirds for 3 nodes: ceil(6/3) = 2', () => {
+    const result = quorumSize(3, 'two_thirds');
+    expect(result.quorumSize).toBe(2);
+  });
+
+  it('unanimous for any n: quorum = n', () => {
+    const result = quorumSize(10, 'unanimous');
+    expect(result.quorumSize).toBe(10);
+    expect(result.quorumFraction).toBe(1);
+  });
+
+  it('bft quorum is always > simple majority', () => {
+    for (const n of [4, 7, 10, 20, 100]) {
+      const bft = quorumSize(n, 'bft');
+      const simple = quorumSize(n, 'simple_majority');
+      expect(bft.quorumSize).toBeGreaterThanOrEqual(simple.quorumSize);
+    }
+  });
+
+  it('formula contains protocol-specific description', () => {
+    expect(quorumSize(10, 'simple_majority').formula).toContain('Simple majority');
+    expect(quorumSize(10, 'bft').formula).toContain('BFT quorum');
+    expect(quorumSize(10, 'two_thirds').formula).toContain('Two-thirds');
+    expect(quorumSize(10, 'unanimous').formula).toContain('Unanimous');
+  });
+
+  it('quorum never exceeds totalNodes', () => {
+    const result = quorumSize(1, 'bft');
+    expect(result.quorumSize).toBeLessThanOrEqual(1);
+  });
+
+  it('throws on non-positive totalNodes', () => {
+    expect(() => quorumSize(0, 'simple_majority')).toThrow(
+      'totalNodes must be a positive integer',
+    );
+  });
+
+  it('throws on non-integer totalNodes', () => {
+    expect(() => quorumSize(3.5, 'bft')).toThrow(
+      'totalNodes must be a positive integer',
+    );
+  });
+});
+
+// ---------------------------------------------------------------------------
+// consensusLatency
+// ---------------------------------------------------------------------------
+describe('consensusLatency', () => {
+  it('computes basic latency without loss or processing', () => {
+    const result = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 50,
+      messageRounds: 3,
+    });
+    // networkLatency = 3 * 50 = 150
+    expect(result.networkLatencyMs).toBe(150);
+    expect(result.processingLatencyMs).toBe(0);
+    expect(result.retryOverheadMs).toBe(0);
+    expect(result.estimatedLatencyMs).toBe(150);
+  });
+
+  it('includes processing time per round', () => {
+    const result = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 50,
+      messageRounds: 3,
+      processingTimeMs: 10,
+    });
+    // processing = 3 * 10 = 30
+    expect(result.processingLatencyMs).toBe(30);
+    expect(result.estimatedLatencyMs).toBe(180);
+  });
+
+  it('includes retry overhead from message loss', () => {
+    const result = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 100,
+      messageRounds: 2,
+      messageLossProbability: 0.1,
+    });
+    // networkLatency = 200
+    // retryOverhead = 200 * (0.1 / 0.9) = 200 * 0.1111... = 22.22...
+    expect(result.networkLatencyMs).toBe(200);
+    expect(result.retryOverheadMs).toBeCloseTo(200 * (0.1 / 0.9), 5);
+    expect(result.estimatedLatencyMs).toBeCloseTo(200 + 200 * (0.1 / 0.9), 5);
+  });
+
+  it('higher message loss leads to higher latency', () => {
+    const low = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 100,
+      messageRounds: 3,
+      messageLossProbability: 0.05,
+    });
+    const high = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 100,
+      messageRounds: 3,
+      messageLossProbability: 0.3,
+    });
+    expect(high.estimatedLatencyMs).toBeGreaterThan(low.estimatedLatencyMs);
+  });
+
+  it('more rounds leads to higher latency', () => {
+    const few = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 50,
+      messageRounds: 2,
+    });
+    const many = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 50,
+      messageRounds: 5,
+    });
+    expect(many.estimatedLatencyMs).toBeGreaterThan(few.estimatedLatencyMs);
+  });
+
+  it('formula contains breakdown', () => {
+    const result = consensusLatency({
+      nodeCount: 10,
+      averageLatencyMs: 50,
+      messageRounds: 3,
+      processingTimeMs: 5,
+      messageLossProbability: 0.1,
+    });
+    expect(result.formula).toContain('Network latency');
+    expect(result.formula).toContain('Processing latency');
+    expect(result.formula).toContain('Retry overhead');
+    expect(result.formula).toContain('Total estimated');
+  });
+
+  it('zero latency network returns zero total', () => {
+    const result = consensusLatency({
+      nodeCount: 5,
+      averageLatencyMs: 0,
+      messageRounds: 3,
+    });
+    expect(result.estimatedLatencyMs).toBe(0);
+  });
+
+  it('throws on non-positive nodeCount', () => {
+    expect(() =>
+      consensusLatency({ nodeCount: 0, averageLatencyMs: 50, messageRounds: 3 }),
+    ).toThrow('nodeCount must be a positive integer');
+  });
+
+  it('throws on negative averageLatencyMs', () => {
+    expect(() =>
+      consensusLatency({ nodeCount: 10, averageLatencyMs: -10, messageRounds: 3 }),
+    ).toThrow('averageLatencyMs must be >= 0');
+  });
+
+  it('throws on non-positive messageRounds', () => {
+    expect(() =>
+      consensusLatency({ nodeCount: 10, averageLatencyMs: 50, messageRounds: 0 }),
+    ).toThrow('messageRounds must be a positive integer');
+  });
+
+  it('throws on messageLossProbability >= 1', () => {
+    expect(() =>
+      consensusLatency({
+        nodeCount: 10,
+        averageLatencyMs: 50,
+        messageRounds: 3,
+        messageLossProbability: 1,
+      }),
+    ).toThrow('messageLossProbability must be in [0, 1)');
+  });
+
+  it('throws on negative messageLossProbability', () => {
+    expect(() =>
+      consensusLatency({
+        nodeCount: 10,
+        averageLatencyMs: 50,
+        messageRounds: 3,
+        messageLossProbability: -0.1,
+      }),
+    ).toThrow('messageLossProbability must be in [0, 1)');
+  });
+
+  it('throws on negative processingTimeMs', () => {
+    expect(() =>
+      consensusLatency({
+        nodeCount: 10,
+        averageLatencyMs: 50,
+        messageRounds: 3,
+        processingTimeMs: -5,
+      }),
+    ).toThrow('processingTimeMs must be >= 0');
   });
 });

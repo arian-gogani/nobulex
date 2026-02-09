@@ -6,12 +6,16 @@ import {
   proveTermination,
   trustBase,
   addLayer,
+  computeTrustTransitivity,
+  findMinimalVerificationSet,
 } from './index';
 import type {
   MetaCovenant,
   VerificationEntity,
   MetaTargetType,
   TrustBase,
+  TrustEdge,
+  VerifierNode,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -403,5 +407,240 @@ describe('addLayer', () => {
     const mc2 = addLayer(mc1, ['c3']);
     expect(mc2.dependsOn).toContain(mc1.id);
     expect(mc2.dependsOn).toContain(mc0.id);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeTrustTransitivity
+// ---------------------------------------------------------------------------
+describe('computeTrustTransitivity', () => {
+  it('returns trust 1.0 when source equals target', () => {
+    const result = computeTrustTransitivity([], 'A', 'A');
+    expect(result.effectiveTrust).toBe(1.0);
+    expect(result.path).toEqual(['A']);
+    expect(result.hops).toBe(0);
+  });
+
+  it('returns trust 0 when no path exists', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 0.9 },
+    ];
+    const result = computeTrustTransitivity(edges, 'A', 'C');
+    expect(result.effectiveTrust).toBe(0);
+    expect(result.path).toEqual([]);
+  });
+
+  it('computes direct trust for single-hop path', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 0.8 },
+    ];
+    const result = computeTrustTransitivity(edges, 'A', 'B');
+    expect(result.effectiveTrust).toBeCloseTo(0.8, 10);
+    expect(result.path).toEqual(['A', 'B']);
+    expect(result.hops).toBe(1);
+  });
+
+  it('attenuates trust through multi-hop paths', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 0.9 },
+      { from: 'B', to: 'C', trustScore: 0.8 },
+    ];
+    // A->B: 0.9, B->C: 0.9 * 0.8 * 0.9 (attenuation) = 0.648
+    const result = computeTrustTransitivity(edges, 'A', 'C', 0.9);
+    expect(result.effectiveTrust).toBeCloseTo(0.9 * 0.8 * 0.9, 10);
+    expect(result.path).toEqual(['A', 'B', 'C']);
+    expect(result.hops).toBe(2);
+  });
+
+  it('picks the highest-trust path among alternatives', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 0.5 },
+      { from: 'B', to: 'C', trustScore: 0.5 },
+      { from: 'A', to: 'C', trustScore: 0.9 },
+    ];
+    const result = computeTrustTransitivity(edges, 'A', 'C', 0.9);
+    // Direct path A->C: 0.9 is better than A->B->C: 0.5*0.5*0.9 = 0.225
+    expect(result.effectiveTrust).toBeCloseTo(0.9, 10);
+    expect(result.path).toEqual(['A', 'C']);
+  });
+
+  it('handles cycles without infinite loops', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 0.9 },
+      { from: 'B', to: 'A', trustScore: 0.9 },
+      { from: 'B', to: 'C', trustScore: 0.8 },
+    ];
+    const result = computeTrustTransitivity(edges, 'A', 'C', 0.9);
+    expect(result.effectiveTrust).toBeGreaterThan(0);
+    expect(result.path).toEqual(['A', 'B', 'C']);
+  });
+
+  it('throws on invalid attenuationFactor <= 0', () => {
+    expect(() => computeTrustTransitivity([], 'A', 'B', 0)).toThrow('attenuationFactor must be in (0, 1]');
+    expect(() => computeTrustTransitivity([], 'A', 'B', -0.5)).toThrow('attenuationFactor must be in (0, 1]');
+  });
+
+  it('throws on attenuationFactor > 1', () => {
+    expect(() => computeTrustTransitivity([], 'A', 'B', 1.5)).toThrow('attenuationFactor must be in (0, 1]');
+  });
+
+  it('throws on invalid trust scores', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 1.5 },
+    ];
+    expect(() => computeTrustTransitivity(edges, 'A', 'B')).toThrow('Invalid trustScore');
+  });
+
+  it('with attenuationFactor=1.0, trust is pure product of edges', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 0.8 },
+      { from: 'B', to: 'C', trustScore: 0.7 },
+      { from: 'C', to: 'D', trustScore: 0.6 },
+    ];
+    const result = computeTrustTransitivity(edges, 'A', 'D', 1.0);
+    expect(result.effectiveTrust).toBeCloseTo(0.8 * 0.7 * 0.6, 10);
+    expect(result.hops).toBe(3);
+  });
+
+  it('handles a longer chain with proper attenuation', () => {
+    const edges: TrustEdge[] = [
+      { from: 'A', to: 'B', trustScore: 1.0 },
+      { from: 'B', to: 'C', trustScore: 1.0 },
+      { from: 'C', to: 'D', trustScore: 1.0 },
+    ];
+    // A->B: 1.0 (no attenuation on first hop)
+    // B->C: 1.0 * 1.0 * 0.5 = 0.5
+    // C->D: 0.5 * 1.0 * 0.5 = 0.25
+    const result = computeTrustTransitivity(edges, 'A', 'D', 0.5);
+    expect(result.effectiveTrust).toBeCloseTo(1.0 * 1.0 * 0.5 * 1.0 * 0.5, 10);
+    expect(result.path).toEqual(['A', 'B', 'C', 'D']);
+  });
+
+  it('returns from and to fields correctly', () => {
+    const edges: TrustEdge[] = [
+      { from: 'X', to: 'Y', trustScore: 0.7 },
+    ];
+    const result = computeTrustTransitivity(edges, 'X', 'Y');
+    expect(result.from).toBe('X');
+    expect(result.to).toBe('Y');
+  });
+});
+
+// ---------------------------------------------------------------------------
+// findMinimalVerificationSet
+// ---------------------------------------------------------------------------
+describe('findMinimalVerificationSet', () => {
+  it('returns empty set for empty constraints', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1', 'c2'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, []);
+    expect(result.verifiers).toEqual([]);
+    expect(result.coveredConstraints).toEqual([]);
+    expect(result.uncoveredConstraints).toEqual([]);
+  });
+
+  it('returns all uncovered when no verifiers provided', () => {
+    const result = findMinimalVerificationSet([], ['c1', 'c2']);
+    expect(result.verifiers).toEqual([]);
+    expect(result.uncoveredConstraints).toEqual(['c1', 'c2']);
+  });
+
+  it('selects a single verifier that covers all constraints', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1', 'c2', 'c3'] },
+      { id: 'v2', coveredConstraints: ['c1'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2', 'c3']);
+    expect(result.verifiers).toEqual(['v1']);
+    expect(result.uncoveredConstraints).toEqual([]);
+  });
+
+  it('selects minimal verifiers via greedy set cover', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1', 'c2'] },
+      { id: 'v2', coveredConstraints: ['c2', 'c3'] },
+      { id: 'v3', coveredConstraints: ['c3', 'c4'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2', 'c3', 'c4']);
+    // Greedy: v1 covers c1,c2 (2), then v3 covers c3,c4 (2 uncovered)
+    expect(result.verifiers).toHaveLength(2);
+    expect(result.uncoveredConstraints).toEqual([]);
+  });
+
+  it('reports uncovered constraints when full coverage is impossible', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2', 'c3']);
+    expect(result.verifiers).toEqual(['v1']);
+    expect(result.coveredConstraints).toContain('c1');
+    expect(result.uncoveredConstraints).toContain('c2');
+    expect(result.uncoveredConstraints).toContain('c3');
+  });
+
+  it('handles overlapping verifiers correctly', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1', 'c2', 'c3'] },
+      { id: 'v2', coveredConstraints: ['c1', 'c2'] },
+      { id: 'v3', coveredConstraints: ['c3', 'c4'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2', 'c3', 'c4']);
+    // v1 covers c1,c2,c3 (3), then v3 covers c4 (1 remaining)
+    expect(result.verifiers).toHaveLength(2);
+    expect(result.verifiers).toContain('v1');
+    expect(result.verifiers).toContain('v3');
+    expect(result.uncoveredConstraints).toEqual([]);
+  });
+
+  it('handles case where verifier covers no required constraints', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['x1', 'x2'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2']);
+    expect(result.verifiers).toEqual([]);
+    expect(result.uncoveredConstraints).toEqual(['c1', 'c2']);
+  });
+
+  it('handles verifiers with empty covered constraints', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: [] },
+      { id: 'v2', coveredConstraints: ['c1'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1']);
+    expect(result.verifiers).toEqual(['v2']);
+    expect(result.uncoveredConstraints).toEqual([]);
+  });
+
+  it('coveredConstraints in result contains all covered items', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1', 'c2'] },
+      { id: 'v2', coveredConstraints: ['c3'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2', 'c3']);
+    expect(result.coveredConstraints).toContain('c1');
+    expect(result.coveredConstraints).toContain('c2');
+    expect(result.coveredConstraints).toContain('c3');
+  });
+
+  it('works with a single verifier and single constraint', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1']);
+    expect(result.verifiers).toEqual(['v1']);
+    expect(result.coveredConstraints).toEqual(['c1']);
+    expect(result.uncoveredConstraints).toEqual([]);
+  });
+
+  it('selects verifier with most coverage first (greedy)', () => {
+    const verifiers: VerifierNode[] = [
+      { id: 'v1', coveredConstraints: ['c1'] },
+      { id: 'v2', coveredConstraints: ['c1', 'c2', 'c3', 'c4', 'c5'] },
+      { id: 'v3', coveredConstraints: ['c1', 'c2'] },
+    ];
+    const result = findMinimalVerificationSet(verifiers, ['c1', 'c2', 'c3', 'c4', 'c5']);
+    expect(result.verifiers[0]).toBe('v2');
+    expect(result.verifiers).toHaveLength(1);
   });
 });

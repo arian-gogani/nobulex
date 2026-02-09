@@ -5,11 +5,14 @@ import {
   discoverNorms,
   proposeStandard,
   generateTemplate,
+  normConflictDetection,
+  normPrecedence,
 } from './index';
 import type {
   CovenantData,
   DiscoveredNorm,
   NormAnalysis,
+  NormDefinition,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -517,5 +520,222 @@ describe('Pearson correlation behavior', () => {
       // Correlation should be close to zero (within reason)
       expect(Math.abs(denialNorms[0]!.correlationWithTrust)).toBeLessThan(0.5);
     }
+  });
+});
+
+// ===========================================================================
+// Helper for NormDefinition tests
+// ===========================================================================
+function makeNorm(overrides: Partial<NormDefinition> & { id: string }): NormDefinition {
+  return {
+    pattern: `deny file.read on '/data'`,
+    category: 'denial',
+    action: 'file.read',
+    resource: '/data',
+    authority: 1,
+    createdAt: 1000,
+    specificity: 1,
+    ...overrides,
+  };
+}
+
+// ===========================================================================
+// normConflictDetection
+// ===========================================================================
+describe('normConflictDetection', () => {
+  it('returns empty array for empty norms', () => {
+    const result = normConflictDetection([]);
+    expect(result).toEqual([]);
+  });
+
+  it('returns empty array for a single norm', () => {
+    const norms = [makeNorm({ id: 'n1' })];
+    const result = normConflictDetection(norms);
+    expect(result).toEqual([]);
+  });
+
+  it('detects direct contradiction: deny vs permit on same resource and action', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data' }),
+      makeNorm({ id: 'n2', category: 'permission', action: 'file.read', resource: '/data', pattern: "permit file.read on '/data'" }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.conflictType).toBe('direct_contradiction');
+  });
+
+  it('does not detect conflict between norms on different resources', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data' }),
+      makeNorm({ id: 'n2', category: 'permission', action: 'file.read', resource: '/public', pattern: "permit file.read on '/public'" }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(0);
+  });
+
+  it('does not detect conflict between norms of the same category', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data' }),
+      makeNorm({ id: 'n2', category: 'denial', action: 'file.write', resource: '/data', pattern: "deny file.write on '/data'" }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(0);
+  });
+
+  it('detects resource overlap: deny vs permit, same resource, different actions', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data' }),
+      makeNorm({ id: 'n2', category: 'permission', action: 'file.write', resource: '/data', pattern: "permit file.write on '/data'" }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.conflictType).toBe('resource_overlap');
+  });
+
+  it('detects multiple conflicts among many norms', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data' }),
+      makeNorm({ id: 'n2', category: 'permission', action: 'file.read', resource: '/data', pattern: "permit file.read on '/data'" }),
+      makeNorm({ id: 'n3', category: 'denial', action: 'file.write', resource: '/config' }),
+      makeNorm({ id: 'n4', category: 'permission', action: 'file.write', resource: '/config', pattern: "permit file.write on '/config'" }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(2);
+  });
+
+  it('conflict description includes norm patterns', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data', pattern: 'deny-pattern' }),
+      makeNorm({ id: 'n2', category: 'permission', action: 'file.read', resource: '/data', pattern: 'permit-pattern' }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result[0]!.description).toContain('deny-pattern');
+    expect(result[0]!.description).toContain('permit-pattern');
+  });
+
+  it('conflict references the correct norm objects', () => {
+    const normA = makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/data' });
+    const normB = makeNorm({ id: 'n2', category: 'permission', action: 'file.read', resource: '/data', pattern: "permit file.read on '/data'" });
+    const result = normConflictDetection([normA, normB]);
+    expect(result[0]!.normA).toBe(normA);
+    expect(result[0]!.normB).toBe(normB);
+  });
+
+  it('detects requirement vs denial conflict on same resource', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'requirement', action: 'audit.log', resource: '/data', pattern: "require audit.log on '/data'" }),
+      makeNorm({ id: 'n2', category: 'denial', action: 'audit.write', resource: '/data', pattern: "deny audit.write on '/data'" }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(1);
+    expect(result[0]!.conflictType).toBe('resource_overlap');
+  });
+
+  it('handles norms with no conflicts', () => {
+    const norms = [
+      makeNorm({ id: 'n1', category: 'denial', action: 'file.read', resource: '/secret' }),
+      makeNorm({ id: 'n2', category: 'requirement', action: 'audit.log', resource: '/api', pattern: "require audit.log on '/api'" }),
+      makeNorm({ id: 'n3', category: 'limitation', action: 'api.call', resource: '/external', pattern: 'limit api.call 100 per 3600 seconds' }),
+    ];
+    const result = normConflictDetection(norms);
+    expect(result).toHaveLength(0);
+  });
+});
+
+// ===========================================================================
+// normPrecedence
+// ===========================================================================
+describe('normPrecedence', () => {
+  it('higher specificity wins', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 5, authority: 1, createdAt: 1000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.winner.id).toBe('n1');
+    expect(result.loser.id).toBe('n2');
+    expect(result.factors.specificityDiff).toBe(4);
+  });
+
+  it('higher authority wins when specificity is equal', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 1, authority: 10, createdAt: 1000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.winner.id).toBe('n1');
+  });
+
+  it('more recent norm wins when other factors are equal', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 1, authority: 1, createdAt: 5000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.winner.id).toBe('n1');
+    expect(result.factors.recencyDiff).toBe(4000);
+  });
+
+  it('combined factors determine winner', () => {
+    // normB has higher authority but normA has higher specificity and recency
+    const normA = makeNorm({ id: 'n1', specificity: 10, authority: 1, createdAt: 5000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 3, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    // Specificity strongly favors A, recency favors A, authority favors B
+    expect(result.winner.id).toBe('n1');
+  });
+
+  it('returns correct factors', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 3, authority: 5, createdAt: 2000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 2, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.factors.specificityDiff).toBe(2);
+    expect(result.factors.authorityDiff).toBe(3);
+    expect(result.factors.recencyDiff).toBe(1000);
+  });
+
+  it('reason includes specificity explanation when relevant', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 5, authority: 1, createdAt: 1000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.reason).toContain('specificity');
+  });
+
+  it('reason includes authority explanation when relevant', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 1, authority: 10, createdAt: 1000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.reason).toContain('authority');
+  });
+
+  it('reason includes recency explanation when relevant', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 1, authority: 1, createdAt: 5000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.reason).toContain('recency');
+  });
+
+  it('when all factors are equal, first norm (A) wins', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 1, authority: 1, createdAt: 1000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 1, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    expect(result.winner.id).toBe('n1');
+  });
+
+  it('lower specificity can still win with much higher authority', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 2, authority: 1, createdAt: 1000 });
+    const normB = makeNorm({ id: 'n2', specificity: 1, authority: 100, createdAt: 1000 });
+    const result = normPrecedence(normA, normB);
+    // Authority difference is huge, should outweigh specificity
+    expect(result.winner.id).toBe('n2');
+  });
+
+  it('reason includes the winning pattern', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 5, pattern: 'deny-pattern' });
+    const normB = makeNorm({ id: 'n2', specificity: 1, pattern: 'permit-pattern' });
+    const result = normPrecedence(normA, normB);
+    expect(result.reason).toContain(result.winner.pattern);
+  });
+
+  it('winner and loser reference the correct norm objects', () => {
+    const normA = makeNorm({ id: 'n1', specificity: 5 });
+    const normB = makeNorm({ id: 'n2', specificity: 1 });
+    const result = normPrecedence(normA, normB);
+    expect(result.winner).toBe(normA);
+    expect(result.loser).toBe(normB);
   });
 });

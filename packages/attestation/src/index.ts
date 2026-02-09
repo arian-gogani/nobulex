@@ -5,6 +5,10 @@ export type {
   AttestationReconciliation,
   Discrepancy,
   ReceiptSummary,
+  AttestationChainLink,
+  ChainVerificationResult,
+  AgentAction,
+  AttestationCoverageResult,
 } from './types';
 
 import type {
@@ -12,6 +16,10 @@ import type {
   AttestationReconciliation,
   Discrepancy,
   ReceiptSummary,
+  AttestationChainLink,
+  ChainVerificationResult,
+  AgentAction,
+  AttestationCoverageResult,
 } from './types';
 
 /** Default timestamp difference threshold (in ms) for minor discrepancy. */
@@ -214,4 +222,150 @@ export function getDiscrepancies(
   }
 
   return discrepancies;
+}
+
+/**
+ * Verify a chain of attestations where each attester attests the previous one.
+ *
+ * The chain is ordered from the first attestation to the last. Each link
+ * contains an attestation and the public key of the attester who signed it.
+ * Verification proceeds sequentially: if any link fails verification,
+ * the chain is considered broken at that link.
+ *
+ * Additionally checks that the chain is temporally ordered (each attestation's
+ * timestamp is >= the previous one's timestamp).
+ *
+ * @param chain - Array of attestation chain links in order
+ * @returns ChainVerificationResult with the verification outcome
+ */
+export async function attestationChainVerify(
+  chain: AttestationChainLink[],
+): Promise<ChainVerificationResult> {
+  if (chain.length === 0) {
+    return {
+      valid: true,
+      verifiedLinks: 0,
+      totalLinks: 0,
+    };
+  }
+
+  let verifiedLinks = 0;
+
+  for (let i = 0; i < chain.length; i++) {
+    const link = chain[i]!;
+
+    // Check that the attestation is signed
+    if (!isSigned(link.attestation)) {
+      return {
+        valid: false,
+        verifiedLinks,
+        totalLinks: chain.length,
+        brokenAt: i,
+        reason: `Link ${i}: attestation is not signed`,
+      };
+    }
+
+    // Verify the signature
+    const signatureValid = await verifyAttestation(link.attestation, link.attesterPublicKey);
+    if (!signatureValid) {
+      return {
+        valid: false,
+        verifiedLinks,
+        totalLinks: chain.length,
+        brokenAt: i,
+        reason: `Link ${i}: signature verification failed`,
+      };
+    }
+
+    // Check temporal ordering (each attestation should be at or after the previous)
+    if (i > 0) {
+      const prevTimestamp = chain[i - 1]!.attestation.timestamp;
+      if (link.attestation.timestamp < prevTimestamp) {
+        return {
+          valid: false,
+          verifiedLinks,
+          totalLinks: chain.length,
+          brokenAt: i,
+          reason: `Link ${i}: timestamp ${link.attestation.timestamp} is before previous link's timestamp ${prevTimestamp}`,
+        };
+      }
+    }
+
+    // Check chain continuity: the attester of the current link should be
+    // the counterparty of the previous link's attestation (if applicable)
+    if (i > 0) {
+      const prevAttestation = chain[i - 1]!.attestation;
+      if (link.attestation.agentId !== prevAttestation.counterpartyId) {
+        return {
+          valid: false,
+          verifiedLinks,
+          totalLinks: chain.length,
+          brokenAt: i,
+          reason: `Link ${i}: agentId "${link.attestation.agentId}" does not match previous link's counterpartyId "${prevAttestation.counterpartyId}"`,
+        };
+      }
+    }
+
+    verifiedLinks++;
+  }
+
+  return {
+    valid: true,
+    verifiedLinks,
+    totalLinks: chain.length,
+  };
+}
+
+/**
+ * Compute what percentage of an agent's actions are covered by attestations.
+ *
+ * An action is considered "covered" if there exists an attestation where:
+ * - The attestation's agentId matches the action's agentId
+ * - The attestation's timestamp is within the given time window of the action's timestamp
+ *
+ * @param actions - Array of agent actions to check coverage for
+ * @param attestations - Array of attestations that may cover the actions
+ * @param timeWindowMs - Maximum time difference (in ms) for an attestation to cover an action (default 5000)
+ * @returns AttestationCoverageResult with coverage statistics
+ */
+export function computeAttestationCoverage(
+  actions: AgentAction[],
+  attestations: ExternalAttestation[],
+  timeWindowMs: number = 5000,
+): AttestationCoverageResult {
+  if (timeWindowMs < 0) {
+    throw new Error('timeWindowMs must be non-negative');
+  }
+
+  if (actions.length === 0) {
+    return {
+      totalActions: 0,
+      coveredActions: 0,
+      coveragePercentage: 100,
+      uncoveredActionIds: [],
+    };
+  }
+
+  const uncoveredActionIds: string[] = [];
+  let coveredCount = 0;
+
+  for (const action of actions) {
+    const isCovered = attestations.some(att =>
+      att.agentId === action.agentId &&
+      Math.abs(att.timestamp - action.timestamp) <= timeWindowMs,
+    );
+
+    if (isCovered) {
+      coveredCount++;
+    } else {
+      uncoveredActionIds.push(action.id);
+    }
+  }
+
+  return {
+    totalActions: actions.length,
+    coveredActions: coveredCount,
+    coveragePercentage: (coveredCount / actions.length) * 100,
+    uncoveredActionIds,
+  };
 }

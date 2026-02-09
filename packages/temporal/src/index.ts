@@ -9,6 +9,9 @@ export type {
   EvolutionEvent,
   AgentState,
   CovenantState,
+  DecayPoint,
+  ViolationRecord,
+  ExpirationForecastResult,
 } from './types';
 
 import type {
@@ -20,6 +23,9 @@ import type {
   EvolutionEvent,
   AgentState,
   CovenantState,
+  DecayPoint,
+  ViolationRecord,
+  ExpirationForecastResult,
 } from './types';
 
 const VALID_TRIGGER_TYPES: TriggerType[] = [
@@ -423,4 +429,219 @@ export function evolve(
  */
 export function evolutionHistory(covenant: CovenantState): EvolutionEvent[] {
   return covenant.history;
+}
+
+/**
+ * Compute a decay schedule showing how a covenant's enforcement weight
+ * decreases over its lifetime.
+ *
+ * Uses an exponential decay model: value(t) = initialWeight * e^(-decayRate * t)
+ *
+ * The schedule is sampled at `steps` evenly-spaced time points from 0 to `lifetimeMs`.
+ *
+ * @param initialWeight - The starting enforcement weight (must be > 0)
+ * @param decayRate - The exponential decay rate (must be >= 0). Higher = faster decay.
+ * @param lifetimeMs - The total lifetime in milliseconds (must be > 0)
+ * @param steps - The number of sample points (must be >= 2)
+ * @returns Array of (time, value) pairs
+ */
+export function computeDecaySchedule(
+  initialWeight: number,
+  decayRate: number,
+  lifetimeMs: number,
+  steps: number,
+): DecayPoint[] {
+  if (initialWeight <= 0) {
+    throw new Error('initialWeight must be positive');
+  }
+  if (decayRate < 0) {
+    throw new Error('decayRate must be non-negative');
+  }
+  if (lifetimeMs <= 0) {
+    throw new Error('lifetimeMs must be positive');
+  }
+  if (steps < 2) {
+    throw new Error('steps must be at least 2');
+  }
+
+  const schedule: DecayPoint[] = [];
+  const stepSize = lifetimeMs / (steps - 1);
+
+  for (let i = 0; i < steps; i++) {
+    const time = i * stepSize;
+    // Normalize time to [0, 1] for the decay calculation
+    const normalizedTime = time / lifetimeMs;
+    const value = initialWeight * Math.exp(-decayRate * normalizedTime);
+    schedule.push({ time, value });
+  }
+
+  return schedule;
+}
+
+/**
+ * Predict when a covenant will functionally expire based on violation patterns.
+ *
+ * Analyzes the history of violations to estimate:
+ * 1. The current enforcement weight (decayed from initial)
+ * 2. The trend in violations (accelerating, stable, or decelerating)
+ * 3. The predicted time when enforcement weight drops below a functional threshold
+ *
+ * The model considers:
+ * - Each violation reduces the effective weight by (severity * violationImpact)
+ * - Natural decay reduces weight over time via exponential decay
+ * - Violation frequency trends are used to extrapolate future violations
+ *
+ * @param initialWeight - The starting enforcement weight (must be > 0)
+ * @param decayRate - The exponential decay rate (must be >= 0)
+ * @param violations - Array of violation records with timestamps and severities
+ * @param currentTime - The current time in milliseconds
+ * @param threshold - The weight below which the covenant is considered expired (default 0.1)
+ * @param violationImpact - How much each unit of severity reduces weight (default 0.05)
+ * @returns ExpirationForecastResult with predicted expiration time and metadata
+ */
+export function expirationForecast(
+  initialWeight: number,
+  decayRate: number,
+  violations: ViolationRecord[],
+  currentTime: number,
+  threshold: number = 0.1,
+  violationImpact: number = 0.05,
+): ExpirationForecastResult {
+  if (initialWeight <= 0) {
+    throw new Error('initialWeight must be positive');
+  }
+  if (decayRate < 0) {
+    throw new Error('decayRate must be non-negative');
+  }
+  if (threshold < 0 || threshold >= initialWeight) {
+    throw new Error('threshold must be in [0, initialWeight)');
+  }
+  if (violationImpact < 0) {
+    throw new Error('violationImpact must be non-negative');
+  }
+
+  // Sort violations by timestamp
+  const sorted = [...violations].sort((a, b) => a.timestamp - b.timestamp);
+
+  // Compute cumulative violation damage
+  let totalViolationDamage = 0;
+  for (const v of sorted) {
+    if (v.timestamp <= currentTime) {
+      totalViolationDamage += v.severity * violationImpact;
+    }
+  }
+
+  // Compute current weight considering both natural decay and violation damage
+  // Use 1 year as reference lifetime for normalization
+  const referenceLifetime = 365 * 24 * 60 * 60 * 1000;
+  const normalizedCurrentTime = currentTime / referenceLifetime;
+  const naturalDecayWeight = initialWeight * Math.exp(-decayRate * normalizedCurrentTime);
+  const remainingWeight = Math.max(0, naturalDecayWeight - totalViolationDamage);
+
+  // Determine violation trend by comparing intervals between recent violations
+  let violationTrend: 'accelerating' | 'stable' | 'decelerating' = 'stable';
+  const recentViolations = sorted.filter(v => v.timestamp <= currentTime);
+
+  if (recentViolations.length >= 3) {
+    // Compare average interval of first half vs second half
+    const mid = Math.floor(recentViolations.length / 2);
+    const firstHalfIntervals: number[] = [];
+    const secondHalfIntervals: number[] = [];
+
+    for (let i = 1; i < recentViolations.length; i++) {
+      const interval = recentViolations[i]!.timestamp - recentViolations[i - 1]!.timestamp;
+      if (i <= mid) {
+        firstHalfIntervals.push(interval);
+      } else {
+        secondHalfIntervals.push(interval);
+      }
+    }
+
+    const avgFirst = firstHalfIntervals.length > 0
+      ? firstHalfIntervals.reduce((a, b) => a + b, 0) / firstHalfIntervals.length
+      : Infinity;
+    const avgSecond = secondHalfIntervals.length > 0
+      ? secondHalfIntervals.reduce((a, b) => a + b, 0) / secondHalfIntervals.length
+      : Infinity;
+
+    // If intervals are getting shorter, violations are accelerating
+    if (avgSecond < avgFirst * 0.8) {
+      violationTrend = 'accelerating';
+    } else if (avgSecond > avgFirst * 1.2) {
+      violationTrend = 'decelerating';
+    }
+  }
+
+  // If already below threshold, covenant is already expired
+  if (remainingWeight <= threshold) {
+    return {
+      predictedExpirationTime: currentTime,
+      confidence: 1.0,
+      remainingWeight,
+      violationTrend,
+    };
+  }
+
+  // Predict future expiration by projecting violation rate and natural decay
+  // Estimate violation rate (violations per ms)
+  let violationRate = 0;
+  if (recentViolations.length >= 2) {
+    const timeSpan = recentViolations[recentViolations.length - 1]!.timestamp - recentViolations[0]!.timestamp;
+    if (timeSpan > 0) {
+      violationRate = recentViolations.length / timeSpan;
+      // Adjust rate based on trend
+      if (violationTrend === 'accelerating') {
+        violationRate *= 1.5;
+      } else if (violationTrend === 'decelerating') {
+        violationRate *= 0.7;
+      }
+    }
+  }
+
+  // Average severity of violations
+  const avgSeverity = recentViolations.length > 0
+    ? recentViolations.reduce((sum, v) => sum + v.severity, 0) / recentViolations.length
+    : 0;
+
+  // Binary search for when remaining weight hits threshold
+  let low = currentTime;
+  let high = currentTime + referenceLifetime * 10; // Search up to 10x reference lifetime
+  const maxIterations = 100;
+
+  for (let iter = 0; iter < maxIterations; iter++) {
+    const mid = (low + high) / 2;
+    const dt = mid - currentTime;
+
+    // Project natural decay from current time
+    const futureNormalizedTime = mid / referenceLifetime;
+    const futureNaturalWeight = initialWeight * Math.exp(-decayRate * futureNormalizedTime);
+
+    // Project additional violation damage
+    const projectedNewViolations = violationRate * dt;
+    const projectedAdditionalDamage = projectedNewViolations * avgSeverity * violationImpact;
+    const projectedWeight = Math.max(0, futureNaturalWeight - totalViolationDamage - projectedAdditionalDamage);
+
+    if (Math.abs(projectedWeight - threshold) < threshold * 0.001) {
+      low = mid;
+      break;
+    }
+
+    if (projectedWeight > threshold) {
+      low = mid;
+    } else {
+      high = mid;
+    }
+  }
+
+  const predictedExpirationTime = low;
+
+  // Confidence is higher with more violation data
+  const confidence = Math.min(1.0, 0.3 + 0.1 * recentViolations.length);
+
+  return {
+    predictedExpirationTime,
+    confidence,
+    remainingWeight,
+    violationTrend,
+  };
 }

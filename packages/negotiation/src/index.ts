@@ -4,12 +4,20 @@ export type {
   NegotiationSession,
   Proposal,
   NegotiationPolicy,
+  UtilityFunction,
+  Outcome,
+  NashBargainingSolution,
+  ParetoOutcome,
 } from './types.js';
 
 import type {
   NegotiationSession,
   Proposal,
   NegotiationPolicy,
+  UtilityFunction,
+  Outcome,
+  NashBargainingSolution,
+  ParetoOutcome,
 } from './types.js';
 
 /**
@@ -290,4 +298,120 @@ export function fail(
  */
 export function roundCount(session: NegotiationSession): number {
   return session.proposals.length;
+}
+
+/**
+ * Compute the Nash Bargaining Solution between two parties.
+ *
+ * The Nash Bargaining Solution maximizes the product:
+ *   (utilityA(outcome) - disagreementA) * (utilityB(outcome) - disagreementB)
+ *
+ * over all feasible outcomes, where disagreementA and disagreementB are
+ * the utilities each party receives if negotiation fails.
+ *
+ * Only outcomes where both parties receive utility above their disagreement
+ * value are considered (individual rationality constraint).
+ *
+ * @param outcomes - Array of possible outcomes to evaluate
+ * @param utilityA - Utility function for party A (includes disagreement value)
+ * @param utilityB - Utility function for party B (includes disagreement value)
+ * @returns NashBargainingSolution or null if no individually rational outcome exists
+ */
+export function computeNashBargainingSolution(
+  outcomes: Outcome[],
+  utilityA: UtilityFunction,
+  utilityB: UtilityFunction,
+): NashBargainingSolution | null {
+  if (outcomes.length === 0) {
+    return null;
+  }
+
+  let bestSolution: NashBargainingSolution | null = null;
+  let bestProduct = -Infinity;
+
+  for (const outcome of outcomes) {
+    const uA = utilityA.evaluate(outcome);
+    const uB = utilityB.evaluate(outcome);
+
+    // Individual rationality: both parties must be at least as well off
+    // as their disagreement point
+    const surplusA = uA - utilityA.disagreementValue;
+    const surplusB = uB - utilityB.disagreementValue;
+
+    if (surplusA < 0 || surplusB < 0) {
+      continue;
+    }
+
+    const nashProduct = surplusA * surplusB;
+
+    if (nashProduct > bestProduct) {
+      bestProduct = nashProduct;
+      bestSolution = {
+        outcome,
+        utilityA: uA,
+        utilityB: uB,
+        nashProduct,
+      };
+    }
+  }
+
+  return bestSolution;
+}
+
+/**
+ * Compute the Pareto frontier from a set of possible outcomes.
+ *
+ * An outcome is Pareto-optimal if no other outcome exists that makes
+ * at least one party better off without making any party worse off.
+ *
+ * @param outcomes - Array of possible outcomes
+ * @param utilityFunctions - Array of utility functions (one per party)
+ * @returns Array of ParetoOutcome objects, with `dominated` flag set appropriately
+ */
+export function paretoFrontier(
+  outcomes: Outcome[],
+  utilityFunctions: UtilityFunction[],
+): ParetoOutcome[] {
+  if (outcomes.length === 0 || utilityFunctions.length === 0) {
+    return [];
+  }
+
+  // Compute utilities for all outcomes
+  const evaluated: ParetoOutcome[] = outcomes.map(outcome => ({
+    outcome,
+    utilities: utilityFunctions.map(uf => uf.evaluate(outcome)),
+    dominated: false,
+  }));
+
+  // Mark dominated outcomes
+  for (let i = 0; i < evaluated.length; i++) {
+    if (evaluated[i]!.dominated) continue;
+
+    for (let j = 0; j < evaluated.length; j++) {
+      if (i === j) continue;
+      if (evaluated[j]!.dominated) continue;
+
+      // Check if j dominates i:
+      // j is at least as good in all dimensions and strictly better in at least one
+      let atLeastAsGood = true;
+      let strictlyBetter = false;
+
+      for (let k = 0; k < utilityFunctions.length; k++) {
+        if (evaluated[j]!.utilities[k]! < evaluated[i]!.utilities[k]!) {
+          atLeastAsGood = false;
+          break;
+        }
+        if (evaluated[j]!.utilities[k]! > evaluated[i]!.utilities[k]!) {
+          strictlyBetter = true;
+        }
+      }
+
+      if (atLeastAsGood && strictlyBetter) {
+        evaluated[i]!.dominated = true;
+        break;
+      }
+    }
+  }
+
+  return evaluated;
 }

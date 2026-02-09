@@ -42,3 +42,46 @@ export interface SafetyBoundResult {
   limitHit: 'hard' | 'soft' | 'none';
   action?: string;
 }
+
+export interface CompatibilityResult {
+  compatible: boolean;
+  sourceType: SubstrateType;
+  targetType: SubstrateType;
+  sharedCapabilities: string[];
+  interactionProtocol: 'direct' | 'bridged' | 'incompatible';
+  constraints: string[];
+  warnings: string[];
+}
+
+export interface EnforcementRule {
+  originalConstraint: string;
+  substrateType: SubstrateType;
+  mechanism: string;
+  enforcementLevel: 'hardware' | 'software' | 'contractual' | 'advisory';
+  implementation: string;
+  feasible: boolean;
+}
+
+export interface ConstraintTranslationResult {
+  constraint: string;
+  targetSubstrate: SubstrateType;
+  rules: EnforcementRule[];
+  overallFeasibility: boolean;
+}
+
+export interface CapabilityEntry {
+  capability: string;
+  supported: boolean;
+  enforcementLevel: 'hardware' | 'software' | 'contractual' | 'advisory' | 'none';
+  notes: string;
+}
+
+export interface CapabilityMatrixRow {
+  substrateType: SubstrateType;
+  capabilities: CapabilityEntry[];
+}
+
+export interface CapabilityMatrix {
+  capabilities: string[];
+  substrates: CapabilityMatrixRow[];
+}

@@ -2,18 +2,28 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, 'feature/**', 'fix/**', 'release/**']
   pull_request:
     branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
 
-jobs:
-  build-and-test:
-    name: Build & Test
-    runs-on: ubuntu-latest
+env:
+  NODE_OPTIONS: --max-old-space-size=4096
 
+jobs:
+  # ──────────────────────────────────────────────
+  # Lint: TypeScript type checking across all packages
+  # ──────────────────────────────────────────────
+  lint:
+    name: Typecheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,17 +31,210 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: npm
+
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node20-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node20-modules-
+
+      - name: Install dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build packages (required for cross-package declarations)
+        run: npm run build
+
+      - name: TypeScript type checking
+        run: npm run typecheck
+
+  # ──────────────────────────────────────────────
+  # Test: Run vitest with coverage across Node versions
+  # ──────────────────────────────────────────────
+  test:
+    name: Test (Node ${{ matrix.node-version }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version: [18, 20, 22]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: npm
+
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node${{ matrix.node-version }}-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node${{ matrix.node-version }}-modules-
+
+      - name: Install dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Run tests with coverage
+        run: npx vitest run --coverage
+
+      - name: Upload coverage report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-node-${{ matrix.node-version }}
+          path: coverage/
+          retention-days: 14
+          if-no-files-found: ignore
+
+  # ──────────────────────────────────────────────
+  # Build: Full build of all packages (depends on lint + test)
+  # ──────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [lint, test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node20-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node20-modules-
+
+      - name: Install dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Verify build artifacts
+        run: |
+          echo "Build artifact summary:"
+          for pkg_dir in packages/*/; do
+            pkg_name=$(basename "$pkg_dir")
+            if [ -d "${pkg_dir}dist" ]; then
+              file_count=$(find "${pkg_dir}dist" -type f | wc -l)
+              size=$(du -sh "${pkg_dir}dist" | cut -f1)
+              echo "  @stele/${pkg_name}: ${file_count} files, ${size}"
+            fi
+          done
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-output
+          path: packages/*/dist/
+          retention-days: 7
+
+  # ──────────────────────────────────────────────
+  # Security: npm audit for known vulnerabilities
+  # ──────────────────────────────────────────────
+  security:
+    name: Security Audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
-        run: npm run build
+      - name: Run npm audit
+        run: npm audit --audit-level=moderate
 
-      - name: Typecheck
-        run: npm run typecheck
+  # ──────────────────────────────────────────────
+  # Size Check: Ensure bundle sizes don't regress
+  # ──────────────────────────────────────────────
+  size-check:
+    name: Bundle Size Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Test
-        run: npm run test
+      - name: Download build artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: build-output
+          path: packages/
+
+      - name: Check bundle sizes
+        run: |
+          echo "## Bundle Size Report"
+          echo ""
+          echo "| Package | Size (KB) | File Count |"
+          echo "|---------|-----------|------------|"
+          total_bytes=0
+          for pkg_dist in packages/*/dist; do
+            if [ -d "$pkg_dist" ]; then
+              size_bytes=$(du -sb "$pkg_dist" | cut -f1)
+              name=$(basename "$(dirname "$pkg_dist")")
+              file_count=$(find "$pkg_dist" -type f | wc -l)
+              size_kb=$(awk "BEGIN {printf \"%.2f\", $size_bytes / 1024}")
+              echo "| @stele/${name} | ${size_kb} | ${file_count} |"
+              total_bytes=$((total_bytes + size_bytes))
+            fi
+          done
+          echo ""
+          total_kb=$(awk "BEGIN {printf \"%.2f\", $total_bytes / 1024}")
+          echo "**Total size: ${total_kb} KB**"
+          echo ""
+
+          # Fail if total bundle size exceeds 5 MB
+          max_bytes=5242880
+          if [ "$total_bytes" -gt "$max_bytes" ]; then
+            echo "::error::Total bundle size (${total_kb} KB) exceeds the 5120 KB limit"
+            exit 1
+          else
+            echo "Bundle size is within limits."
+          fi
+
+      - name: Upload size report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: size-report
+          path: packages/*/dist/
+          retention-days: 3
+          if-no-files-found: ignore

@@ -5,15 +5,25 @@ on:
     tags:
       - "v*"
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
   contents: read
   id-token: write
 
-jobs:
-  publish:
-    name: Build & Publish
-    runs-on: ubuntu-latest
+env:
+  NODE_OPTIONS: --max-old-space-size=4096
 
+jobs:
+  # ──────────────────────────────────────────────
+  # Validate: Full build, typecheck, and test before publishing
+  # ──────────────────────────────────────────────
+  validate:
+    name: Validate Release
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -21,78 +31,193 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: TypeScript type checking
+        run: npm run typecheck
+
+      - name: Run tests
+        run: npx vitest run
+
+  # ──────────────────────────────────────────────
+  # Tier 1: Foundation packages with no internal dependencies
+  # ──────────────────────────────────────────────
+  publish-foundation:
+    name: "Publish @stele/${{ matrix.package }}"
+    needs: validate
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: true
+      matrix:
+        package: [types, crypto]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
           cache: npm
           registry-url: https://registry.npmjs.org
 
       - name: Install dependencies
         run: npm ci
 
-      - name: Build
+      - name: Build all packages
         run: npm run build
 
-      - name: Typecheck
-        run: npm run typecheck
-
-      - name: Test
-        run: npm run test
-
-      - name: Publish @stele/types
+      - name: Publish @stele/${{ matrix.package }}
         run: npm publish --provenance --access public
-        working-directory: packages/types
+        working-directory: packages/${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @stele/crypto
+  # ──────────────────────────────────────────────
+  # Tier 2: Core packages that depend on foundation
+  # ──────────────────────────────────────────────
+  publish-core:
+    name: "Publish @stele/${{ matrix.package }}"
+    needs: publish-foundation
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: true
+      matrix:
+        package: [core, store, verifier]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Publish @stele/${{ matrix.package }}
         run: npm publish --provenance --access public
-        working-directory: packages/crypto
+        working-directory: packages/${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @stele/core
+  # ──────────────────────────────────────────────
+  # Tier 3: SDK, CLI, integrations, and protocol packages
+  # ──────────────────────────────────────────────
+  publish-ecosystem:
+    name: "Publish @stele/${{ matrix.package }}"
+    needs: publish-core
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        package:
+          - sdk
+          - cli
+          - mcp-server
+          - react
+          - evm
+          - attestation
+          - canary
+          - gametheory
+          - composition
+          - antifragile
+          - negotiation
+          - consensus
+          - robustness
+          - temporal
+          - recursive
+          - alignment
+          - norms
+          - substrate
+          - derivatives
+          - legal
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+          registry-url: https://registry.npmjs.org
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Publish @stele/${{ matrix.package }}
         run: npm publish --provenance --access public
-        working-directory: packages/core
+        working-directory: packages/${{ matrix.package }}
         env:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Publish @stele/store
-        run: npm publish --provenance --access public
-        working-directory: packages/store
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+  # ──────────────────────────────────────────────
+  # Verify: Confirm all packages are live on npm
+  # ──────────────────────────────────────────────
+  verify:
+    name: Verify Published Packages
+    needs: [publish-foundation, publish-core, publish-ecosystem]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Extract expected version from tag
+        id: version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
 
-      - name: Publish @stele/verifier
-        run: npm publish --provenance --access public
-        working-directory: packages/verifier
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Wait for npm registry propagation
+        run: sleep 30
 
-      - name: Publish @stele/sdk
-        run: npm publish --provenance --access public
-        working-directory: packages/sdk
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Verify all packages on npm
+        run: |
+          packages=(
+            types crypto core store verifier sdk cli mcp-server react evm
+            attestation canary gametheory composition antifragile negotiation
+            consensus robustness temporal recursive alignment norms substrate
+            derivatives legal
+          )
+          expected="${{ steps.version.outputs.version }}"
+          passed=0
+          failed=0
 
-      - name: Publish @stele/cli
-        run: npm publish --provenance --access public
-        working-directory: packages/cli
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          echo "Verifying packages for version: ${expected}"
+          echo ""
 
-      - name: Publish @stele/mcp-server
-        run: npm publish --provenance --access public
-        working-directory: packages/mcp-server
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          for pkg in "${packages[@]}"; do
+            published=$(npm view "@stele/${pkg}" version 2>/dev/null || echo "NOT_FOUND")
+            if [ "$published" = "$expected" ]; then
+              echo "[PASS] @stele/${pkg}@${published}"
+              passed=$((passed + 1))
+            else
+              echo "[FAIL] @stele/${pkg} - expected ${expected}, got ${published}"
+              failed=$((failed + 1))
+            fi
+          done
 
-      - name: Publish @stele/react
-        run: npm publish --provenance --access public
-        working-directory: packages/react
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          echo ""
+          echo "Results: ${passed} passed, ${failed} failed out of ${#packages[@]} packages"
 
-      - name: Publish @stele/evm
-        run: npm publish --provenance --access public
-        working-directory: packages/evm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          if [ "$failed" -gt 0 ]; then
+            echo "::error::${failed} package(s) failed version verification"
+            exit 1
+          fi

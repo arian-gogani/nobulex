@@ -3,21 +3,23 @@
   "entryPoints": [
     "packages/types/src/index.ts",
     "packages/crypto/src/index.ts",
+    "packages/ccl/src/index.ts",
     "packages/core/src/index.ts",
     "packages/store/src/index.ts",
     "packages/verifier/src/index.ts",
     "packages/sdk/src/index.ts",
-    "packages/cli/src/index.ts",
-    "packages/mcp-server/src/index.ts",
-    "packages/react/src/index.ts",
-    "packages/evm/src/index.ts"
+    "packages/identity/src/index.ts"
   ],
-  "entryPointStrategy": "expand",
   "out": "docs/api",
-  "name": "Stele API Documentation",
-  "readme": "README.md",
-  "tsconfig": "tsconfig.json",
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "markdown",
+  "readme": "none",
   "excludePrivate": true,
   "excludeInternal": true,
-  "githubPages": true
+  "excludeExternals": true,
+  "categoryOrder": ["Foundation", "Protocol", "Utilities"],
+  "navigationLinks": {
+    "GitHub": "https://github.com/agbusiness195/stele",
+    "Website": "https://stele.dev"
+  }
 }

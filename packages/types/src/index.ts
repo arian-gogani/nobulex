@@ -290,3 +290,8 @@ export {
   freezeDeep,
   assertNever,
 } from './guards';
+
+// ─── Structured logging ─────────────────────────────────────────────────────────
+
+export { Logger, createLogger, defaultLogger, LogLevel } from './logger';
+export type { LogEntry, LogOutput } from './logger';

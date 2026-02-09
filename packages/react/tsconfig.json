@@ -3,12 +3,13 @@
   "compilerOptions": {
     "rootDir": "src",
     "outDir": "dist",
-    "composite": true,
-    "jsx": "react-jsx"
+    "composite": true
   },
   "include": ["src"],
   "references": [
     { "path": "../types" },
-    { "path": "../sdk" }
+    { "path": "../sdk" },
+    { "path": "../store" },
+    { "path": "../core" }
   ]
 }

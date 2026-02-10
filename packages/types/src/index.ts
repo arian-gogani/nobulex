@@ -116,7 +116,12 @@ export class StorageError extends SteleError {
  *
  * @param value - The value to validate.
  * @param name  - Human-readable name of the parameter (used in error messages).
- * @throws ValidationError if the value is empty or whitespace-only.
+ * @throws {ValidationError} When the value is empty or whitespace-only.
+ *
+ * @example
+ * ```typescript
+ * validateNonEmpty(issuerName, 'issuer.name'); // throws if blank
+ * ```
  */
 export function validateNonEmpty(value: string, name: string): void {
   if (typeof value !== 'string' || value.trim().length === 0) {
@@ -135,7 +140,12 @@ export function validateNonEmpty(value: string, name: string): void {
  * @param min   - Minimum allowed value (inclusive).
  * @param max   - Maximum allowed value (inclusive).
  * @param name  - Human-readable name of the parameter.
- * @throws ValidationError if the value is outside [min, max].
+ * @throws {ValidationError} When the value is outside [min, max].
+ *
+ * @example
+ * ```typescript
+ * validateRange(chainDepth, 1, 16, 'chain.depth');
+ * ```
  */
 export function validateRange(value: number, min: number, max: number, name: string): void {
   if (typeof value !== 'number' || Number.isNaN(value) || value < min || value > max) {
@@ -152,7 +162,12 @@ export function validateRange(value: number, min: number, max: number, name: str
  *
  * @param value - The hex string to validate.
  * @param name  - Human-readable name of the parameter.
- * @throws ValidationError if the value is not valid hex.
+ * @throws {ValidationError} When the value is not valid hex.
+ *
+ * @example
+ * ```typescript
+ * validateHex(publicKeyHex, 'issuer.publicKey');
+ * ```
  */
 export function validateHex(value: string, name: string): void {
   if (typeof value !== 'string' || value.length === 0) {
@@ -183,7 +198,12 @@ export function validateHex(value: string, name: string): void {
  *
  * @param value - The value to validate.
  * @param name  - Human-readable name of the parameter.
- * @throws ValidationError if the value is not in [0, 1].
+ * @throws {ValidationError} When the value is not in [0, 1].
+ *
+ * @example
+ * ```typescript
+ * validateProbability(carryForward, 'reputationCarryForward');
+ * ```
  */
 export function validateProbability(value: number, name: string): void {
   if (typeof value !== 'number' || Number.isNaN(value) || value < 0 || value > 1) {
@@ -262,6 +282,15 @@ export type Result<T, E = Error> =
 
 /**
  * Construct a successful Result.
+ *
+ * @param value - The success value to wrap.
+ * @returns A Result with `ok: true` and the given value.
+ *
+ * @example
+ * ```typescript
+ * const result = ok(42);
+ * if (result.ok) console.log(result.value); // 42
+ * ```
  */
 export function ok<T>(value: T): Result<T, never> {
   return { ok: true, value };
@@ -269,6 +298,15 @@ export function ok<T>(value: T): Result<T, never> {
 
 /**
  * Construct a failed Result.
+ *
+ * @param error - The error value to wrap.
+ * @returns A Result with `ok: false` and the given error.
+ *
+ * @example
+ * ```typescript
+ * const result = err(new Error('not found'));
+ * if (!result.ok) console.log(result.error.message); // 'not found'
+ * ```
  */
 export function err<E>(error: E): Result<never, E> {
   return { ok: false, error };
@@ -276,6 +314,17 @@ export function err<E>(error: E): Result<never, E> {
 
 // ─── Runtime type guards & sanitization ─────────────────────────────────────────
 
+/**
+ * Runtime type guards and input sanitization utilities.
+ *
+ * - **Type guards**: `isNonEmptyString`, `isValidHex`, `isValidId`,
+ *   `isValidPublicKey`, `isValidSignature`, `isValidISODate`,
+ *   `isValidVersion`, `isPlainObject` -- each returns a type-narrowing boolean.
+ * - **Sanitization**: `sanitizeString` (trims, truncates, strips control chars),
+ *   `sanitizeJsonInput` (parses JSON with prototype-pollution protection).
+ * - **Utilities**: `freezeDeep` (recursively freeze objects),
+ *   `assertNever` (exhaustiveness checking in switch statements).
+ */
 export {
   isNonEmptyString,
   isValidHex,

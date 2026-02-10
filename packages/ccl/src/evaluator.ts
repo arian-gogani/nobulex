@@ -12,10 +12,22 @@ import type {
 } from './types.js';
 
 /**
- * Match an action string against a pattern.
- * Segments are dot-separated.
- * - `*` matches exactly one segment
- * - `**` matches zero or more segments (greedy)
+ * Match an action string against a dot-separated pattern.
+ *
+ * Segments are split on `.`. Wildcard rules:
+ * - `*` matches exactly one segment (e.g. `file.*` matches `file.read`)
+ * - `**` matches zero or more segments (e.g. `file.**` matches `file.read.all`)
+ *
+ * @param pattern - The action pattern (e.g. `"file.*"`, `"**"`).
+ * @param action - The concrete action string to test (e.g. `"file.read"`).
+ * @returns `true` if the action matches the pattern.
+ *
+ * @example
+ * ```typescript
+ * matchAction('file.*', 'file.read');   // true
+ * matchAction('file.*', 'file.a.b');    // false
+ * matchAction('**', 'anything.here');   // true
+ * ```
  */
 export function matchAction(pattern: string, action: string): boolean {
   const patternParts = pattern.split('.');
@@ -24,10 +36,26 @@ export function matchAction(pattern: string, action: string): boolean {
 }
 
 /**
- * Match a resource string against a pattern.
- * Segments are slash-separated.
- * - `*` matches exactly one segment
- * - `**` matches zero or more segments (greedy)
+ * Match a resource path against a slash-separated pattern.
+ *
+ * Segments are split on `/`. Leading/trailing slashes are normalized.
+ * Wildcard rules:
+ * - `*` matches exactly one path segment
+ * - `**` matches zero or more segments
+ *
+ * Note: resource matching is exact per-segment. `/secrets` does NOT
+ * match `/secrets/key` unless you use `/secrets/**`.
+ *
+ * @param pattern - The resource pattern (e.g. `"/data/**"`, `"/api/*"`).
+ * @param resource - The concrete resource path to test.
+ * @returns `true` if the resource matches the pattern.
+ *
+ * @example
+ * ```typescript
+ * matchResource('/data/**', '/data/users/123');  // true
+ * matchResource('/data/*', '/data/users/123');   // false
+ * matchResource('/data/*', '/data/users');       // true
+ * ```
  */
 export function matchResource(pattern: string, resource: string): boolean {
   // Normalize: remove leading/trailing slashes for matching
@@ -91,11 +119,25 @@ function matchSegments(
 }
 
 /**
- * Calculate the specificity of an action+resource pattern pair.
- * More specific patterns have higher scores.
- * Non-wildcard segments count as 2 points each.
- * Single wildcards (*) count as 1 point each.
- * Double wildcards (**) count as 0 points.
+ * Calculate the specificity score of an action+resource pattern pair.
+ *
+ * More specific patterns produce higher scores. Scoring per segment:
+ * - Literal segment: 2 points
+ * - Single wildcard (`*`): 1 point
+ * - Double wildcard (`**`): 0 points
+ *
+ * Used internally by {@link evaluate} to resolve conflicts: when multiple
+ * rules match, the most specific one wins.
+ *
+ * @param actionPattern - The action pattern (dot-separated).
+ * @param resourcePattern - The resource pattern (slash-separated).
+ * @returns A non-negative integer specificity score.
+ *
+ * @example
+ * ```typescript
+ * specificity('file.read', '/data/users'); // 8
+ * specificity('**', '**');                 // 0
+ * ```
  */
 export function specificity(actionPattern: string, resourcePattern: string): number {
   let score = 0;
@@ -129,8 +171,21 @@ export function specificity(actionPattern: string, resourcePattern: string): num
 }
 
 /**
- * Evaluate a condition or compound condition against a context.
- * Missing fields evaluate to false (safe default).
+ * Evaluate a simple or compound condition against a context object.
+ *
+ * Supports all CCL operators (`=`, `!=`, `<`, `>`, `contains`, `in`,
+ * `matches`, etc.) and compound conditions (`and`, `or`, `not`).
+ * Missing context fields evaluate to `false` (safe default-deny).
+ *
+ * @param condition - The condition (simple or compound) to evaluate.
+ * @param context - Key-value context object; supports dotted field paths.
+ * @returns `true` if the condition is satisfied.
+ *
+ * @example
+ * ```typescript
+ * const cond = { field: 'user.role', operator: '=' as const, value: 'admin' };
+ * evaluateCondition(cond, { user: { role: 'admin' } }); // true
+ * ```
  */
 export function evaluateCondition(
   condition: Condition | CompoundCondition,
@@ -251,11 +306,28 @@ function resolveField(context: EvaluationContext, field: string): unknown {
 /**
  * Evaluate a CCL document against an action/resource pair.
  *
+ * This is the core access-control decision function. It finds all
+ * matching permit/deny statements, resolves conflicts using specificity
+ * and deny-wins semantics, and returns a detailed result.
+ *
  * Resolution order:
  * 1. Find all matching statements (action + resource match, conditions pass)
- * 2. Sort by specificity (more specific first)
+ * 2. Sort by specificity (most specific first)
  * 3. At equal specificity, deny wins over permit
- * 4. If no rules match, default is deny
+ * 4. If no rules match, default is deny (`permitted: false`)
+ *
+ * @param doc - The parsed CCL document to evaluate against.
+ * @param action - The action being attempted (e.g. `"read"`, `"api.call"`).
+ * @param resource - The target resource path (e.g. `"/data/users"`).
+ * @param context - Optional context for condition evaluation (e.g. `{ user: { role: 'admin' } }`).
+ * @returns An EvaluationResult with `permitted`, `matchedRule`, and `allMatches`.
+ *
+ * @example
+ * ```typescript
+ * const doc = parse("permit read on '/data/**'\ndeny read on '/data/secret'");
+ * const result = evaluate(doc, 'read', '/data/public');
+ * console.log(result.permitted); // true
+ * ```
  */
 export function evaluate(
   doc: CCLDocument,
@@ -333,7 +405,25 @@ export function evaluate(
 }
 
 /**
- * Check if a rate limit has been exceeded.
+ * Check whether an action has exceeded its rate limit.
+ *
+ * Finds the most specific matching `limit` statement for the given action,
+ * then checks whether `currentCount` exceeds the allowed count within
+ * the time window starting at `periodStartTime`.
+ *
+ * @param doc - The parsed CCL document containing limit statements.
+ * @param action - The action to check (e.g. `"api.call"`).
+ * @param currentCount - How many times the action has been performed in the current window.
+ * @param periodStartTime - Epoch milliseconds when the current window started.
+ * @param now - Optional current time in epoch ms (defaults to `Date.now()`).
+ * @returns An object with `exceeded`, the matched `limit`, and `remaining` count.
+ *
+ * @example
+ * ```typescript
+ * const doc = parse("limit api.call 100 per 1 hours");
+ * const result = checkRateLimit(doc, 'api.call', 50, Date.now() - 1000);
+ * console.log(result.remaining); // 50
+ * ```
  */
 export function checkRateLimit(
   doc: CCLDocument,
@@ -385,9 +475,24 @@ export function checkRateLimit(
 
 /**
  * Merge a parent and child CCL document with deny-wins semantics.
- * The child inherits all parent rules. If both parent and child have
- * permits for the same action/resource, the result is the intersection.
- * All denies from both are included.
+ *
+ * Combines rules from both documents following delegation chain merge rules:
+ * - All denies from both parent and child are included
+ * - All permits from both are included (evaluate resolves conflicts)
+ * - All obligations from both are included
+ * - For limits on the same action, the more restrictive (lower count) wins
+ *
+ * @param parent - The parent (broader) CCL document.
+ * @param child - The child (narrower) CCL document.
+ * @returns A new merged CCLDocument.
+ *
+ * @example
+ * ```typescript
+ * const parent = parse("permit read on '**'");
+ * const child = parse("deny read on '/secret/**'");
+ * const merged = merge(parent, child);
+ * console.log(merged.denies.length); // 1
+ * ```
  */
 export function merge(parent: CCLDocument, child: CCLDocument): CCLDocument {
   const statements: Statement[] = [];
@@ -431,10 +536,24 @@ export function merge(parent: CCLDocument, child: CCLDocument): CCLDocument {
 }
 
 /**
- * Validate that a child document only narrows (restricts) the parent.
- * A child cannot:
- * - Permit something the parent denies
- * - Permit a broader scope than the parent permits
+ * Validate that a child CCL document only narrows (restricts) the parent.
+ *
+ * A valid delegation chain requires that each child can only make
+ * constraints more restrictive, never broader. Violations occur when:
+ * - A child permits something the parent explicitly denies
+ * - A child permit covers a broader scope than any parent permit
+ *
+ * @param parent - The parent CCL document.
+ * @param child - The child CCL document to validate against the parent.
+ * @returns An object with `valid` boolean and `violations` array.
+ *
+ * @example
+ * ```typescript
+ * const parent = parse("permit read on '/data/**'");
+ * const child = parse("permit write on '/data/**'");
+ * const result = validateNarrowing(parent, child);
+ * console.log(result.valid); // false -- child broadens parent
+ * ```
  */
 export function validateNarrowing(
   parent: CCLDocument,
@@ -595,7 +714,21 @@ function isSubsetSegments(
 }
 
 /**
- * Serialize a CCLDocument back to CCL source text.
+ * Serialize a CCLDocument back to human-readable CCL source text.
+ *
+ * Produces one line per statement. Time periods are converted to
+ * the most natural unit (seconds, minutes, hours, days).
+ * Conditions and severity annotations are included when present.
+ *
+ * @param doc - The CCL document to serialize.
+ * @returns A multi-line CCL source string.
+ *
+ * @example
+ * ```typescript
+ * const doc = parse("permit read on '/data/**'");
+ * const source = serialize(doc);
+ * console.log(source); // "permit read on '/data/**'"
+ * ```
  */
 export function serialize(doc: CCLDocument): string {
   const lines: string[] = [];

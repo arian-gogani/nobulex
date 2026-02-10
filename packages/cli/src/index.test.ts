@@ -1,7 +1,11 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import { run } from './index';
 import { buildCovenant, serializeCovenant, PROTOCOL_VERSION } from '@stele/core';
 import { generateKeyPair } from '@stele/crypto';
+import { setColorsEnabled, stripAnsi } from './format';
+import { mkdtempSync, readFileSync, existsSync, rmSync } from 'fs';
+import { join } from 'path';
+import { tmpdir } from 'os';
 
 // ---------------------------------------------------------------------------
 // Helper: create a valid signed covenant JSON string for test use
@@ -28,6 +32,23 @@ async function makeCovenantJson(constraints = "permit read on '**'"): Promise<st
   return serializeCovenant(doc);
 }
 
+// ---------------------------------------------------------------------------
+// Helper: ANSI detection
+// ---------------------------------------------------------------------------
+
+function hasAnsi(s: string): boolean {
+  // eslint-disable-next-line no-control-regex
+  return /\x1b\[/.test(s);
+}
+
+// ---------------------------------------------------------------------------
+// Reset color state between tests
+// ---------------------------------------------------------------------------
+
+afterEach(() => {
+  setColorsEnabled(true);
+});
+
 // ===========================================================================
 // help / --help
 // ===========================================================================
@@ -37,13 +58,14 @@ describe('stele help', () => {
     const r = await run([]);
     expect(r.exitCode).toBe(0);
     expect(r.stdout).toContain('Stele CLI');
-    expect(r.stdout).toContain('Commands:');
+    expect(r.stdout).toContain('Commands');
     expect(r.stdout).toContain('init');
     expect(r.stdout).toContain('create');
     expect(r.stdout).toContain('verify');
     expect(r.stdout).toContain('evaluate');
     expect(r.stdout).toContain('inspect');
     expect(r.stdout).toContain('parse');
+    expect(r.stdout).toContain('completions');
     expect(r.stdout).toContain('version');
     expect(r.stdout).toContain('help');
     expect(r.stderr).toBe('');
@@ -61,6 +83,17 @@ describe('stele help', () => {
     expect(r.exitCode).toBe(0);
     expect(r.stdout).toContain('stele init');
     expect(r.stderr).toBe('');
+  });
+
+  it('includes ANSI codes in help when colors enabled', async () => {
+    const r = await run([]);
+    expect(hasAnsi(r.stdout)).toBe(true);
+  });
+
+  it('strips ANSI from help when --no-color is set', async () => {
+    const r = await run(['--no-color']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('Stele CLI');
   });
 });
 
@@ -92,15 +125,20 @@ describe('stele version', () => {
 
 describe('stele init', () => {
   it('generates a key pair and prints public key', async () => {
-    const r = await run(['init']);
-    expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('Generated Ed25519 key pair.');
-    expect(r.stdout).toContain('Public key:');
-    expect(r.stderr).toBe('');
-    // Public key should be 64 hex chars
-    const match = r.stdout.match(/Public key: ([0-9a-f]+)/);
-    expect(match).not.toBeNull();
-    expect(match![1]).toHaveLength(64);
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-test-'));
+    try {
+      const r = await run(['init'], tmp);
+      expect(r.exitCode).toBe(0);
+      expect(stripAnsi(r.stdout)).toContain('Generated Ed25519 key pair.');
+      expect(stripAnsi(r.stdout)).toContain('Public key');
+      expect(r.stderr).toBe('');
+      // Public key should be 64 hex chars
+      const plain = stripAnsi(r.stdout);
+      const match = plain.match(/Public key\s+([0-9a-f]{64})/);
+      expect(match).not.toBeNull();
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
   });
 
   it('outputs JSON with --json flag', async () => {
@@ -120,6 +158,43 @@ describe('stele init', () => {
     expect(r.stdout).toContain('stele init');
     expect(r.stdout).toContain('Generate');
   });
+
+  it('writes stele.config.json on init', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-test-'));
+    try {
+      const r = await run(['init'], tmp);
+      expect(r.exitCode).toBe(0);
+      const configPath = join(tmp, 'stele.config.json');
+      expect(existsSync(configPath)).toBe(true);
+      const config = JSON.parse(readFileSync(configPath, 'utf-8'));
+      expect(config.defaultIssuer).toBeDefined();
+      expect(config.defaultIssuer.publicKey).toHaveLength(64);
+      expect(config.outputFormat).toBe('text');
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('init output contains ANSI when colors enabled', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-test-'));
+    try {
+      const r = await run(['init'], tmp);
+      expect(hasAnsi(r.stdout)).toBe(true);
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('init output has no ANSI with --no-color', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-test-'));
+    try {
+      const r = await run(['init', '--no-color'], tmp);
+      expect(hasAnsi(r.stdout)).toBe(false);
+      expect(r.stdout).toContain('Generated Ed25519 key pair.');
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
 });
 
 // ===========================================================================
@@ -127,7 +202,7 @@ describe('stele init', () => {
 // ===========================================================================
 
 describe('stele create', () => {
-  it('creates a covenant and outputs JSON', async () => {
+  it('creates a covenant and outputs formatted text', async () => {
     const r = await run([
       'create',
       '--issuer', 'alice',
@@ -135,9 +210,9 @@ describe('stele create', () => {
       '--constraints', "permit read on '**'",
     ]);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('Covenant created successfully.');
-    expect(r.stdout).toContain('alice');
-    expect(r.stdout).toContain('bob');
+    expect(stripAnsi(r.stdout)).toContain('Covenant created successfully.');
+    expect(stripAnsi(r.stdout)).toContain('alice');
+    expect(stripAnsi(r.stdout)).toContain('bob');
     expect(r.stderr).toBe('');
   });
 
@@ -157,6 +232,8 @@ describe('stele create', () => {
     expect(typeof parsed.id).toBe('string');
     expect(typeof parsed.signature).toBe('string');
     expect(r.stderr).toBe('');
+    // --json should not have ANSI
+    expect(hasAnsi(r.stdout)).toBe(false);
   });
 
   it('fails without --issuer', async () => {
@@ -206,6 +283,28 @@ describe('stele create', () => {
     expect(r.stdout).toContain('stele create');
     expect(r.stdout).toContain('--issuer');
   });
+
+  it('create text output contains ANSI', async () => {
+    const r = await run([
+      'create',
+      '--issuer', 'alice',
+      '--beneficiary', 'bob',
+      '--constraints', "permit read on '**'",
+    ]);
+    expect(hasAnsi(r.stdout)).toBe(true);
+  });
+
+  it('create --no-color strips ANSI', async () => {
+    const r = await run([
+      'create',
+      '--issuer', 'alice',
+      '--beneficiary', 'bob',
+      '--constraints', "permit read on '**'",
+      '--no-color',
+    ]);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('Covenant created successfully.');
+  });
 });
 
 // ===========================================================================
@@ -213,13 +312,24 @@ describe('stele create', () => {
 // ===========================================================================
 
 describe('stele verify', () => {
-  it('verifies a valid covenant', async () => {
+  it('verifies a valid covenant with colored output', async () => {
     const json = await makeCovenantJson();
     const r = await run(['verify', json]);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('PASS');
-    expect(r.stdout).toContain('Valid:');
+    // Should contain checkmarks (colored)
+    expect(r.stdout).toContain('\u2714'); // checkmark
+    expect(stripAnsi(r.stdout)).toContain('Valid:');
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(true);
+  });
+
+  it('verify --no-color uses [OK] prefix instead of checkmark', async () => {
+    const json = await makeCovenantJson();
+    const r = await run(['verify', json, '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('[OK]');
+    expect(r.stdout).toContain('Valid:');
   });
 
   it('outputs JSON with --json on a valid covenant', async () => {
@@ -231,6 +341,7 @@ describe('stele verify', () => {
     expect(Array.isArray(parsed.checks)).toBe(true);
     expect(parsed.checks.length).toBeGreaterThan(0);
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(false);
   });
 
   it('fails with invalid JSON', async () => {
@@ -246,7 +357,20 @@ describe('stele verify', () => {
     const tampered = JSON.stringify(obj);
     const r = await run(['verify', tampered]);
     expect(r.exitCode).toBe(1);
-    expect(r.stdout).toContain('FAIL');
+    // Should contain X mark for failures
+    expect(r.stdout).toContain('\u2718'); // X mark
+    expect(stripAnsi(r.stdout)).toContain('Invalid:');
+  });
+
+  it('tampered covenant --no-color shows [ERROR] prefix', async () => {
+    const json = await makeCovenantJson();
+    const obj = JSON.parse(json);
+    obj.constraints = "deny ** on '**'";
+    const tampered = JSON.stringify(obj);
+    const r = await run(['verify', tampered, '--no-color']);
+    expect(r.exitCode).toBe(1);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('[ERROR]');
     expect(r.stdout).toContain('Invalid:');
   });
 
@@ -261,6 +385,14 @@ describe('stele verify', () => {
     expect(r.exitCode).toBe(0);
     expect(r.stdout).toContain('stele verify');
   });
+
+  it('verify output includes box-drawing summary', async () => {
+    const json = await makeCovenantJson();
+    const r = await run(['verify', json]);
+    // Box drawing characters
+    expect(r.stdout).toContain('\u250C'); // top-left corner
+    expect(r.stdout).toContain('Summary');
+  });
 });
 
 // ===========================================================================
@@ -268,21 +400,30 @@ describe('stele verify', () => {
 // ===========================================================================
 
 describe('stele evaluate', () => {
-  it('evaluates a permitted action', async () => {
+  it('evaluates a permitted action with PERMITTED text', async () => {
     const json = await makeCovenantJson("permit read on '**'");
     const r = await run(['evaluate', json, 'read', '/data']);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('PERMIT');
-    expect(r.stdout).toContain('read');
-    expect(r.stdout).toContain('/data');
+    expect(stripAnsi(r.stdout)).toContain('PERMITTED');
+    expect(stripAnsi(r.stdout)).toContain('read');
+    expect(stripAnsi(r.stdout)).toContain('/data');
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(true);
   });
 
-  it('evaluates a denied action (default deny)', async () => {
+  it('evaluates a denied action (default deny) with DENIED text', async () => {
     const json = await makeCovenantJson("deny write on '/system/**'");
     const r = await run(['evaluate', json, 'write', '/system/config']);
     expect(r.exitCode).toBe(1);
-    expect(r.stdout).toContain('DENY');
+    expect(stripAnsi(r.stdout)).toContain('DENIED');
+  });
+
+  it('evaluate --no-color strips ANSI', async () => {
+    const json = await makeCovenantJson("permit read on '**'");
+    const r = await run(['evaluate', json, 'read', '/data', '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('PERMITTED');
   });
 
   it('outputs JSON with --json', async () => {
@@ -294,6 +435,7 @@ describe('stele evaluate', () => {
     expect(parsed.action).toBe('read');
     expect(parsed.resource).toBe('/data');
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(false);
   });
 
   it('fails without JSON argument', async () => {
@@ -334,20 +476,31 @@ describe('stele evaluate', () => {
 // ===========================================================================
 
 describe('stele inspect', () => {
-  it('pretty-prints covenant details', async () => {
+  it('pretty-prints covenant details with boxes', async () => {
     const json = await makeCovenantJson("permit read on '**'\ndeny write on '/system/**'");
     const r = await run(['inspect', json]);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('=== Covenant Inspection ===');
-    expect(r.stdout).toContain('test-issuer');
-    expect(r.stdout).toContain('test-beneficiary');
-    expect(r.stdout).toContain('Constraints:');
-    expect(r.stdout).toContain("permit read on '**'");
-    expect(r.stdout).toContain('Constraint summary:');
-    expect(r.stdout).toContain('Permits:');
-    expect(r.stdout).toContain('Denies:');
-    expect(r.stdout).toContain('Signature:');
+    // Box drawing characters
+    expect(r.stdout).toContain('\u250C'); // top-left corner
+    expect(r.stdout).toContain('Covenant Inspection');
+    expect(stripAnsi(r.stdout)).toContain('test-issuer');
+    expect(stripAnsi(r.stdout)).toContain('test-beneficiary');
+    expect(r.stdout).toContain('Parties');
+    expect(r.stdout).toContain('Constraints');
+    expect(stripAnsi(r.stdout)).toContain('Permits');
+    expect(stripAnsi(r.stdout)).toContain('Denies');
+    expect(stripAnsi(r.stdout)).toContain('Signature:');
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(true);
+  });
+
+  it('inspect --no-color strips ANSI', async () => {
+    const json = await makeCovenantJson("permit read on '**'");
+    const r = await run(['inspect', json, '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('Covenant Inspection');
+    expect(r.stdout).toContain('test-issuer');
   });
 
   it('outputs JSON with --json', async () => {
@@ -360,6 +513,7 @@ describe('stele inspect', () => {
     expect(parsed.beneficiary).toBeDefined();
     expect(parsed.constraints).toBeDefined();
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(false);
   });
 
   it('fails without a JSON argument', async () => {
@@ -386,23 +540,32 @@ describe('stele inspect', () => {
 // ===========================================================================
 
 describe('stele parse', () => {
-  it('parses valid CCL and shows summary', async () => {
+  it('parses valid CCL and shows formatted summary', async () => {
     const r = await run(['parse', "permit read on '**'"]);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('Parsed 1 statement(s)');
-    expect(r.stdout).toContain('Permits:');
-    expect(r.stdout).toContain('Serialized:');
+    expect(stripAnsi(r.stdout)).toContain('Parsed 1 statement(s)');
+    expect(stripAnsi(r.stdout)).toContain('Permits');
+    expect(stripAnsi(r.stdout)).toContain('Serialized:');
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(true);
   });
 
   it('parses multiple statements', async () => {
     const ccl = "permit read on '**'\ndeny write on '/system/**'\nrequire audit.log on '**'";
     const r = await run(['parse', ccl]);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('Parsed 3 statement(s)');
-    expect(r.stdout).toContain('Permits:     1');
-    expect(r.stdout).toContain('Denies:      1');
-    expect(r.stdout).toContain('Obligations: 1');
+    expect(stripAnsi(r.stdout)).toContain('Parsed 3 statement(s)');
+    const plain = stripAnsi(r.stdout);
+    expect(plain).toContain('Permits');
+    expect(plain).toContain('Denies');
+    expect(plain).toContain('Obligations');
+  });
+
+  it('parse --no-color strips ANSI', async () => {
+    const r = await run(['parse', "permit read on '**'", '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('Parsed 1 statement(s)');
   });
 
   it('outputs JSON with --json', async () => {
@@ -413,6 +576,7 @@ describe('stele parse', () => {
     expect(parsed.statements.length).toBe(1);
     expect(parsed.permits.length).toBe(1);
     expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(false);
   });
 
   it('fails with invalid CCL', async () => {
@@ -435,6 +599,57 @@ describe('stele parse', () => {
 });
 
 // ===========================================================================
+// completions
+// ===========================================================================
+
+describe('stele completions', () => {
+  it('generates bash completion script', async () => {
+    const r = await run(['completions', 'bash']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('_stele_completions');
+    expect(r.stdout).toContain('complete -F');
+    expect(r.stdout).toContain('compgen');
+    expect(r.stdout).toContain('init');
+    expect(r.stdout).toContain('create');
+    expect(r.stdout).toContain('verify');
+    expect(r.stderr).toBe('');
+  });
+
+  it('generates zsh completion script', async () => {
+    const r = await run(['completions', 'zsh']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('#compdef stele');
+    expect(r.stdout).toContain('_stele');
+    expect(r.stdout).toContain('_arguments');
+    expect(r.stdout).toContain('init');
+    expect(r.stdout).toContain('create');
+    expect(r.stderr).toBe('');
+  });
+
+  it('fails without shell argument', async () => {
+    const r = await run(['completions']);
+    expect(r.exitCode).toBe(1);
+    expect(r.stderr).toContain('Shell argument is required');
+  });
+
+  it('fails with unsupported shell', async () => {
+    const r = await run(['completions', 'fish']);
+    expect(r.exitCode).toBe(1);
+    expect(r.stderr).toContain("Unsupported shell 'fish'");
+    expect(r.stderr).toContain('bash');
+    expect(r.stderr).toContain('zsh');
+  });
+
+  it('shows help with --help', async () => {
+    const r = await run(['completions', '--help']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('stele completions');
+    expect(r.stdout).toContain('bash');
+    expect(r.stdout).toContain('zsh');
+  });
+});
+
+// ===========================================================================
 // unknown command
 // ===========================================================================
 
@@ -444,6 +659,126 @@ describe('unknown command', () => {
     expect(r.exitCode).toBe(1);
     expect(r.stderr).toContain("Unknown command 'foobar'");
     expect(r.stderr).toContain('stele help');
+  });
+});
+
+// ===========================================================================
+// config loading
+// ===========================================================================
+
+describe('config loading', () => {
+  it('loads config from specified directory', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-cfg-'));
+    try {
+      // Write a config file
+      const { writeFileSync } = await import('fs');
+      writeFileSync(
+        join(tmp, 'stele.config.json'),
+        JSON.stringify({
+          defaultIssuer: { id: 'cfg-issuer', publicKey: 'a'.repeat(64) },
+          defaultBeneficiary: { id: 'cfg-beneficiary', publicKey: 'b'.repeat(64) },
+          constraints: "permit read on '**'",
+        }),
+        'utf-8',
+      );
+
+      // create should pick up defaults from config
+      const r = await run([
+        'create',
+        '--json',
+      ], tmp);
+      expect(r.exitCode).toBe(0);
+      const parsed = JSON.parse(r.stdout);
+      expect(parsed.issuer.id).toBe('cfg-issuer');
+      expect(parsed.beneficiary.id).toBe('cfg-beneficiary');
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('CLI flags override config defaults', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-cfg-'));
+    try {
+      const { writeFileSync } = await import('fs');
+      writeFileSync(
+        join(tmp, 'stele.config.json'),
+        JSON.stringify({
+          defaultIssuer: { id: 'cfg-issuer', publicKey: 'a'.repeat(64) },
+          defaultBeneficiary: { id: 'cfg-beneficiary', publicKey: 'b'.repeat(64) },
+          constraints: "permit read on '**'",
+        }),
+        'utf-8',
+      );
+
+      const r = await run([
+        'create',
+        '--issuer', 'override-issuer',
+        '--beneficiary', 'override-beneficiary',
+        '--json',
+      ], tmp);
+      expect(r.exitCode).toBe(0);
+      const parsed = JSON.parse(r.stdout);
+      expect(parsed.issuer.id).toBe('override-issuer');
+      expect(parsed.beneficiary.id).toBe('override-beneficiary');
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+
+  it('works gracefully when no config file exists', async () => {
+    const tmp = mkdtempSync(join(tmpdir(), 'stele-nocfg-'));
+    try {
+      const r = await run(['version'], tmp);
+      expect(r.exitCode).toBe(0);
+      expect(r.stdout).toBe('0.1.0');
+    } finally {
+      rmSync(tmp, { recursive: true, force: true });
+    }
+  });
+});
+
+// ===========================================================================
+// --json flag ensures no ANSI across all commands
+// ===========================================================================
+
+describe('--json flag produces clean JSON without ANSI', () => {
+  it('init --json has no ANSI', async () => {
+    const r = await run(['init', '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('version --json has no ANSI', async () => {
+    const r = await run(['version', '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('verify --json has no ANSI', async () => {
+    const json = await makeCovenantJson();
+    const r = await run(['verify', json, '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('evaluate --json has no ANSI', async () => {
+    const json = await makeCovenantJson("permit read on '**'");
+    const r = await run(['evaluate', json, 'read', '/data', '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('inspect --json has no ANSI', async () => {
+    const json = await makeCovenantJson();
+    const r = await run(['inspect', json, '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('parse --json has no ANSI', async () => {
+    const r = await run(['parse', "permit read on '**'", '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
   });
 });
 
@@ -467,24 +802,24 @@ describe('round-trip workflow', () => {
     // 2. Verify
     const verifyResult = await run(['verify', covenantJson]);
     expect(verifyResult.exitCode).toBe(0);
-    expect(verifyResult.stdout).toContain('Valid:');
+    expect(stripAnsi(verifyResult.stdout)).toContain('Valid:');
 
     // 3. Evaluate (permitted)
     const evalPermit = await run(['evaluate', covenantJson, 'read', '/data']);
     expect(evalPermit.exitCode).toBe(0);
-    expect(evalPermit.stdout).toContain('PERMIT');
+    expect(stripAnsi(evalPermit.stdout)).toContain('PERMITTED');
 
     // 4. Evaluate (denied)
     const evalDeny = await run(['evaluate', covenantJson, 'data.delete', '/system/config']);
     expect(evalDeny.exitCode).toBe(1);
-    expect(evalDeny.stdout).toContain('DENY');
+    expect(stripAnsi(evalDeny.stdout)).toContain('DENIED');
 
     // 5. Inspect
     const inspectResult = await run(['inspect', covenantJson]);
     expect(inspectResult.exitCode).toBe(0);
-    expect(inspectResult.stdout).toContain('alice');
-    expect(inspectResult.stdout).toContain('bob');
-    expect(inspectResult.stdout).toContain('Permits:');
+    expect(stripAnsi(inspectResult.stdout)).toContain('alice');
+    expect(stripAnsi(inspectResult.stdout)).toContain('bob');
+    expect(stripAnsi(inspectResult.stdout)).toContain('Permits');
 
     // 6. Inspect --json
     const inspectJson = await run(['inspect', covenantJson, '--json']);

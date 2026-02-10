@@ -82,6 +82,9 @@ import type {
 export { MiddlewarePipeline, loggingMiddleware, validationMiddleware, timingMiddleware, rateLimitMiddleware } from './middleware.js';
 export type { MiddlewareContext, MiddlewareResult, MiddlewareFn, SteleMiddleware } from './middleware.js';
 
+// Re-export plugins
+export * from './plugins/index.js';
+
 // Re-export all SDK types
 export type {
   SteleClientOptions,
@@ -250,6 +253,21 @@ export {
  * Provides a unified, high-level API for the entire Stele protocol:
  * key management, covenant lifecycle, identity management, chain
  * operations, and CCL utilities.
+ *
+ * @example
+ * ```typescript
+ * const client = new SteleClient();
+ * await client.generateKeyPair();
+ *
+ * const doc = await client.createCovenant({
+ *   issuer: { id: 'alice', publicKey: client.keyPair!.publicKeyHex, role: 'issuer' },
+ *   beneficiary: { id: 'bob', publicKey: bobPubHex, role: 'beneficiary' },
+ *   constraints: "permit read on '/data/**'",
+ * });
+ *
+ * const result = await client.verifyCovenant(doc);
+ * console.log(result.valid); // true
+ * ```
  */
 export class SteleClient {
   private _keyPair: KeyPair | undefined;
@@ -285,7 +303,17 @@ export class SteleClient {
 
   /**
    * Generate a new Ed25519 key pair and set it as the client's active key pair.
-   * Returns the generated key pair.
+   *
+   * Subsequent operations (createCovenant, countersign, etc.) will use this
+   * key pair automatically unless overridden per-call.
+   *
+   * @returns The generated key pair.
+   *
+   * @example
+   * ```typescript
+   * const kp = await client.generateKeyPair();
+   * console.log(kp.publicKeyHex); // 64-char hex
+   * ```
    */
   async generateKeyPair(): Promise<KeyPair> {
     const kp = await cryptoGenerateKeyPair();
@@ -301,8 +329,19 @@ export class SteleClient {
    * If `options.privateKey` is not provided, the client's key pair is used.
    * Emits a `covenant:created` event on success.
    *
-   * @throws CovenantBuildError if validation fails.
-   * @throws Error if no private key is available.
+   * @param options - Covenant creation options including parties and constraints.
+   * @returns A complete, signed CovenantDocument.
+   * @throws {CovenantBuildError} When validation of inputs or CCL parsing fails.
+   * @throws {Error} When no private key is available.
+   *
+   * @example
+   * ```typescript
+   * const doc = await client.createCovenant({
+   *   issuer: { id: 'alice', publicKey: pubHex, role: 'issuer' },
+   *   beneficiary: { id: 'bob', publicKey: bobHex, role: 'beneficiary' },
+   *   constraints: "permit read on '/data/**'",
+   * });
+   * ```
    */
   async createCovenant(options: CreateCovenantOptions): Promise<CovenantDocument> {
     // ── Input validation (Stripe-quality errors at the public API boundary) ──

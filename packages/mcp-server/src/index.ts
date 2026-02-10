@@ -46,6 +46,9 @@ export type {
 
 export { JSON_RPC_ERRORS } from './types';
 
+export { createAuthMiddleware } from './auth';
+export type { MCPAuthOptions, AuthenticatedRequest } from './auth';
+
 // ─── Tool definitions ───────────────────────────────────────────────────────────
 
 const TOOL_DEFINITIONS: ToolDefinition[] = [

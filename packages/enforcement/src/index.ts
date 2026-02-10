@@ -977,3 +977,8 @@ function computeMerkleRootFromHashes(hashes: HashHex[]): HashHex {
 
   return level[0]!;
 }
+
+// ─── Audit Chain ──────────────────────────────────────────────────────────────
+
+export { AuditChain } from './audit-chain';
+export type { ChainedAuditEntry } from './audit-chain';

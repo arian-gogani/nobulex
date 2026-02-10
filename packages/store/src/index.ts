@@ -103,6 +103,20 @@ export class MemoryStore implements CovenantStore {
 
   // ── Single-document CRUD ──────────────────────────────────────────────
 
+  /**
+   * Store a covenant document, replacing any existing document with the same ID.
+   *
+   * Emits a `'put'` event to all registered listeners.
+   *
+   * @param doc - The document to store. Must have a non-empty `id`.
+   * @throws {Error} When the document or its ID is null/empty.
+   *
+   * @example
+   * ```typescript
+   * const store = new MemoryStore();
+   * await store.put(doc);
+   * ```
+   */
   async put(doc: CovenantDocument): Promise<void> {
     if (doc == null) {
       throw new Error('put(): document is required');
@@ -114,14 +128,38 @@ export class MemoryStore implements CovenantStore {
     this.emit('put', doc.id, doc);
   }
 
+  /**
+   * Retrieve a covenant document by its ID.
+   *
+   * @param id - The document ID to look up.
+   * @returns The document, or `undefined` if not found.
+   *
+   * @example
+   * ```typescript
+   * const doc = await store.get(documentId);
+   * if (doc) console.log(doc.constraints);
+   * ```
+   */
   async get(id: string): Promise<CovenantDocument | undefined> {
     return this.data.get(id);
   }
 
+  /**
+   * Check whether a document with the given ID exists in the store.
+   *
+   * @param id - The document ID to check.
+   * @returns `true` if a document with this ID exists.
+   */
   async has(id: string): Promise<boolean> {
     return this.data.has(id);
   }
 
+  /**
+   * Delete a document by ID. Emits a `'delete'` event if the document existed.
+   *
+   * @param id - The document ID to delete.
+   * @returns `true` if the document was found and deleted, `false` if not found.
+   */
   async delete(id: string): Promise<boolean> {
     const existed = this.data.delete(id);
     if (existed) {
@@ -130,6 +168,17 @@ export class MemoryStore implements CovenantStore {
     return existed;
   }
 
+  /**
+   * List all documents, optionally filtered by the given criteria.
+   *
+   * @param filter - Optional filter with AND semantics across all fields.
+   * @returns An array of matching documents.
+   *
+   * @example
+   * ```typescript
+   * const docs = await store.list({ issuerId: 'alice' });
+   * ```
+   */
   async list(filter?: StoreFilter): Promise<CovenantDocument[]> {
     const all = Array.from(this.data.values());
     if (!filter) {
@@ -138,6 +187,12 @@ export class MemoryStore implements CovenantStore {
     return all.filter((doc) => matchesFilter(doc, filter));
   }
 
+  /**
+   * Count documents, optionally filtered by the given criteria.
+   *
+   * @param filter - Optional filter with AND semantics.
+   * @returns The number of matching documents.
+   */
   async count(filter?: StoreFilter): Promise<number> {
     if (!filter) {
       return this.data.size;
@@ -153,6 +208,13 @@ export class MemoryStore implements CovenantStore {
 
   // ── Batch operations ──────────────────────────────────────────────────
 
+  /**
+   * Store multiple documents in a single operation.
+   *
+   * Emits a `'put'` event for each document.
+   *
+   * @param docs - The documents to store.
+   */
   async putBatch(docs: CovenantDocument[]): Promise<void> {
     for (const doc of docs) {
       this.data.set(doc.id, doc);
@@ -160,10 +222,22 @@ export class MemoryStore implements CovenantStore {
     }
   }
 
+  /**
+   * Retrieve multiple documents by ID in a single operation.
+   *
+   * @param ids - The document IDs to look up.
+   * @returns An array where each element is the document or `undefined` if not found.
+   */
   async getBatch(ids: string[]): Promise<(CovenantDocument | undefined)[]> {
     return ids.map((id) => this.data.get(id));
   }
 
+  /**
+   * Delete multiple documents by ID in a single operation.
+   *
+   * @param ids - The document IDs to delete.
+   * @returns The number of documents that were actually deleted.
+   */
   async deleteBatch(ids: string[]): Promise<number> {
     let deleted = 0;
     for (const id of ids) {
@@ -177,10 +251,27 @@ export class MemoryStore implements CovenantStore {
 
   // ── Event system ──────────────────────────────────────────────────────
 
+  /**
+   * Register a callback for store mutation events (`'put'` and `'delete'`).
+   *
+   * @param callback - Function called whenever a document is stored or deleted.
+   *
+   * @example
+   * ```typescript
+   * store.onEvent((event) => {
+   *   console.log(`${event.type}: ${event.documentId}`);
+   * });
+   * ```
+   */
   onEvent(callback: StoreEventCallback): void {
     this.listeners.add(callback);
   }
 
+  /**
+   * Unregister a previously registered event callback.
+   *
+   * @param callback - The callback to remove.
+   */
   offEvent(callback: StoreEventCallback): void {
     this.listeners.delete(callback);
   }
@@ -202,3 +293,17 @@ export class MemoryStore implements CovenantStore {
 
 export { QueryBuilder, createQuery } from './query';
 export type { PaginationOptions, PaginatedResult, SortField, SortOrder } from './query';
+
+// ─── Indexing ───────────────────────────────────────────────────────────────────
+
+export { StoreIndex } from './indexing';
+export type { IndexField } from './indexing';
+
+// ─── Transactions ───────────────────────────────────────────────────────────────
+
+export { createTransaction } from './transaction';
+export type { Transaction } from './transaction';
+
+// ─── IndexedStore ───────────────────────────────────────────────────────────────
+
+export { IndexedStore } from './indexed-store';

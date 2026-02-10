@@ -303,3 +303,7 @@ export type { Span, SpanEvent, SpanStatus, SpanCollector } from './tracing';
 // ─── Retry & resilience ──────────────────────────────────────────────────────────
 export { withRetry, CircuitBreaker, HealthChecker } from './retry';
 export type { RetryOptions, CircuitBreakerOptions, CircuitBreakerState, HealthCheck, HealthStatus } from './retry';
+
+// ─── Metrics ─────────────────────────────────────────────────────────────────────
+export { Counter, Gauge, Histogram, MetricsRegistry, createMetricsRegistry, defaultMetrics } from './metrics';
+export type { HistogramSnapshot, MetricsSnapshot } from './metrics';

@@ -78,6 +78,10 @@ import type {
 
 // ─── Re-exports ─────────────────────────────────────────────────────────────
 
+// Re-export middleware system
+export { MiddlewarePipeline, loggingMiddleware, validationMiddleware, timingMiddleware, rateLimitMiddleware } from './middleware.js';
+export type { MiddlewareContext, MiddlewareResult, MiddlewareFn, SteleMiddleware } from './middleware.js';
+
 // Re-export all SDK types
 export type {
   SteleClientOptions,

@@ -191,3 +191,8 @@ export class MemoryStore implements CovenantStore {
     return this.data.size;
   }
 }
+
+// ─── Query builder ──────────────────────────────────────────────────────────────
+
+export { QueryBuilder, createQuery } from './query';
+export type { PaginationOptions, PaginatedResult, SortField, SortOrder } from './query';

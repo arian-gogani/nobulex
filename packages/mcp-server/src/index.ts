@@ -320,6 +320,8 @@ export class SteleServer {
           protocolVersion: '2024-11-05',
           capabilities: {
             tools: {},
+            resources: {},
+            prompts: {},
           },
           serverInfo: {
             name: this.name,
@@ -353,6 +355,20 @@ export class SteleServer {
         const result = await this.callTool(toolName, toolArgs);
         return this._successResponse(id, result);
       }
+
+      case 'notifications/initialized':
+        // Client acknowledges initialization — no response needed for notifications,
+        // but we return success for non-notification calls.
+        return this._successResponse(id, {});
+
+      case 'resources/list':
+        return this._successResponse(id, { resources: [] });
+
+      case 'resources/templates/list':
+        return this._successResponse(id, { resourceTemplates: [] });
+
+      case 'prompts/list':
+        return this._successResponse(id, { prompts: [] });
 
       default:
         return this._errorResponse(id, JSON_RPC_ERRORS.METHOD_NOT_FOUND, `Unknown method: ${message.method}`);

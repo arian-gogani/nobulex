@@ -862,6 +862,46 @@ describe('SteleServer', () => {
     });
   });
 
+  // ── MCP lifecycle methods ─────────────────────────────────────────────
+
+  describe('MCP lifecycle', () => {
+    it('initialize advertises tools, resources, and prompts capabilities', async () => {
+      const resp = await server.handleMessage(rpc('initialize'));
+      expect(isSuccess(resp)).toBe(true);
+      const result = (resp as JsonRpcSuccessResponse).result as Record<string, unknown>;
+      const capabilities = result.capabilities as Record<string, unknown>;
+      expect(capabilities.tools).toBeDefined();
+      expect(capabilities.resources).toBeDefined();
+      expect(capabilities.prompts).toBeDefined();
+    });
+
+    it('notifications/initialized returns success', async () => {
+      const resp = await server.handleMessage(rpc('notifications/initialized'));
+      expect(isSuccess(resp)).toBe(true);
+    });
+
+    it('resources/list returns empty resources', async () => {
+      const resp = await server.handleMessage(rpc('resources/list'));
+      expect(isSuccess(resp)).toBe(true);
+      const result = (resp as JsonRpcSuccessResponse).result as Record<string, unknown>;
+      expect(result.resources).toEqual([]);
+    });
+
+    it('resources/templates/list returns empty templates', async () => {
+      const resp = await server.handleMessage(rpc('resources/templates/list'));
+      expect(isSuccess(resp)).toBe(true);
+      const result = (resp as JsonRpcSuccessResponse).result as Record<string, unknown>;
+      expect(result.resourceTemplates).toEqual([]);
+    });
+
+    it('prompts/list returns empty prompts', async () => {
+      const resp = await server.handleMessage(rpc('prompts/list'));
+      expect(isSuccess(resp)).toBe(true);
+      const result = (resp as JsonRpcSuccessResponse).result as Record<string, unknown>;
+      expect(result.prompts).toEqual([]);
+    });
+  });
+
   // ── callTool direct ─────────────────────────────────────────────────────
 
   describe('callTool', () => {

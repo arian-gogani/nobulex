@@ -380,7 +380,10 @@ describe('Core edge cases', () => {
 
   it('verifyCovenant with tampered signature fails signature check', async () => {
     const { doc } = await buildValidCovenant();
-    const tampered = { ...doc, signature: doc.signature.replace(/^./, 'f') };
+    // Flip the first character to guarantee a different signature
+    const firstChar = doc.signature[0]!;
+    const flipped = firstChar === 'f' ? '0' : 'f';
+    const tampered = { ...doc, signature: flipped + doc.signature.slice(1) };
     const result = await verifyCovenant(tampered);
     const sigCheck = result.checks.find((c) => c.name === 'signature_valid');
     expect(sigCheck?.passed).toBe(false);

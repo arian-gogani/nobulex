@@ -1,7 +1,7 @@
 {
   "name": "@stele/mcp-server",
   "version": "0.1.0",
-  "description": "Model Context Protocol server that exposes Stele tools to any AI agent",
+  "description": "Model Context Protocol server with stdio transport that exposes Stele covenant tools to AI agents",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -47,6 +47,8 @@
   "keywords": [
     "stele",
     "covenant",
-    "ai-accountability"
+    "ai-accountability",
+    "mcp",
+    "model-context-protocol"
   ]
 }

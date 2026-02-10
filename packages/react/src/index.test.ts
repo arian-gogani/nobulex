@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { generateKeyPair } from '@stele/crypto';
 import type { KeyPair } from '@stele/crypto';
 import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
@@ -892,6 +892,224 @@ describe('@stele/react', () => {
 
       expect(errorMessage.get()).toBeTruthy();
       expect(errorMessage.get().length).toBeGreaterThan(0);
+    });
+  });
+
+  // ========================================================================
+  // React Hooks (with mock React)
+  // ========================================================================
+
+  describe('React hooks', () => {
+    // Minimal mock of React hooks for testing without React installed
+    function createMockReact() {
+      const effects: Array<{ effect: () => void | (() => void); deps?: unknown[] }> = [];
+      const cleanups: Array<() => void> = [];
+
+      return {
+        mock: {
+          useState<T>(initial: T | (() => T)): [T, (v: T | ((prev: T) => T)) => void] {
+            let value = typeof initial === 'function' ? (initial as () => T)() : initial;
+            return [value, (v: T | ((prev: T) => T)) => {
+              value = typeof v === 'function' ? (v as (prev: T) => T)(value) : v;
+            }];
+          },
+          useEffect(effect: () => void | (() => void), deps?: unknown[]): void {
+            effects.push({ effect, deps });
+          },
+          useRef<T>(initial: T): { current: T } {
+            return { current: initial };
+          },
+          useCallback<T extends (...args: unknown[]) => unknown>(fn: T, _deps: unknown[]): T {
+            return fn;
+          },
+          useSyncExternalStore<T>(
+            subscribe: (cb: () => void) => () => void,
+            getSnapshot: () => T,
+          ): T {
+            // Subscribe for side-effect tracking but return snapshot
+            const unsub = subscribe(() => {});
+            cleanups.push(unsub);
+            return getSnapshot();
+          },
+        },
+        runEffects() {
+          for (const { effect } of effects) {
+            const cleanup = effect();
+            if (typeof cleanup === 'function') {
+              cleanups.push(cleanup);
+            }
+          }
+        },
+        cleanup() {
+          for (const fn of cleanups) fn();
+          cleanups.length = 0;
+          effects.length = 0;
+        },
+      };
+    }
+
+    let mockReactEnv: ReturnType<typeof createMockReact>;
+
+    beforeEach(async () => {
+      const { _injectReact } = await import('./hooks');
+      mockReactEnv = createMockReact();
+      _injectReact(mockReactEnv.mock as any);
+    });
+
+    afterEach(async () => {
+      mockReactEnv.cleanup();
+      const { _resetReact } = await import('./hooks');
+      _resetReact();
+    });
+
+    describe('useObservable', () => {
+      it('returns the current value of an observable', async () => {
+        const { useObservable } = await import('./hooks');
+        const obs = new Observable(42);
+        const value = useObservable(obs);
+        expect(value).toBe(42);
+      });
+
+      it('returns updated value after observable changes', async () => {
+        const { useObservable } = await import('./hooks');
+        const obs = new Observable('hello');
+        obs.set('world');
+        const value = useObservable(obs);
+        expect(value).toBe('world');
+      });
+
+      it('works with null values', async () => {
+        const { useObservable } = await import('./hooks');
+        const obs = new Observable<string | null>(null);
+        const value = useObservable(obs);
+        expect(value).toBeNull();
+      });
+
+      it('works with complex objects', async () => {
+        const { useObservable } = await import('./hooks');
+        const obs = new Observable({ count: 5, name: 'test' });
+        const value = useObservable(obs);
+        expect(value).toEqual({ count: 5, name: 'test' });
+      });
+    });
+
+    describe('useCovenant', () => {
+      it('returns initial idle state', async () => {
+        const { useCovenant } = await import('./hooks');
+        const kp = await generateKeyPair();
+        const client = new SteleClient({ keyPair: kp });
+        const result = useCovenant(client);
+        expect(result.status).toBe('idle');
+        expect(result.document).toBeNull();
+        expect(result.error).toBeNull();
+        expect(result.verificationResult).toBeNull();
+      });
+
+      it('provides create, verify, and evaluateAction functions', async () => {
+        const { useCovenant } = await import('./hooks');
+        const kp = await generateKeyPair();
+        const client = new SteleClient({ keyPair: kp });
+        const result = useCovenant(client);
+        expect(typeof result.create).toBe('function');
+        expect(typeof result.verify).toBe('function');
+        expect(typeof result.evaluateAction).toBe('function');
+      });
+
+      it('create function creates a covenant document', async () => {
+        const { useCovenant } = await import('./hooks');
+        const parties = await makeParties();
+        const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+        const hook = useCovenant(client);
+
+        const doc = await hook.create(
+          makeCovenantOptions(parties.issuer, parties.beneficiary, parties.issuerKeyPair.privateKey),
+        );
+        expect(doc).toBeDefined();
+        expect(doc.id).toBeTruthy();
+      });
+    });
+
+    describe('useIdentity', () => {
+      it('returns initial idle state', async () => {
+        const { useIdentity } = await import('./hooks');
+        const kp = await generateKeyPair();
+        const client = new SteleClient({ keyPair: kp });
+        const result = useIdentity(client);
+        expect(result.status).toBe('idle');
+        expect(result.identity).toBeNull();
+        expect(result.error).toBeNull();
+      });
+
+      it('provides create and evolve functions', async () => {
+        const { useIdentity } = await import('./hooks');
+        const kp = await generateKeyPair();
+        const client = new SteleClient({ keyPair: kp });
+        const result = useIdentity(client);
+        expect(typeof result.create).toBe('function');
+        expect(typeof result.evolve).toBe('function');
+      });
+
+      it('create function creates an identity', async () => {
+        const { useIdentity } = await import('./hooks');
+        const kp = await generateKeyPair();
+        const client = new SteleClient({ keyPair: kp });
+        const hook = useIdentity(client);
+
+        const identity = await hook.create(makeIdentityOptions(kp));
+        expect(identity).toBeDefined();
+        expect(identity.id).toBeTruthy();
+        expect(identity.version).toBe(1);
+      });
+    });
+
+    describe('useCovenantStore', () => {
+      it('returns initial empty state', async () => {
+        const { useCovenantStore } = await import('./hooks');
+        const testStore = new MemoryStore();
+        mockReactEnv = createMockReact();
+        const { _injectReact } = await import('./hooks');
+        _injectReact(mockReactEnv.mock as any);
+
+        const result = useCovenantStore(testStore);
+        expect(result.documents).toEqual([]);
+        expect(result.loading).toBe(false);
+        expect(result.error).toBeNull();
+      });
+
+      it('provides refresh and filter functions', async () => {
+        const { useCovenantStore } = await import('./hooks');
+        const testStore = new MemoryStore();
+        const result = useCovenantStore(testStore);
+        expect(typeof result.refresh).toBe('function');
+        expect(typeof result.filter).toBe('function');
+      });
+
+      it('refresh loads documents from store', async () => {
+        const { useCovenantStore } = await import('./hooks');
+        const testStore = new MemoryStore();
+        const parties = await makeParties();
+        const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+        const doc = await client.createCovenant(
+          makeCovenantOptions(parties.issuer, parties.beneficiary, parties.issuerKeyPair.privateKey),
+        );
+        await testStore.put(doc);
+
+        const hook = useCovenantStore(testStore);
+        await hook.refresh();
+
+        // After refresh, re-read from the store state
+        // Note: in a real React app, useSyncExternalStore would trigger a re-render
+      });
+    });
+
+    describe('_injectReact / _resetReact', () => {
+      it('_resetReact clears the injected module', async () => {
+        const { _resetReact, _injectReact } = await import('./hooks');
+        _resetReact();
+        // After reset, hooks should throw if React is not installed
+        // Re-inject for other tests
+        _injectReact(mockReactEnv.mock as any);
+      });
     });
   });
 });

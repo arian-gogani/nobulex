@@ -7,6 +7,7 @@
  * @packageDocumentation
  */
 
+import { keccak_256 } from '@noble/hashes/sha3';
 import { sha256String } from '@stele/crypto';
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
@@ -27,6 +28,40 @@ function utf8ToHex(value: string): string {
   let hex = '';
   for (let i = 0; i < bytes.length; i++) {
     hex += bytes[i]!.toString(16).padStart(2, '0');
+  }
+  return hex;
+}
+
+/**
+ * Compute the Keccak-256 hash of a hex string input.
+ * This is the real EVM hash function, not a SHA-256 placeholder.
+ * @param input - String to hash
+ * @returns 64-character lowercase hex hash string
+ */
+function keccak256String(input: string): string {
+  const bytes = new TextEncoder().encode(input);
+  const hash = keccak_256(bytes);
+  let hex = '';
+  for (let i = 0; i < hash.length; i++) {
+    hex += hash[i]!.toString(16).padStart(2, '0');
+  }
+  return hex;
+}
+
+/**
+ * Compute the Keccak-256 hash of raw hex-encoded bytes.
+ * @param hexData - Hex-encoded bytes (no 0x prefix)
+ * @returns 64-character lowercase hex hash string
+ */
+function keccak256Hex(hexData: string): string {
+  const bytes = new Uint8Array(hexData.length / 2);
+  for (let i = 0; i < hexData.length; i += 2) {
+    bytes[i / 2] = parseInt(hexData.substring(i, i + 2), 16);
+  }
+  const hash = keccak_256(bytes);
+  let hex = '';
+  for (let i = 0; i < hash.length; i++) {
+    hex += hash[i]!.toString(16).padStart(2, '0');
   }
   return hex;
 }
@@ -165,12 +200,12 @@ export function encodeFunctionCall(selector: string, ...params: string[]): strin
 
 /**
  * Compute the 4-byte function selector for a Solidity function signature.
- * Uses SHA-256 as a placeholder for Keccak-256 (production EVM uses Keccak-256).
+ * Uses Keccak-256 as per the Ethereum ABI specification.
  * @param signature - Canonical function signature, e.g., "transfer(address,uint256)"
  * @returns 8-character hex string (4 bytes, no 0x prefix)
  */
 export function computeFunctionSelector(signature: string): string {
-  const hash = sha256String(signature);
+  const hash = keccak256String(signature);
   return hash.slice(0, 8);
 }
 
@@ -267,7 +302,7 @@ export function computeAnchorHash(anchor: CovenantAnchor): string {
     encodeAddress(anchor.beneficiaryAddress) +
     encodeUint256(anchor.timestamp) +
     encodeUint256(BigInt(anchor.chainId));
-  return sha256String(encoded);
+  return keccak256Hex(encoded);
 }
 
 // ─── Contract ABI Definition ────────────────────────────────────────────────────
@@ -353,8 +388,7 @@ export function isValidAddress(address: string): boolean {
 
 /**
  * Apply EIP-55 mixed-case checksum encoding to an address.
- * Uses SHA-256 as a deterministic placeholder for Keccak-256.
- * Production EVM tooling would use Keccak-256 here.
+ * Uses Keccak-256 as specified by EIP-55.
  *
  * @param address - A valid EVM address (0x-prefixed, 40 hex chars)
  * @returns The same address with EIP-55 mixed-case checksum encoding
@@ -364,7 +398,7 @@ export function checksumAddress(address: string): string {
     throw new Error('Invalid EVM address');
   }
   const lower = address.slice(2).toLowerCase();
-  const hash = sha256String(lower);
+  const hash = keccak256String(lower);
   let result = '0x';
   for (let i = 0; i < 40; i++) {
     const c = lower[i]!;
@@ -394,3 +428,196 @@ export function covenantIdToBytes32(id: string): string {
   }
   return '0x' + clean.toLowerCase();
 }
+
+// ─── JSON-RPC Provider Interface ────────────────────────────────────────────────
+
+/**
+ * Minimal JSON-RPC provider interface for EVM interaction.
+ * Consumers supply their own transport (HTTP, WebSocket, IPC).
+ */
+export interface EVMProvider {
+  /** Send a JSON-RPC request and return the result. */
+  request(args: { method: string; params?: unknown[] }): Promise<unknown>;
+}
+
+/**
+ * Transaction request for sending to the network.
+ */
+export interface TransactionRequest {
+  /** Target contract address (0x-prefixed). */
+  to: string;
+  /** Hex-encoded calldata (0x-prefixed). */
+  data: string;
+  /** Optional value in wei (hex-encoded). */
+  value?: string;
+  /** Optional gas limit (hex-encoded). */
+  gas?: string;
+  /** Sender address (0x-prefixed). */
+  from?: string;
+}
+
+/**
+ * Transaction receipt returned after confirmation.
+ */
+export interface TransactionReceipt {
+  /** Transaction hash. */
+  transactionHash: string;
+  /** Block number (hex-encoded). */
+  blockNumber: string;
+  /** Status: '0x1' for success, '0x0' for revert. */
+  status: string;
+  /** Gas used (hex-encoded). */
+  gasUsed: string;
+}
+
+/**
+ * EVM client for anchoring and verifying covenants on-chain.
+ *
+ * Requires a user-supplied {@link EVMProvider} for actual network interaction.
+ * This keeps the package dependency-free while supporting any EVM-compatible chain.
+ *
+ * @example
+ * ```typescript
+ * import { EVMClient } from '@stele/evm';
+ *
+ * // Plug in any provider (ethers, viem, raw fetch, etc.)
+ * const client = new EVMClient(myProvider, '0xRegistryAddress');
+ * const txHash = await client.anchorCovenant(anchor);
+ * const isAnchored = await client.verifyCovenant(covenantId);
+ * ```
+ */
+export class EVMClient {
+  private readonly provider: EVMProvider;
+  private readonly registryAddress: string;
+
+  constructor(provider: EVMProvider, registryAddress: string) {
+    if (!isValidAddress(registryAddress)) {
+      throw new Error('Invalid registry address');
+    }
+    this.provider = provider;
+    this.registryAddress = registryAddress;
+  }
+
+  /**
+   * Anchor a covenant on-chain by calling the registry's anchor() function.
+   *
+   * @param anchor - The covenant anchor data to write on-chain.
+   * @param from - The sender address (must be unlocked in the provider).
+   * @returns The transaction hash.
+   */
+  async anchorCovenant(anchor: CovenantAnchor, from: string): Promise<string> {
+    const calldata = buildAnchorCalldata(anchor);
+    const txHash = await this.provider.request({
+      method: 'eth_sendTransaction',
+      params: [{
+        from,
+        to: this.registryAddress,
+        data: calldata,
+      }],
+    }) as string;
+    return txHash;
+  }
+
+  /**
+   * Verify whether a covenant has been anchored on-chain.
+   *
+   * @param covenantId - The 64-char hex covenant ID to check.
+   * @returns true if the covenant is anchored, false otherwise.
+   */
+  async verifyCovenant(covenantId: string): Promise<boolean> {
+    const selector = computeFunctionSelector('verify(bytes32)');
+    const calldata = '0x' + selector + encodeBytes32(covenantId);
+    const result = await this.provider.request({
+      method: 'eth_call',
+      params: [{
+        to: this.registryAddress,
+        data: calldata,
+      }, 'latest'],
+    }) as string;
+    // Result is ABI-encoded bool: 0x...0001 = true, 0x...0000 = false
+    return result !== '0x' + '0'.repeat(64);
+  }
+
+  /**
+   * Retrieve anchor data for a covenant from the on-chain registry.
+   *
+   * @param covenantId - The 64-char hex covenant ID to look up.
+   * @returns The anchor data, or null if not found.
+   */
+  async getAnchor(covenantId: string): Promise<CovenantAnchor | null> {
+    const selector = computeFunctionSelector('getAnchor(bytes32)');
+    const calldata = '0x' + selector + encodeBytes32(covenantId);
+    const result = await this.provider.request({
+      method: 'eth_call',
+      params: [{
+        to: this.registryAddress,
+        data: calldata,
+      }, 'latest'],
+    }) as string;
+
+    const data = result.startsWith('0x') ? result.slice(2) : result;
+
+    // Empty result means no anchor found
+    if (!data || data === '0'.repeat(256)) {
+      return null;
+    }
+
+    // Decode: bytes32 constraintsHash, address issuer, address beneficiary, uint256 timestamp
+    const constraintsHash = decodeBytes32(data.slice(0, 64));
+    const issuerAddress = decodeAddress(data.slice(64, 128));
+    const beneficiaryAddress = decodeAddress(data.slice(128, 192));
+    const timestamp = decodeUint256(data.slice(192, 256));
+
+    return {
+      covenantId,
+      constraintsHash,
+      issuerAddress,
+      beneficiaryAddress,
+      timestamp,
+      chainId: 1,
+    };
+  }
+
+  /**
+   * Wait for a transaction to be confirmed.
+   *
+   * @param txHash - The transaction hash to wait for.
+   * @param maxAttempts - Maximum polling attempts (default: 30).
+   * @param intervalMs - Polling interval in milliseconds (default: 2000).
+   * @returns The transaction receipt, or null if not confirmed within maxAttempts.
+   */
+  async waitForTransaction(
+    txHash: string,
+    maxAttempts: number = 30,
+    intervalMs: number = 2000,
+  ): Promise<TransactionReceipt | null> {
+    for (let i = 0; i < maxAttempts; i++) {
+      const receipt = await this.provider.request({
+        method: 'eth_getTransactionReceipt',
+        params: [txHash],
+      }) as TransactionReceipt | null;
+
+      if (receipt) {
+        return receipt;
+      }
+
+      await new Promise((resolve) => setTimeout(resolve, intervalMs));
+    }
+    return null;
+  }
+
+  /**
+   * Get the current chain ID from the provider.
+   * @returns The chain ID as a number.
+   */
+  async getChainId(): Promise<number> {
+    const result = await this.provider.request({
+      method: 'eth_chainId',
+      params: [],
+    }) as string;
+    return parseInt(result, 16);
+  }
+}
+
+/** Export keccak256String for consumers who need EVM-compatible hashing. */
+export { keccak256String as keccak256 };

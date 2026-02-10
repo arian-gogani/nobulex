@@ -13,6 +13,7 @@
     { "path": "../ccl" },
     { "path": "../identity" },
     { "path": "../store" },
-    { "path": "../verifier" }
+    { "path": "../verifier" },
+    { "path": "../negotiation" }
   ]
 }

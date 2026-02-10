@@ -23,7 +23,8 @@
     "@stele/ccl": "0.1.0",
     "@stele/identity": "0.1.0",
     "@stele/store": "0.1.0",
-    "@stele/verifier": "0.1.0"
+    "@stele/verifier": "0.1.0",
+    "@stele/negotiation": "0.1.0"
   },
   "license": "MIT",
   "engines": {

@@ -12,8 +12,9 @@
 import {
   generateKeyPair as cryptoGenerateKeyPair,
   timestamp,
+  KeyManager,
 } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
+import type { KeyPair, KeyRotationPolicy, ManagedKeyPair } from '@stele/crypto';
 
 import {
   buildCovenant,
@@ -78,12 +79,49 @@ import type {
 
 // ─── Re-exports ─────────────────────────────────────────────────────────────
 
+// Re-export conformance suite
+export {
+  runConformanceSuite,
+  cryptoConformance,
+  cclConformance,
+  covenantConformance,
+  interopConformance,
+} from './conformance.js';
+export type {
+  ConformanceResult,
+  ConformanceFailure,
+  ConformanceTarget,
+} from './conformance.js';
+
 // Re-export middleware system
 export { MiddlewarePipeline, loggingMiddleware, validationMiddleware, timingMiddleware, rateLimitMiddleware } from './middleware.js';
 export type { MiddlewareContext, MiddlewareResult, MiddlewareFn, SteleMiddleware } from './middleware.js';
 
 // Re-export plugins
 export * from './plugins/index.js';
+
+// Re-export telemetry
+export {
+  telemetryMiddleware,
+  SteleMetrics,
+  NoopTracer,
+  NoopMeter,
+  NoopSpan,
+  NoopCounter,
+  NoopHistogram,
+  createTelemetry,
+  SpanStatusCode,
+} from './telemetry.js';
+export type {
+  Span,
+  Tracer,
+  Meter,
+  Counter,
+  Histogram,
+  TelemetryMiddlewareOptions,
+  CreateTelemetryOptions,
+  EventSource,
+} from './telemetry.js';
 
 // Re-export all SDK types
 export type {
@@ -105,6 +143,7 @@ export type {
   ChainResolvedEvent,
   ChainValidatedEvent,
   EvaluationCompletedEvent,
+  KeyRotatedEvent,
   SteleEvent,
 } from './types.js';
 
@@ -165,6 +204,8 @@ export type {
   Signature,
   DetachedSignature,
   Nonce,
+  KeyRotationPolicy,
+  ManagedKeyPair,
 } from '@stele/crypto';
 
 export {
@@ -186,6 +227,7 @@ export {
   timestamp,
   keyPairFromPrivateKey,
   keyPairFromPrivateKeyHex,
+  KeyManager,
 } from '@stele/crypto';
 
 // Re-export CCL types and functions
@@ -274,12 +316,21 @@ export class SteleClient {
   private readonly _agentId: string | undefined;
   private readonly _strictMode: boolean;
   private readonly _listeners: Map<SteleEventType, Set<SteleEventHandler<SteleEventType>>>;
+  private _keyManager: KeyManager | undefined;
 
   constructor(options: SteleClientOptions = {}) {
     this._keyPair = options.keyPair;
     this._agentId = options.agentId;
     this._strictMode = options.strictMode ?? false;
     this._listeners = new Map();
+
+    if (options.keyRotation) {
+      this._keyManager = new KeyManager({
+        maxAgeMs: options.keyRotation.maxAgeMs,
+        overlapPeriodMs: options.keyRotation.overlapPeriodMs,
+        onRotation: options.keyRotation.onRotation,
+      });
+    }
   }
 
   // ── Accessors ───────────────────────────────────────────────────────────
@@ -299,6 +350,11 @@ export class SteleClient {
     return this._strictMode;
   }
 
+  /** Get the key manager instance, if key rotation is configured. */
+  get keyManager(): KeyManager | undefined {
+    return this._keyManager;
+  }
+
   // ── Key management ──────────────────────────────────────────────────────
 
   /**
@@ -306,6 +362,9 @@ export class SteleClient {
    *
    * Subsequent operations (createCovenant, countersign, etc.) will use this
    * key pair automatically unless overridden per-call.
+   *
+   * If key rotation is configured and initialized, returns the current
+   * managed key pair instead of generating a new one.
    *
    * @returns The generated key pair.
    *
@@ -316,9 +375,70 @@ export class SteleClient {
    * ```
    */
   async generateKeyPair(): Promise<KeyPair> {
+    if (this._keyManager) {
+      try {
+        const managed = this._keyManager.current();
+        this._keyPair = managed.keyPair;
+        return managed.keyPair;
+      } catch {
+        // KeyManager not initialized yet, fall through to normal generation
+      }
+    }
     const kp = await cryptoGenerateKeyPair();
     this._keyPair = kp;
     return kp;
+  }
+
+  /**
+   * Initialize key rotation. Generates the first key and starts lifecycle management.
+   *
+   * Requires that the client was constructed with a `keyRotation` policy.
+   * After initialization, the managed key becomes the client's active key pair.
+   *
+   * @throws {Error} When key rotation is not configured.
+   */
+  async initializeKeyRotation(): Promise<void> {
+    if (!this._keyManager) {
+      throw new Error(
+        'Key rotation is not configured. Pass { keyRotation } in the client options.',
+      );
+    }
+    const managed = await this._keyManager.initialize();
+    this._keyPair = managed.keyPair;
+  }
+
+  /**
+   * Check if the current key needs rotation and rotate if necessary.
+   *
+   * If the key manager determines that the current key has exceeded its
+   * maximum age, a new key is generated and the old key enters the overlap
+   * period. Emits a `key:rotated` event on rotation.
+   *
+   * @returns `true` if rotation occurred, `false` otherwise.
+   * @throws {Error} When key rotation is not configured.
+   */
+  async rotateKeyIfNeeded(): Promise<boolean> {
+    if (!this._keyManager) {
+      throw new Error(
+        'Key rotation is not configured. Pass { keyRotation } in the client options.',
+      );
+    }
+
+    if (!this._keyManager.needsRotation()) {
+      return false;
+    }
+
+    const { previous, current } = await this._keyManager.rotate();
+    this._keyPair = current.keyPair;
+
+    this._emit('key:rotated', {
+      type: 'key:rotated',
+      timestamp: timestamp(),
+      previousPublicKey: previous.keyPair.publicKeyHex,
+      currentPublicKey: current.keyPair.publicKeyHex,
+    });
+
+    return true;
   }
 
   // ── Covenant lifecycle ──────────────────────────────────────────────────
@@ -359,6 +479,15 @@ export class SteleClient {
       throw new Error(
         "constraints must be a non-empty CCL string. Example: permit read on '/data/**'",
       );
+    }
+
+    // Auto-rotate key if key rotation is configured and initialized
+    if (this._keyManager && !options.privateKey) {
+      try {
+        await this.rotateKeyIfNeeded();
+      } catch {
+        // KeyManager may not be initialized; fall through to normal key resolution
+      }
     }
 
     const privateKey = options.privateKey ?? this._keyPair?.privateKey;
@@ -455,6 +584,15 @@ export class SteleClient {
     signerRole: PartyRole = 'auditor',
     signerKeyPair?: KeyPair,
   ): Promise<CovenantDocument> {
+    // Auto-rotate key if key rotation is configured and initialized
+    if (this._keyManager && !signerKeyPair) {
+      try {
+        await this.rotateKeyIfNeeded();
+      } catch {
+        // KeyManager may not be initialized; fall through to normal key resolution
+      }
+    }
+
     const kp = signerKeyPair ?? this._keyPair;
     if (!kp) {
       throw new Error(
@@ -952,3 +1090,6 @@ export class QuickCovenant {
     });
   }
 }
+
+// Re-export adapters
+export * from './adapters/index.js';

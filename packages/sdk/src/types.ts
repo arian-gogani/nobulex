@@ -46,6 +46,15 @@ export interface SteleClientOptions {
    * instead of returning a result with valid=false.
    */
   strictMode?: boolean;
+  /** Optional key rotation policy for automatic key lifecycle management. */
+  keyRotation?: {
+    /** Maximum key age in milliseconds before rotation is required. */
+    maxAgeMs: number;
+    /** Grace period in milliseconds where both old and new keys are valid. */
+    overlapPeriodMs: number;
+    /** Optional callback invoked when rotation occurs. */
+    onRotation?: (oldKey: string, newKey: string) => void;
+  };
 }
 
 // ─── Covenant creation ──────────────────────────────────────────────────────
@@ -167,7 +176,8 @@ export type SteleEventType =
   | 'identity:evolved'
   | 'chain:resolved'
   | 'chain:validated'
-  | 'evaluation:completed';
+  | 'evaluation:completed'
+  | 'key:rotated';
 
 /** Base event payload. */
 export interface SteleEvent {
@@ -229,6 +239,13 @@ export interface EvaluationCompletedEvent extends SteleEvent {
   resource: string;
 }
 
+/** Event emitted when a key rotation occurs. */
+export interface KeyRotatedEvent extends SteleEvent {
+  type: 'key:rotated';
+  previousPublicKey: string;
+  currentPublicKey: string;
+}
+
 /** Map of event types to their payloads. */
 export interface SteleEventMap {
   'covenant:created': CovenantCreatedEvent;
@@ -239,6 +256,7 @@ export interface SteleEventMap {
   'chain:resolved': ChainResolvedEvent;
   'chain:validated': ChainValidatedEvent;
   'evaluation:completed': EvaluationCompletedEvent;
+  'key:rotated': KeyRotatedEvent;
 }
 
 /** Event handler function type. */

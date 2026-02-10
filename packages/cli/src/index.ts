@@ -4,7 +4,7 @@
  * @stele/cli -- Command-line interface for the Stele covenant protocol.
  *
  * Provides commands for key generation, covenant creation, verification,
- * evaluation, inspection, CCL parsing, and shell completions.
+ * evaluation, inspection, CCL parsing, shell completions, diagnostics, and diff.
  *
  * @packageDocumentation
  */
@@ -25,18 +25,27 @@ import {
   setColorsEnabled,
   success,
   error as fmtError,
+  warning as fmtWarning,
   header,
   dim,
   bold,
   green,
   red,
   cyan,
+  yellow,
   table,
   keyValue,
   box,
 } from './format';
 import { loadConfig, saveConfig } from './config';
 import type { SteleConfig } from './config';
+import {
+  bashCompletions,
+  zshCompletions,
+  fishCompletions,
+} from './completions';
+import { runDoctor } from './doctor';
+import type { DoctorCheck } from './doctor';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -116,7 +125,9 @@ function buildMainHelp(): string {
         ['evaluate <json> <action> <resource>', 'Evaluate an action against a covenant'],
         ['inspect <json>', 'Pretty-print covenant details'],
         ['parse <ccl>', 'Parse CCL and output AST as JSON'],
-        ['completions <shell>', 'Generate shell completion script (bash|zsh)'],
+        ['completions <shell>', 'Generate shell completion script (bash|zsh|fish)'],
+        ['doctor', 'Check Stele installation health'],
+        ['diff <doc1> <doc2>', 'Show differences between two covenant documents'],
         ['version', 'Print version information'],
         ['help', 'Show this help message'],
       ],
@@ -131,6 +142,7 @@ function buildMainHelp(): string {
         ['--json', 'Machine-readable JSON output (no colors)'],
         ['--no-color', 'Disable colored output'],
         ['--help', 'Show help for a command'],
+        ['--config', 'Path to config file'],
       ],
     ),
   );
@@ -189,98 +201,35 @@ Usage: stele completions <shell>
 Supported shells:
   bash    Generate Bash completion script
   zsh     Generate Zsh completion script
+  fish    Generate Fish completion script
 
 Pipe the output to the appropriate file:
   stele completions bash > /etc/bash_completion.d/stele
-  stele completions zsh > ~/.zsh/completions/_stele`;
+  stele completions zsh > ~/.zsh/completions/_stele
+  stele completions fish > ~/.config/fish/completions/stele.fish`;
 
-// ─── Shell completions ────────────────────────────────────────────────────────
+const DOCTOR_HELP = `stele doctor - Check Stele installation health.
 
-function bashCompletions(): string {
-  return `# Bash completion for stele CLI
-# Source this file or copy to /etc/bash_completion.d/stele
+Usage: stele doctor [--json]
 
-_stele_completions() {
-    local cur prev commands global_flags
-    COMPREPLY=()
-    cur="\${COMP_WORDS[COMP_CWORD]}"
-    prev="\${COMP_WORDS[COMP_CWORD-1]}"
+Runs diagnostic checks on the Stele installation:
+  - Node.js version >= 18
+  - All @stele/* packages importable
+  - Crypto key pair generation works
+  - Covenant build and verify round-trip
+  - CCL parsing works
+  - Config file readable (if exists)
+  - No stale dist files detected`;
 
-    commands="init create verify evaluate inspect parse completions version help"
-    global_flags="--json --no-color --help"
+const DIFF_HELP = `stele diff - Show differences between two covenant documents.
 
-    if [[ \${COMP_CWORD} -eq 1 ]]; then
-        COMPREPLY=( $(compgen -W "\${commands}" -- "\${cur}") )
-        return 0
-    fi
+Usage: stele diff <doc1-json> <doc2-json> [--json]
 
-    case "\${COMP_WORDS[1]}" in
-        create)
-            local create_flags="--issuer --beneficiary --constraints --json --help"
-            COMPREPLY=( $(compgen -W "\${create_flags}" -- "\${cur}") )
-            ;;
-        completions)
-            COMPREPLY=( $(compgen -W "bash zsh" -- "\${cur}") )
-            ;;
-        *)
-            COMPREPLY=( $(compgen -W "\${global_flags}" -- "\${cur}") )
-            ;;
-    esac
-    return 0
-}
-
-complete -F _stele_completions stele`;
-}
-
-function zshCompletions(): string {
-  return `#compdef stele
-# Zsh completion for stele CLI
-# Copy to a directory in your $fpath (e.g. ~/.zsh/completions/_stele)
-
-_stele() {
-    local -a commands
-    commands=(
-        'init:Generate an Ed25519 key pair and config file'
-        'create:Create and sign a covenant document'
-        'verify:Verify a covenant document'
-        'evaluate:Evaluate an action against a covenant'
-        'inspect:Pretty-print covenant details'
-        'parse:Parse CCL and output AST'
-        'completions:Generate shell completion script'
-        'version:Print version information'
-        'help:Show help message'
-    )
-
-    _arguments -C \\
-        '--json[Machine-readable JSON output]' \\
-        '--no-color[Disable colored output]' \\
-        '--help[Show help]' \\
-        '1:command:->command' \\
-        '*::arg:->args'
-
-    case $state in
-        command)
-            _describe 'stele command' commands
-            ;;
-        args)
-            case $words[1] in
-                create)
-                    _arguments \\
-                        '--issuer[Issuer identifier]:id:' \\
-                        '--beneficiary[Beneficiary identifier]:id:' \\
-                        '--constraints[CCL constraint string]:ccl:' \\
-                        '--json[Output raw JSON]'
-                    ;;
-                completions)
-                    _arguments '1:shell:(bash zsh)'
-                    ;;
-            esac
-            ;;
-    esac
-}
-
-_stele "$@"`;
-}
+Compares two covenant documents and highlights:
+  - Changed fields (version, constraints, timestamps, etc.)
+  - Party changes (issuer, beneficiary)
+  - Constraint differences
+  - Color-coded output (green for additions, red for removals)`;
 
 // ─── Command: init ────────────────────────────────────────────────────────────
 
@@ -711,7 +660,7 @@ function cmdCompletions(positional: string[], flags: Record<string, string | boo
 
   const shell = positional[0];
   if (!shell) {
-    return { stdout: '', stderr: 'Error: Shell argument is required (bash or zsh)', exitCode: 1 };
+    return { stdout: '', stderr: 'Error: Shell argument is required (bash, zsh, or fish)', exitCode: 1 };
   }
 
   switch (shell) {
@@ -719,13 +668,230 @@ function cmdCompletions(positional: string[], flags: Record<string, string | boo
       return { stdout: bashCompletions(), stderr: '', exitCode: 0 };
     case 'zsh':
       return { stdout: zshCompletions(), stderr: '', exitCode: 0 };
+    case 'fish':
+      return { stdout: fishCompletions(), stderr: '', exitCode: 0 };
     default:
       return {
         stdout: '',
-        stderr: `Error: Unsupported shell '${shell}'. Supported: bash, zsh`,
+        stderr: `Error: Unsupported shell '${shell}'. Supported: bash, zsh, fish`,
         exitCode: 1,
       };
   }
+}
+
+// ─── Command: doctor ──────────────────────────────────────────────────────────
+
+async function cmdDoctor(
+  flags: Record<string, string | boolean>,
+  configDir?: string,
+): Promise<RunResult> {
+  if (hasFlag(flags, 'help')) {
+    return { stdout: DOCTOR_HELP, stderr: '', exitCode: 0 };
+  }
+
+  const checks = await runDoctor(configDir);
+
+  if (hasFlag(flags, 'json')) {
+    const out = JSON.stringify({ checks }, null, 2);
+    const hasFailure = checks.some((c) => c.status === 'fail');
+    return { stdout: out, stderr: '', exitCode: hasFailure ? 1 : 0 };
+  }
+
+  const lines: string[] = [''];
+  lines.push(header('Stele Doctor'));
+  lines.push('');
+
+  for (const check of checks) {
+    switch (check.status) {
+      case 'ok':
+        lines.push(success(`${check.name}${dim(` - ${check.message}`)}`));
+        break;
+      case 'warn':
+        lines.push(fmtWarning(`${check.name}${dim(` - ${check.message}`)}`));
+        break;
+      case 'fail':
+        lines.push(fmtError(`${check.name} - ${check.message}`));
+        break;
+    }
+  }
+  lines.push('');
+
+  const okCount = checks.filter((c) => c.status === 'ok').length;
+  const warnCount = checks.filter((c) => c.status === 'warn').length;
+  const failCount = checks.filter((c) => c.status === 'fail').length;
+
+  const parts: string[] = [];
+  parts.push(green(`${okCount} passed`));
+  if (warnCount > 0) parts.push(yellow(`${warnCount} warning(s)`));
+  if (failCount > 0) parts.push(red(`${failCount} failed`));
+
+  const summaryText = parts.join(', ');
+  lines.push(box('Summary', summaryText));
+  lines.push('');
+
+  return { stdout: lines.join('\n'), stderr: '', exitCode: failCount > 0 ? 1 : 0 };
+}
+
+// ─── Command: diff ────────────────────────────────────────────────────────────
+
+function diffField(
+  label: string,
+  val1: string | undefined,
+  val2: string | undefined,
+): string[] {
+  if (val1 === val2) return [];
+  const lines: string[] = [];
+  lines.push(bold(`  ${label}:`));
+  if (val1 !== undefined) {
+    lines.push(red(`    - ${val1}`));
+  }
+  if (val2 !== undefined) {
+    lines.push(green(`    + ${val2}`));
+  }
+  return lines;
+}
+
+function diffParty(
+  label: string,
+  party1: { id: string; publicKey: string; name?: string },
+  party2: { id: string; publicKey: string; name?: string },
+): string[] {
+  const lines: string[] = [];
+  const idDiff = diffField(`${label} ID`, party1.id, party2.id);
+  const keyDiff = diffField(`${label} Key`, party1.publicKey, party2.publicKey);
+  const nameDiff = diffField(`${label} Name`, party1.name, party2.name);
+  lines.push(...idDiff, ...keyDiff, ...nameDiff);
+  return lines;
+}
+
+async function cmdDiff(
+  positional: string[],
+  flags: Record<string, string | boolean>,
+): Promise<RunResult> {
+  if (hasFlag(flags, 'help')) {
+    return { stdout: DIFF_HELP, stderr: '', exitCode: 0 };
+  }
+
+  const json1 = positional[0];
+  const json2 = positional[1];
+
+  if (!json1 || !json2) {
+    return {
+      stdout: '',
+      stderr: 'Error: Two covenant JSON strings are required',
+      exitCode: 1,
+    };
+  }
+
+  let doc1: CovenantDocument;
+  let doc2: CovenantDocument;
+
+  try {
+    doc1 = deserializeCovenant(json1);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { stdout: '', stderr: `Error: Invalid first covenant JSON: ${msg}`, exitCode: 1 };
+  }
+
+  try {
+    doc2 = deserializeCovenant(json2);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { stdout: '', stderr: `Error: Invalid second covenant JSON: ${msg}`, exitCode: 1 };
+  }
+
+  if (hasFlag(flags, 'json')) {
+    const changes: Record<string, { from: unknown; to: unknown }> = {};
+    const fields: (keyof CovenantDocument)[] = [
+      'id', 'version', 'constraints', 'nonce', 'createdAt',
+      'expiresAt', 'activatesAt', 'signature',
+    ];
+
+    for (const field of fields) {
+      const v1 = doc1[field];
+      const v2 = doc2[field];
+      if (v1 !== v2) {
+        changes[field] = { from: v1 ?? null, to: v2 ?? null };
+      }
+    }
+
+    // Party changes
+    if (doc1.issuer.id !== doc2.issuer.id || doc1.issuer.publicKey !== doc2.issuer.publicKey) {
+      changes['issuer'] = {
+        from: { id: doc1.issuer.id, publicKey: doc1.issuer.publicKey },
+        to: { id: doc2.issuer.id, publicKey: doc2.issuer.publicKey },
+      };
+    }
+    if (doc1.beneficiary.id !== doc2.beneficiary.id || doc1.beneficiary.publicKey !== doc2.beneficiary.publicKey) {
+      changes['beneficiary'] = {
+        from: { id: doc1.beneficiary.id, publicKey: doc1.beneficiary.publicKey },
+        to: { id: doc2.beneficiary.id, publicKey: doc2.beneficiary.publicKey },
+      };
+    }
+
+    const out = JSON.stringify({
+      identical: Object.keys(changes).length === 0,
+      changes,
+    }, null, 2);
+    return { stdout: out, stderr: '', exitCode: 0 };
+  }
+
+  // Build colored diff output
+  const lines: string[] = [''];
+  lines.push(header('Covenant Diff'));
+  lines.push('');
+
+  const allDiffs: string[] = [];
+
+  // Scalar fields
+  allDiffs.push(...diffField('ID', doc1.id, doc2.id));
+  allDiffs.push(...diffField('Version', doc1.version, doc2.version));
+  allDiffs.push(...diffField('Created', doc1.createdAt, doc2.createdAt));
+  allDiffs.push(...diffField('Expires', doc1.expiresAt, doc2.expiresAt));
+  allDiffs.push(...diffField('Activates', doc1.activatesAt, doc2.activatesAt));
+
+  // Party changes
+  allDiffs.push(...diffParty('Issuer', doc1.issuer, doc2.issuer));
+  allDiffs.push(...diffParty('Beneficiary', doc1.beneficiary, doc2.beneficiary));
+
+  // Constraints
+  if (doc1.constraints !== doc2.constraints) {
+    allDiffs.push(bold('  Constraints:'));
+    const lines1 = doc1.constraints.split('\n');
+    const lines2 = doc2.constraints.split('\n');
+
+    // Show removed lines
+    for (const line of lines1) {
+      if (!lines2.includes(line)) {
+        allDiffs.push(red(`    - ${line}`));
+      }
+    }
+    // Show added lines
+    for (const line of lines2) {
+      if (!lines1.includes(line)) {
+        allDiffs.push(green(`    + ${line}`));
+      }
+    }
+    // Show unchanged lines
+    for (const line of lines1) {
+      if (lines2.includes(line)) {
+        allDiffs.push(dim(`      ${line}`));
+      }
+    }
+  }
+
+  // Nonce and signature (always differ between covenants, just note it)
+  allDiffs.push(...diffField('Nonce', doc1.nonce, doc2.nonce));
+  allDiffs.push(...diffField('Signature', doc1.signature.slice(0, 32) + '...', doc2.signature.slice(0, 32) + '...'));
+
+  if (allDiffs.length === 0) {
+    lines.push(success('Documents are identical.'));
+  } else {
+    lines.push(...allDiffs);
+  }
+
+  lines.push('');
+  return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
 // ─── Command: version ─────────────────────────────────────────────────────────
@@ -799,6 +965,10 @@ export async function run(args: string[], configDir?: string): Promise<RunResult
         return await cmdParse(parsed.positional, parsed.flags);
       case 'completions':
         return cmdCompletions(parsed.positional, parsed.flags);
+      case 'doctor':
+        return await cmdDoctor(parsed.flags, configDir);
+      case 'diff':
+        return await cmdDiff(parsed.positional, parsed.flags);
       case 'version':
         return cmdVersion(parsed.flags);
       case 'help':

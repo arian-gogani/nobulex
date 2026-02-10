@@ -356,3 +356,25 @@ export type { RetryOptions, CircuitBreakerOptions, CircuitBreakerState, HealthCh
 // ─── Metrics ─────────────────────────────────────────────────────────────────────
 export { Counter, Gauge, Histogram, MetricsRegistry, createMetricsRegistry, defaultMetrics } from './metrics';
 export type { HistogramSnapshot, MetricsSnapshot } from './metrics';
+
+// ─── Documented error codes ─────────────────────────────────────────────────────
+//
+// The comprehensive error code system in ./errors provides unique, documentable
+// error codes (STELE_Exxx). The legacy SteleErrorCode/SteleError above are
+// retained for backward compatibility. Import directly from './errors' for the
+// full documented error code system.
+export {
+  SteleErrorCode as DocumentedErrorCode,
+  SteleError as DocumentedSteleError,
+  errorDocsUrl,
+  formatError,
+} from './errors';
+export type { SteleErrorOptions } from './errors';
+
+// ─── Debug logging ──────────────────────────────────────────────────────────────
+export { isDebugEnabled, createDebugLogger, debug } from './debug';
+export type { DebugLogger } from './debug';
+
+// ─── Deprecation warnings ───────────────────────────────────────────────────────
+export { deprecated, wrapDeprecated, resetDeprecationWarnings, getEmittedWarnings } from './deprecation';
+export type { DeprecationWarning } from './deprecation';

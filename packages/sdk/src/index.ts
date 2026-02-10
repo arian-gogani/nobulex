@@ -636,8 +636,16 @@ export class SteleClient {
    * Uses a MemoryChainResolver seeded with the provided documents.
    * If no additional documents are provided, only the document's
    * immediate chain reference is followed.
-   *
    * Emits a `chain:resolved` event.
+   *
+   * @param doc - The covenant document whose chain to resolve.
+   * @param knownDocuments - Optional array of documents that may be ancestors.
+   * @returns An array of ancestor documents, parent-first.
+   *
+   * @example
+   * ```typescript
+   * const ancestors = await client.resolveChain(childDoc, [parentDoc]);
+   * ```
    */
   async resolveChain(
     doc: CovenantDocument,
@@ -666,11 +674,19 @@ export class SteleClient {
   /**
    * Validate a chain of covenant documents.
    *
-   * Verifies each document individually and checks narrowing
-   * constraints between parent-child pairs.
-   *
-   * Documents should be ordered from root (index 0) to leaf (last index).
+   * Verifies each document individually and checks that each child
+   * only narrows (restricts) its parent's constraints. Documents
+   * should be ordered from root (index 0) to leaf (last index).
    * Emits a `chain:validated` event.
+   *
+   * @param docs - The chain of documents, ordered root-first.
+   * @returns A ChainValidationResult with per-document and narrowing results.
+   *
+   * @example
+   * ```typescript
+   * const result = await client.validateChain([rootDoc, childDoc]);
+   * console.log(result.valid); // true if all docs valid and narrowing holds
+   * ```
    */
   async validateChain(docs: CovenantDocument[]): Promise<ChainValidationResult> {
     const results: VerificationResult[] = [];
@@ -719,6 +735,15 @@ export class SteleClient {
 
   /**
    * Parse CCL source text into a CCLDocument.
+   *
+   * @param source - CCL source text.
+   * @returns A parsed CCLDocument.
+   * @throws {CCLSyntaxError} When the source has syntax errors.
+   *
+   * @example
+   * ```typescript
+   * const cclDoc = client.parseCCL("permit read on '/data/**'");
+   * ```
    */
   parseCCL(source: string): CCLDocument {
     return cclParse(source);
@@ -726,13 +751,20 @@ export class SteleClient {
 
   /**
    * Merge two CCL documents using deny-wins semantics.
+   *
+   * @param a - The first (parent) CCL document.
+   * @param b - The second (child) CCL document.
+   * @returns A new merged CCLDocument.
    */
   mergeCCL(a: CCLDocument, b: CCLDocument): CCLDocument {
     return cclMerge(a, b);
   }
 
   /**
-   * Serialize a CCLDocument back to CCL source text.
+   * Serialize a CCLDocument back to human-readable CCL source text.
+   *
+   * @param doc - The CCL document to serialize.
+   * @returns Multi-line CCL source string.
    */
   serializeCCL(doc: CCLDocument): string {
     return cclSerialize(doc);
@@ -742,7 +774,18 @@ export class SteleClient {
 
   /**
    * Register an event handler for a specific event type.
-   * Returns a function that removes the handler when called.
+   *
+   * @param event - The event type to listen for.
+   * @param handler - The callback function.
+   * @returns A disposal function that removes the handler when called.
+   *
+   * @example
+   * ```typescript
+   * const off = client.on('covenant:created', (e) => {
+   *   console.log('Created:', e.document.id);
+   * });
+   * // later: off() to unsubscribe
+   * ```
    */
   on<T extends SteleEventType>(
     event: T,
@@ -760,7 +803,10 @@ export class SteleClient {
   }
 
   /**
-   * Remove an event handler.
+   * Remove a previously registered event handler.
+   *
+   * @param event - The event type.
+   * @param handler - The handler function to remove.
    */
   off<T extends SteleEventType>(
     event: T,
@@ -773,7 +819,10 @@ export class SteleClient {
   }
 
   /**
-   * Remove all event handlers for a specific event, or all events.
+   * Remove all event handlers for a specific event type, or all events if
+   * no type is specified.
+   *
+   * @param event - Optional event type. If omitted, removes all handlers.
    */
   removeAllListeners(event?: SteleEventType): void {
     if (event) {
@@ -809,11 +858,17 @@ export class QuickCovenant {
   /**
    * Create a simple permit covenant that allows a specific action on a resource.
    *
-   * @param action - The action to permit (e.g., "read", "file.read")
-   * @param resource - The resource to permit on (e.g., "/data", "/files/**")
+   * @param action - The action to permit (e.g., `"read"`, `"file.read"`).
+   * @param resource - The resource to permit on (e.g., `"/data"`, `"/files/**"`).
    * @param issuer - The issuing party.
    * @param beneficiary - The beneficiary party.
    * @param privateKey - Issuer's private key for signing.
+   * @returns A signed CovenantDocument with a single permit rule.
+   *
+   * @example
+   * ```typescript
+   * const doc = await QuickCovenant.permit('read', '/data/**', issuer, beneficiary, kp.privateKey);
+   * ```
    */
   static async permit(
     action: string,
@@ -839,6 +894,12 @@ export class QuickCovenant {
    * @param issuer - The issuing party.
    * @param beneficiary - The beneficiary party.
    * @param privateKey - Issuer's private key for signing.
+   * @returns A signed CovenantDocument with a single deny rule.
+   *
+   * @example
+   * ```typescript
+   * const doc = await QuickCovenant.deny('delete', '/system/**', issuer, beneficiary, kp.privateKey);
+   * ```
    */
   static async deny(
     action: string,
@@ -865,6 +926,12 @@ export class QuickCovenant {
    * @param issuer - The issuing party.
    * @param beneficiary - The beneficiary party.
    * @param privateKey - Issuer's private key for signing.
+   * @returns A signed CovenantDocument with standard constraints.
+   *
+   * @example
+   * ```typescript
+   * const doc = await QuickCovenant.standard(issuer, beneficiary, kp.privateKey);
+   * ```
    */
   static async standard(
     issuer: Issuer,

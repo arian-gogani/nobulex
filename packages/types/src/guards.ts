@@ -10,6 +10,12 @@
  *
  * @param value - The value to check.
  * @returns `true` if `value` is a string with at least one non-whitespace character.
+ *
+ * @example
+ * ```typescript
+ * isNonEmptyString('hello'); // true
+ * isNonEmptyString('  ');    // false
+ * ```
  */
 export function isNonEmptyString(value: unknown): value is string {
   return typeof value === 'string' && value.trim().length > 0;
@@ -20,6 +26,12 @@ export function isNonEmptyString(value: unknown): value is string {
  *
  * @param value - The value to check.
  * @returns `true` if `value` is a valid even-length hex string.
+ *
+ * @example
+ * ```typescript
+ * isValidHex('a1b2c3'); // true
+ * isValidHex('xyz');    // false
+ * ```
  */
 export function isValidHex(value: unknown): value is string {
   return (
@@ -185,7 +197,13 @@ function assertNoDangerousKeys(obj: unknown): void {
  *
  * @param value - The JSON string to parse.
  * @returns The parsed value.
- * @throws Error if parsing fails or a dangerous key is detected.
+ * @throws {Error} When parsing fails or a dangerous key is detected.
+ *
+ * @example
+ * ```typescript
+ * const data = sanitizeJsonInput('{"name": "safe"}'); // OK
+ * sanitizeJsonInput('{"__proto__": {}}'); // throws Error
+ * ```
  */
 export function sanitizeJsonInput(value: string): unknown {
   const parsed: unknown = JSON.parse(value);

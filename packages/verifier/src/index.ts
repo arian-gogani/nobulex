@@ -128,8 +128,19 @@ function collectWarnings(doc: CovenantDocument): string[] {
 // ─── Verifier class ─────────────────────────────────────────────────────────────
 
 /**
- * A stateful verification engine that tracks verification history
- * and supports single, chain, action, and batch verification.
+ * A stateful verification engine for third-party auditors.
+ *
+ * Wraps the core `verifyCovenant` function with history tracking,
+ * batch processing, chain integrity validation, and action-level
+ * evaluation. Each instance has a unique verifier ID that is
+ * included in all reports for traceability.
+ *
+ * @example
+ * ```typescript
+ * const verifier = new Verifier({ strictMode: true });
+ * const report = await verifier.verify(doc);
+ * console.log(report.valid, report.durationMs);
+ * ```
  */
 export class Verifier {
   /** Unique identifier for this verifier instance. */
@@ -171,7 +182,14 @@ export class Verifier {
     }
   }
 
-  /** Returns a copy of the verification history. */
+  /**
+   * Returns a copy of the verification history.
+   *
+   * History is capped at `maxHistorySize` (default 1000). Oldest entries
+   * are evicted when the limit is exceeded.
+   *
+   * @returns An array of verification records, oldest first.
+   */
   getHistory(): VerificationRecord[] {
     return [...this.history];
   }
@@ -186,8 +204,18 @@ export class Verifier {
   /**
    * Verify a single covenant document.
    *
-   * Runs all core verification checks plus optional strict-mode
-   * warnings. The result is recorded in history.
+   * Runs all core verification checks (signature, ID, version, expiry,
+   * constraints syntax) plus optional strict-mode warnings. The result
+   * is recorded in history.
+   *
+   * @param doc - The covenant document to verify.
+   * @returns A VerificationReport with timing and warning metadata.
+   *
+   * @example
+   * ```typescript
+   * const report = await verifier.verify(doc);
+   * if (!report.valid) console.log(report.warnings);
+   * ```
    */
   async verify(doc: CovenantDocument): Promise<VerificationReport> {
     const startMs = Date.now();
@@ -212,9 +240,18 @@ export class Verifier {
    * Checks performed:
    * 1. Each document is individually valid.
    * 2. Chain depth does not exceed the configured limit.
-   * 3. Parent references are consistent (child.chain.parentId === parent.id).
+   * 3. Parent references are consistent (`child.chain.parentId === parent.id`).
    * 4. Depths are monotonically increasing.
    * 5. Narrowing: each child only restricts (never broadens) its parent.
+   *
+   * @param docs - Chain of documents ordered root-first.
+   * @returns A ChainVerificationReport with per-document, integrity, and narrowing results.
+   *
+   * @example
+   * ```typescript
+   * const report = await verifier.verifyChain([rootDoc, childDoc]);
+   * console.log(report.valid, report.integrityChecks);
+   * ```
    */
   async verifyChain(docs: CovenantDocument[]): Promise<ChainVerificationReport> {
     const startMs = Date.now();
@@ -373,7 +410,20 @@ export class Verifier {
    * Check whether a specific action on a resource is permitted
    * by the document's CCL constraints.
    *
-   * Also verifies the document itself and reports on document validity.
+   * Also verifies the document itself -- if the document is invalid,
+   * the action is always denied regardless of the CCL evaluation result.
+   *
+   * @param doc - The covenant document to evaluate.
+   * @param action - The action to check (e.g. `"read"`).
+   * @param resource - The resource path (e.g. `"/data/users"`).
+   * @param context - Optional evaluation context for condition checking.
+   * @returns An ActionVerificationReport combining document validity and access decision.
+   *
+   * @example
+   * ```typescript
+   * const report = await verifier.verifyAction(doc, 'read', '/data');
+   * console.log(report.permitted, report.documentValid);
+   * ```
    */
   async verifyAction(
     doc: CovenantDocument,
@@ -441,10 +491,19 @@ export class Verifier {
  * Verify a batch of covenant documents in parallel.
  *
  * Returns a {@link BatchVerificationReport} with per-document results
- * and aggregate summary statistics.
+ * and aggregate summary statistics. This is a standalone convenience
+ * function that creates a temporary Verifier internally. For history
+ * tracking across multiple calls, use the {@link Verifier} class directly.
  *
- * This is a standalone function that creates a temporary Verifier
- * internally. For history tracking across calls, use the Verifier class.
+ * @param docs - The documents to verify.
+ * @param options - Optional verifier configuration (strict mode, etc.).
+ * @returns A BatchVerificationReport with individual reports and summary.
+ *
+ * @example
+ * ```typescript
+ * const report = await verifyBatch([doc1, doc2, doc3]);
+ * console.log(`${report.summary.passed}/${report.summary.total} passed`);
+ * ```
  */
 export async function verifyBatch(
   docs: CovenantDocument[],

@@ -1,40 +1,49 @@
 {
   "name": "@stele/cli",
   "version": "0.1.0",
-  "description": "Command-line tools for inspecting, querying, and verifying steles",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "stele": "dist/bin.js"
+    "stele": "./dist/cli.js"
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs --dts",
+    "bundle": "tsup src/index.ts --format cjs",
+    "dev": "tsup src/index.ts --format cjs --dts --watch",
+    "prepublishOnly": "npm run build"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
-  "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
-  },
   "dependencies": {
-    "@stele/types": "0.1.0",
     "@stele/crypto": "0.1.0",
+    "@stele/ccl": "0.1.0",
     "@stele/core": "0.1.0",
-    "@stele/store": "0.1.0",
-    "@stele/verifier": "0.1.0",
-    "@stele/sdk": "0.1.0"
+    "@stele/identity": "0.1.0",
+    "@stele/enforcement": "0.1.0",
+    "@stele/proof": "0.1.0",
+    "@stele/reputation": "0.1.0",
+    "@stele/breach": "0.1.0",
+    "@stele/mcp": "0.1.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele",
+    "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/cli"
   },
-  "homepage": "https://stele.dev",
-  "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
-  },
-  "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability"
+  ]
 }

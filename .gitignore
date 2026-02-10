@@ -1,6 +1,20 @@
 # Generated API docs
 docs/api/
 
+# tsc --build output in examples, tests, and package src dirs
+examples/**/*.js
+examples/**/*.d.ts
+examples/**/*.js.map
+tests/**/*.js
+tests/**/*.d.ts
+tests/**/*.js.map
+scripts/*.js
+scripts/*.d.ts
+scripts/*.js.map
+packages/*/src/*.js
+packages/*/src/*.d.ts
+packages/*/src/*.js.map
+
 # Logs
 logs
 *.log
@@ -47,8 +61,17 @@ jspm_packages/
 # Snowpack dependency directory (https://snowpack.dev/)
 web_modules/
 
-# TypeScript cache
+# TypeScript cache and build artifacts
 *.tsbuildinfo
+*.d.ts.map
+
+# Build output from tsc alongside config files
+vitest.config.d.ts
+vitest.config.js
+vitest.config.js.map
+tsup.config.d.ts
+tsup.config.js
+tsup.config.js.map
 
 # Optional npm cache directory
 .npm

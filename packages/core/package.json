@@ -1,33 +1,50 @@
 {
   "name": "@stele/core",
   "version": "0.1.0",
-  "description": "Protocol engine — commitment creation, action logging, and verification proof generation",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "files": [
-    "dist"
-  ],
-  "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+  "description": "Core covenant lifecycle management for the Stele framework",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
   },
-  "dependencies": {
-    "@stele/types": "0.1.0",
-    "@stele/crypto": "0.1.0"
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele",
+    "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/core"
   },
-  "homepage": "https://stele.dev",
-  "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability",
+    "core",
+    "lifecycle",
+    "framework"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "bundle": "tsup src/index.ts --format cjs,esm",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "prepublishOnly": "npm run build"
   },
-  "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "dependencies": {
+    "@stele/crypto": "0.1.0",
+    "@stele/ccl": "0.1.0"
+  }
 }

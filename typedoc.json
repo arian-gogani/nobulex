@@ -1,23 +1,9 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "packages/types/src/index.ts",
-    "packages/crypto/src/index.ts",
-    "packages/core/src/index.ts",
-    "packages/store/src/index.ts",
-    "packages/verifier/src/index.ts",
-    "packages/sdk/src/index.ts",
-    "packages/cli/src/index.ts",
-    "packages/mcp-server/src/index.ts",
-    "packages/react/src/index.ts",
-    "packages/evm/src/index.ts"
-  ],
-  "entryPointStrategy": "expand",
-  "out": "docs/api",
-  "name": "Stele API Documentation",
-  "readme": "README.md",
-  "tsconfig": "tsconfig.json",
+  "entryPointStrategy": "packages",
+  "entryPoints": ["packages/*"],
+  "out": "docs/api-generated",
   "excludePrivate": true,
   "excludeInternal": true,
-  "githubPages": true
+  "readme": "README.md"
 }

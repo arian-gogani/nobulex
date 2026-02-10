@@ -10,7 +10,10 @@
     { "path": "../types" },
     { "path": "../crypto" },
     { "path": "../core" },
+    { "path": "../ccl" },
+    { "path": "../identity" },
     { "path": "../store" },
-    { "path": "../verifier" }
+    { "path": "../verifier" },
+    { "path": "../negotiation" }
   ]
 }

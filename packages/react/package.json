@@ -1,31 +1,45 @@
 {
   "name": "@stele/react",
   "version": "0.1.0",
-  "description": "React components for accountability dashboards and stele explorers",
+  "description": "React hooks and reactive primitives for Stele-powered UIs",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@stele/types": "0.1.0",
-    "@stele/sdk": "0.1.0"
+    "@stele/sdk": "0.1.0",
+    "@stele/store": "0.1.0",
+    "@stele/core": "0.1.0"
   },
   "peerDependencies": {
-    "react": ">=18.0.0",
-    "react-dom": ">=18.0.0"
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
   },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele",
+    "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/react"
   },
   "homepage": "https://stele.dev",
@@ -33,5 +47,11 @@
     "url": "https://github.com/agbusiness195/stele/issues"
   },
   "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability",
+    "react",
+    "hooks"
+  ]
 }

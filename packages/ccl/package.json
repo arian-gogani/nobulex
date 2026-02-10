@@ -1,0 +1,50 @@
+{
+  "name": "@stele/ccl",
+  "version": "0.1.0",
+  "description": "Covenant Constraint Language parser and evaluator for Stele",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/Stele.git",
+    "directory": "packages/ccl"
+  },
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability",
+    "ccl",
+    "constraint-language",
+    "policy",
+    "rules"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "bundle": "tsup src/index.ts --format cjs,esm",
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@stele/crypto": "0.1.0"
+  }
+}

@@ -1,22 +1,37 @@
 {
   "name": "@stele/core",
   "version": "0.1.0",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "module": "dist/index.mjs",
+  "description": "Core covenant lifecycle management for the Stele framework",
+  "type": "module",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.js",
+      "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     }
   },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/Stele.git",
+    "directory": "packages/core"
+  },
+  "keywords": ["stele", "covenant", "ai-accountability", "core", "lifecycle", "framework"],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "bundle": "tsup src/index.ts --format cjs,esm",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch"
+    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "prepublishOnly": "npm run build"
   },
-  "files": ["dist"],
   "dependencies": {
     "@stele/crypto": "0.1.0",
     "@stele/ccl": "0.1.0"

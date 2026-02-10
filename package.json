@@ -34,7 +34,11 @@
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test --workspaces",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint packages/*/src/**/*.ts",
     "docs": "npx typedoc",
+    "docs:build": "typedoc",
+    "prepublish:check": "npm pack --dry-run -ws",
     "publish:all": "npm run build && npm publish --workspaces"
   },
   "repository": {

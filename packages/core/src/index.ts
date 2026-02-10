@@ -65,6 +65,25 @@ export {
   MAX_DOCUMENT_SIZE,
 } from './types.js';
 
+// ─── Schema validation ──────────────────────────────────────────────────────────
+
+export {
+  validateDocumentSchema,
+  validatePartySchema,
+  validateConstraintsSchema,
+  validateChainSchema,
+} from './schema.js';
+
+export type {
+  ValidationError,
+  ValidationResult,
+} from './schema.js';
+
+// ─── Document migration ─────────────────────────────────────────────────────────
+
+export { DocumentMigrator, defaultMigrator } from './migration.js';
+export type { Migration } from './migration.js';
+
 // ─── Error classes ─────────────────────────────────────────────────────────────
 
 /**

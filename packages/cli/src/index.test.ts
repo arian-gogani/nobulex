@@ -66,6 +66,8 @@ describe('stele help', () => {
     expect(r.stdout).toContain('inspect');
     expect(r.stdout).toContain('parse');
     expect(r.stdout).toContain('completions');
+    expect(r.stdout).toContain('doctor');
+    expect(r.stdout).toContain('diff');
     expect(r.stdout).toContain('version');
     expect(r.stdout).toContain('help');
     expect(r.stderr).toBe('');
@@ -612,6 +614,8 @@ describe('stele completions', () => {
     expect(r.stdout).toContain('init');
     expect(r.stdout).toContain('create');
     expect(r.stdout).toContain('verify');
+    expect(r.stdout).toContain('doctor');
+    expect(r.stdout).toContain('diff');
     expect(r.stderr).toBe('');
   });
 
@@ -623,6 +627,19 @@ describe('stele completions', () => {
     expect(r.stdout).toContain('_arguments');
     expect(r.stdout).toContain('init');
     expect(r.stdout).toContain('create');
+    expect(r.stdout).toContain('doctor');
+    expect(r.stdout).toContain('diff');
+    expect(r.stderr).toBe('');
+  });
+
+  it('generates fish completion script', async () => {
+    const r = await run(['completions', 'fish']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('complete -c stele');
+    expect(r.stdout).toContain('init');
+    expect(r.stdout).toContain('create');
+    expect(r.stdout).toContain('doctor');
+    expect(r.stdout).toContain('diff');
     expect(r.stderr).toBe('');
   });
 
@@ -633,11 +650,12 @@ describe('stele completions', () => {
   });
 
   it('fails with unsupported shell', async () => {
-    const r = await run(['completions', 'fish']);
+    const r = await run(['completions', 'powershell']);
     expect(r.exitCode).toBe(1);
-    expect(r.stderr).toContain("Unsupported shell 'fish'");
+    expect(r.stderr).toContain("Unsupported shell 'powershell'");
     expect(r.stderr).toContain('bash');
     expect(r.stderr).toContain('zsh');
+    expect(r.stderr).toContain('fish');
   });
 
   it('shows help with --help', async () => {
@@ -646,6 +664,15 @@ describe('stele completions', () => {
     expect(r.stdout).toContain('stele completions');
     expect(r.stdout).toContain('bash');
     expect(r.stdout).toContain('zsh');
+    expect(r.stdout).toContain('fish');
+  });
+
+  it('bash completions include all new commands', async () => {
+    const r = await run(['completions', 'bash']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('evaluate');
+    expect(r.stdout).toContain('inspect');
+    expect(r.stdout).toContain('parse');
   });
 });
 
@@ -777,6 +804,193 @@ describe('--json flag produces clean JSON without ANSI', () => {
 
   it('parse --json has no ANSI', async () => {
     const r = await run(['parse', "permit read on '**'", '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+});
+
+// ===========================================================================
+// doctor
+// ===========================================================================
+
+describe('stele doctor', () => {
+  it('returns checks with colored output', async () => {
+    const r = await run(['doctor']);
+    expect(r.exitCode).toBe(0);
+    expect(stripAnsi(r.stdout)).toContain('Stele Doctor');
+    expect(stripAnsi(r.stdout)).toContain('Node.js version');
+    expect(stripAnsi(r.stdout)).toContain('Crypto');
+    expect(stripAnsi(r.stdout)).toContain('Core');
+    expect(stripAnsi(r.stdout)).toContain('CCL');
+    expect(r.stderr).toBe('');
+    expect(hasAnsi(r.stdout)).toBe(true);
+  });
+
+  it('returns JSON with --json', async () => {
+    const r = await run(['doctor', '--json']);
+    expect(r.exitCode).toBe(0);
+    const parsed = JSON.parse(r.stdout);
+    expect(parsed.checks).toBeDefined();
+    expect(Array.isArray(parsed.checks)).toBe(true);
+    expect(parsed.checks.length).toBeGreaterThan(0);
+    for (const check of parsed.checks) {
+      expect(typeof check.name).toBe('string');
+      expect(['ok', 'warn', 'fail']).toContain(check.status);
+      expect(typeof check.message).toBe('string');
+    }
+    expect(hasAnsi(r.stdout)).toBe(false);
+  });
+
+  it('shows help with --help', async () => {
+    const r = await run(['doctor', '--help']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('stele doctor');
+    expect(r.stdout).toContain('diagnostic');
+  });
+
+  it('doctor --no-color strips ANSI', async () => {
+    const r = await run(['doctor', '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('Stele Doctor');
+  });
+
+  it('doctor output includes summary box', async () => {
+    const r = await run(['doctor']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('Summary');
+    expect(stripAnsi(r.stdout)).toContain('passed');
+  });
+});
+
+// ===========================================================================
+// diff
+// ===========================================================================
+
+describe('stele diff', () => {
+  it('shows differences between two covenants', async () => {
+    const json1 = await makeCovenantJson("permit read on '**'");
+    const json2 = await makeCovenantJson("permit write on '**'");
+    const r = await run(['diff', json1, json2]);
+    expect(r.exitCode).toBe(0);
+    expect(stripAnsi(r.stdout)).toContain('Covenant Diff');
+    expect(r.stderr).toBe('');
+  });
+
+  it('diff output has ANSI when colors enabled', async () => {
+    const json1 = await makeCovenantJson("permit read on '**'");
+    const json2 = await makeCovenantJson("permit write on '**'");
+    const r = await run(['diff', json1, json2]);
+    expect(hasAnsi(r.stdout)).toBe(true);
+  });
+
+  it('diff --no-color strips ANSI', async () => {
+    const json1 = await makeCovenantJson("permit read on '**'");
+    const json2 = await makeCovenantJson("permit write on '**'");
+    const r = await run(['diff', json1, json2, '--no-color']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(r.stdout).toContain('Covenant Diff');
+  });
+
+  it('shows constraint differences', async () => {
+    const json1 = await makeCovenantJson("permit read on '**'");
+    const json2 = await makeCovenantJson("permit write on '**'");
+    const r = await run(['diff', json1, json2, '--no-color']);
+    expect(r.stdout).toContain('Constraints');
+  });
+
+  it('shows party changes', async () => {
+    // Create two covenants with different issuers
+    const kp1 = await generateKeyPair();
+    const kp2 = await generateKeyPair();
+
+    const doc1 = await buildCovenant({
+      issuer: { id: 'alice', publicKey: kp1.publicKeyHex, role: 'issuer', name: 'Alice' },
+      beneficiary: { id: 'bob', publicKey: kp1.publicKeyHex, role: 'beneficiary', name: 'Bob' },
+      constraints: "permit read on '**'",
+      privateKey: kp1.privateKey,
+    });
+
+    const doc2 = await buildCovenant({
+      issuer: { id: 'carol', publicKey: kp2.publicKeyHex, role: 'issuer', name: 'Carol' },
+      beneficiary: { id: 'dave', publicKey: kp2.publicKeyHex, role: 'beneficiary', name: 'Dave' },
+      constraints: "permit read on '**'",
+      privateKey: kp2.privateKey,
+    });
+
+    const r = await run(['diff', serializeCovenant(doc1), serializeCovenant(doc2), '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('Issuer');
+    expect(r.stdout).toContain('alice');
+    expect(r.stdout).toContain('carol');
+    expect(r.stdout).toContain('Beneficiary');
+    expect(r.stdout).toContain('bob');
+    expect(r.stdout).toContain('dave');
+  });
+
+  it('outputs JSON with --json', async () => {
+    const json1 = await makeCovenantJson("permit read on '**'");
+    const json2 = await makeCovenantJson("permit write on '**'");
+    const r = await run(['diff', json1, json2, '--json']);
+    expect(r.exitCode).toBe(0);
+    const parsed = JSON.parse(r.stdout);
+    expect(typeof parsed.identical).toBe('boolean');
+    expect(typeof parsed.changes).toBe('object');
+    expect(parsed.identical).toBe(false);
+    expect(parsed.changes.constraints).toBeDefined();
+    expect(hasAnsi(r.stdout)).toBe(false);
+  });
+
+  it('fails without two arguments', async () => {
+    const json1 = await makeCovenantJson();
+    const r = await run(['diff', json1]);
+    expect(r.exitCode).toBe(1);
+    expect(r.stderr).toContain('Two covenant JSON strings are required');
+  });
+
+  it('fails without any arguments', async () => {
+    const r = await run(['diff']);
+    expect(r.exitCode).toBe(1);
+    expect(r.stderr).toContain('Two covenant JSON strings are required');
+  });
+
+  it('fails with invalid first JSON', async () => {
+    const json2 = await makeCovenantJson();
+    const r = await run(['diff', 'not-json', json2]);
+    expect(r.exitCode).toBe(1);
+    expect(r.stderr).toContain('Invalid first covenant JSON');
+  });
+
+  it('fails with invalid second JSON', async () => {
+    const json1 = await makeCovenantJson();
+    const r = await run(['diff', json1, 'not-json']);
+    expect(r.exitCode).toBe(1);
+    expect(r.stderr).toContain('Invalid second covenant JSON');
+  });
+
+  it('shows help with --help', async () => {
+    const r = await run(['diff', '--help']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('stele diff');
+    expect(r.stdout).toContain('differences');
+  });
+});
+
+// ===========================================================================
+// --json flag ensures no ANSI across all commands (including new ones)
+// ===========================================================================
+
+describe('--json flag produces clean JSON without ANSI (new commands)', () => {
+  it('doctor --json has no ANSI', async () => {
+    const r = await run(['doctor', '--json']);
+    expect(hasAnsi(r.stdout)).toBe(false);
+    expect(() => JSON.parse(r.stdout)).not.toThrow();
+  });
+
+  it('diff --json has no ANSI', async () => {
+    const json1 = await makeCovenantJson("permit read on '**'");
+    const json2 = await makeCovenantJson("permit write on '**'");
+    const r = await run(['diff', json1, json2, '--json']);
     expect(hasAnsi(r.stdout)).toBe(false);
     expect(() => JSON.parse(r.stdout)).not.toThrow();
   });

@@ -1,7 +1,7 @@
 {
   "name": "@stele/react",
   "version": "0.1.0",
-  "description": "Framework-agnostic reactive primitives for Stele-powered UIs",
+  "description": "React hooks and reactive primitives for Stele-powered UIs",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -21,6 +21,14 @@
     "@stele/sdk": "0.1.0",
     "@stele/store": "0.1.0",
     "@stele/core": "0.1.0"
+  },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "react": {
+      "optional": true
+    }
   },
   "license": "MIT",
   "engines": {
@@ -42,6 +50,8 @@
   "keywords": [
     "stele",
     "covenant",
-    "ai-accountability"
+    "ai-accountability",
+    "react",
+    "hooks"
   ]
 }

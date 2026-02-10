@@ -393,3 +393,22 @@ export function createIdentityState(client: SteleClient): IdentityState {
 export function createStoreState(store: CovenantStore): StoreState {
   return new StoreState(store);
 }
+
+// ---------------------------------------------------------------------------
+// React hooks (require React >= 18 as peer dependency)
+// ---------------------------------------------------------------------------
+
+export {
+  useObservable,
+  useCovenant,
+  useIdentity,
+  useCovenantStore,
+  _injectReact,
+  _resetReact,
+} from './hooks';
+
+export type {
+  UseCovenantReturn,
+  UseIdentityReturn,
+  UseCovenantStoreReturn,
+} from './hooks';

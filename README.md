@@ -2,8 +2,8 @@
 
 **The accountability primitive for AI agents.**
 
-![Tests](https://img.shields.io/badge/tests-4%2C327%20passing-brightgreen)
-![Coverage](https://img.shields.io/badge/coverage-66%20suites-blue)
+![Tests](https://img.shields.io/badge/tests-4%2C709%20passing-brightgreen)
+![Coverage](https://img.shields.io/badge/coverage-74%20suites-blue)
 ![Packages](https://img.shields.io/badge/packages-25-orange)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)

@@ -1,7 +1,7 @@
 {
   "name": "@stele/evm",
   "version": "0.1.0",
-  "description": "Solidity contracts and ethers.js bindings for on-chain anchoring",
+  "description": "EVM anchoring utilities with ABI encoding, Keccak-256 hashing, and JSON-RPC provider interface",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -19,7 +19,8 @@
   "dependencies": {
     "@stele/types": "0.1.0",
     "@stele/crypto": "0.1.0",
-    "@stele/core": "0.1.0"
+    "@stele/core": "0.1.0",
+    "@noble/hashes": "^1.4.0"
   },
   "license": "MIT",
   "engines": {

@@ -1,5 +1,4 @@
 import { describe, it, expect } from 'vitest';
-import { sha256String } from '@stele/crypto';
 import {
   encodeUint256,
   encodeBytes32,
@@ -17,7 +16,10 @@ import {
   checksumAddress,
   covenantIdToBytes32,
   STELE_REGISTRY_ABI,
+  EVMClient,
+  keccak256,
   type CovenantAnchor,
+  type EVMProvider,
 } from './index';
 
 // ─── encodeUint256 / decodeUint256 ─────────────────────────────────────────────
@@ -306,10 +308,19 @@ describe('computeFunctionSelector', () => {
     expect(s1).not.toBe(s2);
   });
 
-  it('matches sha256String slice for the same signature', () => {
-    const sig = 'balanceOf(address)';
-    const expected = sha256String(sig).slice(0, 8);
-    expect(computeFunctionSelector(sig)).toBe(expected);
+  it('matches known keccak256 selector for transfer(address,uint256)', () => {
+    // Well-known selector from the Ethereum ecosystem: 0xa9059cbb
+    expect(computeFunctionSelector('transfer(address,uint256)')).toBe('a9059cbb');
+  });
+
+  it('matches known keccak256 selector for balanceOf(address)', () => {
+    // Well-known selector: 0x70a08231
+    expect(computeFunctionSelector('balanceOf(address)')).toBe('70a08231');
+  });
+
+  it('matches known keccak256 selector for approve(address,uint256)', () => {
+    // Well-known selector: 0x095ea7b3
+    expect(computeFunctionSelector('approve(address,uint256)')).toBe('095ea7b3');
   });
 });
 
@@ -494,7 +505,7 @@ describe('checksumAddress', () => {
     // The result should differ from all-lowercase since some chars get uppercased
     const hasUppercase = /[A-F]/.test(result.slice(2));
     const hasLowercase = /[a-f]/.test(result.slice(2));
-    // With SHA-256 hashing, we expect a mix of upper and lower
+    // With Keccak-256 hashing per EIP-55, we expect a mix of upper and lower
     expect(hasUppercase || hasLowercase).toBe(true);
   });
 
@@ -502,6 +513,14 @@ describe('checksumAddress', () => {
     const lower = '0x' + 'abcdef1234'.repeat(4);
     const upper = '0x' + 'ABCDEF1234'.repeat(4);
     expect(checksumAddress(lower)).toBe(checksumAddress(upper));
+  });
+
+  it('matches known EIP-55 checksummed addresses', () => {
+    // Well-known test vectors from EIP-55
+    expect(checksumAddress('0x5aaeb6053f3e94c9b9a09f33669435e7ef1beaed'))
+      .toBe('0x5aAeb6053F3E94C9b9A09f33669435E7Ef1BeAed');
+    expect(checksumAddress('0xfb6916095ca1df60bb79ce92ce3ea74c37c5d359'))
+      .toBe('0xfB6916095ca1df60bB79Ce92cE3Ea74c37c5d359');
   });
 
   it('throws on invalid address', () => {
@@ -649,5 +668,139 @@ describe('edge cases', () => {
     const hash = computeAnchorHash(anchor);
     expect(hash.length).toBe(64);
     expect(/^[0-9a-f]{64}$/.test(hash)).toBe(true);
+  });
+});
+
+// ─── keccak256 export ───────────────────────────────────────────────────────────
+
+describe('keccak256 export', () => {
+  it('returns 64-char hex string', () => {
+    const hash = keccak256('hello');
+    expect(hash.length).toBe(64);
+    expect(/^[0-9a-f]{64}$/.test(hash)).toBe(true);
+  });
+
+  it('matches known keccak256 of empty string', () => {
+    // Well-known: keccak256('') = c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470
+    expect(keccak256('')).toBe('c5d2460186f7233c927e7db2dcc703c0e500b653ca82273b7bfad8045d85a470');
+  });
+});
+
+// ─── EVMClient ──────────────────────────────────────────────────────────────────
+
+describe('EVMClient', () => {
+  function makeMockProvider(responses: Record<string, unknown> = {}): EVMProvider {
+    return {
+      request: async (args: { method: string; params?: unknown[] }) => {
+        if (args.method in responses) {
+          return responses[args.method];
+        }
+        throw new Error(`Unexpected RPC call: ${args.method}`);
+      },
+    };
+  }
+
+  it('constructor validates registry address', () => {
+    const provider = makeMockProvider();
+    expect(() => new EVMClient(provider, 'not-an-address')).toThrow('Invalid registry address');
+  });
+
+  it('constructor accepts valid address', () => {
+    const provider = makeMockProvider();
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    expect(client).toBeDefined();
+  });
+
+  it('anchorCovenant sends eth_sendTransaction with correct calldata', async () => {
+    let capturedParams: unknown;
+    const provider: EVMProvider = {
+      request: async (args) => {
+        capturedParams = args;
+        return '0x' + 'aa'.repeat(32);
+      },
+    };
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const anchor = {
+      covenantId: 'aa'.repeat(32),
+      constraintsHash: 'bb'.repeat(32),
+      issuerAddress: '0x' + '1234567890'.repeat(4),
+      beneficiaryAddress: '0x' + '0987654321'.repeat(4),
+      timestamp: 1700000000n,
+      chainId: 1,
+    };
+
+    const txHash = await client.anchorCovenant(anchor, '0x' + '2'.repeat(40));
+    expect(txHash).toBe('0x' + 'aa'.repeat(32));
+    expect((capturedParams as any).method).toBe('eth_sendTransaction');
+    const txParams = (capturedParams as any).params[0];
+    expect(txParams.to).toBe('0x' + '1'.repeat(40));
+    expect(txParams.from).toBe('0x' + '2'.repeat(40));
+    expect(txParams.data.startsWith('0x')).toBe(true);
+  });
+
+  it('verifyCovenant calls eth_call and returns true for non-zero result', async () => {
+    const provider = makeMockProvider({
+      eth_call: '0x' + '0'.repeat(63) + '1',
+    });
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const result = await client.verifyCovenant('aa'.repeat(32));
+    expect(result).toBe(true);
+  });
+
+  it('verifyCovenant returns false for zero result', async () => {
+    const provider = makeMockProvider({
+      eth_call: '0x' + '0'.repeat(64),
+    });
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const result = await client.verifyCovenant('aa'.repeat(32));
+    expect(result).toBe(false);
+  });
+
+  it('getAnchor returns null for empty result', async () => {
+    const provider = makeMockProvider({
+      eth_call: '0x' + '0'.repeat(256),
+    });
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const result = await client.getAnchor('aa'.repeat(32));
+    expect(result).toBeNull();
+  });
+
+  it('getChainId parses hex chain ID', async () => {
+    const provider = makeMockProvider({
+      eth_chainId: '0x1',
+    });
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const chainId = await client.getChainId();
+    expect(chainId).toBe(1);
+  });
+
+  it('waitForTransaction returns receipt when available', async () => {
+    let callCount = 0;
+    const mockReceipt = {
+      transactionHash: '0x' + 'aa'.repeat(32),
+      blockNumber: '0xa',
+      status: '0x1',
+      gasUsed: '0x5208',
+    };
+    const provider: EVMProvider = {
+      request: async () => {
+        callCount++;
+        if (callCount >= 2) return mockReceipt;
+        return null;
+      },
+    };
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const receipt = await client.waitForTransaction('0x' + 'aa'.repeat(32), 5, 10);
+    expect(receipt).toEqual(mockReceipt);
+    expect(callCount).toBeGreaterThanOrEqual(2);
+  });
+
+  it('waitForTransaction returns null after max attempts', async () => {
+    const provider = makeMockProvider({
+      eth_getTransactionReceipt: null,
+    });
+    const client = new EVMClient(provider, '0x' + '1'.repeat(40));
+    const receipt = await client.waitForTransaction('0x' + 'aa'.repeat(32), 2, 10);
+    expect(receipt).toBeNull();
   });
 });

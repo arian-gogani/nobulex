@@ -254,7 +254,7 @@ describe('@stele/sdk', () => {
       expect(doc.enforcement?.type).toBe('monitor');
     });
 
-    it('propagates CovenantBuildError for invalid input', async () => {
+    it('throws a helpful error for empty constraints', async () => {
       const { issuerKeyPair, issuer, beneficiary } = await makeParties();
       const client = new SteleClient({ keyPair: issuerKeyPair });
 
@@ -263,6 +263,19 @@ describe('@stele/sdk', () => {
           issuer,
           beneficiary,
           constraints: '',
+        }),
+      ).rejects.toThrow('constraints must be a non-empty CCL string');
+    });
+
+    it('propagates CovenantBuildError for invalid CCL syntax', async () => {
+      const { issuerKeyPair, issuer, beneficiary } = await makeParties();
+      const client = new SteleClient({ keyPair: issuerKeyPair });
+
+      await expect(
+        client.createCovenant({
+          issuer,
+          beneficiary,
+          constraints: '!!! not valid CCL !!!',
         }),
       ).rejects.toThrow(CovenantBuildError);
     });

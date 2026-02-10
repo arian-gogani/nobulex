@@ -111,11 +111,10 @@ describe('CCL regressions', () => {
     expect(result.permitted).toBe(false);
   });
 
-  it('empty constraints string parses to zero statements (guard is in buildCovenant)', () => {
-    // parse('') does NOT throw; it returns a document with zero statements.
-    // The real guard is in buildCovenant which rejects empty/whitespace constraints.
-    const doc = parse('');
-    expect(doc.statements.length).toBe(0);
+  it('empty constraints string now throws a helpful parse error', () => {
+    // parse('') now throws a CCLSyntaxError with a helpful message.
+    // This is the improved behavior: empty input is caught early with guidance.
+    expect(() => parse('')).toThrow('CCL parse error: input is empty');
   });
 
   it('merge of two identical documents produces equivalent evaluation', () => {

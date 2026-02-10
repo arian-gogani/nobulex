@@ -2,27 +2,35 @@
   "name": "@stele/evm",
   "version": "0.1.0",
   "description": "Solidity contracts and ethers.js bindings for on-chain anchoring",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@stele/types": "0.1.0",
     "@stele/crypto": "0.1.0",
     "@stele/core": "0.1.0"
   },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele",
+    "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/evm"
   },
   "homepage": "https://stele.dev",
@@ -30,5 +38,9 @@
     "url": "https://github.com/agbusiness195/stele/issues"
   },
   "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability"
+  ]
 }

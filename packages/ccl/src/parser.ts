@@ -87,7 +87,7 @@ class Parser {
         return this.parseLimit();
       default:
         throw new CCLSyntaxError(
-          `Expected statement (permit, deny, require, limit), got '${tok.value}'`,
+          `Expected statement keyword (permit, deny, require, or limit), but got '${tok.value}'. Each line must start with one of: permit, deny, require, limit`,
           tok.line,
           tok.column,
         );
@@ -540,8 +540,11 @@ class Parser {
   private expect(type: TokenType, message: string): Token {
     const tok = this.current();
     if (tok.type !== type) {
+      const gotDescription = tok.type === 'EOF'
+        ? 'end of input'
+        : `'${tok.value}' (${tok.type})`;
       throw new CCLSyntaxError(
-        `${message}, got '${tok.value}' (${tok.type})`,
+        `${message}, but got ${gotDescription}`,
         tok.line,
         tok.column,
       );

@@ -210,6 +210,12 @@ export class FileStore implements CovenantStore {
   // ── Single-document CRUD ────────────────────────────────────────────────
 
   async put(doc: CovenantDocument): Promise<void> {
+    if (doc == null) {
+      throw new Error('put(): document is required');
+    }
+    if (!doc.id || (typeof doc.id === 'string' && doc.id.trim().length === 0)) {
+      throw new Error('put(): document.id is required and must be a non-empty string');
+    }
     await this.ensureDir();
     await this.atomicWrite(this.docPath(doc.id), JSON.stringify(doc, null, 2));
     await this.withIndexLock(async () => {

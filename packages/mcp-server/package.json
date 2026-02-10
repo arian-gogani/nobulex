@@ -2,18 +2,22 @@
   "name": "@stele/mcp-server",
   "version": "0.1.0",
   "description": "Model Context Protocol server that exposes Stele tools to any AI agent",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
     "stele-mcp": "dist/bin.js"
   },
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@stele/types": "0.1.0",
@@ -23,12 +27,16 @@
     "@stele/verifier": "0.1.0",
     "@stele/sdk": "0.1.0"
   },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele",
+    "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/mcp-server"
   },
   "homepage": "https://stele.dev",
@@ -36,5 +44,9 @@
     "url": "https://github.com/agbusiness195/stele/issues"
   },
   "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability"
+  ]
 }

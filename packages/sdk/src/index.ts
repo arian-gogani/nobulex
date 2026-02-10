@@ -397,8 +397,21 @@ export class SteleClient {
   /**
    * Verify a covenant document by running all specification checks.
    *
-   * In strict mode, throws `CovenantVerificationError` if verification fails.
-   * Emits a `covenant:verified` event.
+   * Checks include signature validity, ID integrity, protocol version,
+   * party roles, expiry, and constraint syntax. In strict mode, throws
+   * `CovenantVerificationError` on failure. Emits a `covenant:verified` event.
+   *
+   * @param doc - The covenant document to verify.
+   * @returns A VerificationResult with `valid` and detailed `checks` array.
+   * @throws {CovenantVerificationError} In strict mode when verification fails.
+   *
+   * @example
+   * ```typescript
+   * const result = await client.verifyCovenant(doc);
+   * if (!result.valid) {
+   *   console.log(result.checks.filter(c => !c.passed));
+   * }
+   * ```
    */
   async verifyCovenant(doc: CovenantDocument): Promise<VerificationResult> {
     const result = await coreVerifyCovenant(doc);
@@ -423,9 +436,19 @@ export class SteleClient {
    * Add a countersignature to a covenant document.
    *
    * If no key pair is provided, the client's key pair is used.
-   * Emits a `covenant:countersigned` event on success.
+   * Emits a `covenant:countersigned` event on success. Returns a
+   * new document; the original is not mutated.
    *
-   * @throws Error if no key pair is available.
+   * @param doc - The covenant document to countersign.
+   * @param signerRole - Role of the countersigner (default: `'auditor'`).
+   * @param signerKeyPair - Optional key pair override.
+   * @returns A new CovenantDocument with the countersignature appended.
+   * @throws {Error} When no key pair is available.
+   *
+   * @example
+   * ```typescript
+   * const audited = await client.countersign(doc, 'auditor');
+   * ```
    */
   async countersign(
     doc: CovenantDocument,
@@ -455,7 +478,20 @@ export class SteleClient {
    * Evaluate an action/resource pair against a covenant's CCL constraints.
    *
    * Parses the covenant's constraints and runs the CCL evaluator.
-   * Emits an `evaluation:completed` event.
+   * Uses default-deny semantics: if no rules match, the result is
+   * `permitted: false`. Emits an `evaluation:completed` event.
+   *
+   * @param doc - The covenant document containing CCL constraints.
+   * @param action - The action to evaluate (e.g. `"read"`, `"api.call"`).
+   * @param resource - The target resource (e.g. `"/data/users"`).
+   * @param context - Optional evaluation context for condition checking.
+   * @returns An EvaluationResult with the access decision.
+   *
+   * @example
+   * ```typescript
+   * const result = await client.evaluateAction(doc, 'read', '/data/users');
+   * console.log(result.permitted); // true or false
+   * ```
    */
   async evaluateAction(
     doc: CovenantDocument,
@@ -504,7 +540,18 @@ export class SteleClient {
    * If `options.operatorKeyPair` is not provided, the client's key pair is used.
    * Emits an `identity:created` event on success.
    *
-   * @throws Error if no key pair is available.
+   * @param options - Identity creation options including model and capabilities.
+   * @returns A signed AgentIdentity object.
+   * @throws {Error} When no key pair is available.
+   *
+   * @example
+   * ```typescript
+   * const identity = await client.createIdentity({
+   *   model: { provider: 'anthropic', modelId: 'claude-3' },
+   *   capabilities: ['read', 'write'],
+   *   deployment: { runtime: 'container' },
+   * });
+   * ```
    */
   async createIdentity(options: CreateIdentityOptions): Promise<AgentIdentity> {
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
@@ -534,10 +581,23 @@ export class SteleClient {
   /**
    * Evolve an existing agent identity with updates.
    *
-   * If `options.operatorKeyPair` is not provided, the client's key pair is used.
-   * Emits an `identity:evolved` event on success.
+   * Creates a new lineage entry recording the change. If
+   * `options.operatorKeyPair` is not provided, the client's key pair
+   * is used. Emits an `identity:evolved` event on success.
    *
-   * @throws Error if no key pair is available.
+   * @param identity - The current agent identity to evolve.
+   * @param options - Evolution options describing the change.
+   * @returns The updated AgentIdentity with a new lineage entry.
+   * @throws {Error} When no key pair is available.
+   *
+   * @example
+   * ```typescript
+   * const evolved = await client.evolveIdentity(identity, {
+   *   changeType: 'model_update',
+   *   description: 'Upgraded to v2',
+   *   updates: { model: { provider: 'anthropic', modelId: 'claude-4' } },
+   * });
+   * ```
    */
   async evolveIdentity(
     identity: AgentIdentity,

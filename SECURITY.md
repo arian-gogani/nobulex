@@ -1,54 +1,114 @@
 # Security Policy
 
+## Supported Versions
+
+| Version | Supported |
+|---------|-----------|
+| 0.1.x   | Yes (current) |
+
+Only the latest minor release receives security patches. We recommend always running
+the most recent version.
+
 ## Reporting a Vulnerability
 
-**Do not open a public GitHub issue for security vulnerabilities.**
+If you discover a security vulnerability in Stele, please report it responsibly.
 
-Email **security@stelelabs.com** with:
+**Email**: security@stele.dev
 
-- Description of the vulnerability
+Please include:
+
+- A description of the vulnerability
 - Steps to reproduce
-- Affected packages and versions
-- Severity assessment (your best judgment)
-- Any suggested fix, if you have one
+- Affected package(s) and version(s)
+- Any potential impact assessment
 
-## Response Timeline
+We will acknowledge your report within 48 hours and aim to provide a fix or mitigation
+within 7 days for critical issues. We will credit reporters in the release notes unless
+anonymity is requested.
 
-| Action | Timeframe |
-|---|---|
-| Acknowledgment of report | 48 hours |
-| Initial assessment | 7 days |
-| Fix development and review | Best effort, typically 30 days |
-| Coordinated disclosure | 90 days from report |
+**Do NOT** open a public GitHub issue for security vulnerabilities.
 
-We follow a **90-day disclosure window**. If a fix is not released within 90 days of the initial report, the reporter may disclose publicly. We will work with reporters to coordinate disclosure timing when possible.
+## Security Model
 
-## Scope
+### Cryptographic Primitives
 
-The following are in scope:
+Stele relies on the following cryptographic building blocks:
 
-- All `@stele/*` packages published to npm
-- The Stele protocol implementation (cryptographic operations, proof generation, verification)
-- Covenant parsing and CCL evaluation
-- Merkle tree construction and proof verification
-- Key management and signature operations
-- ZK circuit compilation and proof generation
+| Primitive | Library | Purpose |
+|-----------|---------|---------|
+| **Ed25519** | `@noble/ed25519` | Covenant signing, identity signing, countersignatures, breach attestations |
+| **SHA-256** | `@noble/hashes/sha256` | Document IDs, canonical hashing, content-addressed identifiers |
+| **Poseidon** | `@stele/proof` (internal) | Zero-knowledge-style compliance proof commitments |
+| **CSPRNG** | `@noble/hashes/utils` (`randomBytes`) | Nonce generation, key generation |
 
-The following are out of scope:
+All cryptographic operations use audited, pure-JavaScript implementations from the
+`@noble` family of libraries (by Paul Miller), which are widely used in the
+Web3 ecosystem and have undergone independent security reviews.
 
-- Vulnerabilities in third-party dependencies (report these upstream, but do let us know)
-- Social engineering attacks
-- Denial of service without a novel vector
+### Key Design Decisions
 
-## Safe Harbor
+- **Canonical JSON (JCS / RFC 8785)**: All document hashing and signing uses
+  deterministic JSON serialization to prevent signature malleability.
+- **Constant-time comparison**: The `constantTimeEqual()` function in `@stele/crypto`
+  prevents timing side-channel attacks when comparing signatures or hashes.
+- **Immutable documents**: Functions like `countersignCovenant()` and `resignCovenant()`
+  return new document copies rather than mutating the input, preventing accidental
+  state corruption.
+- **Nonce-per-document**: Every covenant document includes a unique 32-byte
+  cryptographic nonce to prevent replay attacks.
+- **Deny-by-default**: CCL evaluation returns `{ permitted: false }` when no rules
+  match, ensuring that unrecognized actions are blocked by default.
 
-We will not pursue legal action against researchers who:
+### What Is Covered
 
-- Report vulnerabilities through the process described above
-- Avoid accessing or modifying data belonging to others
-- Do not exploit vulnerabilities beyond what is necessary to demonstrate the issue
-- Allow reasonable time for remediation before disclosure
+- Ed25519 signature generation and verification for covenant documents
+- SHA-256 document ID computation and integrity checking
+- CCL constraint evaluation with deny-wins merge semantics
+- Chain narrowing validation (children cannot broaden parent constraints)
+- Countersignature verification
+- Input validation and sanitization (`@stele/types` guards)
+- Constant-time comparison for cryptographic values
+- Poseidon-based compliance proof generation and verification
 
-## Recognition
+### What Is NOT Covered
 
-We maintain a security acknowledgments page for researchers who report valid vulnerabilities. Let us know in your report if you'd like to be credited and how.
+- **Network transport**: Stele does not include TLS or transport-layer security.
+  Documents should be transmitted over secure channels.
+- **Key storage**: Private keys are handled as raw `Uint8Array` values. Secure key
+  storage (HSM, KMS, encrypted keyring) is the responsibility of the integrator.
+- **Access control to the store**: `MemoryStore` and `FileStore` do not implement
+  authentication or authorization. Wrap them with appropriate access controls in
+  production.
+- **Denial-of-service protection**: The CCL parser and evaluator do not implement
+  resource limits beyond `MAX_CONSTRAINTS` and `MAX_DOCUMENT_SIZE`.
+
+## Known Limitations
+
+- **No formal security audit**: The codebase has not yet undergone a formal
+  third-party security audit. Use in production at your own risk.
+- **MemoryStore and FileStore are not encrypted at rest**: Covenant documents stored
+  via these backends are written as plaintext JSON. Use disk encryption or an
+  encrypted storage backend for sensitive deployments.
+- **No key rotation protocol**: While `resignCovenant()` supports re-signing with a
+  new key, there is no built-in key rotation ceremony or revocation list.
+- **Poseidon proofs are not full ZK-SNARKs**: The `@stele/proof` package uses
+  Poseidon hashing for commitment schemes, but does not generate or verify
+  zero-knowledge proofs in the formal cryptographic sense.
+- **EVM anchoring is offline**: The `@stele/evm` package produces ABI-encoded
+  calldata but does not submit transactions. On-chain verification requires a
+  deployed smart contract (not included).
+
+## Dependency Security
+
+The project has minimal runtime dependencies:
+
+- `@noble/ed25519` -- Ed25519 signatures
+- `@noble/hashes` -- SHA-256 and utility functions
+
+Both are pure JavaScript with no native addons or transitive dependencies, reducing
+the attack surface. We pin exact versions and review updates before merging.
+
+## Security Contacts
+
+- **Primary**: security@stele.dev
+- **GitHub**: https://github.com/agbusiness195/stele/security

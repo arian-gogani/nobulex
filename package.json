@@ -13,13 +13,32 @@
     "packages/cli",
     "packages/mcp-server",
     "packages/react",
-    "packages/evm"
+    "packages/evm",
+    "packages/attestation",
+    "packages/canary",
+    "packages/gametheory",
+    "packages/composition",
+    "packages/antifragile",
+    "packages/negotiation",
+    "packages/consensus",
+    "packages/robustness",
+    "packages/temporal",
+    "packages/recursive",
+    "packages/alignment",
+    "packages/norms",
+    "packages/substrate",
+    "packages/derivatives",
+    "packages/legal"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces",
     "test": "npm run test --workspaces",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint packages/*/src/**/*.ts",
     "docs": "npx typedoc",
+    "docs:build": "typedoc",
+    "prepublish:check": "npm pack --dry-run -ws",
     "publish:all": "npm run build && npm publish --workspaces"
   },
   "repository": {
@@ -31,5 +50,10 @@
     "url": "https://github.com/agbusiness195/stele/issues"
   },
   "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.18"
+  }
 }

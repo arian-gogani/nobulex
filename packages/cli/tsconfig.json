@@ -1,17 +1,17 @@
 {
   "extends": "../../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "src",
-    "outDir": "dist",
-    "composite": true
-  },
-  "include": ["src"],
+  "compilerOptions": { "outDir": "dist", "rootDir": "src", "composite": true, "emitDeclarationOnly": true },
+  "include": ["src/**/*"],
   "references": [
-    { "path": "../types" },
     { "path": "../crypto" },
+    { "path": "../ccl" },
     { "path": "../core" },
-    { "path": "../store" },
-    { "path": "../verifier" },
-    { "path": "../sdk" }
+    { "path": "../identity" },
+    { "path": "../enforcement" },
+    { "path": "../proof" },
+    { "path": "../reputation" },
+    { "path": "../breach" },
+    { "path": "../mcp" }
   ]
 }
+

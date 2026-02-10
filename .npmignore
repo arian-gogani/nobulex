@@ -1,0 +1,12 @@
+src/
+*.test.ts
+*.test.js
+.github/
+tests/
+benchmarks/
+docs/
+examples/
+vitest.config.ts
+tsconfig*.json
+typedoc.json
+.eslintrc.json

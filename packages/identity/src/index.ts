@@ -55,8 +55,19 @@ export const DEFAULT_EVOLUTION_POLICY: EvolutionPolicy = {
 
 /**
  * Compute a canonical hash of a sorted capabilities list.
+ *
  * Capabilities are sorted lexicographically before hashing to ensure
- * determinism regardless of input order.
+ * determinism regardless of input order. Two agents with the same
+ * capabilities always produce the same manifest hash.
+ *
+ * @param capabilities - Array of capability strings.
+ * @returns A hex-encoded SHA-256 hash of the canonical capability list.
+ *
+ * @example
+ * ```typescript
+ * const hash = computeCapabilityManifestHash(['write', 'read']);
+ * // Same result as: computeCapabilityManifestHash(['read', 'write'])
+ * ```
  */
 export function computeCapabilityManifestHash(capabilities: string[]): HashHex {
   const sorted = [...capabilities].sort();
@@ -65,8 +76,13 @@ export function computeCapabilityManifestHash(capabilities: string[]): HashHex {
 
 /**
  * Compute the composite identity hash from all identity-defining fields.
+ *
  * The hash covers operator key, model attestation, capability manifest,
- * deployment context, and the full lineage chain.
+ * deployment context, and the full lineage chain. This produces the
+ * `id` field of an AgentIdentity.
+ *
+ * @param identity - The identity fields (excluding `id` and `signature`).
+ * @returns A hex-encoded SHA-256 composite hash.
  */
 export function computeIdentityHash(
   identity: Omit<AgentIdentity, 'id' | 'signature'>
@@ -113,6 +129,21 @@ function lineageSigningPayload(entry: Omit<LineageEntry, 'signature'>): string {
  * Computes the capability manifest hash and composite identity hash,
  * initialises a single lineage entry of type `created`, and signs
  * the whole identity with the provided operator key pair.
+ *
+ * @param options - Creation options including operator key pair, model, capabilities, and deployment.
+ * @returns A fully signed AgentIdentity with version 1 and one lineage entry.
+ *
+ * @example
+ * ```typescript
+ * const kp = await generateKeyPair();
+ * const identity = await createIdentity({
+ *   operatorKeyPair: kp,
+ *   model: { provider: 'anthropic', modelId: 'claude-3' },
+ *   capabilities: ['read', 'write'],
+ *   deployment: { runtime: 'container' },
+ * });
+ * console.log(identity.id); // hex hash
+ * ```
  */
 export async function createIdentity(
   options: CreateIdentityOptions
@@ -189,12 +220,27 @@ export async function createIdentity(
 // ---------------------------------------------------------------------------
 
 /**
- * Evolve an existing identity by applying updates. Returns a **new**
- * `AgentIdentity` (the original is never mutated).
+ * Evolve an existing identity by applying updates.
  *
+ * Returns a **new** AgentIdentity (the original is never mutated).
  * The updates are merged on top of the current fields. A new lineage
  * entry is appended, the version is incremented, and the composite
  * identity hash and operator signature are recomputed.
+ *
+ * @param current - The existing identity to evolve.
+ * @param options - Evolution options including change type, description, and field updates.
+ * @returns A new AgentIdentity with incremented version and extended lineage.
+ *
+ * @example
+ * ```typescript
+ * const evolved = await evolveIdentity(identity, {
+ *   operatorKeyPair: kp,
+ *   changeType: 'capability_change',
+ *   description: 'Added write capability',
+ *   updates: { capabilities: ['read', 'write', 'admin'] },
+ * });
+ * console.log(evolved.version); // identity.version + 1
+ * ```
  */
 export async function evolveIdentity(
   current: AgentIdentity,
@@ -313,7 +359,20 @@ interface VerificationCheck {
  *  2. Composite identity hash matches the `id` field.
  *  3. Operator signature over the identity payload is valid.
  *  4. Lineage chain is consistent (parent hash links, ordered timestamps).
- *  5. Version number matches the lineage length.
+ *  5. All lineage entry signatures are valid.
+ *  6. Version number matches the lineage length.
+ *
+ * @param identity - The agent identity to verify.
+ * @returns An object with `valid` boolean and detailed `checks` array.
+ *
+ * @example
+ * ```typescript
+ * const result = await verifyIdentity(identity);
+ * if (!result.valid) {
+ *   const failed = result.checks.filter(c => !c.passed);
+ *   console.log('Failed checks:', failed.map(c => c.name));
+ * }
+ * ```
  */
 export async function verifyIdentity(
   identity: AgentIdentity
@@ -476,11 +535,23 @@ export async function verifyIdentity(
 // ---------------------------------------------------------------------------
 
 /**
- * Compute the reputation carry-forward rate based on the change type,
- * the current identity state, and the proposed updates.
+ * Compute the reputation carry-forward rate for an identity evolution.
  *
- * If an explicit `EvolutionPolicy` is provided it will be used;
- * otherwise `DEFAULT_EVOLUTION_POLICY` applies.
+ * Determines what fraction of the agent's reputation is preserved
+ * after a given change type. Values range from 0.0 (no reputation
+ * preserved) to 1.0 (full reputation preserved).
+ *
+ * @param changeType - The type of change being made.
+ * @param current - The current identity state.
+ * @param updates - The proposed updates.
+ * @param policy - Optional custom evolution policy (defaults to DEFAULT_EVOLUTION_POLICY).
+ * @returns A number in [0, 1] representing the carry-forward rate.
+ *
+ * @example
+ * ```typescript
+ * const rate = computeCarryForward('model_update', identity, { model: newModel });
+ * console.log(rate); // 0.80 for same-family version change
+ * ```
  */
 export function computeCarryForward(
   changeType: LineageEntry['changeType'],
@@ -544,15 +615,38 @@ export function computeCarryForward(
 // ---------------------------------------------------------------------------
 
 /**
- * Return the full lineage chain for an identity.
+ * Return a copy of the full lineage chain for an identity.
+ *
+ * The returned array is a shallow copy, so mutations do not
+ * affect the original identity.
+ *
+ * @param identity - The agent identity.
+ * @returns An array of lineage entries, oldest first.
+ *
+ * @example
+ * ```typescript
+ * const lineage = getLineage(identity);
+ * console.log(lineage[0].changeType); // 'created'
+ * ```
  */
 export function getLineage(identity: AgentIdentity): LineageEntry[] {
   return [...identity.lineage];
 }
 
 /**
- * Check whether two identities share a common ancestor by comparing
- * identity hashes in their lineage chains.
+ * Check whether two identities share a common ancestor.
+ *
+ * Compares identity hashes in their lineage chains to find any overlap.
+ * Useful for determining if two agents diverged from a common origin.
+ *
+ * @param a - First agent identity.
+ * @param b - Second agent identity.
+ * @returns `true` if any lineage entry hash appears in both chains.
+ *
+ * @example
+ * ```typescript
+ * const related = shareAncestor(agent1, agent2);
+ * ```
  */
 export function shareAncestor(a: AgentIdentity, b: AgentIdentity): boolean {
   const hashesA = new Set(a.lineage.map((e) => e.identityHash));
@@ -564,15 +658,38 @@ export function shareAncestor(a: AgentIdentity, b: AgentIdentity): boolean {
 // ---------------------------------------------------------------------------
 
 /**
- * Serialize an `AgentIdentity` to a canonical JSON string.
+ * Serialize an AgentIdentity to a canonical (deterministic) JSON string.
+ *
+ * Uses sorted keys so the output is identical regardless of object
+ * property insertion order.
+ *
+ * @param identity - The identity to serialize.
+ * @returns A canonical JSON string.
+ *
+ * @example
+ * ```typescript
+ * const json = serializeIdentity(identity);
+ * fs.writeFileSync('identity.json', json);
+ * ```
  */
 export function serializeIdentity(identity: AgentIdentity): string {
   return canonicalizeJson(identity);
 }
 
 /**
- * Deserialize a JSON string back into an `AgentIdentity`.
- * Performs basic structural validation.
+ * Deserialize a JSON string back into an AgentIdentity.
+ *
+ * Performs structural validation to ensure all required fields
+ * are present and have correct types.
+ *
+ * @param json - A JSON string representing an agent identity.
+ * @returns The parsed AgentIdentity.
+ * @throws {Error} When the JSON is malformed or missing required fields.
+ *
+ * @example
+ * ```typescript
+ * const identity = deserializeIdentity(fs.readFileSync('identity.json', 'utf-8'));
+ * ```
  */
 export function deserializeIdentity(json: string): AgentIdentity {
   const parsed: unknown = JSON.parse(json);

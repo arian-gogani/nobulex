@@ -159,6 +159,105 @@ jobs:
           retention-days: 7
 
   # ──────────────────────────────────────────────
+  # Pack Check: Verify all packages pack cleanly
+  # ──────────────────────────────────────────────
+  pack-check:
+    name: Pack Check
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node20-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node20-modules-
+
+      - name: Install dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Verify packages pack cleanly
+        run: |
+          echo "## Pack Dry-Run Report"
+          echo ""
+          for pkg_dir in packages/*/; do
+            pkg_name=$(basename "$pkg_dir")
+            echo "--- @stele/${pkg_name} ---"
+            (cd "$pkg_dir" && npm pack --dry-run 2>&1) || {
+              echo "::error::@stele/${pkg_name} failed to pack cleanly"
+              exit 1
+            }
+            echo ""
+          done
+          echo "All packages pack cleanly."
+
+  # ──────────────────────────────────────────────
+  # Docs: Build TypeDoc documentation
+  # ──────────────────────────────────────────────
+  docs:
+    name: TypeDoc Build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Cache node_modules
+        id: cache-modules
+        uses: actions/cache@v4
+        with:
+          path: |
+            node_modules
+            packages/*/node_modules
+          key: ${{ runner.os }}-node20-modules-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node20-modules-
+
+      - name: Install dependencies
+        if: steps.cache-modules.outputs.cache-hit != 'true'
+        run: npm ci
+
+      - name: Build all packages
+        run: npm run build
+
+      - name: Build TypeDoc documentation
+        run: npx typedoc
+
+      - name: Upload documentation
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: typedoc-output
+          path: docs/
+          retention-days: 7
+          if-no-files-found: ignore
+
+  # ──────────────────────────────────────────────
   # Security: npm audit for known vulnerabilities
   # ──────────────────────────────────────────────
   security:

@@ -27,6 +27,8 @@ export type {
 } from './types.js';
 
 export { FileStore } from './file-store';
+export { SqliteStore } from './sqlite-store';
+export type { SQLiteDriver } from './sqlite-store';
 
 // ─── Filter helpers ─────────────────────────────────────────────────────────────
 

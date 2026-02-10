@@ -19,7 +19,7 @@ export default defineConfig({
   resolve: { alias },
   test: {
     globals: true,
-    include: ['packages/*/src/**/*.test.ts', 'tests/**/*.test.ts', 'benchmarks/**/*.test.ts'],
+    include: ['packages/*/src/**/*.test.ts', 'packages/*/__tests__/**/*.test.ts', 'tests/**/*.test.ts', 'benchmarks/**/*.test.ts'],
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**/*.ts'],

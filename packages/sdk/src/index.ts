@@ -305,10 +305,27 @@ export class SteleClient {
    * @throws Error if no private key is available.
    */
   async createCovenant(options: CreateCovenantOptions): Promise<CovenantDocument> {
+    // ── Input validation (Stripe-quality errors at the public API boundary) ──
+    if (!options.issuer || !options.issuer.id) {
+      throw new Error(
+        'issuer.id is required and must be a non-empty string',
+      );
+    }
+    if (!options.beneficiary || !options.beneficiary.id) {
+      throw new Error(
+        'beneficiary.id is required and must be a non-empty string',
+      );
+    }
+    if (!options.constraints || options.constraints.trim().length === 0) {
+      throw new Error(
+        "constraints must be a non-empty CCL string. Example: permit read on '/data/**'",
+      );
+    }
+
     const privateKey = options.privateKey ?? this._keyPair?.privateKey;
     if (!privateKey) {
       throw new Error(
-        'No private key available. Provide options.privateKey or call generateKeyPair() first.',
+        'No private key available. Call client.generateKeyPair() first, or pass { privateKey } in the options.',
       );
     }
 
@@ -379,7 +396,7 @@ export class SteleClient {
     const kp = signerKeyPair ?? this._keyPair;
     if (!kp) {
       throw new Error(
-        'No key pair available. Provide signerKeyPair or call generateKeyPair() first.',
+        'No key pair available. Call client.generateKeyPair() first, or pass a KeyPair in the method options.',
       );
     }
 
@@ -407,6 +424,17 @@ export class SteleClient {
     resource: string,
     context?: EvaluationContext,
   ): Promise<EvaluationResult> {
+    if (!action || action.trim().length === 0) {
+      throw new Error(
+        'action must be a non-empty string (e.g., "read", "write", "api.call")',
+      );
+    }
+    if (!resource || resource.trim().length === 0) {
+      throw new Error(
+        'resource must be a non-empty string (e.g., "/data/**", "/api/endpoint")',
+      );
+    }
+
     const cclDoc = cclParse(doc.constraints);
     const cclResult = cclEvaluate(cclDoc, action, resource, context);
 
@@ -443,7 +471,7 @@ export class SteleClient {
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
     if (!operatorKeyPair) {
       throw new Error(
-        'No key pair available. Provide options.operatorKeyPair or call generateKeyPair() first.',
+        'No key pair available. Call client.generateKeyPair() first, or pass a KeyPair in the method options.',
       );
     }
 
@@ -479,7 +507,7 @@ export class SteleClient {
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
     if (!operatorKeyPair) {
       throw new Error(
-        'No key pair available. Provide options.operatorKeyPair or call generateKeyPair() first.',
+        'No key pair available. Call client.generateKeyPair() first, or pass a KeyPair in the method options.',
       );
     }
 

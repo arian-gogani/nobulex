@@ -2,15 +2,19 @@
   "name": "@stele/react",
   "version": "0.1.0",
   "description": "Framework-agnostic reactive primitives for Stele-powered UIs",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "README.md",
+    "LICENSE"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
     "typecheck": "tsc --noEmit",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "@stele/types": "0.1.0",
@@ -18,12 +22,16 @@
     "@stele/store": "0.1.0",
     "@stele/core": "0.1.0"
   },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
   "publishConfig": {
     "access": "public"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele",
+    "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/react"
   },
   "homepage": "https://stele.dev",
@@ -31,5 +39,9 @@
     "url": "https://github.com/agbusiness195/stele/issues"
   },
   "author": "Stele Labs, Inc.",
-  "license": "MIT"
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability"
+  ]
 }

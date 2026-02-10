@@ -1,17 +1,23 @@
 {
   "name": "@stele/cli",
   "version": "0.1.0",
+  "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "stele": "./dist/index.js"
+    "stele": "./dist/cli.js"
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs --dts",
     "bundle": "tsup src/index.ts --format cjs",
-    "dev": "tsup src/index.ts --format cjs --dts --watch"
+    "dev": "tsup src/index.ts --format cjs --dts --watch",
+    "prepublishOnly": "npm run build"
   },
-  "files": ["dist"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "dependencies": {
     "@stele/crypto": "0.1.0",
     "@stele/ccl": "0.1.0",
@@ -22,5 +28,22 @@
     "@stele/reputation": "0.1.0",
     "@stele/breach": "0.1.0",
     "@stele/mcp": "0.1.0"
-  }
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/Stele.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability"
+  ]
 }

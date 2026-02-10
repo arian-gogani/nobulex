@@ -1,25 +1,9 @@
 {
   "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
-    "packages/types/src/index.ts",
-    "packages/crypto/src/index.ts",
-    "packages/ccl/src/index.ts",
-    "packages/core/src/index.ts",
-    "packages/store/src/index.ts",
-    "packages/verifier/src/index.ts",
-    "packages/sdk/src/index.ts",
-    "packages/identity/src/index.ts"
-  ],
-  "out": "docs/api",
-  "plugin": ["typedoc-plugin-markdown"],
-  "theme": "markdown",
-  "readme": "none",
+  "entryPointStrategy": "packages",
+  "entryPoints": ["packages/*"],
+  "out": "docs/api-generated",
   "excludePrivate": true,
   "excludeInternal": true,
-  "excludeExternals": true,
-  "categoryOrder": ["Foundation", "Protocol", "Utilities"],
-  "navigationLinks": {
-    "GitHub": "https://github.com/agbusiness195/stele",
-    "Website": "https://stele.dev"
-  }
+  "readme": "README.md"
 }

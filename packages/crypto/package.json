@@ -2,17 +2,21 @@
   "name": "@stele/crypto",
   "version": "0.1.0",
   "description": "Cryptographic primitives for the Stele covenant framework",
-  "type": "module",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
+      "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
-      "types": "./dist/index.d.ts"
+      "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
   "engines": {
     "node": ">=18"
@@ -25,7 +29,15 @@
     "url": "https://github.com/agbusiness195/Stele.git",
     "directory": "packages/crypto"
   },
-  "keywords": ["stele", "covenant", "ai-accountability", "cryptography", "ed25519", "signing", "hashing"],
+  "keywords": [
+    "stele",
+    "covenant",
+    "ai-accountability",
+    "cryptography",
+    "ed25519",
+    "signing",
+    "hashing"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "bundle": "tsup src/index.ts --format cjs,esm",

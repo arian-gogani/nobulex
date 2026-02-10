@@ -138,7 +138,10 @@ export async function buildCovenant(
     throw new CovenantBuildError('issuer.id is required', 'issuer.id');
   }
   if (!options.issuer.publicKey) {
-    throw new CovenantBuildError('issuer.publicKey is required', 'issuer.publicKey');
+    throw new CovenantBuildError(
+      'buildCovenant: issuer.publicKey is required (hex-encoded Ed25519 public key)',
+      'issuer.publicKey',
+    );
   }
   if (options.issuer.role !== 'issuer') {
     throw new CovenantBuildError('issuer.role must be "issuer"', 'issuer.role');
@@ -158,11 +161,22 @@ export async function buildCovenant(
   }
 
   if (!options.constraints || options.constraints.trim().length === 0) {
-    throw new CovenantBuildError('constraints is required and must be non-empty', 'constraints');
+    throw new CovenantBuildError(
+      "buildCovenant: constraints is required. Provide a CCL string, e.g.: permit read on '/data/**'",
+      'constraints',
+    );
   }
 
   if (!options.privateKey || options.privateKey.length === 0) {
-    throw new CovenantBuildError('privateKey is required', 'privateKey');
+    throw new CovenantBuildError('buildCovenant: privateKey is required', 'privateKey');
+  }
+
+  // Validate privateKey size (Ed25519 keys are 32 bytes private or 64 bytes expanded)
+  if (options.privateKey.length !== 32 && options.privateKey.length !== 64) {
+    throw new CovenantBuildError(
+      `buildCovenant: privateKey must be a Uint8Array of 32 or 64 bytes (Ed25519), got ${options.privateKey.length} bytes`,
+      'privateKey',
+    );
   }
 
   // ── Parse CCL to verify syntax and check constraint count ─────────────

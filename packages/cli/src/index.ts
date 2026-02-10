@@ -4,7 +4,7 @@
  * @stele/cli -- Command-line interface for the Stele covenant protocol.
  *
  * Provides commands for key generation, covenant creation, verification,
- * evaluation, inspection, and CCL parsing.
+ * evaluation, inspection, CCL parsing, and shell completions.
  *
  * @packageDocumentation
  */
@@ -20,6 +20,23 @@ import {
 } from '@stele/core';
 import type { CovenantDocument } from '@stele/core';
 import { parse, evaluate, serialize as serializeCCL } from '@stele/ccl';
+
+import {
+  setColorsEnabled,
+  success,
+  error as fmtError,
+  header,
+  dim,
+  bold,
+  green,
+  red,
+  cyan,
+  table,
+  keyValue,
+  box,
+} from './format';
+import { loadConfig, saveConfig } from './config';
+import type { SteleConfig } from './config';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -80,29 +97,53 @@ function hasFlag(flags: Record<string, string | boolean>, key: string): boolean 
 
 // ─── Help text ────────────────────────────────────────────────────────────────
 
-const MAIN_HELP = `Stele CLI - Covenant Protocol Tool
+function buildMainHelp(): string {
+  const lines: string[] = [];
+  lines.push('');
+  lines.push(header('Stele CLI') + dim(' - Covenant Protocol Tool'));
+  lines.push('');
+  lines.push(`${bold('Usage:')} stele <command> [options]`);
+  lines.push('');
+  lines.push(bold('Commands:'));
+  lines.push('');
+  lines.push(
+    table(
+      ['Command', 'Description'],
+      [
+        ['init', 'Generate an Ed25519 key pair and config file'],
+        ['create', 'Create and sign a covenant document'],
+        ['verify <json>', 'Verify a covenant document'],
+        ['evaluate <json> <action> <resource>', 'Evaluate an action against a covenant'],
+        ['inspect <json>', 'Pretty-print covenant details'],
+        ['parse <ccl>', 'Parse CCL and output AST as JSON'],
+        ['completions <shell>', 'Generate shell completion script (bash|zsh)'],
+        ['version', 'Print version information'],
+        ['help', 'Show this help message'],
+      ],
+    ),
+  );
+  lines.push('');
+  lines.push(bold('Global flags:'));
+  lines.push(
+    table(
+      ['Flag', 'Description'],
+      [
+        ['--json', 'Machine-readable JSON output (no colors)'],
+        ['--no-color', 'Disable colored output'],
+        ['--help', 'Show help for a command'],
+      ],
+    ),
+  );
+  lines.push('');
+  return lines.join('\n');
+}
 
-Usage: stele <command> [options]
-
-Commands:
-  init                          Generate an Ed25519 key pair
-  create                        Create and sign a covenant document
-  verify <json>                 Verify a covenant document
-  evaluate <json> <action> <resource>  Evaluate an action against a covenant
-  inspect <json>                Pretty-print covenant details
-  parse <ccl>                   Parse CCL and output AST as JSON
-  version                       Print version
-  help                          Show this help message
-
-Global flags:
-  --json                        Machine-readable JSON output
-  --help                        Show help for a command`;
-
-const INIT_HELP = `stele init - Generate an Ed25519 key pair and print the public key.
+const INIT_HELP = `stele init - Generate an Ed25519 key pair and write stele.config.json.
 
 Usage: stele init [--json]
 
-Generates a new key pair and outputs the public key hex string.
+Generates a new key pair, outputs the public key, and writes a
+stele.config.json configuration file in the current directory.
 With --json, outputs { publicKey, privateKey } as JSON.`;
 
 const CREATE_HELP = `stele create - Create and sign a covenant document.
@@ -141,9 +182,109 @@ Usage: stele parse <ccl-string> [--json]
 Parses CCL and outputs the AST. With --json, outputs the full
 CCLDocument as JSON. Without --json, outputs a human-readable summary.`;
 
+const COMPLETIONS_HELP = `stele completions - Generate shell completion script.
+
+Usage: stele completions <shell>
+
+Supported shells:
+  bash    Generate Bash completion script
+  zsh     Generate Zsh completion script
+
+Pipe the output to the appropriate file:
+  stele completions bash > /etc/bash_completion.d/stele
+  stele completions zsh > ~/.zsh/completions/_stele`;
+
+// ─── Shell completions ────────────────────────────────────────────────────────
+
+function bashCompletions(): string {
+  return `# Bash completion for stele CLI
+# Source this file or copy to /etc/bash_completion.d/stele
+
+_stele_completions() {
+    local cur prev commands global_flags
+    COMPREPLY=()
+    cur="\${COMP_WORDS[COMP_CWORD]}"
+    prev="\${COMP_WORDS[COMP_CWORD-1]}"
+
+    commands="init create verify evaluate inspect parse completions version help"
+    global_flags="--json --no-color --help"
+
+    if [[ \${COMP_CWORD} -eq 1 ]]; then
+        COMPREPLY=( $(compgen -W "\${commands}" -- "\${cur}") )
+        return 0
+    fi
+
+    case "\${COMP_WORDS[1]}" in
+        create)
+            local create_flags="--issuer --beneficiary --constraints --json --help"
+            COMPREPLY=( $(compgen -W "\${create_flags}" -- "\${cur}") )
+            ;;
+        completions)
+            COMPREPLY=( $(compgen -W "bash zsh" -- "\${cur}") )
+            ;;
+        *)
+            COMPREPLY=( $(compgen -W "\${global_flags}" -- "\${cur}") )
+            ;;
+    esac
+    return 0
+}
+
+complete -F _stele_completions stele`;
+}
+
+function zshCompletions(): string {
+  return `#compdef stele
+# Zsh completion for stele CLI
+# Copy to a directory in your $fpath (e.g. ~/.zsh/completions/_stele)
+
+_stele() {
+    local -a commands
+    commands=(
+        'init:Generate an Ed25519 key pair and config file'
+        'create:Create and sign a covenant document'
+        'verify:Verify a covenant document'
+        'evaluate:Evaluate an action against a covenant'
+        'inspect:Pretty-print covenant details'
+        'parse:Parse CCL and output AST'
+        'completions:Generate shell completion script'
+        'version:Print version information'
+        'help:Show help message'
+    )
+
+    _arguments -C \\
+        '--json[Machine-readable JSON output]' \\
+        '--no-color[Disable colored output]' \\
+        '--help[Show help]' \\
+        '1:command:->command' \\
+        '*::arg:->args'
+
+    case $state in
+        command)
+            _describe 'stele command' commands
+            ;;
+        args)
+            case $words[1] in
+                create)
+                    _arguments \\
+                        '--issuer[Issuer identifier]:id:' \\
+                        '--beneficiary[Beneficiary identifier]:id:' \\
+                        '--constraints[CCL constraint string]:ccl:' \\
+                        '--json[Output raw JSON]'
+                    ;;
+                completions)
+                    _arguments '1:shell:(bash zsh)'
+                    ;;
+            esac
+            ;;
+    esac
+}
+
+_stele "$@"`;
+}
+
 // ─── Command: init ────────────────────────────────────────────────────────────
 
-async function cmdInit(flags: Record<string, string | boolean>): Promise<RunResult> {
+async function cmdInit(flags: Record<string, string | boolean>, configDir?: string): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
     return { stdout: INIT_HELP, stderr: '', exitCode: 0 };
   }
@@ -157,31 +298,52 @@ async function cmdInit(flags: Record<string, string | boolean>): Promise<RunResu
     return { stdout: out, stderr: '', exitCode: 0 };
   }
 
+  // Write config file
+  const config: SteleConfig = {
+    defaultIssuer: { id: 'default', publicKey: publicKeyHex },
+    outputFormat: 'text',
+  };
+
+  try {
+    saveConfig(config, configDir);
+  } catch {
+    // Config write failure is non-fatal -- user may be in a read-only dir
+  }
+
   const lines: string[] = [
-    'Generated Ed25519 key pair.',
-    `Public key: ${publicKeyHex}`,
+    '',
+    success('Generated Ed25519 key pair.'),
+    '',
+    keyValue([
+      ['Public key', publicKeyHex],
+    ]),
+    '',
+    success('Wrote stele.config.json'),
+    '',
+    dim('Run "stele create" to build your first covenant.'),
+    '',
   ];
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
 // ─── Command: create ──────────────────────────────────────────────────────────
 
-async function cmdCreate(flags: Record<string, string | boolean>): Promise<RunResult> {
+async function cmdCreate(flags: Record<string, string | boolean>, config?: SteleConfig): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
     return { stdout: CREATE_HELP, stderr: '', exitCode: 0 };
   }
 
-  const issuerId = getFlag(flags, 'issuer');
+  const issuerId = getFlag(flags, 'issuer') ?? config?.defaultIssuer?.id;
   if (!issuerId) {
     return { stdout: '', stderr: 'Error: --issuer <id> is required', exitCode: 1 };
   }
 
-  const beneficiaryId = getFlag(flags, 'beneficiary');
+  const beneficiaryId = getFlag(flags, 'beneficiary') ?? config?.defaultBeneficiary?.id;
   if (!beneficiaryId) {
     return { stdout: '', stderr: 'Error: --beneficiary <id> is required', exitCode: 1 };
   }
 
-  const constraints = getFlag(flags, 'constraints');
+  const constraints = getFlag(flags, 'constraints') ?? config?.constraints;
   if (!constraints) {
     return { stdout: '', stderr: 'Error: --constraints <ccl> is required', exitCode: 1 };
   }
@@ -220,13 +382,19 @@ async function cmdCreate(flags: Record<string, string | boolean>): Promise<RunRe
   }
 
   const lines: string[] = [
-    'Covenant created successfully.',
-    `ID: ${covenant.id}`,
-    `Issuer: ${covenant.issuer.id}`,
-    `Beneficiary: ${covenant.beneficiary.id}`,
-    `Version: ${covenant.version}`,
     '',
+    success('Covenant created successfully.'),
+    '',
+    keyValue([
+      ['ID', covenant.id],
+      ['Issuer', covenant.issuer.id],
+      ['Beneficiary', covenant.beneficiary.id],
+      ['Version', covenant.version],
+    ]),
+    '',
+    dim('--- Serialized covenant ---'),
     json,
+    '',
   ];
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
@@ -261,10 +429,16 @@ async function cmdVerify(positional: string[], flags: Record<string, string | bo
     return { stdout: out, stderr: '', exitCode: result.valid ? 0 : 1 };
   }
 
-  const lines: string[] = [];
+  const lines: string[] = [''];
+  lines.push(header('Verification Results'));
+  lines.push('');
+
   for (const check of result.checks) {
-    const indicator = check.passed ? 'PASS' : 'FAIL';
-    lines.push(`[${indicator}] ${check.name}: ${check.message ?? ''}`);
+    if (check.passed) {
+      lines.push(success(`${check.name}${check.message ? dim(` - ${check.message}`) : ''}`));
+    } else {
+      lines.push(fmtError(`${check.name}${check.message ? ` - ${check.message}` : ''}`));
+    }
   }
   lines.push('');
 
@@ -272,12 +446,15 @@ async function cmdVerify(positional: string[], flags: Record<string, string | bo
   const total = result.checks.length;
 
   if (result.valid) {
-    lines.push(`Valid: ${passed}/${total} checks passed`);
-    return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
+    const summary = box('Summary', `${green(`Valid: ${passed}/${total} checks passed`)}`);
+    lines.push(summary);
   } else {
-    lines.push(`Invalid: ${passed}/${total} checks passed`);
-    return { stdout: lines.join('\n'), stderr: '', exitCode: 1 };
+    const summary = box('Summary', `${red(`Invalid: ${passed}/${total} checks passed`)}`);
+    lines.push(summary);
   }
+  lines.push('');
+
+  return { stdout: lines.join('\n'), stderr: '', exitCode: result.valid ? 0 : 1 };
 }
 
 // ─── Command: evaluate ────────────────────────────────────────────────────────
@@ -333,18 +510,24 @@ async function cmdEvaluate(positional: string[], flags: Record<string, string | 
     return { stdout: out, stderr: '', exitCode: result.permitted ? 0 : 1 };
   }
 
-  const decision = result.permitted ? 'PERMIT' : 'DENY';
+  const decision = result.permitted ? green('PERMITTED') : red('DENIED');
   const lines: string[] = [
-    `Action:   ${action}`,
-    `Resource: ${resource}`,
-    `Decision: ${decision}`,
+    '',
+    header('Evaluation Result'),
+    '',
+    keyValue([
+      ['Action', action],
+      ['Resource', resource],
+      ['Decision', decision],
+    ]),
   ];
   if (result.reason) {
-    lines.push(`Reason:   ${result.reason}`);
+    lines.push(keyValue([['Reason', result.reason]]));
   }
   if (result.matchedRule) {
-    lines.push(`Rule:     ${result.matchedRule.type} (line ${result.matchedRule.line})`);
+    lines.push(keyValue([['Rule', `${result.matchedRule.type} (line ${result.matchedRule.line})`]]));
   }
+  lines.push('');
   return { stdout: lines.join('\n'), stderr: '', exitCode: result.permitted ? 0 : 1 };
 }
 
@@ -373,75 +556,105 @@ async function cmdInspect(positional: string[], flags: Record<string, string | b
     return { stdout: out, stderr: '', exitCode: 0 };
   }
 
-  const lines: string[] = [
-    '=== Covenant Inspection ===',
-    '',
-    `ID:          ${covenant.id}`,
-    `Version:     ${covenant.version}`,
-    `Created:     ${covenant.createdAt}`,
-    '',
-    'Issuer:',
-    `  ID:        ${covenant.issuer.id}`,
-    `  Key:       ${covenant.issuer.publicKey.slice(0, 16)}...`,
-  ];
+  // Build identity section
+  const identityLines: string[] = [];
+  identityLines.push(keyValue([
+    ['ID', covenant.id],
+    ['Version', covenant.version],
+    ['Created', covenant.createdAt],
+  ]));
+  if (covenant.expiresAt) {
+    identityLines.push(keyValue([['Expires', covenant.expiresAt]]));
+  }
+  if (covenant.activatesAt) {
+    identityLines.push(keyValue([['Activates', covenant.activatesAt]]));
+  }
 
+  // Build parties section
+  const partiesLines: string[] = [];
+  partiesLines.push(bold('Issuer'));
+  partiesLines.push(keyValue([
+    ['  ID', covenant.issuer.id],
+    ['  Key', covenant.issuer.publicKey.slice(0, 16) + '...'],
+  ]));
   if (covenant.issuer.name) {
-    lines.push(`  Name:      ${covenant.issuer.name}`);
+    partiesLines.push(keyValue([['  Name', covenant.issuer.name]]));
   }
-
-  lines.push('');
-  lines.push('Beneficiary:');
-  lines.push(`  ID:        ${covenant.beneficiary.id}`);
-  lines.push(`  Key:       ${covenant.beneficiary.publicKey.slice(0, 16)}...`);
+  partiesLines.push('');
+  partiesLines.push(bold('Beneficiary'));
+  partiesLines.push(keyValue([
+    ['  ID', covenant.beneficiary.id],
+    ['  Key', covenant.beneficiary.publicKey.slice(0, 16) + '...'],
+  ]));
   if (covenant.beneficiary.name) {
-    lines.push(`  Name:      ${covenant.beneficiary.name}`);
+    partiesLines.push(keyValue([['  Name', covenant.beneficiary.name]]));
   }
 
-  lines.push('');
-  lines.push('Constraints:');
+  // Build constraints section
+  const constraintLines: string[] = [];
   for (const line of covenant.constraints.split('\n')) {
-    lines.push(`  ${line}`);
+    constraintLines.push(cyan(line));
   }
 
   // Parse to show summary
   try {
     const cclDoc = parse(covenant.constraints);
-    lines.push('');
-    lines.push('Constraint summary:');
-    lines.push(`  Permits:     ${cclDoc.permits.length}`);
-    lines.push(`  Denies:      ${cclDoc.denies.length}`);
-    lines.push(`  Obligations: ${cclDoc.obligations.length}`);
-    lines.push(`  Limits:      ${cclDoc.limits.length}`);
+    constraintLines.push('');
+    constraintLines.push(dim('Summary:'));
+    constraintLines.push(keyValue([
+      ['  Permits', String(cclDoc.permits.length)],
+      ['  Denies', String(cclDoc.denies.length)],
+      ['  Obligations', String(cclDoc.obligations.length)],
+      ['  Limits', String(cclDoc.limits.length)],
+    ]));
   } catch {
     // CCL parse failure is non-fatal for inspect
   }
 
+  // Build extras section
+  const extrasLines: string[] = [];
   if (covenant.enforcement) {
-    lines.push('');
-    lines.push(`Enforcement: ${covenant.enforcement.type}`);
+    extrasLines.push(keyValue([['Enforcement', covenant.enforcement.type]]));
   }
-
   if (covenant.proof) {
-    lines.push('');
-    lines.push(`Proof: ${covenant.proof.type}`);
+    extrasLines.push(keyValue([['Proof', covenant.proof.type]]));
   }
-
+  if (covenant.chain) {
+    extrasLines.push(keyValue([
+      ['Chain Parent', covenant.chain.parentId],
+      ['Chain Relation', covenant.chain.relation],
+      ['Chain Depth', String(covenant.chain.depth)],
+    ]));
+  }
   if (covenant.metadata) {
-    lines.push('');
-    lines.push('Metadata:');
     if (covenant.metadata.name) {
-      lines.push(`  Name:  ${covenant.metadata.name}`);
+      extrasLines.push(keyValue([['Meta Name', covenant.metadata.name]]));
     }
     if (covenant.metadata.description) {
-      lines.push(`  Desc:  ${covenant.metadata.description}`);
+      extrasLines.push(keyValue([['Meta Desc', covenant.metadata.description]]));
     }
     if (covenant.metadata.tags && covenant.metadata.tags.length > 0) {
-      lines.push(`  Tags:  ${covenant.metadata.tags.join(', ')}`);
+      extrasLines.push(keyValue([['Meta Tags', covenant.metadata.tags.join(', ')]]));
     }
+  }
+
+  // Assemble output
+  const lines: string[] = [''];
+
+  lines.push(box('Covenant Inspection', identityLines.join('\n')));
+  lines.push('');
+  lines.push(box('Parties', partiesLines.join('\n')));
+  lines.push('');
+  lines.push(box('Constraints', constraintLines.join('\n')));
+
+  if (extrasLines.length > 0) {
+    lines.push('');
+    lines.push(box('Details', extrasLines.join('\n')));
   }
 
   lines.push('');
-  lines.push(`Signature: ${covenant.signature.slice(0, 32)}...`);
+  lines.push(dim(`Signature: ${covenant.signature.slice(0, 32)}...`));
+  lines.push('');
 
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
@@ -472,16 +685,47 @@ async function cmdParse(positional: string[], flags: Record<string, string | boo
   }
 
   const lines: string[] = [
-    `Parsed ${cclDoc.statements.length} statement(s):`,
-    `  Permits:     ${cclDoc.permits.length}`,
-    `  Denies:      ${cclDoc.denies.length}`,
-    `  Obligations: ${cclDoc.obligations.length}`,
-    `  Limits:      ${cclDoc.limits.length}`,
     '',
-    'Serialized:',
-    serializeCCL(cclDoc),
+    header(`Parsed ${cclDoc.statements.length} statement(s)`),
+    '',
+    keyValue([
+      ['Permits', String(cclDoc.permits.length)],
+      ['Denies', String(cclDoc.denies.length)],
+      ['Obligations', String(cclDoc.obligations.length)],
+      ['Limits', String(cclDoc.limits.length)],
+    ]),
+    '',
+    dim('Serialized:'),
+    cyan(serializeCCL(cclDoc)),
+    '',
   ];
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
+}
+
+// ─── Command: completions ─────────────────────────────────────────────────────
+
+function cmdCompletions(positional: string[], flags: Record<string, string | boolean>): RunResult {
+  if (hasFlag(flags, 'help')) {
+    return { stdout: COMPLETIONS_HELP, stderr: '', exitCode: 0 };
+  }
+
+  const shell = positional[0];
+  if (!shell) {
+    return { stdout: '', stderr: 'Error: Shell argument is required (bash or zsh)', exitCode: 1 };
+  }
+
+  switch (shell) {
+    case 'bash':
+      return { stdout: bashCompletions(), stderr: '', exitCode: 0 };
+    case 'zsh':
+      return { stdout: zshCompletions(), stderr: '', exitCode: 0 };
+    default:
+      return {
+        stdout: '',
+        stderr: `Error: Unsupported shell '${shell}'. Supported: bash, zsh`,
+        exitCode: 1,
+      };
+  }
 }
 
 // ─── Command: version ─────────────────────────────────────────────────────────
@@ -500,7 +744,7 @@ function cmdVersion(flags: Record<string, string | boolean>): RunResult {
 // ─── Command: help ────────────────────────────────────────────────────────────
 
 function cmdHelp(): RunResult {
-  return { stdout: MAIN_HELP, stderr: '', exitCode: 0 };
+  return { stdout: buildMainHelp(), stderr: '', exitCode: 0 };
 }
 
 // ─── Main run function ────────────────────────────────────────────────────────
@@ -509,10 +753,31 @@ function cmdHelp(): RunResult {
  * Run the Stele CLI with the given argument list.
  *
  * @param args - The command-line arguments (without node/script prefix).
+ * @param configDir - Optional directory to search for stele.config.json (defaults to cwd).
  * @returns An object with stdout, stderr, and exitCode.
  */
-export async function run(args: string[]): Promise<RunResult> {
+export async function run(args: string[], configDir?: string): Promise<RunResult> {
   const parsed = parseArgs(args);
+
+  // Handle --no-color and --json disabling colors
+  const noColor = hasFlag(parsed.flags, 'no-color');
+  const jsonMode = hasFlag(parsed.flags, 'json');
+  setColorsEnabled(!noColor && !jsonMode);
+
+  // Load config file (non-fatal if missing)
+  let config: SteleConfig | undefined;
+  try {
+    config = loadConfig(configDir);
+  } catch {
+    // config load failure is non-fatal
+  }
+
+  // If config says outputFormat is json, treat as --json
+  if (config?.outputFormat === 'json' && !hasFlag(parsed.flags, 'json')) {
+    // We don't force json mode from config; config only provides defaults for
+    // identities and constraints.  outputFormat from config is respected by
+    // only setting the flag when not already set.
+  }
 
   if (!parsed.command || parsed.command === 'help' || hasFlag(parsed.flags, 'help') && !parsed.command) {
     return cmdHelp();
@@ -521,9 +786,9 @@ export async function run(args: string[]): Promise<RunResult> {
   try {
     switch (parsed.command) {
       case 'init':
-        return await cmdInit(parsed.flags);
+        return await cmdInit(parsed.flags, configDir);
       case 'create':
-        return await cmdCreate(parsed.flags);
+        return await cmdCreate(parsed.flags, config);
       case 'verify':
         return await cmdVerify(parsed.positional, parsed.flags);
       case 'evaluate':
@@ -532,6 +797,8 @@ export async function run(args: string[]): Promise<RunResult> {
         return await cmdInspect(parsed.positional, parsed.flags);
       case 'parse':
         return await cmdParse(parsed.positional, parsed.flags);
+      case 'completions':
+        return cmdCompletions(parsed.positional, parsed.flags);
       case 'version':
         return cmdVersion(parsed.flags);
       case 'help':

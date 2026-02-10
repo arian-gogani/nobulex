@@ -102,6 +102,16 @@ export class CovenantVerificationError extends Error {
  *
  * Strips the `id`, `signature`, and `countersignatures` fields, then
  * produces deterministic JSON via JCS (RFC 8785) canonicalization.
+ * This canonical form is what gets signed and hashed.
+ *
+ * @param doc - The covenant document to canonicalize.
+ * @returns A deterministic JSON string suitable for signing or hashing.
+ *
+ * @example
+ * ```typescript
+ * const canonical = canonicalForm(doc);
+ * const sig = await signString(canonical, privateKey);
+ * ```
  */
 export function canonicalForm(doc: CovenantDocument): string {
   // Build a shallow copy omitting the three mutable fields
@@ -111,6 +121,15 @@ export function canonicalForm(doc: CovenantDocument): string {
 
 /**
  * Compute the SHA-256 document ID from its canonical form.
+ *
+ * @param doc - The covenant document.
+ * @returns A 64-character hex SHA-256 hash serving as the document ID.
+ *
+ * @example
+ * ```typescript
+ * const expectedId = computeId(doc);
+ * console.log(expectedId === doc.id); // true for valid documents
+ * ```
  */
 export function computeId(doc: CovenantDocument): HashHex {
   return sha256String(canonicalForm(doc));
@@ -125,7 +144,20 @@ export function computeId(doc: CovenantDocument): HashHex {
  * generates a cryptographic nonce, signs the canonical form with the
  * issuer's private key, and computes the document ID.
  *
- * @throws CovenantBuildError if any required input is missing or invalid.
+ * @param options - Builder options including parties, constraints, and private key.
+ * @returns A complete, signed CovenantDocument ready for verification.
+ * @throws {CovenantBuildError} When any required input is missing or invalid.
+ *
+ * @example
+ * ```typescript
+ * const kp = await generateKeyPair();
+ * const doc = await buildCovenant({
+ *   issuer: { id: 'alice', publicKey: kp.publicKeyHex, role: 'issuer' },
+ *   beneficiary: { id: 'bob', publicKey: bobPubHex, role: 'beneficiary' },
+ *   constraints: "permit read on '/data/**'",
+ *   privateKey: kp.privateKey,
+ * });
+ * ```
  */
 export async function buildCovenant(
   options: CovenantBuilderOptions,
@@ -302,7 +334,18 @@ export async function buildCovenant(
  * Re-sign an existing covenant document with a new nonce, signature, and ID.
  *
  * Useful when the issuer's key has rotated or the nonce must be refreshed.
- * The returned document is a new copy; the original is not mutated.
+ * Existing countersignatures are stripped because they are invalidated
+ * by the new canonical form. The returned document is a new copy;
+ * the original is not mutated.
+ *
+ * @param doc - The covenant document to re-sign.
+ * @param privateKey - The issuer's new (or same) private key.
+ * @returns A new CovenantDocument with a fresh nonce, signature, and ID.
+ *
+ * @example
+ * ```typescript
+ * const refreshed = await resignCovenant(doc, newKeyPair.privateKey);
+ * ```
  */
 export async function resignCovenant(
   doc: CovenantDocument,
@@ -331,11 +374,22 @@ export async function resignCovenant(
 /**
  * Add a countersignature to a covenant document.
  *
- * The countersigner signs the canonical form (which does not include
- * existing countersignatures), producing a stable signature that is
- * independent of other countersignatures.
+ * The countersigner signs the canonical form (which excludes
+ * existing countersignatures), so each countersignature is
+ * independent and can be verified individually.
  *
  * Returns a new document; the original is not mutated.
+ *
+ * @param doc - The covenant document to countersign.
+ * @param signerKeyPair - The countersigner's key pair.
+ * @param signerRole - The role of the countersigner (e.g. `"auditor"`).
+ * @returns A new CovenantDocument with the countersignature appended.
+ *
+ * @example
+ * ```typescript
+ * const audited = await countersignCovenant(doc, auditorKp, 'auditor');
+ * console.log(audited.countersignatures?.length); // 1
+ * ```
  */
 export async function countersignCovenant(
   doc: CovenantDocument,
@@ -387,6 +441,18 @@ const VALID_PROOF_TYPES: readonly string[] = [
  *
  * Returns a VerificationResult with per-check details; `valid` is true
  * only if every check passes.
+ *
+ * @param doc - The covenant document to verify.
+ * @returns A VerificationResult with `valid` and detailed `checks` array.
+ *
+ * @example
+ * ```typescript
+ * const result = await verifyCovenant(doc);
+ * if (!result.valid) {
+ *   const failed = result.checks.filter(c => !c.passed);
+ *   console.log('Failed:', failed.map(c => c.name));
+ * }
+ * ```
  */
 export async function verifyCovenant(
   doc: CovenantDocument,
@@ -612,8 +678,17 @@ export async function verifyCovenant(
 
 /**
  * Interface for resolving parent covenant documents by their ID.
+ *
+ * Implement this interface to plug in custom storage backends
+ * (database, API, etc.) for chain resolution.
  */
 export interface ChainResolver {
+  /**
+   * Look up a covenant document by its SHA-256 ID.
+   *
+   * @param id - The document ID (hex-encoded SHA-256 hash).
+   * @returns The document, or `undefined` if not found.
+   */
   resolve(id: HashHex): Promise<CovenantDocument | undefined>;
 }
 
@@ -652,7 +727,14 @@ export class MemoryChainResolver implements ChainResolver {
  * @param doc       - The starting covenant document.
  * @param resolver  - A ChainResolver to look up parent documents.
  * @param maxDepth  - Maximum number of ancestors to resolve (default MAX_CHAIN_DEPTH).
- * @returns Array of ancestor CovenantDocuments.
+ * @returns Array of ancestor CovenantDocuments, parent-first.
+ *
+ * @example
+ * ```typescript
+ * const resolver = new MemoryChainResolver();
+ * resolver.add(parentDoc);
+ * const ancestors = await resolveChain(childDoc, resolver);
+ * ```
  */
 export async function resolveChain(
   doc: CovenantDocument,
@@ -692,6 +774,13 @@ export async function resolveChain(
  * @param doc        - The covenant document.
  * @param ancestors  - Ancestor documents ordered parent-first (as returned by resolveChain).
  * @returns The merged CCLDocument representing the effective constraints.
+ *
+ * @example
+ * ```typescript
+ * const ancestors = await resolveChain(childDoc, resolver);
+ * const effective = await computeEffectiveConstraints(childDoc, ancestors);
+ * const result = evaluate(effective, 'read', '/data');
+ * ```
  */
 export async function computeEffectiveConstraints(
   doc: CovenantDocument,
@@ -724,6 +813,14 @@ export async function computeEffectiveConstraints(
  * @param child  - The child covenant document.
  * @param parent - The parent covenant document.
  * @returns An object with `valid` (boolean) and `violations` (array of NarrowingViolation).
+ *
+ * @example
+ * ```typescript
+ * const result = await validateChainNarrowing(childDoc, parentDoc);
+ * if (!result.valid) {
+ *   console.log('Violations:', result.violations);
+ * }
+ * ```
  */
 export async function validateChainNarrowing(
   child: CovenantDocument,
@@ -738,6 +835,15 @@ export async function validateChainNarrowing(
 
 /**
  * Serialize a CovenantDocument to a JSON string.
+ *
+ * @param doc - The document to serialize.
+ * @returns A JSON string representation of the document.
+ *
+ * @example
+ * ```typescript
+ * const json = serializeCovenant(doc);
+ * fs.writeFileSync('covenant.json', json);
+ * ```
  */
 export function serializeCovenant(doc: CovenantDocument): string {
   return JSON.stringify(doc);
@@ -747,9 +853,18 @@ export function serializeCovenant(doc: CovenantDocument): string {
  * Deserialize a JSON string into a CovenantDocument.
  *
  * Performs structural validation to ensure the result contains all
- * required fields with correct types.
+ * required fields with correct types, including issuer/beneficiary
+ * role validation and protocol version check.
  *
- * @throws Error if the JSON is malformed or missing required fields.
+ * @param json - A JSON string to parse.
+ * @returns The parsed CovenantDocument.
+ * @throws {Error} When the JSON is malformed, missing required fields,
+ *   or exceeds the maximum document size.
+ *
+ * @example
+ * ```typescript
+ * const doc = deserializeCovenant(fs.readFileSync('covenant.json', 'utf-8'));
+ * ```
  */
 export function deserializeCovenant(json: string): CovenantDocument {
   let parsed: unknown;

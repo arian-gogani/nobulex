@@ -33,8 +33,25 @@ const WORD_OPERATORS = new Set([
 ]);
 
 /**
- * Character-by-character lexer state machine that tokenizes CCL source code.
- * Tracks line and column numbers for error reporting.
+ * Tokenize CCL source code into an array of tokens.
+ *
+ * This is the first stage of the CCL parsing pipeline. The lexer
+ * scans character-by-character, producing keyword tokens (`PERMIT`,
+ * `DENY`, `LIMIT`, etc.), operators, strings, numbers, and
+ * structural tokens. Line and column numbers are tracked for
+ * precise error reporting.
+ *
+ * Most users should call {@link parse} instead, which calls this
+ * function internally.
+ *
+ * @param source - The raw CCL source text to tokenize.
+ * @returns An array of Token objects ending with an EOF token.
+ *
+ * @example
+ * ```typescript
+ * const tokens = tokenize("permit read on '/data'");
+ * console.log(tokens[0].type); // 'PERMIT'
+ * ```
  */
 export function tokenize(source: string): Token[] {
   const tokens: Token[] = [];

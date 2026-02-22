@@ -1,6 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
   parse,
+  validateCCL,
   tokenize,
   parseTokens,
   evaluate,
@@ -317,6 +318,28 @@ limit file.read 50 per 30 seconds`;
     expect(doc.permits[0]?.severity).toBe('high');
   });
 
+  it('parses enforcement tier hard and soft', () => {
+    const hardDoc = parse("permit read on '/data' enforcement hard");
+    const softDoc = parse("deny write on '/system' enforcement soft");
+    expect(hardDoc.permits[0]).toHaveProperty('enforcementTier', 'hard');
+    expect(softDoc.denies[0]).toHaveProperty('enforcementTier', 'soft');
+  });
+
+  it('evaluate returns matchedRule with enforcement soft for deny', () => {
+    const doc = parse("permit read on '/data'\ndeny write on '/system/**' enforcement soft");
+    const result = evaluate(doc, 'write', '/system/config');
+    expect(result.permitted).toBe(false);
+    expect(result.matchedRule).toBeDefined();
+    expect(result.matchedRule).toHaveProperty('enforcementTier', 'soft');
+  });
+
+  it('evaluate returns matchedRule with enforcement hard for permit', () => {
+    const doc = parse("permit read on '/data/**' enforcement hard");
+    const result = evaluate(doc, 'read', '/data/file');
+    expect(result.permitted).toBe(true);
+    expect(result.matchedRule).toHaveProperty('enforcementTier', 'hard');
+  });
+
   it('parses double wildcard action **', () => {
     const doc = parse("permit ** on '**'");
     expect(doc.permits[0]?.action).toBe('**');
@@ -400,6 +423,38 @@ describe('CCLSyntaxError', () => {
 
   it('is thrown for invalid severity value', () => {
     expect(() => parse("deny file.read on '/data' severity invalid_level")).toThrow(CCLSyntaxError);
+  });
+});
+
+// ===========================================================================
+// validateCCL
+// ===========================================================================
+describe('validateCCL', () => {
+  it('returns true for valid CCL', () => {
+    expect(validateCCL("permit file.read on '/data/**'")).toBe(true);
+    expect(validateCCL("deny network.send on '**'")).toBe(true);
+    expect(validateCCL('limit api.call 100 per 60 seconds')).toBe(true);
+  });
+
+  it('returns false for invalid CCL', () => {
+    expect(validateCCL('invalid_keyword file.read')).toBe(false);
+    expect(validateCCL("permit file.read '/data'")).toBe(false);
+    expect(validateCCL('')).toBe(false);
+  });
+
+  it('returns true for valid multi-statement CCL', () => {
+    const multi = `
+permit file.read on '/data/**'
+deny file.write on '/system/**'
+limit api.call 100 per 60 seconds
+require audit.log on '**'
+`;
+    expect(validateCCL(multi.trim())).toBe(true);
+    expect(validateCCL("permit read on 'a'\npermit write on 'b'")).toBe(true);
+  });
+
+  it('returns false for multi-statement CCL with one invalid line', () => {
+    expect(validateCCL("permit read on '/data'\ninvalid_keyword write")).toBe(false);
   });
 });
 

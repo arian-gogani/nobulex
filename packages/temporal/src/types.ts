@@ -1,4 +1,10 @@
-export type TriggerType = 'capability_change' | 'time_elapsed' | 'reputation_threshold' | 'breach_event' | 'governance_vote';
+export type TriggerType =
+  | 'capability_change'
+  | 'time_elapsed'
+  | 'reputation_threshold'
+  | 'breach_event'
+  | 'governance_vote'
+  | 'model_update';
 export type TriggerAction = 'tighten' | 'relax' | 'add_constraint' | 'remove_constraint';
 
 export interface EvolutionPolicy {
@@ -40,6 +46,8 @@ export interface AgentState {
   lastBreachAt?: number;
   currentTime: number;
   governanceVotes?: Record<string, boolean>;
+  /** Model version/identifier. When this changes, model_update triggers fire (Hole 7/39: re-verification). */
+  modelVersion?: string;
 }
 
 export interface CovenantState {

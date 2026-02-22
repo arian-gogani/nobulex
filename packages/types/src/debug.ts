@@ -33,7 +33,7 @@ export function isDebugEnabled(namespace?: string): boolean {
     return false;
   }
 
-  const patterns = debugEnv.split(',').map((p) => p.trim()).filter(Boolean);
+  const patterns = debugEnv.split(',').map((p: string) => p.trim()).filter(Boolean);
 
   for (const pattern of patterns) {
     // Wildcard: enable everything

@@ -1,4 +1,4 @@
-# Stele Protocol Specification
+# Kova Protocol Specification
 
 **Version 0.1.0 — Draft**
 
@@ -25,7 +25,7 @@
 
 Autonomous AI agents are executing consequential actions — transferring funds, signing contracts, deploying infrastructure, negotiating on behalf of principals — with no protocol-level mechanism to hold them accountable. Existing approaches rely on operator-controlled logs, platform-specific audit trails, and post-hoc forensics conducted by the same parties whose behavior is in question. There is no way for an independent third party to verify what an agent committed to doing before it acted, or to confirm that its actions remained within declared bounds. The accountability gap grows in direct proportion to agent autonomy.
 
-Stele is a cryptographic protocol that introduces **behavioral commitments** as a first-class primitive for AI agents. Before acting, an agent inscribes a covenant — a signed, content-addressed document specifying its intended behavior, constraints, and scope. During operation, every action is logged against this covenant in a tamper-evident structure. After execution, any party can independently verify compliance without access to the agent, its operator, or any privileged system. The protocol requires no trusted intermediary. Verification is deterministic and reproducible from the proof alone.
+Kova is an open cryptographic protocol (MIT license) and the trust layer for the agent economy — the way HTTPS enabled e-commerce, Kova enables agents to transact safely across organizational boundaries. It introduces **behavioral commitments** as a first-class primitive for AI agents. Before acting, an agent inscribes a covenant — a signed, content-addressed document specifying its intended behavior, constraints, and scope. During operation, every action is logged against this covenant in a tamper-evident structure. After execution, any party can independently verify compliance without access to the agent, its operator, or any privileged system. The protocol requires no trusted intermediary. Verification is deterministic and reproducible from the proof alone.
 
 The protocol provides the following properties: **immutability** (covenants cannot be modified after inscription), **completeness** (all observable actions are captured in the audit log), **independent verifiability** (verification requires only the covenant, the action log, and the proof — no oracle, no API call, no trust assumption), **composability** (covenants can be chained and delegated while maintaining monotonic constraint narrowing), and **economic accountability** (agents build non-transferable reputation through verifiable execution history, with cryptoeconomic consequences for breach).
 
@@ -39,9 +39,9 @@ AI agents break this model. An agent that autonomously decides which API to call
 
 This is not a hypothetical problem. Agents already manage portfolios, execute code in production environments, interact with other agents, and operate with increasing autonomy. The economic value under agent control is growing exponentially. Yet the accountability infrastructure is identical to what existed before agents: server logs controlled by operators, platform dashboards controlled by vendors, and trust assumptions that collapse exactly when they matter most.
 
-Cryptographic accountability for AI agents is a new primitive because the problem it solves — holding a non-human autonomous actor accountable to commitments it made before acting — has never existed at scale. Traditional digital signatures prove that a message was sent by a particular key. Stele extends this to prove that an *entire sequence of behavior* conformed to a *declared specification*. The unit of accountability is not a single message but a complete execution trace, verified against a pre-committed behavioral contract.
+Cryptographic accountability for AI agents is a new primitive because the problem it solves — holding a non-human autonomous actor accountable to commitments it made before acting — has never existed at scale. Traditional digital signatures prove that a message was sent by a particular key. Kova extends this to prove that an *entire sequence of behavior* conformed to a *declared specification*. The unit of accountability is not a single message but a complete execution trace, verified against a pre-committed behavioral contract.
 
-The Stele protocol makes three claims:
+The Kova protocol makes three claims:
 
 1. **Accountability must be structural, not operational.** It cannot depend on the cooperation of the party being held accountable. It must be embedded in the protocol, not the application.
 
@@ -55,7 +55,7 @@ The Stele protocol makes three claims:
 
 ### 3.1 Overview
 
-A **covenant** is the fundamental unit of the Stele protocol. It is a signed, content-addressed document in which an agent declares what it will do, what it will not do, and the constraints under which it will operate. Covenants are inscribed before execution begins and are immutable once published.
+A **covenant** is the fundamental unit of the Kova protocol. It is a signed, content-addressed document in which an agent declares what it will do, what it will not do, and the constraints under which it will operate. Covenants are inscribed before execution begins and are immutable once published.
 
 ### 3.2 Document Format
 
@@ -179,7 +179,7 @@ If any step fails, the covenant is invalid. Invalid covenants MUST be rejected b
 
 ### 4.1 Composite Identity Model
 
-An agent's identity in Stele is not a single key but a **composite identity** comprising multiple facets:
+An agent's identity in Kova is not a single key but a **composite identity** comprising multiple facets:
 
 ```json
 {
@@ -258,7 +258,7 @@ Carry-forward is multiplicative across the chain. An agent that undergoes a `mod
 
 ### 5.1 Architecture
 
-Enforcement in Stele operates at two layers: **real-time gating** (preventing violations before they occur) and **post-hoc auditing** (detecting violations after the fact). Neither layer depends on the other; both can operate independently.
+Enforcement in Kova operates at two layers: **real-time gating** (preventing violations before they occur) and **post-hoc auditing** (detecting violations after the fact). Neither layer depends on the other; both can operate independently.
 
 ### 5.2 Monitor
 
@@ -280,7 +280,7 @@ The **CapabilityGate** is an enforcement boundary that intercepts agent actions 
 | `DENY` | The action is blocked. The agent receives a denial with the violated constraint. |
 | `ESCALATE` | The action requires human approval before proceeding. |
 
-The CapabilityGate is the only component in the Stele architecture that has the power to prevent an action. It is optional — an operator may choose to run in monitor-only mode, where all actions are logged but none are blocked. This is useful during initial deployment or when the operator prefers post-hoc accountability over real-time prevention.
+The CapabilityGate is the only component in the Kova architecture that has the power to prevent an action. It is optional — an operator may choose to run in monitor-only mode, where all actions are logged but none are blocked. This is useful during initial deployment or when the operator prefers post-hoc accountability over real-time prevention.
 
 ### 5.4 Tamper-Evident Audit Log
 
@@ -339,7 +339,7 @@ This allows a verifier to confirm that a specific action is included in the log 
 
 ### 6.1 Design Goals
 
-Verification in Stele must satisfy three requirements:
+Verification in Kova must satisfy three requirements:
 
 1. **No trusted party.** Verification must not require contacting the agent, the operator, or any third-party service.
 2. **Deterministic.** The same inputs must always produce the same verification result.
@@ -349,7 +349,7 @@ Requirements (1) and (2) are satisfied by the Merkle proof structure in §5. Req
 
 ### 6.2 ZK Proof Architecture
 
-Stele uses zero-knowledge proofs to enable **selective disclosure verification** — proving that a sequence of actions satisfies a covenant's constraints without revealing the actions themselves.
+Kova uses zero-knowledge proofs to enable **selective disclosure verification** — proving that a sequence of actions satisfies a covenant's constraints without revealing the actions themselves.
 
 The architecture has three components:
 
@@ -368,7 +368,7 @@ The architecture has three components:
 
 ### 6.3 Poseidon Commitments
 
-Stele uses the **Poseidon** hash function for in-circuit commitments. Poseidon is designed for efficiency inside arithmetic circuits (SNARKs/STARKs), with significantly lower constraint counts compared to SHA-256 or Keccak.
+Kova uses the **Poseidon** hash function for in-circuit commitments. Poseidon is designed for efficiency inside arithmetic circuits (SNARKs/STARKs), with significantly lower constraint counts compared to SHA-256 or Keccak.
 
 A Poseidon commitment to an action record is computed as:
 
@@ -400,7 +400,7 @@ Proof generation is computationally intensive but parallelizable. For a typical 
 
 ### 6.5 Independent Verification
 
-To verify a Stele proof, a verifier needs:
+To verify a Kova proof, a verifier needs:
 
 | Input | Source |
 |---|---|
@@ -520,7 +520,7 @@ The default attenuation rate is 0.5. A breach by a depth-3 delegate costs the ro
 
 ### 7.6 Non-Transferable Economic Personhood
 
-Reputation in Stele is **non-transferable**. It cannot be bought, sold, gifted, or merged between identities. This is a deliberate design choice with three motivations:
+Reputation in Kova is **non-transferable**. It cannot be bought, sold, gifted, or merged between identities. This is a deliberate design choice with three motivations:
 
 1. **Sybil resistance.** If reputation were transferable, an attacker could farm reputation across many identities and consolidate it into one, or sell high-reputation identities on a secondary market.
 
@@ -684,9 +684,13 @@ procedure COMPUTE_EFFECTIVE(covenant C):
 
 ## 10. Web of Trust
 
+### 10.0 Trust Entanglement
+
+Delegated trust relationships are **cryptographically linked**. Verifying one agent partially verifies its partners; delegation chains and breach propagation create a network where trust is entangled across agents. Composition (`@stele/composition`) and breach propagation (`@stele/breach`) implement linked verification. Network-wide verification can be achieved at sublinear cost by leveraging the transitive structure of the trust graph. See [CORE-MECHANISMS.md](docs/CORE-MECHANISMS.md) Core 9.
+
 ### 10.1 Endorsement Protocol
 
-Beyond delegation (which implies a principal-agent relationship), Stele supports **endorsements** — attestations from one agent about another's capabilities or trustworthiness.
+Beyond delegation (which implies a principal-agent relationship), Kova supports **endorsements** — attestations from one agent about another's capabilities or trustworthiness.
 
 ```json
 {
@@ -725,7 +729,7 @@ An endorsement from a high-reputation agent with relevant expertise and verifiab
 
 ### 10.3 Sybil Resistance
 
-The web of trust is vulnerable to sybil attacks: an adversary creates many identities that endorse each other to inflate their trust scores. Stele employs three defenses:
+The web of trust is vulnerable to sybil attacks: an adversary creates many identities that endorse each other to inflate their trust scores. Kova employs three defenses:
 
 **1. Reputation cost.** Creating a new identity starts with zero reputation. Reputation can only be earned through verified covenant execution (§7.1). Farming reputation requires actually performing work under covenants and producing clean receipts. This makes sybil attacks expensive in terms of computation and time.
 
@@ -739,7 +743,7 @@ The web of trust is vulnerable to sybil attacks: an adversary creates many ident
 
 ### 11.1 Principles
 
-Stele governance follows three principles:
+Kova governance follows three principles:
 
 1. **Participation-weighted, not plutocratic.** Governance power derives from verified protocol participation (covenant execution, verification, attestation), not from token holdings or financial stake.
 2. **Minimal governance surface.** The protocol should require as few governance decisions as possible. Anything that can be determined algorithmically should be.
@@ -792,7 +796,7 @@ Governance proposals follow a structured lifecycle:
 
 ### 12.1 Threat Model
 
-Stele assumes the following threat model:
+Kova assumes the following threat model:
 
 **Trusted:**
 - Cryptographic primitives (Ed25519, SHA-256, Poseidon) are secure.
@@ -810,7 +814,7 @@ Stele assumes the following threat model:
 
 **Attack:** An agent creates a retroactive covenant that matches its already-executed actions, claiming it was inscribed before execution.
 
-**Mitigation:** Covenants are content-addressed and timestamped. When on-chain anchoring is used (via `@stele/evm`), the covenant's content address is recorded on an immutable ledger with a block timestamp. Even without on-chain anchoring, the covenant must be signed before any action records reference it, and the action records' hash chain includes the covenant ID. Backdating a covenant requires forging the entire action log.
+**Mitigation:** Covenants are content-addressed and timestamped. When on-chain anchoring is used (via `@stele/evm`), the covenant's content address is recorded on an immutable ledger with a block timestamp. (Package names remain `@stele/*` for backward compatibility.) Even without on-chain anchoring, the covenant must be signed before any action records reference it, and the action records' hash chain includes the covenant ID. Backdating a covenant requires forging the entire action log.
 
 #### 12.2.2 Action Log Omission
 

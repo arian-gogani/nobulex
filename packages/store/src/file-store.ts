@@ -44,6 +44,13 @@ interface StoreIndex {
   entries: Record<string, IndexEntry>;
 }
 
+// ─── Error helpers ────────────────────────────────────────────────────────────
+
+/** Check if an error has Node.js errno code (e.g. ENOENT). */
+function isErrnoException(err: unknown): err is NodeJS.ErrnoException {
+  return err !== null && typeof err === 'object' && 'code' in err;
+}
+
 // ─── Filter helper ──────────────────────────────────────────────────────────────
 
 /**
@@ -141,8 +148,8 @@ export class FileStore implements CovenantStore {
     try {
       const raw = await fs.readFile(this.indexPath, 'utf-8');
       return JSON.parse(raw) as StoreIndex;
-    } catch (err: any) {
-      if (err.code === 'ENOENT') {
+    } catch (err) {
+      if (isErrnoException(err) && err.code === 'ENOENT') {
         return { entries: {} };
       }
       throw err;
@@ -230,8 +237,8 @@ export class FileStore implements CovenantStore {
     try {
       const raw = await fs.readFile(this.docPath(id), 'utf-8');
       return JSON.parse(raw) as CovenantDocument;
-    } catch (err: any) {
-      if (err.code === 'ENOENT') {
+    } catch (err) {
+      if (isErrnoException(err) && err.code === 'ENOENT') {
         return undefined;
       }
       throw err;
@@ -252,8 +259,8 @@ export class FileStore implements CovenantStore {
       delete index.entries[id];
       try {
         await fs.unlink(this.docPath(id));
-      } catch (err: any) {
-        if (err.code !== 'ENOENT') throw err;
+      } catch (err) {
+        if (!isErrnoException(err) || err.code !== 'ENOENT') throw err;
       }
       await this.writeIndex(index);
       return true;
@@ -347,8 +354,8 @@ export class FileStore implements CovenantStore {
           delete index.entries[id];
           try {
             await fs.unlink(this.docPath(id));
-          } catch (err: any) {
-            if (err.code !== 'ENOENT') throw err;
+          } catch (err) {
+            if (!isErrnoException(err) || err.code !== 'ENOENT') throw err;
           }
           deletedIds.push(id);
         }

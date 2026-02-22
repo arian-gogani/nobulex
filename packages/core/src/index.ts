@@ -56,6 +56,7 @@ export type {
   CovenantBuilderOptions,
   VerificationResult,
   VerificationCheck,
+  Severity,
 } from './types.js';
 
 export {

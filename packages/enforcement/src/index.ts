@@ -27,8 +27,24 @@ import type {
   EvaluationResult,
   EvaluationContext,
   PermitDenyStatement,
+  RequireStatement,
   LimitStatement,
 } from '@stele/ccl';
+
+/** Wrap a single Statement in a CCLDocument for serialization. */
+function wrapStatement(stmt: Statement): CCLDocument {
+  const permits: PermitDenyStatement[] = [];
+  const denies: PermitDenyStatement[] = [];
+  const obligations: RequireStatement[] = [];
+  const limits: LimitStatement[] = [];
+  switch (stmt.type) {
+    case 'permit': permits.push(stmt); break;
+    case 'deny': denies.push(stmt); break;
+    case 'require': obligations.push(stmt); break;
+    case 'limit': limits.push(stmt); break;
+  }
+  return { statements: [stmt], permits, denies, obligations, limits };
+}
 
 export type {
   ExecutionOutcome,
@@ -482,6 +498,14 @@ export class Monitor {
       ? GENESIS_HASH
       : this.entries[index - 1]!.hash;
 
+    const matchedRule = result.matchedRule;
+    const authorizationConstraint = matchedRule
+      ? cclSerialize(wrapStatement(matchedRule))
+      : undefined;
+    const enforcementTier = matchedRule && 'enforcementTier' in matchedRule
+      ? matchedRule.enforcementTier
+      : undefined;
+
     const entry: AuditEntry = {
       index,
       timestamp: ts,
@@ -492,6 +516,8 @@ export class Monitor {
       outcome,
       previousHash,
       hash: '' as HashHex,
+      authorizationConstraint,
+      enforcementTier,
     };
 
     if (error !== undefined) {
@@ -944,6 +970,14 @@ function computeEntryHash(entry: AuditEntry): HashHex {
 
   if (entry.error !== undefined) {
     content.error = entry.error;
+  }
+
+  if (entry.authorizationConstraint !== undefined) {
+    content.authorizationConstraint = entry.authorizationConstraint;
+  }
+
+  if (entry.enforcementTier !== undefined) {
+    content.enforcementTier = entry.enforcementTier;
   }
 
   return sha256Object(content);

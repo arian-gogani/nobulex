@@ -314,12 +314,19 @@ export function toHex(data: Uint8Array): string {
  * ```
  */
 export function fromHex(hex: string): Uint8Array {
+  if (typeof hex !== 'string') {
+    throw new Error('Invalid hex: expected string');
+  }
   if (hex.length % 2 !== 0) {
     throw new Error('Invalid hex string: odd length');
   }
   const bytes = new Uint8Array(hex.length / 2);
   for (let i = 0; i < hex.length; i += 2) {
-    bytes[i / 2] = parseInt(hex.substring(i, i + 2), 16);
+    const byte = parseInt(hex.substring(i, i + 2), 16);
+    if (Number.isNaN(byte) || byte < 0 || byte > 255) {
+      throw new Error(`Invalid hex string: invalid character at position ${i}`);
+    }
+    bytes[i / 2] = byte;
   }
   return bytes;
 }

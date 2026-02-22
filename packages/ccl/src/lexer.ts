@@ -8,6 +8,7 @@ const KEYWORDS: Record<string, TokenType> = {
   on: 'ON',
   when: 'WHEN',
   severity: 'SEVERITY',
+  enforcement: 'ENFORCEMENT',
   per: 'PER',
   seconds: 'SECONDS',
   second: 'SECONDS',

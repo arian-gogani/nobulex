@@ -1,24 +1,48 @@
-# Stele Architecture
+# Kova Architecture
 
 ## Overview
 
-Stele is a digital accountability protocol for AI agents. It provides a cryptographically
-signed covenant system that defines what an AI agent may and may not do, with mechanisms
-for verification, enforcement, identity tracking, reputation scoring, and legal compliance.
+Kova is an open cryptographic protocol (MIT license) and the trust layer for the agent economy. The way HTTPS enabled e-commerce, Kova enables agents to transact safely across organizational boundaries. The protocol core is three primitives; everything else is ecosystem.
 
-The core idea: before an AI agent operates, it enters into a **covenant** -- a signed
-document specifying constraints on its behavior. These constraints are written in CCL
-(Covenant Constraint Language), a purpose-built rule language. The covenant is signed by
-an **issuer** (typically the operator) and references a **beneficiary** (the party whose
-interests are protected). Every action the agent takes can be evaluated against its
-covenant constraints, producing a verifiable audit trail.
+**Key mechanism:** Self-enforcing covenant runtime. Covenants compile into capability restrictions — agents physically cannot violate tool/API constraints. Hard enforcement for actions (guaranteed), soft enforcement for language outputs (probabilistic, honestly labeled). The covenant is simultaneously the specification, the enforcement, and the proof — one object that can't drift.
 
-Stele is designed to be:
+The core idea: before an AI agent operates, it enters into a **covenant** — a signed document specifying constraints on its behavior. These constraints are written in CCL (Covenant Constraint Language), a purpose-built rule language. The covenant is signed by an **issuer** (typically the operator) and references a **beneficiary** (the party whose interests are protected). Every action the agent takes can be evaluated against its covenant constraints, producing a verifiable audit trail.
+
+**Trust model:** Trust is a bounded resource — it can't exceed economic value staked to back it. Multidimensional trust profile resists gaming. Trust relationships can be entangled for efficient network-wide verification.
+
+**Game theory:** Honest behavior is an Evolutionary Stable Strategy. No mutant strategy can invade the population. Applies to operators (rational humans), not agents (stochastic systems).
+
+Kova is designed to be:
 
 - **Cryptographically verifiable**: All documents are signed with Ed25519 and content-addressed with SHA-256.
 - **Composable**: Covenants can form delegation chains where each child narrows the parent's constraints.
 - **Extensible**: Pluggable storage, custom chain resolvers, and an event-driven SDK.
 - **Zero-dependency at runtime**: Only `@noble/ed25519` and `@noble/hashes` are required.
+
+## Three-Primitive Protocol Layer
+
+The protocol core is **only** these three primitives. Everything else moves to the ecosystem layer.
+
+| Primitive | Description | Packages |
+|-----------|-------------|----------|
+| **Identity Binding** | Agent proves who it is and who's responsible; composite identity hash; lineage chains | `@stele/identity`, `@stele/crypto` |
+| **Covenant Declaration** | Agent publishes signed behavioral commitments in a formal constraint language (CCL); child covenants only narrow | `@stele/core`, `@stele/ccl` |
+| **Compliance Proof** | Anyone verifies compliance via zero-knowledge proofs without seeing proprietary logic | `@stele/proof`, `@stele/enforcement` |
+
+## Three-Tier Package Structure
+
+```
+Protocol Layer (the standard):
+  identity, core, ccl, crypto, proof, enforcement, verifier, store
+
+SDK Layer (developer experience):
+  kova (single package, one import, 30-minute integration)
+
+Ecosystem Layer (commercial opportunity):
+  attestation, canary, gametheory, composition, antifragile, negotiation,
+  consensus, robustness, temporal, recursive, alignment, norms,
+  substrate, derivatives, legal
+```
 
 ## Layer Diagram
 
@@ -31,7 +55,7 @@ layers below it:
 │       react  ·  evm  ·  mcp-server  ·  cli           │
 ├─────────────────────────────────────────────────────┤
 │                       SDK                            │
-│          sdk (SteleClient, QuickCovenant)             │
+│        kova (withKova)  ·  sdk (SteleClient)          │
 ├─────────────────────────────────────────────────────┤
 │                    Protocol                          │
 │   attestation · canary · gametheory · composition     │
@@ -71,8 +95,9 @@ and legal compliance.
 
 ### SDK
 
-A thin unification layer (`SteleClient`) that re-exports and wraps Foundation
-packages into a single, ergonomic API with an event system.
+**kova** — Single package, `withKova(server, preset)` API. One import, 30-minute integration.
+
+**sdk** — `SteleClient` (from `@stele/sdk`) for advanced use: custom covenants, identity, verification, event system.
 
 ### Platform
 
@@ -81,7 +106,7 @@ JSON-RPC MCP server, and a command-line interface.
 
 ## Data Flow
 
-A typical Stele workflow follows this sequence:
+A typical Kova workflow follows this sequence:
 
 ```
 1. Key Generation

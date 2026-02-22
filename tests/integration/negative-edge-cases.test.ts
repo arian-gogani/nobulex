@@ -161,11 +161,8 @@ describe('Crypto edge cases', () => {
     expect(() => fromHex('abc')).toThrow('odd length');
   });
 
-  it('fromHex with non-hex characters produces NaN bytes', () => {
-    // parseInt('zz', 16) returns NaN, which becomes 0 in Uint8Array
-    const result = fromHex('zzzz');
-    // The function does not throw, but produces NaN->0 bytes
-    expect(result.length).toBe(2);
+  it('fromHex with non-hex characters throws', () => {
+    expect(() => fromHex('zzzz')).toThrow(/Invalid hex string/);
   });
 
   it('sha256 of empty input still produces valid 64-char hex hash', () => {

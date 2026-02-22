@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Stele — The Accountability Primitive for AI Agents</title>
-<meta name="description" content="Cryptographic behavioral commitments with trustless verification. Stele is the accountability protocol for autonomous AI agents.">
+<title>Kova — The Trust Layer for the Agent Economy</title>
+<meta name="description" content="Kova is an open cryptographic protocol (MIT) — the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation across platforms.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@1&family=Inter+Tight:wght@900&family=Inter:wght@400;500&family=JetBrains+Mono&display=swap" rel="stylesheet">
@@ -541,22 +541,16 @@ footer {
 <!-- THE CODE -->
 <section class="section-pad">
   <div class="container">
-    <h2 class="heading code-heading reveal">Two lines. Full accountability.</h2>
+    <h2 class="heading code-heading reveal">Three lines. Full covenant enforcement.</h2>
     <div class="code-block reveal" id="codeBlock">
-      <pre><span class="code-line"><span class="cc">// Before: uncovenanted agent — no commitments, no verification</span></span>
-<span class="code-line"><span class="ck">const</span> <span class="cp">agent = </span><span class="ck">new</span> <span class="cf">Agent</span><span class="cp">(</span><span class="cs">"portfolio-manager"</span><span class="cp">);</span></span>
+      <pre><span class="code-line"><span class="cc">// Before: uncovenanted MCP server — no commitments, no verification</span></span>
+<span class="code-line"><span class="ck">const</span> <span class="cp">server = </span><span class="cf">createMCPServer</span><span class="cp">();</span></span>
 <span class="code-line">&nbsp;</span>
-<span class="code-line"><span class="cc">// After: full cryptographic accountability in two lines</span></span>
-<span class="code-line"><span class="ck">import</span> <span class="cp">{ SteleGuard } </span><span class="ck">from</span> <span class="cs">"@stele/sdk"</span><span class="cp">;</span></span>
-<span class="code-line"><span class="ck">const</span> <span class="cp">guarded = </span><span class="ck">await</span> <span class="cf">SteleGuard.wrap</span><span class="cp">(agent, {</span></span>
-<span class="code-line"><span class="cp">  covenant: {</span></span>
-<span class="code-line"><span class="cp">    allow: [</span><span class="cs">"trade.execute"</span><span class="cp">, </span><span class="cs">"portfolio.rebalance"</span><span class="cp">],</span></span>
-<span class="code-line"><span class="cp">    deny:  [</span><span class="cs">"funds.withdraw"</span><span class="cp">, </span><span class="cs">"keys.export"</span><span class="cp">],</span></span>
-<span class="code-line"><span class="cp">    limit: { </span><span class="cs">"trade.value"</span><span class="cp">: </span><span class="cs">"<= 50000 per 24h"</span><span class="cp"> }</span></span>
-<span class="code-line"><span class="cp">  }</span></span>
-<span class="code-line"><span class="cp">});</span></span>
+<span class="code-line"><span class="cc">// After: full covenant enforcement in three lines</span></span>
+<span class="code-line"><span class="ck">import</span> <span class="cp">{ withKova } </span><span class="ck">from</span> <span class="cs">"kova"</span><span class="cp">;</span></span>
+<span class="code-line"><span class="ck">const</span> <span class="cp">server = </span><span class="ck">await</span> <span class="cf">withKova</span><span class="cp">(yourMCPServer, </span><span class="cs">"data-isolation"</span><span class="cp">);</span></span>
 <span class="code-line">&nbsp;</span>
-<span class="code-line"><span class="cc">// Every action is now inscribed, logged, and independently verifiable</span></span></pre>
+<span class="code-line"><span class="cc">// Every tool call is now gated by covenant, logged, and independently verifiable</span></span></pre>
     </div>
   </div>
 </section>
@@ -574,8 +568,8 @@ footer {
       <div class="arch-bar reveal"><span class="arch-name">@stele/proof</span><span class="arch-desc">ZK proof architecture — Poseidon commitments and circuit generation</span></div>
       <div class="arch-bar reveal"><span class="arch-name">@stele/reputation</span><span class="arch-desc">Execution receipts, trust scoring, staking, and non-transferable personhood</span></div>
       <div class="arch-bar reveal"><span class="arch-name">@stele/breach</span><span class="arch-desc">Breach attestations, trust graph propagation, and severity-mapped degradation</span></div>
-      <div class="arch-bar reveal"><span class="arch-name">@stele/mcp</span><span class="arch-desc">Model Context Protocol server exposing Stele tools to any AI agent</span></div>
-      <div class="arch-bar reveal"><span class="arch-name">@stele/cli</span><span class="arch-desc">Command-line tools for inspecting, querying, and verifying steles</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/mcp</span><span class="arch-desc">Model Context Protocol middleware exposing Kova covenant enforcement to any AI agent</span></div>
+      <div class="arch-bar reveal"><span class="arch-name">@stele/cli</span><span class="arch-desc">Command-line tools for inspecting, querying, and verifying covenants</span></div>
     </div>
   </div>
 </section>
@@ -610,7 +604,7 @@ footer {
 
 <!-- FOOTER -->
 <footer>
-  <div class="heading footer-name">Stele Labs, Inc.</div>
+  <div class="heading footer-name">Kova · Open Protocol (MIT)</div>
   <a href="https://github.com/agbusiness195/stele" class="footer-gh" aria-label="GitHub">
     <svg width="20" height="20" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
       <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/>
@@ -630,8 +624,8 @@ footer {
   const heroTagline = document.getElementById('heroTagline');
   const heroCta = document.getElementById('heroCta');
 
-  const titleText = 'THE ACCOUNTABILITY PRIMITIVE';
-  const subtitleText = 'FOR AI AGENTS';
+  const titleText = 'THE TRUST LAYER';
+  const subtitleText = 'FOR THE AGENT ECONOMY';
 
   function populateChars(el, text) {
     el.innerHTML = '';

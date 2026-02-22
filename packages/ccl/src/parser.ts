@@ -9,6 +9,7 @@ import type {
   Condition,
   CompoundCondition,
   Severity,
+  EnforcementTier,
   Operator,
 } from './types.js';
 import { CCLSyntaxError } from './errors.js';
@@ -19,9 +20,9 @@ import { CCLSyntaxError } from './errors.js';
  * Grammar:
  *   document     = { statement NEWLINE }* EOF
  *   statement    = permit_deny | require_stmt | limit_stmt
- *   permit_deny  = (PERMIT | DENY) action ON resource [WHEN condition] [SEVERITY level]
- *   require_stmt = REQUIRE action ON resource [WHEN condition] [SEVERITY level]
- *   limit_stmt   = LIMIT action NUMBER PER NUMBER SECONDS [SEVERITY level]
+ *   permit_deny  = (PERMIT | DENY) action ON resource [WHEN condition] [SEVERITY level] [ENFORCEMENT tier]
+ *   require_stmt = REQUIRE action ON resource [WHEN condition] [SEVERITY level] [ENFORCEMENT tier]
+ *   limit_stmt   = LIMIT action NUMBER PER NUMBER SECONDS [SEVERITY level] [ENFORCEMENT tier]
  *   action       = IDENTIFIER { DOT IDENTIFIER }* | WILDCARD | DOUBLE_WILDCARD
  *   resource     = STRING | resource_pattern
  *   condition    = or_expr
@@ -118,12 +119,19 @@ class Parser {
       severity = this.parseSeverity();
     }
 
+    let enforcementTier: EnforcementTier | undefined;
+    if (this.check('ENFORCEMENT')) {
+      this.advance();
+      enforcementTier = this.parseEnforcementTier();
+    }
+
     return {
       type: stmtType,
       action,
       resource,
       condition,
       severity,
+      ...(enforcementTier !== undefined ? { enforcementTier } : {}),
       line: stmtLine,
     };
   }
@@ -151,12 +159,19 @@ class Parser {
       severity = this.parseSeverity();
     }
 
+    let enforcementTier: EnforcementTier | undefined;
+    if (this.check('ENFORCEMENT')) {
+      this.advance();
+      enforcementTier = this.parseEnforcementTier();
+    }
+
     return {
       type: 'require',
       action,
       resource,
       condition,
       severity,
+      ...(enforcementTier !== undefined ? { enforcementTier } : {}),
       line: stmtLine,
     };
   }
@@ -202,14 +217,39 @@ class Parser {
       severity = this.parseSeverity();
     }
 
+    let enforcementTier: EnforcementTier | undefined;
+    if (this.check('ENFORCEMENT')) {
+      this.advance();
+      enforcementTier = this.parseEnforcementTier();
+    }
+
     return {
       type: 'limit',
       action,
       count,
       periodSeconds,
       severity,
+      ...(enforcementTier !== undefined ? { enforcementTier } : {}),
       line: stmtLine,
     };
+  }
+
+  private parseEnforcementTier(): EnforcementTier {
+    const tok = this.current();
+    const lower = tok.value.toLowerCase();
+    if (lower === 'hard') {
+      this.advance();
+      return 'hard';
+    }
+    if (lower === 'soft') {
+      this.advance();
+      return 'soft';
+    }
+    throw new CCLSyntaxError(
+      `Expected enforcement tier (hard or soft), got '${tok.value}'`,
+      tok.line,
+      tok.column,
+    );
   }
 
   /**

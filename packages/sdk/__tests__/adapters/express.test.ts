@@ -8,6 +8,9 @@ import {
   steleMiddleware,
   steleGuardHandler,
   createCovenantRouter,
+  createWellKnownHandler,
+  kovaGatewayMiddleware,
+  serializeCovenant,
 } from '../../src/index.js';
 
 import type {
@@ -770,6 +773,192 @@ describe('Express/HTTP middleware adapter', () => {
       });
 
       expect(next2).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('kovaGatewayMiddleware', () => {
+    it('calls next() when covenant has all required constraints', async () => {
+      const constraints = "permit get on '/data'\ndeny write on '/system/**' severity critical";
+      const { client, covenant } = await createTestFixture(constraints);
+
+      const middleware = kovaGatewayMiddleware({
+        client,
+        covenantExtractor: () => covenant,
+        requiredConstraints: ["deny write on '/system/**' severity critical"],
+      });
+
+      const req = mockRequest({ method: 'GET', path: '/data' });
+      const res = mockResponse();
+      const next = vi.fn() as unknown as NextFunction;
+
+      middleware(req, res, next);
+
+      await vi.waitFor(() => {
+        expect(next).toHaveBeenCalledTimes(1);
+      });
+
+      expect(res.setHeader).toHaveBeenCalledWith('x-kova-permitted', 'true');
+    });
+
+    it('sends 401 with missing constraints when covenant lacks required constraint', async () => {
+      const constraints = "permit get on '/data'";
+      const { client, covenant } = await createTestFixture(constraints);
+
+      const middleware = kovaGatewayMiddleware({
+        client,
+        covenantExtractor: () => covenant,
+        requiredConstraints: ["deny write on '/system/**' severity critical"],
+      });
+
+      const req = mockRequest({ method: 'GET', path: '/data' });
+      const res = mockResponse();
+      const next = vi.fn() as unknown as NextFunction;
+
+      middleware(req, res, next);
+
+      await vi.waitFor(() => {
+        expect(res.end).toHaveBeenCalled();
+      });
+
+      expect(next).not.toHaveBeenCalled();
+      expect(res._statusCode).toBe(401);
+
+      const body = JSON.parse(res._body!);
+      expect(body.error).toBe('Covenant missing required constraints');
+      expect(body.missing).toEqual(["deny write on '/system/**' severity critical"]);
+    });
+
+    it('passes through when requiredConstraints is empty', async () => {
+      const { client, covenant } = await createTestFixture("permit get on '/api'");
+
+      const middleware = kovaGatewayMiddleware({
+        client,
+        covenantExtractor: () => covenant,
+        requiredConstraints: [],
+      });
+
+      const req = mockRequest({ method: 'GET', path: '/api' });
+      const res = mockResponse();
+      const next = vi.fn() as unknown as NextFunction;
+
+      middleware(req, res, next);
+
+      await vi.waitFor(() => {
+        expect(next).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('passes through when requiredConstraints is undefined', async () => {
+      const { client, covenant } = await createTestFixture("permit get on '/api'");
+
+      const middleware = kovaGatewayMiddleware({
+        client,
+        covenantExtractor: () => covenant,
+      });
+
+      const req = mockRequest({ method: 'GET', path: '/api' });
+      const res = mockResponse();
+      const next = vi.fn() as unknown as NextFunction;
+
+      middleware(req, res, next);
+
+      await vi.waitFor(() => {
+        expect(next).toHaveBeenCalledTimes(1);
+      });
+    });
+
+    it('extracts covenant from Authorization Bearer (base64-encoded JSON)', async () => {
+      const { client, covenant } = await createTestFixture("permit get on '/api/data'");
+
+      const serialized = serializeCovenant(covenant);
+      const bearerToken = Buffer.from(serialized, 'utf-8').toString('base64');
+
+      const middleware = kovaGatewayMiddleware({
+        client,
+        covenantExtractor: undefined, // use default
+      });
+
+      const req = mockRequest({
+        method: 'GET',
+        path: '/api/data',
+        headers: { authorization: `Bearer ${bearerToken}` },
+      });
+      const res = mockResponse();
+      const next = vi.fn() as unknown as NextFunction;
+
+      middleware(req, res, next);
+
+      await vi.waitFor(() => {
+        expect(next).toHaveBeenCalledTimes(1);
+      });
+
+      expect(res.setHeader).toHaveBeenCalledWith('x-kova-permitted', 'true');
+    });
+
+    it('extracts covenant from x-kova-covenant header (raw JSON)', async () => {
+      const { client, covenant } = await createTestFixture("permit post on '/api/items'");
+
+      const serialized = serializeCovenant(covenant);
+
+      const middleware = kovaGatewayMiddleware({
+        client,
+        covenantExtractor: undefined, // use default
+      });
+
+      const req = mockRequest({
+        method: 'POST',
+        path: '/api/items',
+        headers: { 'x-kova-covenant': serialized },
+      });
+      const res = mockResponse();
+      const next = vi.fn() as unknown as NextFunction;
+
+      middleware(req, res, next);
+
+      await vi.waitFor(() => {
+        expect(next).toHaveBeenCalledTimes(1);
+      });
+
+      expect(res.setHeader).toHaveBeenCalledWith('x-kova-permitted', 'true');
+    });
+  });
+
+  describe('createWellKnownHandler', () => {
+    it('returns JSON with agentId and covenants', async () => {
+      const handler = createWellKnownHandler({
+        agentId: 'agent-1',
+        covenants: [
+          { id: 'c1', url: 'https://example.com/c1.json', status: 'active' },
+        ],
+      });
+
+      const req = mockRequest({ method: 'GET', path: '/.well-known/stele' });
+      const res = mockResponse();
+
+      await handler(req, res);
+
+      expect(res._statusCode).toBe(200);
+      expect(res._headers['content-type']).toBe('application/json');
+      const body = JSON.parse(res._body ?? '{}');
+      expect(body.stele).toBe('0.1.0');
+      expect(body.agentId).toBe('agent-1');
+      expect(body.covenants).toHaveLength(1);
+      expect(body.covenants[0]).toEqual({ id: 'c1', url: 'https://example.com/c1.json', status: 'active' });
+    });
+
+    it('includes resolver when provided', async () => {
+      const handler = createWellKnownHandler({
+        agentId: 'agent-2',
+        covenants: [],
+        resolver: 'https://example.com/stele/resolve',
+      });
+
+      const req = mockRequest();
+      const res = mockResponse();
+      await handler(req, res);
+
+      const body = JSON.parse(res._body ?? '{}');
+      expect(body.resolver).toBe('https://example.com/stele/resolve');
     });
   });
 });

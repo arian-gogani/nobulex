@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "lib": ["ES2022"],
+    "lib": ["ES2022","DOM"],
     "moduleResolution": "bundler",
     "declaration": true,
     "declarationMap": true,
@@ -41,7 +41,8 @@
     { "path": "packages/norms" },
     { "path": "packages/substrate" },
     { "path": "packages/derivatives" },
-    { "path": "packages/legal" }
-  ]
+{ "path": "packages/legal" },
+    { "path": "packages/kova" }
+]
 }
 

@@ -28,7 +28,7 @@ import {
 
 /** True if a string contains at least one ANSI escape sequence. */
 function hasAnsi(s: string): boolean {
-  // eslint-disable-next-line no-control-regex
+  // eslint-disable-next-line no-control-regex -- ANSI escape codes in test assertions
   return /\x1b\[/.test(s);
 }
 

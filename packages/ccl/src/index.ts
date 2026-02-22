@@ -11,6 +11,7 @@ export type {
   TokenType,
   Token,
   Severity,
+  EnforcementTier,
   Operator,
   StatementType,
   Condition,
@@ -74,4 +75,25 @@ export function parse(source: string): CCLDocument {
   }
   const tokens = tokenize(source);
   return parseTokens(tokens);
+}
+
+/**
+ * Check whether CCL source text is valid without throwing.
+ *
+ * @param source - CCL source text to validate.
+ * @returns `true` if the source parses successfully, `false` otherwise.
+ *
+ * @example
+ * ```typescript
+ * validateCCL("permit read on '/data/**'"); // true
+ * validateCCL("invalid_keyword read");      // false
+ * ```
+ */
+export function validateCCL(source: string): boolean {
+  try {
+    parse(source);
+    return true;
+  } catch {
+    return false;
+  }
 }

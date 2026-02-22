@@ -15,6 +15,7 @@ export type {
   AuditTrailExport,
   RegulatoryGap,
   RegulatoryGapAnalysisResult,
+  SteleScoreProfile,
 } from './types';
 
 import type {
@@ -32,6 +33,7 @@ import type {
   AuditTrailExport,
   RegulatoryGap,
   RegulatoryGapAnalysisResult,
+  SteleScoreProfile,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -80,13 +82,18 @@ const jurisdictionRegistry: Record<string, JurisdictionInfo> = {
     complianceStandard: 'GDPR',
     requiredFields: ['agentId', 'operatorId', 'complianceRecord', 'covenantHistory', 'attestations', 'reputationSnapshot'],
   },
+  'EU-AI': {
+    legalFramework: 'EU AI Act (Regulation 2024/1689)',
+    complianceStandard: 'EU_AI_ACT',
+    requiredFields: ['agentId', 'operatorId', 'complianceRecord', 'covenantHistory', 'attestations', 'reputationSnapshot'],
+  },
   UK: {
     legalFramework: 'UK General Data Protection Regulation',
-    complianceStandard: 'UK-GDPR',
+    complianceStandard: 'UK_GDPR',
     requiredFields: ['agentId', 'operatorId', 'complianceRecord', 'covenantHistory', 'attestations'],
   },
   JP: {
-    legalFramework: 'Act on the Protection of Personal Information',
+    legalFramework: 'Act on the Protection of Personal Information (Japan)',
     complianceStandard: 'APPI',
     requiredFields: ['agentId', 'operatorId', 'complianceRecord', 'attestations'],
   },
@@ -141,6 +148,30 @@ export const COMPLIANCE_STANDARDS: Record<ComplianceStandard, ComplianceStandard
     requiredAttestationCoverage: 0.95,
     requiredCanaryPassRate: 0.98,
     description: 'Health Insurance Portability and Accountability Act',
+  },
+  EU_AI_ACT: {
+    requiredScore: 0.85,
+    requiredAttestationCoverage: 0.9,
+    requiredCanaryPassRate: 0.95,
+    description: 'EU AI Act (Regulation 2024/1689) — Article 53 documentation, transparency, risk management for AI systems',
+  },
+  NIST_AI_RMF: {
+    requiredScore: 0.8,
+    requiredAttestationCoverage: 0.85,
+    requiredCanaryPassRate: 0.9,
+    description: 'NIST AI Risk Management Framework — govern, map, measure, manage AI risks',
+  },
+  UK_GDPR: {
+    requiredScore: 0.75,
+    requiredAttestationCoverage: 0.8,
+    requiredCanaryPassRate: 0.9,
+    description: 'UK General Data Protection Regulation',
+  },
+  APPI: {
+    requiredScore: 0.7,
+    requiredAttestationCoverage: 0.75,
+    requiredCanaryPassRate: 0.85,
+    description: 'Act on the Protection of Personal Information (Japan)',
   },
 };
 
@@ -797,5 +828,96 @@ export function regulatoryGapAnalysis(
     readinessPercentage,
     criticalGapCount,
     estimatedRemediationEffort,
+  };
+}
+
+// ---------------------------------------------------------------------------
+// computeSteleScore (multidimensional trust profile)
+// ---------------------------------------------------------------------------
+
+const STELE_SCORE_ALGORITHM_VERSION = '1.0.0';
+
+/** Default weights for composite Stele Score. Dimensions trade off. */
+export const DEFAULT_STELE_SCORE_WEIGHTS = {
+  complianceRate: 0.2,
+  attestationCoverage: 0.2,
+  canaryPassRate: 0.2,
+  breachFreedom: 0.2,
+  stakeLevel: 0.1,
+  lineageDepth: 0.1,
+};
+
+/**
+ * Compute the Stele Score — multidimensional trust profile for agents.
+ *
+ * Open algorithm. Anyone can run it on public data. Dimensions trade off.
+ * Gaming one dimension costs another (e.g., high stake + low compliance is suspicious).
+ * The FICO score for agents.
+ *
+ * @param agentId - Agent identifier.
+ * @param compliance - Compliance record.
+ * @param reputation - Reputation snapshot (optional; stakeLevel from reputation.tier if available).
+ * @param covenantHistory - Covenant lineage for lineageDepth.
+ * @param stakeLevel - Optional explicit stake 0–1 (overrides reputation-derived).
+ */
+export function computeSteleScore(
+  agentId: string,
+  compliance: ComplianceRecord,
+  covenantHistory: CovenantRecord[],
+  options?: {
+    reputation?: ReputationSnapshot;
+    stakeLevel?: number;
+    weights?: Partial<typeof DEFAULT_STELE_SCORE_WEIGHTS>;
+  },
+): SteleScoreProfile {
+  validateNonEmpty(agentId, 'agentId');
+  validateComplianceRecord(compliance);
+
+  const weights = { ...DEFAULT_STELE_SCORE_WEIGHTS, ...options?.weights };
+
+  const complianceRate =
+    compliance.totalInteractions > 0
+      ? compliance.covenantedInteractions / compliance.totalInteractions
+      : 0;
+
+  const canaryPassRate =
+    compliance.canaryTests > 0 ? compliance.canaryPasses / compliance.canaryTests : 0;
+
+  const breachFreedom =
+    compliance.totalInteractions > 0
+      ? 1 - compliance.breaches / compliance.totalInteractions
+      : 1;
+
+  const stakeLevel =
+    options?.stakeLevel ??
+    (options?.reputation?.tier === 'high'
+      ? 0.9
+      : options?.reputation?.tier === 'medium'
+        ? 0.5
+        : options?.reputation?.tier === 'low'
+          ? 0.2
+          : 0);
+
+  const lineageDepth = Math.min(covenantHistory.length / 10, 1);
+
+  const composite =
+    complianceRate * weights.complianceRate +
+    compliance.attestationCoverage * weights.attestationCoverage +
+    canaryPassRate * weights.canaryPassRate +
+    breachFreedom * weights.breachFreedom +
+    stakeLevel * weights.stakeLevel +
+    lineageDepth * weights.lineageDepth;
+
+  return {
+    agentId,
+    complianceRate,
+    attestationCoverage: compliance.attestationCoverage,
+    canaryPassRate,
+    breachFreedom,
+    stakeLevel,
+    lineageDepth,
+    composite: Math.max(0, Math.min(1, composite)),
+    algorithmVersion: STELE_SCORE_ALGORITHM_VERSION,
+    computedAt: Date.now(),
   };
 }

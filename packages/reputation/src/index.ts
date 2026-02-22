@@ -396,8 +396,11 @@ export function computeReputationScore(
   receipts: ExecutionReceipt[],
   endorsements?: Endorsement[],
   config?: ScoringConfig,
+  stakeData?: { currentStake: number; totalBurned: number },
 ): ReputationScore {
   const cfg = config ?? DEFAULT_SCORING_CONFIG;
+  const currentStake = stakeData?.currentStake ?? 0;
+  const totalBurned = stakeData?.totalBurned ?? 0;
   const now = Date.now();
 
   // --- Count outcomes ---
@@ -472,6 +475,15 @@ export function computeReputationScore(
       cfg.endorsementWeight * avgEndorsementWeight;
   }
 
+  // --- Collateralization bound: when stake data provided, trust <= f(stake, history, time) ---
+  // Formula: stakeBound = min(1, currentStake + 0.5 * (1 - totalBurned) * historyFactor)
+  // When stakeData is omitted, no cap is applied (stakeBound = 1).
+  const historyFactor = totalExecutions > 0 ? Math.min(1, totalExecutions / 100) : 0;
+  const stakeBound = stakeData
+    ? Math.min(1, currentStake + 0.5 * Math.max(0, 1 - totalBurned) * historyFactor)
+    : 1;
+  weightedScore = Math.min(weightedScore, stakeBound);
+
   // --- Clamp to [0, 1] ---
   weightedScore = Math.max(0, Math.min(1, weightedScore));
 
@@ -494,8 +506,9 @@ export function computeReputationScore(
     weightedScore,
     receiptsMerkleRoot,
     lastUpdatedAt: new Date(now).toISOString(),
-    currentStake: 0,
-    totalBurned: 0,
+    currentStake,
+    totalBurned,
+    stakeBound,
   };
 }
 

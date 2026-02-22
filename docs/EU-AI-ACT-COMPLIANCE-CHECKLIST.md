@@ -1,0 +1,85 @@
+# EU AI Act Compliance Checklist — Kova Mapping
+
+**Deadline: August 2, 2026** for general obligations on high-risk AI systems.
+
+Use this checklist to verify your agent deployment meets EU AI Act requirements via Kova.
+
+---
+
+## High-Level Checklist
+
+| # | Requirement | Kova Capability | Package | Status |
+|---|-------------|----------------|---------|--------|
+| 1 | Risk management (Art. 10) | Covenant constraints, canary tests, breach detection | @stele/core, @stele/canary, @stele/breach | ✅ |
+| 2 | Data governance (Art. 11) | Behavioral provenance, audit trail | @stele/enforcement | ✅ |
+| 3 | Transparency (Art. 13) | CCL human-readable, LegalIdentityPackage | @stele/core, @stele/legal | ✅ |
+| 4 | Human oversight (Art. 14) | CCL require/deny, revocation | @stele/ccl, @stele/breach | ✅ |
+| 5 | Accuracy & cybersecurity (Art. 15) | Canary, robustness, Ed25519 | @stele/canary, @stele/robustness, @stele/crypto | ✅ |
+| 6 | Record-keeping (Art. 17) | Hash-chained audit trail | @stele/enforcement, @stele/store | ✅ |
+| 7 | Transparency obligations (Art. 53) | Covenant disclosure, LegalIdentityPackage | @stele/legal | ✅ |
+| 8 | Conformity assessment (Art. 71) | Verification, compliance proof | @stele/verifier, @stele/proof | ✅ |
+
+---
+
+## Implementation Steps
+
+### 1. Declare a Covenant (5 min)
+
+```bash
+kova init
+# or
+npx kova init
+```
+
+Creates `stele.config.json` and key pair. Add constraints in CCL.
+
+### 2. Run Compliance Audit (1 min)
+
+```bash
+kova audit .
+```
+
+Shows EU AI Act readiness %, missing items, and recommendations.
+
+### 3. Enable Enforcement (10 min)
+
+```typescript
+import { withKova } from 'kova';
+const server = await withKova(yourMCPServer, 'data-isolation');
+```
+
+Or use `@stele/enforcement` Monitor for custom agents.
+
+### 4. Export Legal Package (5 min)
+
+```typescript
+import { exportLegalPackage } from '@stele/legal';
+const pkg = exportLegalPackage(agentId, operatorId, data, 'json');
+```
+
+Court-ready evidentiary package for regulators and insurers.
+
+---
+
+## Article-by-Article Mapping
+
+See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article → Kova capability mapping.
+
+---
+
+## Certification Path
+
+For regulated industries (finance, healthcare, critical infrastructure):
+
+1. **Solo tier** — Run `kova init` + `kova audit`; fix gaps
+2. **Bilateral** — Add attestation; counterparty signs interactions
+3. **Network** — Enroll in Kova trust graph; publish reputation
+4. **Certified** — Use @stele/certification for agent class certification ($10K–100K)
+
+---
+
+## Support
+
+- [QUICK-START.md](./QUICK-START.md)
+- [CONTRIBUTING.md](../CONTRIBUTING.md)
+- GitHub Issues: https://github.com/agbusiness195/stele/issues

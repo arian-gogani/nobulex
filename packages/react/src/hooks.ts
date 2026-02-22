@@ -24,7 +24,7 @@ interface ReactModule {
   useState<T>(initial: T | (() => T)): [T, (v: T | ((prev: T) => T)) => void];
   useEffect(effect: () => void | (() => void), deps?: unknown[]): void;
   useRef<T>(initial: T): { current: T };
-  useCallback<T extends (...args: unknown[]) => unknown>(fn: T, deps: unknown[]): T;
+  useCallback<T>(fn: T, deps: unknown[]): T;
   useSyncExternalStore<T>(subscribe: (cb: () => void) => () => void, getSnapshot: () => T): T;
 }
 
@@ -35,7 +35,7 @@ let _react: ReactModule | undefined;
 function getReact(): ReactModule {
   if (!_react) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports
+      // eslint-disable-next-line @typescript-eslint/no-require-imports -- Optional peer; require() for lazy load
       _react = require('react') as ReactModule;
     } catch {
       throw new Error(
@@ -49,6 +49,8 @@ function getReact(): ReactModule {
 
 /**
  * Inject a React module for testing or SSR environments.
+ *
+ * @param mod - The React module to inject.
  * @internal
  */
 export function _injectReact(mod: ReactModule): void {
@@ -56,7 +58,8 @@ export function _injectReact(mod: ReactModule): void {
 }
 
 /**
- * Reset the injected React module.
+ * Reset the injected React module (clears any previously injected module).
+ *
  * @internal
  */
 export function _resetReact(): void {

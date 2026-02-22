@@ -1,0 +1,68 @@
+{
+  "name": "kova",
+  "version": "0.1.0",
+  "description": "Open cryptographic protocol (MIT) \u2014 the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation.",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm && node -e \"require('fs').copyFileSync('src/index.d.ts','dist/index.d.ts')\"",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "files": [
+    "dist",
+    "scripts",
+    "README.md",
+    "LICENSE"
+  ],
+  "dependencies": {
+    "@stele/cli": "0.1.0",
+    "@stele/sdk": "0.1.0",
+    "@stele/mcp": "0.1.0",
+    "@stele/enforcement": "0.1.0",
+    "@stele/core": "0.1.0",
+    "@stele/ccl": "0.1.0",
+    "@stele/crypto": "0.1.0",
+    "@stele/identity": "0.1.0",
+    "@stele/proof": "0.1.0",
+    "@stele/store": "0.1.0",
+    "@stele/verifier": "0.1.0"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/stele.git",
+    "directory": "packages/kova"
+  },
+  "homepage": "https://stele.dev",
+  "bugs": {
+    "url": "https://github.com/agbusiness195/stele/issues"
+  },
+  "author": "Stele Labs, Inc.",
+  "keywords": [
+    "kova",
+    "trust",
+    "agent",
+    "accountability",
+    "mcp",
+    "covenant"
+  ],
+  "bin": {
+    "kova": "./scripts/kova.js"
+  }
+}

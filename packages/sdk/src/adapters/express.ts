@@ -10,6 +10,7 @@
 
 import type { SteleClient } from '../index.js';
 import type { CovenantDocument } from '@stele/core';
+import { deserializeCovenant, verifyCovenant } from '@stele/core';
 import type { EvaluationResult } from '../types.js';
 
 // ─── Generic HTTP types ──────────────────────────────────────────────────────
@@ -320,6 +321,63 @@ export function steleGuardHandler(
   };
 }
 
+// ─── createWellKnownHandler ───────────────────────────────────────────────────
+
+/**
+ * Options for the well-known Stele discovery endpoint.
+ * See docs/DISCOVERY.md for the convention.
+ */
+export interface WellKnownOptions {
+  /** Agent identity or content-address. */
+  agentId: string;
+  /** Covenant entries for discovery. */
+  covenants: Array<{ id: string; url: string; status: 'active' | 'expired' | 'revoked' }>;
+  /** Optional base URL for resolver (e.g. https://example.com/stele/resolve). */
+  resolver?: string;
+  /** Protocol version. Defaults to "0.1.0". */
+  stele?: string;
+}
+
+/**
+ * Creates a handler for GET /.well-known/stele (federated covenant discovery).
+ * Trust the Ed25519 signature on the covenant, not the resolver.
+ *
+ * @param options - Discovery metadata.
+ * @returns AsyncHandler for the well-known endpoint.
+ *
+ * @example
+ * ```typescript
+ * const handler = createWellKnownHandler({
+ *   agentId: 'agent-1',
+ *   covenants: [{ id: doc.id, url: 'https://example.com/covenants/abc.json', status: 'active' }],
+ * });
+ * app.get('/.well-known/stele', handler);
+ * ```
+ */
+export function createWellKnownHandler(options: WellKnownOptions): AsyncHandler {
+  const { agentId, covenants, resolver, stele = '0.1.0' } = options;
+
+  return async (_req: IncomingRequest, res: OutgoingResponse): Promise<void> => {
+    const body = JSON.stringify({
+      stele,
+      agentId,
+      covenants,
+      ...(resolver && { resolver }),
+    });
+
+    if (res.setHeader) {
+      res.setHeader('content-type', 'application/json');
+      res.setHeader('cache-control', 'public, max-age=60');
+    }
+    if (res.statusCode !== undefined) {
+      res.statusCode = 200;
+    }
+    if (res.end) {
+      res.end(body);
+    }
+  };
+}
+
 // ─── createCovenantRouter ────────────────────────────────────────────────────
 
 /**
@@ -422,5 +480,144 @@ export function createCovenantRouter(options: CovenantRouterOptions): CovenantRo
       const resource = defaultResourceExtractor(req);
       return client.evaluateAction(covenant, action, resource);
     },
+  };
+}
+
+// ─── Kova API Gateway ────────────────────────────────────────────────────────
+
+/**
+ * Options for the Kova API Gateway middleware.
+ *
+ * Drop-in middleware that sits in front of any API and requires agents
+ * to present a valid covenant before granting access. Protects API providers
+ * from liability when agents misuse their API.
+ *
+ * @see docs/ADOPTION-STRATEGY.md — "Trust-Gated Access: The Liability Play"
+ */
+export interface KovaGatewayOptions {
+  /** The SteleClient instance for covenant verification and evaluation. */
+  client: SteleClient;
+  /**
+   * Extract the covenant from the incoming request.
+   * Default: reads `x-kova-covenant` header as JSON string, or `authorization: Bearer <base64>`.
+   */
+  covenantExtractor?: (req: IncomingRequest) => CovenantDocument | string | null;
+  /**
+   * Optional: required constraints the client's covenant must satisfy.
+   * If provided, the gateway checks that the covenant's CCL includes these.
+   */
+  requiredConstraints?: string[];
+  actionExtractor?: (req: IncomingRequest) => string;
+  resourceExtractor?: (req: IncomingRequest) => string;
+  onDenied?: (req: IncomingRequest, res: OutgoingResponse, result: EvaluationResult) => void;
+  onError?: (req: IncomingRequest, res: OutgoingResponse, error: unknown) => void;
+}
+
+function defaultCovenantExtractor(req: IncomingRequest): CovenantDocument | string | null {
+  const h = req.headers ?? {};
+  const raw = (typeof h['x-kova-covenant'] === 'string' ? h['x-kova-covenant'] : h['x-kova-covenant']?.[0]) ?? null;
+  if (raw) return raw;
+
+  const auth = (typeof h['authorization'] === 'string' ? h['authorization'] : h['authorization']?.[0]) ?? '';
+  const bearer = auth.startsWith('Bearer ') ? auth.slice(7).trim() : null;
+  if (bearer) {
+    try {
+      return JSON.parse(Buffer.from(bearer, 'base64').toString('utf-8'));
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
+/**
+ * Kova API Gateway middleware — requires agents to present a valid covenant before API access.
+ *
+ * Drop-in middleware for Express/Connect. Every agent calling the API must present
+ * a covenant (via `x-kova-covenant` header or `Authorization: Bearer <base64>`).
+ * The gateway verifies the covenant and evaluates the request. Protects API
+ * providers from liability when agents misuse their API.
+ *
+ * @example
+ * ```typescript
+ * import express from 'express';
+ * import { SteleClient, kovaGatewayMiddleware } from '@stele/sdk';
+ *
+ * const client = new SteleClient();
+ * const app = express();
+ *
+ * app.use(kovaGatewayMiddleware({ client }));
+ *
+ * app.get('/data', (req, res) => res.json({ data: 'allowed' }));
+ * ```
+ */
+export function kovaGatewayMiddleware(
+  options: KovaGatewayOptions,
+): (req: IncomingRequest, res: OutgoingResponse, next: NextFunction) => void {
+  const {
+    client,
+    covenantExtractor = defaultCovenantExtractor,
+    requiredConstraints,
+    actionExtractor = defaultActionExtractor,
+    resourceExtractor = defaultResourceExtractor,
+    onDenied = defaultOnDenied,
+    onError = defaultOnError,
+  } = options;
+
+  return (req: IncomingRequest, res: OutgoingResponse, next: NextFunction): void => {
+    const raw = covenantExtractor(req);
+    if (!raw) {
+      if (res.setHeader) res.setHeader('content-type', 'application/json');
+      if (res.statusCode !== undefined) res.statusCode = 401;
+      if (res.end) res.end(JSON.stringify({ error: 'Missing covenant. Send x-kova-covenant header or Authorization: Bearer <covenant-base64>' }));
+      return;
+    }
+
+    let covenant: CovenantDocument;
+    try {
+      covenant = typeof raw === 'string' ? deserializeCovenant(raw) : raw;
+    } catch {
+      if (res.setHeader) res.setHeader('content-type', 'application/json');
+      if (res.statusCode !== undefined) res.statusCode = 401;
+      if (res.end) res.end(JSON.stringify({ error: 'Invalid covenant format' }));
+      return;
+    }
+
+    void verifyCovenant(covenant).then((verifyResult) => {
+      if (!verifyResult.valid) {
+        if (res.setHeader) res.setHeader('content-type', 'application/json');
+        if (res.statusCode !== undefined) res.statusCode = 401;
+        if (res.end) res.end(JSON.stringify({ error: 'Covenant verification failed', details: verifyResult.checks.filter((c) => !c.passed) }));
+        return;
+      }
+
+      if (requiredConstraints && requiredConstraints.length > 0) {
+        const constraints = covenant.constraints ?? '';
+        const missing = requiredConstraints.filter((rc) => !constraints.includes(rc));
+        if (missing.length > 0) {
+          if (res.setHeader) res.setHeader('content-type', 'application/json');
+          if (res.statusCode !== undefined) res.statusCode = 401;
+          if (res.end) res.end(JSON.stringify({ error: 'Covenant missing required constraints', missing }));
+          return;
+        }
+      }
+
+      const action = actionExtractor(req);
+      const resource = resourceExtractor(req);
+
+      return client
+        .evaluateAction(covenant, action, resource)
+        .then((result: EvaluationResult) => {
+          if (result.permitted) {
+            if (res.setHeader) res.setHeader('x-kova-permitted', 'true');
+            next();
+          } else {
+            onDenied(req, res, result);
+          }
+        })
+        .catch((error: unknown) => {
+          onError(req, res, error);
+        });
+    });
   };
 }

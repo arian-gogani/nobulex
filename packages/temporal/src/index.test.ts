@@ -328,6 +328,49 @@ describe('evaluateTriggers', () => {
     expect(fired).toHaveLength(0);
   });
 
+  it('fires model_update when modelVersion changes from condition', () => {
+    const trigger: EvolutionTrigger = {
+      type: 'model_update',
+      condition: 'gpt-4-turbo',
+      action: 'tighten',
+      constraintId: 'pending_reverification',
+    };
+    const policy = makePolicy({ triggers: [trigger] });
+    const covenant = makeCovenant({ policy });
+    const agent = makeAgent({ modelVersion: 'gpt-5' });
+    const fired = evaluateTriggers(covenant, agent);
+    expect(fired).toHaveLength(1);
+    expect(fired[0]!.type).toBe('model_update');
+  });
+
+  it('does not fire model_update when modelVersion matches condition', () => {
+    const trigger: EvolutionTrigger = {
+      type: 'model_update',
+      condition: 'gpt-4-turbo',
+      action: 'tighten',
+      constraintId: 'pending_reverification',
+    };
+    const policy = makePolicy({ triggers: [trigger] });
+    const covenant = makeCovenant({ policy });
+    const agent = makeAgent({ modelVersion: 'gpt-4-turbo' });
+    const fired = evaluateTriggers(covenant, agent);
+    expect(fired).toHaveLength(0);
+  });
+
+  it('does not fire model_update when modelVersion is absent', () => {
+    const trigger: EvolutionTrigger = {
+      type: 'model_update',
+      condition: 'gpt-4-turbo',
+      action: 'tighten',
+      constraintId: 'pending_reverification',
+    };
+    const policy = makePolicy({ triggers: [trigger] });
+    const covenant = makeCovenant({ policy });
+    const agent = makeAgent(); // no modelVersion
+    const fired = evaluateTriggers(covenant, agent);
+    expect(fired).toHaveLength(0);
+  });
+
   it('throws when agentState.reputationScore is not a number', () => {
     const trigger: EvolutionTrigger = { type: 'breach_event', condition: 'any', action: 'tighten' };
     const policy = makePolicy({ triggers: [trigger] });

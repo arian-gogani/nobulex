@@ -25,12 +25,20 @@ export const colors = {
 
 let colorsEnabled = true;
 
-/** Enable or disable ANSI color output globally. */
+/**
+ * Enable or disable ANSI color output globally.
+ *
+ * @param enabled - Whether to enable colored output.
+ */
 export function setColorsEnabled(enabled: boolean): void {
   colorsEnabled = enabled;
 }
 
-/** Returns whether colors are currently enabled. */
+/**
+ * Returns whether colors are currently enabled.
+ *
+ * @returns True if ANSI colors are enabled.
+ */
 export function getColorsEnabled(): boolean {
   return colorsEnabled;
 }
@@ -42,67 +50,74 @@ function c(code: string, text: string): string {
   return `${code}${text}${colors.reset}`;
 }
 
+/** @param text - String to bold. @returns Bolded text. */
 export function bold(text: string): string {
   return c(colors.bold, text);
 }
 
+/** @param text - String to color red. @returns Red text. */
 export function red(text: string): string {
   return c(colors.red, text);
 }
 
+/** @param text - String to color green. @returns Green text. */
 export function green(text: string): string {
   return c(colors.green, text);
 }
 
+/** @param text - String to color yellow. @returns Yellow text. */
 export function yellow(text: string): string {
   return c(colors.yellow, text);
 }
 
+/** @param text - String to color blue. @returns Blue text. */
 export function blue(text: string): string {
   return c(colors.blue, text);
 }
 
+/** @param text - String to color cyan. @returns Cyan text. */
 export function cyan(text: string): string {
   return c(colors.cyan, text);
 }
 
+/** @param text - String to dim. @returns Dimmed text. */
 export function gray(text: string): string {
   return c(colors.gray, text);
 }
 
 // ─── Semantic formatters ──────────────────────────────────────────────────────
 
-/** Green checkmark + message. */
+/** @param msg - Message to display. @returns Green checkmark + message. */
 export function success(msg: string): string {
   if (!colorsEnabled) return `[OK] ${msg}`;
   return `${colors.green}\u2714${colors.reset} ${msg}`;
 }
 
-/** Red X + message. */
+/** @param msg - Error message. @returns Red X + message. */
 export function error(msg: string): string {
   if (!colorsEnabled) return `[ERROR] ${msg}`;
   return `${colors.red}\u2718${colors.reset} ${msg}`;
 }
 
-/** Yellow exclamation + message. */
+/** @param msg - Warning message. @returns Yellow exclamation + message. */
 export function warning(msg: string): string {
   if (!colorsEnabled) return `[WARN] ${msg}`;
   return `${colors.yellow}!${colors.reset} ${msg}`;
 }
 
-/** Blue info marker + message. */
+/** @param msg - Info message. @returns Blue info marker + message. */
 export function info(msg: string): string {
   if (!colorsEnabled) return `[INFO] ${msg}`;
   return `${colors.blue}i${colors.reset} ${msg}`;
 }
 
-/** Bold + underlined header text. */
+/** @param msg - Header text. @returns Bold + underlined text. */
 export function header(msg: string): string {
   if (!colorsEnabled) return msg;
   return `${colors.bold}${colors.underline}${msg}${colors.reset}`;
 }
 
-/** Dim/gray text. */
+/** @param msg - Text to dim. @returns Dimmed text. */
 export function dim(msg: string): string {
   if (!colorsEnabled) return msg;
   return `${colors.gray}${msg}${colors.reset}`;
@@ -110,9 +125,9 @@ export function dim(msg: string): string {
 
 // ─── Strip ANSI codes ─────────────────────────────────────────────────────────
 
-/** Strip all ANSI escape sequences from a string. */
+/** @param text - String possibly containing ANSI codes. @returns String with ANSI codes removed. */
 export function stripAnsi(text: string): string {
-  // eslint-disable-next-line no-control-regex
+  // eslint-disable-next-line no-control-regex -- ANSI escape sequences use \x1b[ for stripping
   return text.replace(/\x1b\[[0-9;]*m/g, '');
 }
 
@@ -121,6 +136,10 @@ export function stripAnsi(text: string): string {
 /**
  * Render a simple aligned table from headers and rows.
  * All cells are left-aligned with 2-space gutter between columns.
+ *
+ * @param headers - Column headers.
+ * @param rows - Row data (each row is an array of cell strings).
+ * @returns Formatted table string.
  */
 export function table(headers: string[], rows: string[][]): string {
   const colCount = headers.length;
@@ -171,6 +190,9 @@ export function table(headers: string[], rows: string[][]): string {
 /**
  * Render key-value pairs with aligned values.
  * Keys are displayed in bold, values are plain.
+ *
+ * @param pairs - Array of [key, value] tuples.
+ * @returns Formatted key-value string.
  */
 export function keyValue(pairs: [string, string][]): string {
   if (pairs.length === 0) return '';
@@ -191,6 +213,10 @@ export function keyValue(pairs: [string, string][]): string {
 /**
  * Draw a box with a title and content using Unicode box-drawing characters.
  * Content lines are padded and framed.
+ *
+ * @param title - Box title.
+ * @param content - Box body text.
+ * @returns Formatted box string.
  */
 export function box(title: string, content: string): string {
   const contentLines = content.split('\n');

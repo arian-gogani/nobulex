@@ -15,6 +15,7 @@ import {
   toHex,
   fromHex,
   timestamp,
+  generateNonce,
 } from '@stele/crypto';
 
 import type {
@@ -128,6 +129,7 @@ export async function createBreachAttestation(
   const recommendedAction = recommendedActionForSeverity(severity);
   const reportedAt = timestamp();
   const reporterPublicKey = reporterKeyPair.publicKeyHex;
+  const nonce = toHex(generateNonce());
 
   // Build the content object (everything except id and signature)
   const content = {
@@ -141,6 +143,7 @@ export async function createBreachAttestation(
     recommendedAction,
     reporterPublicKey,
     reportedAt,
+    nonce,
     affectedCovenants,
   };
 
@@ -166,6 +169,7 @@ export async function createBreachAttestation(
     reporterPublicKey,
     reporterSignature,
     reportedAt,
+    nonce,
     affectedCovenants,
   };
 }
@@ -191,6 +195,7 @@ export async function verifyBreachAttestation(
     recommendedAction: attestation.recommendedAction,
     reporterPublicKey: attestation.reporterPublicKey,
     reportedAt: attestation.reportedAt,
+    nonce: attestation.nonce,
     affectedCovenants: attestation.affectedCovenants,
   };
 

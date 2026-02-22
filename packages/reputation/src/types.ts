@@ -29,6 +29,8 @@ export interface ReputationScore {
   lastUpdatedAt: string;
   currentStake: number;
   totalBurned: number;
+  /** Collateralization bound: trustScore <= f(stake, history, time). Max trust allowed given stake. */
+  stakeBound: number;
 }
 
 export interface ReputationStake {

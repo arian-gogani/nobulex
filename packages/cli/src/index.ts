@@ -46,6 +46,8 @@ import {
 } from './completions';
 import { runDoctor } from './doctor';
 import type { DoctorCheck } from './doctor';
+import { readdirSync, readFileSync, existsSync } from 'fs';
+import { join, resolve } from 'path';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -127,6 +129,7 @@ function buildMainHelp(): string {
         ['parse <ccl>', 'Parse CCL and output AST as JSON'],
         ['completions <shell>', 'Generate shell completion script (bash|zsh|fish)'],
         ['doctor', 'Check Stele installation health'],
+        ['audit [path]', 'Compliance audit report for an agent/project directory'],
         ['diff <doc1> <doc2>', 'Show differences between two covenant documents'],
         ['version', 'Print version information'],
         ['help', 'Show this help message'],
@@ -139,6 +142,7 @@ function buildMainHelp(): string {
     table(
       ['Flag', 'Description'],
       [
+        ['--version, -v', 'Print version and exit'],
         ['--json', 'Machine-readable JSON output (no colors)'],
         ['--no-color', 'Disable colored output'],
         ['--help', 'Show help for a command'],
@@ -230,6 +234,25 @@ Compares two covenant documents and highlights:
   - Party changes (issuer, beneficiary)
   - Constraint differences
   - Color-coded output (green for additions, red for removals)`;
+
+const AUDIT_HELP = `stele audit - Kova compliance audit report for an agent/project directory.
+
+Usage: stele audit [path] [--json] [--format <format>] [--verbose]
+
+Scans the given path (default: .) for covenant configs, runtime restrictions,
+and attestation coverage. Outputs a compliance report including:
+  - EU AI Act Readiness
+  - Covenant Coverage
+  - Hard Enforcement (runtime restrictions)
+  - Attestation Coverage
+  - Trust Score (if enrolled)
+
+Options:
+  --verbose    Show detailed output: covenant file paths, scoring breakdown
+  --json       Output report as JSON
+  --format     Output format: text (default), markdown
+
+Recommended: Run "stele init" to generate covenants from your agent config.`;
 
 // ─── Command: init ────────────────────────────────────────────────────────────
 
@@ -894,6 +917,237 @@ async function cmdDiff(
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
+// ─── Command: audit ──────────────────────────────────────────────────────────
+
+function findCovenantFiles(dir: string, depth = 0, maxDepth = 3): string[] {
+  if (depth > maxDepth) return [];
+  const found: string[] = [];
+  try {
+    const entries = readdirSync(dir, { withFileTypes: true });
+    for (const e of entries) {
+      const full = join(dir, e.name);
+      if (e.isDirectory() && !e.name.startsWith('.') && e.name !== 'node_modules') {
+        found.push(...findCovenantFiles(full, depth + 1, maxDepth));
+      } else if (e.isFile() && (e.name.endsWith('.json') || e.name === 'stele.config.json')) {
+        try {
+          const raw = readFileSync(full, 'utf-8');
+          const parsed = JSON.parse(raw);
+          if (parsed?.stele === '0.1.0' || (parsed?.issuer && parsed?.beneficiary && parsed?.constraints)) {
+            found.push(full);
+          }
+        } catch {
+          // not a covenant
+        }
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return found;
+}
+
+function scanAgentSignals(root: string): { hasAgentsMd: boolean; hasMcpConfig: boolean; hasKovaDep: boolean } {
+  let hasAgentsMd = false;
+  let hasMcpConfig = false;
+  let hasKovaDep = false;
+  try {
+    hasAgentsMd = existsSync(join(root, 'AGENTS.md'));
+    hasMcpConfig = existsSync(join(root, 'mcp.json')) || existsSync(join(root, '.mcp.json'));
+    const pkgPath = join(root, 'package.json');
+    if (existsSync(pkgPath)) {
+      try {
+        const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
+        const deps = { ...pkg.dependencies, ...pkg.devDependencies } as Record<string, string> | undefined;
+        if (deps) {
+          hasKovaDep = Object.keys(deps).some((k) => k === 'kova' || k === '@stele/sdk' || k.startsWith('@stele/'));
+        }
+      } catch {
+        // ignore
+      }
+    }
+  } catch {
+    // ignore
+  }
+  return { hasAgentsMd, hasMcpConfig, hasKovaDep };
+}
+
+async function cmdAudit(
+  positional: string[],
+  flags: Record<string, string | boolean>,
+): Promise<RunResult> {
+  if (hasFlag(flags, 'help')) {
+    return { stdout: AUDIT_HELP, stderr: '', exitCode: 0 };
+  }
+
+  const root = resolve(positional[0] ?? '.');
+  if (!existsSync(root)) {
+    return { stdout: '', stderr: `Error: Path not found: ${root}`, exitCode: 1 };
+  }
+
+  const covenantFiles = findCovenantFiles(root);
+  const hasConfig = existsSync(join(root, 'stele.config.json'));
+  const signals = scanAgentSignals(root);
+  const covenantCount = covenantFiles.length;
+  const covenantCoverage = covenantCount > 0 ? Math.min(100, covenantCount * 50) : 0;
+  let euReadiness = hasConfig ? 25 : 0;
+  euReadiness += covenantCoverage * 0.5;
+  euReadiness += covenantCount > 0 ? 12 : 0;
+  euReadiness += signals.hasAgentsMd ? 5 : 0;
+  euReadiness += signals.hasMcpConfig ? 5 : 0;
+  euReadiness += signals.hasKovaDep ? 8 : 0;
+  const hardEnforcement = covenantCount > 0 ? 50 : signals.hasKovaDep ? 15 : 0;
+  const attestationCoverage = 0;
+
+  const report = {
+    path: root,
+    euAiActReadiness: Math.round(Math.min(100, euReadiness)),
+    covenantCoverage,
+    hardEnforcement,
+    attestationCoverage,
+    trustScore: null as string | null,
+    covenantFilesFound: covenantCount,
+    hasConfig,
+    hasAgentsMd: signals.hasAgentsMd,
+    hasMcpConfig: signals.hasMcpConfig,
+    hasKovaDep: signals.hasKovaDep,
+    missing: [] as string[],
+    recommended: [] as string[],
+  };
+
+  if (report.euAiActReadiness < 50) {
+    report.missing.push('immutable logs', 'incident reporting');
+  }
+  if (covenantCount === 0) {
+    report.missing.push('no covenants declared');
+    report.recommended.push('Run "kova init" to generate covenants and stele.config.json');
+  }
+  if (!hasConfig) {
+    report.recommended.push('Run "kova init" to create stele.config.json');
+  }
+  if (signals.hasMcpConfig && !signals.hasKovaDep) {
+    report.recommended.push('Add kova: npm install kova — wrap your MCP server with withKova(server, "data-isolation")');
+  }
+  if (signals.hasAgentsMd && covenantCount === 0) {
+    report.recommended.push('You have AGENTS.md — add a covenant to declare behavioral constraints');
+  }
+  if (report.recommended.length === 0) {
+    report.recommended.push('Run "kova init" to generate covenants from your agent config');
+  }
+  if (hardEnforcement === 0) {
+    report.missing.push('no runtime restrictions');
+  }
+  if (attestationCoverage === 0) {
+    report.missing.push('no external attestation');
+  }
+
+  const verbose = hasFlag(flags, 'verbose');
+  const format = (getFlag(flags, 'format') as string) ?? 'text';
+
+  if (hasFlag(flags, 'json')) {
+    const jsonReport = verbose
+      ? {
+          ...report,
+          covenantFilePaths: covenantFiles,
+          scoringBreakdown: {
+            config: hasConfig ? 25 : 0,
+            covenantCoverage: covenantCoverage * 0.5,
+            covenantBonus: covenantCount > 0 ? 12 : 0,
+            agentsMd: signals.hasAgentsMd ? 5 : 0,
+            mcpConfig: signals.hasMcpConfig ? 5 : 0,
+            kovaDep: signals.hasKovaDep ? 8 : 0,
+          },
+        }
+      : report;
+    return {
+      stdout: JSON.stringify(jsonReport, null, 2),
+      stderr: '',
+      exitCode: 0,
+    };
+  }
+
+  const missingStr = report.missing.length > 0 ? ` (missing: ${report.missing.join(', ')})` : '';
+  const recLines = report.recommended.map((r) => dim(`  • ${r}`)).join('\n');
+
+  if (format === 'markdown') {
+    const md: string[] = [
+      '# Kova Compliance Audit Report',
+      '',
+      '| Metric | Value |',
+      '|--------|-------|',
+      `| Path | \`${root}\` |`,
+      `| EU AI Act Readiness | ${report.euAiActReadiness}%${missingStr} |`,
+      `| Covenant Coverage | ${report.covenantCoverage}% |`,
+      `| Hard Enforcement | ${report.hardEnforcement}% |`,
+      `| Attestation Coverage | ${report.attestationCoverage}% |`,
+      `| Trust Score | ${report.trustScore ?? 'N/A (not enrolled)'} |`,
+      `| AGENTS.md | ${report.hasAgentsMd ? '✓' : '—'} |`,
+      `| MCP config | ${report.hasMcpConfig ? '✓' : '—'} |`,
+      `| Kova/Stele dep | ${report.hasKovaDep ? '✓' : '—'} |`,
+      '',
+      '## Recommended',
+      '',
+      ...report.recommended.map((r) => `- ${r}`),
+      '',
+    ];
+    if (verbose && covenantFiles.length > 0) {
+      md.push('## Covenant Files\n');
+      covenantFiles.forEach((p) => md.push(`- \`${p}\``));
+      md.push('');
+    }
+    return { stdout: md.join('\n'), stderr: '', exitCode: 0 };
+  }
+
+  const lines: string[] = [
+    '',
+    header('Kova Compliance Audit Report'),
+    dim('═══════════════════════════════'),
+    '',
+    keyValue([
+      ['Path', root],
+      ['EU AI Act Readiness', `${report.euAiActReadiness}%${missingStr}`],
+      ['Covenant Coverage', `${report.covenantCoverage}%`],
+      ['Hard Enforcement', `${report.hardEnforcement}%`],
+      ['Attestation Coverage', `${report.attestationCoverage}%`],
+      ['Trust Score', report.trustScore ?? 'N/A (not enrolled)'],
+      ['AGENTS.md', report.hasAgentsMd ? '✓' : '—'],
+      ['MCP config', report.hasMcpConfig ? '✓' : '—'],
+      ['Kova/Stele dep', report.hasKovaDep ? '✓' : '—'],
+    ]),
+    '',
+    dim('Recommended:'),
+    recLines,
+    '',
+  ];
+
+  if (verbose) {
+    lines.push(dim('Details (--verbose):'));
+    lines.push('');
+    lines.push(keyValue([['Covenant files found', covenantFiles.length.toString()]]));
+    if (covenantFiles.length > 0) {
+      lines.push('');
+      lines.push(dim('  Covenant file paths:'));
+      for (const p of covenantFiles) {
+        lines.push(dim(`    • ${p}`));
+      }
+    }
+    lines.push('');
+    lines.push(dim('  EU AI Act scoring breakdown:'));
+    lines.push(
+      keyValue([
+        ['  stele.config.json', hasConfig ? '+25' : '+0'],
+        ['  Covenant coverage', `+${Math.round(covenantCoverage * 0.5)}`],
+        ['  Covenant bonus', covenantCount > 0 ? '+12' : '+0'],
+        ['  AGENTS.md', signals.hasAgentsMd ? '+5' : '+0'],
+        ['  MCP config', signals.hasMcpConfig ? '+5' : '+0'],
+        ['  Kova/Stele dep', signals.hasKovaDep ? '+8' : '+0'],
+      ]),
+    );
+    lines.push('');
+  }
+
+  return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
+}
+
 // ─── Command: version ─────────────────────────────────────────────────────────
 
 function cmdVersion(flags: Record<string, string | boolean>): RunResult {
@@ -924,6 +1178,11 @@ function cmdHelp(): RunResult {
  */
 export async function run(args: string[], configDir?: string): Promise<RunResult> {
   const parsed = parseArgs(args);
+
+  // Handle --version / -v before any other logic (standard CLI convention)
+  if (hasFlag(parsed.flags, 'version') || args.includes('-v')) {
+    return cmdVersion(parsed.flags);
+  }
 
   // Handle --no-color and --json disabling colors
   const noColor = hasFlag(parsed.flags, 'no-color');
@@ -967,6 +1226,8 @@ export async function run(args: string[], configDir?: string): Promise<RunResult
         return cmdCompletions(parsed.positional, parsed.flags);
       case 'doctor':
         return await cmdDoctor(parsed.flags, configDir);
+      case 'audit':
+        return await cmdAudit(parsed.positional, parsed.flags);
       case 'diff':
         return await cmdDiff(parsed.positional, parsed.flags);
       case 'version':

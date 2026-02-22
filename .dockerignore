@@ -1,0 +1,10 @@
+node_modules
+dist
+.git
+*.log
+.env*
+.DS_Store
+coverage
+.nyc_output
+*.test.ts
+*.spec.ts

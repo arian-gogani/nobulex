@@ -34,6 +34,7 @@ const VALID_TRIGGER_TYPES: TriggerType[] = [
   'reputation_threshold',
   'breach_event',
   'governance_vote',
+  'model_update',
 ];
 
 const VALID_TRIGGER_ACTIONS: TriggerAction[] = [
@@ -94,6 +95,13 @@ function validateTriggerCondition(trigger: EvolutionTrigger): void {
     case 'governance_vote': {
       if (trigger.condition.length === 0) {
         throw new Error('governance_vote condition must not be empty (should be proposal ID)');
+      }
+      break;
+    }
+    case 'model_update': {
+      // condition = previous model version. Fires when agentState.modelVersion !== condition.
+      if (trigger.condition.length === 0) {
+        throw new Error('model_update condition must not be empty (expected previous model version)');
       }
       break;
     }
@@ -243,6 +251,15 @@ export function evaluateTriggers(
           agentState.governanceVotes &&
           agentState.governanceVotes[trigger.condition] === true
         ) {
+          fired.push(trigger);
+        }
+        break;
+      }
+      case 'model_update': {
+        // Fire when model version changed from the expected (condition) value.
+        const previousModel = trigger.condition.trim();
+        const currentModel = agentState.modelVersion ?? '';
+        if (currentModel !== '' && currentModel !== previousModel) {
           fired.push(trigger);
         }
         break;

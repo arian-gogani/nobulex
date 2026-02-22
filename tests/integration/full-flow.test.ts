@@ -427,6 +427,8 @@ describe('Stele SDK: Full cross-package integration flow', () => {
 
       expect(breachAttestation.id).toBeTruthy();
       expect(breachAttestation.id).toMatch(/^[0-9a-f]{64}$/);
+      expect(breachAttestation.nonce).toBeDefined();
+      expect(breachAttestation.nonce).toMatch(/^[0-9a-f]+$/);
       expect(breachAttestation.covenantId).toBe(covenant.id);
       expect(breachAttestation.violatorIdentityHash).toBe(agentIdentity.id);
       expect(breachAttestation.severity).toBe('critical');
@@ -436,6 +438,34 @@ describe('Stele SDK: Full cross-package integration flow', () => {
       expect(breachAttestation.reporterPublicKey).toBe(reporterKeyPair.publicKeyHex);
       expect(breachAttestation.reporterSignature).toBeTruthy();
       expect(breachAttestation.affectedCovenants).toEqual([covenant.id]);
+    });
+
+    it('should produce different attestation IDs for same params (nonce ensures uniqueness)', async () => {
+      const evidenceHash = sha256Object({ test: 'nonce-uniqueness' }) as HashHex;
+      const att1 = await createBreachAttestation(
+        covenant.id,
+        agentIdentity.id,
+        "deny db.write on '/prod/**' severity critical",
+        'critical',
+        'db.write',
+        '/prod/users',
+        evidenceHash,
+        [covenant.id],
+        reporterKeyPair,
+      );
+      const att2 = await createBreachAttestation(
+        covenant.id,
+        agentIdentity.id,
+        "deny db.write on '/prod/**' severity critical",
+        'critical',
+        'db.write',
+        '/prod/users',
+        evidenceHash,
+        [covenant.id],
+        reporterKeyPair,
+      );
+      expect(att1.id).not.toBe(att2.id);
+      expect(att1.nonce).not.toBe(att2.nonce);
     });
 
     it('should verify the breach attestation cryptographic integrity', async () => {

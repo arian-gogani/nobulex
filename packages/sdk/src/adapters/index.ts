@@ -13,6 +13,8 @@ export {
   steleMiddleware,
   steleGuardHandler,
   createCovenantRouter,
+  createWellKnownHandler,
+  kovaGatewayMiddleware,
 } from './express.js';
 
 export type {
@@ -24,6 +26,8 @@ export type {
   CovenantRouterOptions,
   CovenantRouter,
   AsyncHandler,
+  WellKnownOptions,
+  KovaGatewayOptions,
 } from './express.js';
 
 // ─── Vercel AI SDK adapter ───────────────────────────────────────────────────

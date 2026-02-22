@@ -39,9 +39,9 @@
     "rules"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm --dts",
+    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
     "bundle": "tsup src/index.ts --format cjs,esm",
-    "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
+    "dev": "tsup src/index.ts --format cjs,esm --watch",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {

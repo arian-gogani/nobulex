@@ -79,6 +79,8 @@ import type {
 
 // ─── Re-exports ─────────────────────────────────────────────────────────────
 
+export { protect } from './protect.js';
+
 // Re-export conformance suite
 export {
   runConformanceSuite,

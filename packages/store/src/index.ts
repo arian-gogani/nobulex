@@ -1,5 +1,5 @@
 /**
- * @stele/store — Pluggable storage backends for stele records.
+ * @nobulex/store — Pluggable storage backends for stele records.
  *
  * Provides a {@link CovenantStore} interface and a ready-to-use
  * {@link MemoryStore} implementation backed by a Map.
@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 import type {
   CovenantStore,
@@ -17,7 +17,7 @@ import type {
   StoreEventCallback,
 } from './types.js';
 
-// Re-export every type so consumers only need @stele/store
+// Re-export every type so consumers only need @nobulex/store
 export type {
   CovenantStore,
   StoreFilter,

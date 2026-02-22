@@ -339,14 +339,14 @@ describe('validateComposition', () => {
       proof: '', // will be recomputed check
     };
     // Fix the hash so only CCL validity is tested
-    const { sha256Object } = require('@stele/crypto');
+    const { sha256Object } = require('@nobulex/crypto');
     tampered.proof = sha256Object(tampered.composedConstraints);
     expect(validateComposition(tampered)).toBe(false);
   });
 
   it('returns false when deny-wins consistency is violated (permit overlaps deny)', () => {
     // Manually construct a proof where a permit overlaps with a deny
-    const { sha256Object } = require('@stele/crypto');
+    const { sha256Object } = require('@nobulex/crypto');
     const constraints = [
       { source: 'c1', constraint: "permit file_access on '**'", type: 'permit' as const },
       { source: 'c2', constraint: "deny file_access on '**'", type: 'deny' as const },

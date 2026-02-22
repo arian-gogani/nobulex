@@ -6,12 +6,12 @@
  */
 
 import { describe, it, expect } from 'vitest';
-import { generateKeyPair, toHex } from '@stele/crypto';
-import { buildCovenant, verifyCovenant } from '@stele/core';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
-import { parse, evaluate, merge, serialize } from '@stele/ccl';
-import { MemoryStore } from '@stele/store';
-import { Verifier, verifyBatch } from '@stele/verifier';
+import { generateKeyPair, toHex } from '@nobulex/crypto';
+import { buildCovenant, verifyCovenant } from '@nobulex/core';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
+import { parse, evaluate, merge, serialize } from '@nobulex/ccl';
+import { MemoryStore } from '@nobulex/store';
+import { Verifier, verifyBatch } from '@nobulex/verifier';
 
 // ---------------------------------------------------------------------------
 // Helpers

@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 import type { StoreFilter } from './types.js';
 

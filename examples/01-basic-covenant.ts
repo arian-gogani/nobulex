@@ -16,7 +16,7 @@ import {
   generateKeyPair,
   type Issuer,
   type Beneficiary,
-} from '@stele/sdk';
+} from '@nobulex/sdk';
 
 async function main() {
   console.log('========================================');

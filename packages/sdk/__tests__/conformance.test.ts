@@ -14,9 +14,9 @@ import {
 } from '../src/conformance';
 import type { ConformanceTarget } from '../src/conformance';
 
-import { buildCovenant, verifyCovenant } from '@stele/core';
-import { generateKeyPair, sign, verify, sha256 } from '@stele/crypto';
-import { parse, evaluate } from '@stele/ccl';
+import { buildCovenant, verifyCovenant } from '@nobulex/core';
+import { generateKeyPair, sign, verify, sha256 } from '@nobulex/crypto';
+import { parse, evaluate } from '@nobulex/ccl';
 
 // ─── Wire up the ConformanceTarget ──────────────────────────────────────────
 

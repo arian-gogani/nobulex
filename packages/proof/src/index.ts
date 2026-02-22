@@ -1,5 +1,5 @@
-import { sha256String, timestamp } from '@stele/crypto';
-import type { HashHex } from '@stele/crypto';
+import { sha256String, timestamp } from '@nobulex/crypto';
+import type { HashHex } from '@nobulex/crypto';
 import { poseidonHash, hashToField, fieldToHex, FIELD_PRIME } from './poseidon';
 
 import type {

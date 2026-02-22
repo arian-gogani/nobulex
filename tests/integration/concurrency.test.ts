@@ -15,8 +15,8 @@ import {
   sha256,
   toHex,
   generateNonce,
-} from '@stele/crypto';
-import type { KeyPair, HashHex } from '@stele/crypto';
+} from '@nobulex/crypto';
+import type { KeyPair, HashHex } from '@nobulex/crypto';
 
 import {
   buildCovenant,
@@ -25,14 +25,14 @@ import {
   computeId,
   serializeCovenant,
   deserializeCovenant,
-} from '@stele/core';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
+} from '@nobulex/core';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 
-import { parse, evaluate } from '@stele/ccl';
+import { parse, evaluate } from '@nobulex/ccl';
 
-import { MemoryStore } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
 
-import { Verifier, verifyBatch } from '@stele/verifier';
+import { Verifier, verifyBatch } from '@nobulex/verifier';
 
 import {
   createIdentity,
@@ -40,19 +40,19 @@ import {
   verifyIdentity,
   serializeIdentity,
   deserializeIdentity,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
 import {
   Monitor,
   MonitorDeniedError,
   CapabilityGate,
-} from '@stele/enforcement';
+} from '@nobulex/enforcement';
 
 import {
   createReceipt,
   verifyReceipt,
   computeReputationScore,
-} from '@stele/reputation';
+} from '@nobulex/reputation';
 
 // ---------------------------------------------------------------------------
 // Helpers

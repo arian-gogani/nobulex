@@ -27,7 +27,7 @@ Enable privacy-preserving trust verification:
 
 ## Technical Approach
 
-- **@stele/proof** uses Poseidon hashes for ZK-friendly commitments.
+- **@nobulex/proof** uses Poseidon hashes for ZK-friendly commitments.
 - **ZK-SNARKs** (future): Prove "I have a valid covenant" or "my score ≥ X" without revealing covenant or score.
 - **Selective disclosure**: Reveal specific claims (e.g., "EU AI Act compliant") without full audit trail.
 
@@ -37,7 +37,7 @@ Enable privacy-preserving trust verification:
 
 - **Trust–Privacy Tradeoff** ([IMPOSSIBILITY-CONJECTURES.md](./IMPOSSIBILITY-CONJECTURES.md)): ZK allows partial verification with partial disclosure.
 - **Improvement 34**: This document.
-- **@stele/identity**: Current identity binding; ZK hierarchy extends it.
+- **@nobulex/identity**: Current identity binding; ZK hierarchy extends it.
 
 ---
 

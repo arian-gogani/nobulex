@@ -1,5 +1,5 @@
 /**
- * @stele/mcp-server type definitions.
+ * @nobulex/mcp-server type definitions.
  *
  * Provides JSON-RPC 2.0, MCP tool definition, and server option types
  * for the Model Context Protocol server implementation.

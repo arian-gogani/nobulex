@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 import {
   generateCanary,
   evaluateCanary,

@@ -11,23 +11,23 @@
  * Run: npx tsx examples/12-breach-attestation-flow.ts
  */
 
-import { generateKeyPair, sha256Object, sha256String } from '@stele/crypto';
-import type { HashHex } from '@stele/crypto';
+import { generateKeyPair, sha256Object, sha256String } from '@nobulex/crypto';
+import type { HashHex } from '@nobulex/crypto';
 
-import { createIdentity } from '@stele/identity';
+import { createIdentity } from '@nobulex/identity';
 
-import { buildCovenant } from '@stele/core';
-import type { Issuer, Beneficiary } from '@stele/core';
+import { buildCovenant } from '@nobulex/core';
+import type { Issuer, Beneficiary } from '@nobulex/core';
 
-import { Monitor } from '@stele/enforcement';
-import type { AuditEntry } from '@stele/enforcement';
+import { Monitor } from '@nobulex/enforcement';
+import type { AuditEntry } from '@nobulex/enforcement';
 
 import {
   createBreachAttestation,
   verifyBreachAttestation,
   TrustGraph,
-} from '@stele/breach';
-import type { BreachAttestation, BreachEvent } from '@stele/breach';
+} from '@nobulex/breach';
+import type { BreachAttestation, BreachEvent } from '@nobulex/breach';
 
 const CONSTRAINTS = [
   "permit file.read on '/src/**'",

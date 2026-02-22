@@ -1,5 +1,5 @@
 {
-  "name": "@stele/core",
+  "name": "@nobulex/core",
   "version": "0.1.0",
   "description": "Core covenant lifecycle management for the Stele framework",
   "license": "MIT",
@@ -39,12 +39,13 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
     "bundle": "tsup src/index.ts --format cjs,esm",
     "dev": "tsup src/index.ts --format cjs,esm --watch",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@stele/crypto": "0.1.0",
-    "@stele/ccl": "0.1.0"
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/ccl": "0.1.0"
   }
 }

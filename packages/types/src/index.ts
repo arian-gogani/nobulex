@@ -1,5 +1,5 @@
 /**
- * @stele/types — Shared TypeScript type definitions and protocol schemas.
+ * @nobulex/types — Shared TypeScript type definitions and protocol schemas.
  *
  * Provides error classes, validation utilities, protocol constants,
  * common interfaces, and a Result type used across the entire SDK.

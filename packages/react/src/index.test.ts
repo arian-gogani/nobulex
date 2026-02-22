@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
-import { generateKeyPair } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
-import { MemoryStore } from '@stele/store';
-import { SteleClient } from '@stele/sdk';
-import type { CreateCovenantOptions, CreateIdentityOptions } from '@stele/sdk';
+import { generateKeyPair } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
+import { MemoryStore } from '@nobulex/store';
+import { SteleClient } from '@nobulex/sdk';
+import type { CreateCovenantOptions, CreateIdentityOptions } from '@nobulex/sdk';
 
 import {
   Observable,
@@ -77,7 +77,7 @@ function makeIdentityOptions(kp: KeyPair): CreateIdentityOptions {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('@stele/react', () => {
+describe('@nobulex/react', () => {
   // ========================================================================
   // Observable
   // ========================================================================

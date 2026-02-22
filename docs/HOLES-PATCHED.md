@@ -73,7 +73,7 @@ Preemptive defenses against known objections and attack vectors.
 - Weaker claim than "conservation" but defensible and still prevents trust inflation.
 - Trust markets (insurance, derivatives) require this bound to price risk correctly.
 
-**Formula (implemented in `@stele/reputation`):** `stakeBound = min(1, currentStake + 0.5 * (1 - totalBurned) * historyFactor)` where `historyFactor = min(1, totalExecutions / 100)`. Trust score is capped: `weightedScore <= stakeBound`.
+**Formula (implemented in `@nobulex/reputation`):** `stakeBound = min(1, currentStake + 0.5 * (1 - totalBurned) * historyFactor)` where `historyFactor = min(1, totalExecutions / 100)`. Trust score is capped: `weightedScore <= stakeBound`.
 
 ---
 
@@ -101,7 +101,7 @@ Preemptive defenses against known objections and attack vectors.
 3. **Lineage carry-forward** — Old covenant links to new; audit trail preserved.
 4. **Grace period at reduced trust tier** — Until re-verification completes, agent operates at lower trust level.
 
-**Implication:** Covenants are versioned with model lineage. `@stele/temporal` provides the `model_update` trigger: when `agentState.modelVersion` changes from the expected value, the trigger fires and can drive mandatory re-verification, canary re-run, and grace-period transitions. See `defineEvolution` with `type: 'model_update'`.
+**Implication:** Covenants are versioned with model lineage. `@nobulex/temporal` provides the `model_update` trigger: when `agentState.modelVersion` changes from the expected value, the trigger fires and can drive mandatory re-verification, canary re-run, and grace-period transitions. See `defineEvolution` with `type: 'model_update'`.
 
 ---
 
@@ -123,7 +123,7 @@ Preemptive defenses against known objections and attack vectors.
 
 **Objection:** If there's one number, agents will optimize for it. Goodhart's Law.
 
-**Fix:** **Multidimensional trust profile** (Kova Score, `computeSteleScore` in `@stele/legal`).
+**Fix:** **Multidimensional trust profile** (Kova Score, `computeSteleScore` in `@nobulex/legal`).
 
 - Dimensions: compliance rate, attestation coverage, canary pass rate, breach history, stake, lineage.
 - Dimensions trade off — can't optimize all simultaneously.

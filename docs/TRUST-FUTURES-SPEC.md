@@ -33,5 +33,5 @@ Financial instruments betting on agent trust score trajectories. CME Group model
 ## Relation
 
 - **Improvement 73:** Trust Futures Market
-- **@stele/derivatives:** Insurance, risk assessment foundation
+- **@nobulex/derivatives:** Insurance, risk assessment foundation
 - **REVENUE-MODEL.md:** Money Machine v2

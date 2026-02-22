@@ -5,7 +5,7 @@ import {
   settleFutureAtExpiry,
   KOVA_TRADE_FEE_RATE,
 } from './index';
-import type { TrustFuture } from '@stele/derivatives';
+import type { TrustFuture } from '@nobulex/derivatives';
 
 describe('createAndListFuture', () => {
   it('creates a TrustFuture via derivatives', () => {

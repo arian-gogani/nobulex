@@ -1,5 +1,5 @@
 {
-  "name": "@stele/mcp",
+  "name": "@nobulex/mcp",
   "version": "0.1.0",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -24,13 +24,13 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@stele/crypto": "0.1.0",
-    "@stele/ccl": "0.1.0",
-    "@stele/core": "0.1.0",
-    "@stele/enforcement": "0.1.0",
-    "@stele/identity": "0.1.0",
-    "@stele/reputation": "0.1.0",
-    "@stele/proof": "0.1.0"
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/ccl": "0.1.0",
+    "@nobulex/core": "0.1.0",
+    "@nobulex/enforcement": "0.1.0",
+    "@nobulex/identity": "0.1.0",
+    "@nobulex/reputation": "0.1.0",
+    "@nobulex/proof": "0.1.0"
   },
   "license": "MIT",
   "engines": {

@@ -31,6 +31,6 @@ Capacidades de Kova mapeadas a los requisitos del Reglamento de IA. Ruta más r�
 2. **Ejecutar pruebas Canary** — Validar restricciones.
 3. **Activar enforcement** — Gating en tiempo de ejecución, registro de auditoría.
 4. **Exportar LegalIdentityPackage** — Para evaluación de conformidad.
-5. **Mapear a jurisdicción** — `@stele/legal` mapeo UE-IA.
+5. **Mapear a jurisdicción** — `@nobulex/legal` mapeo UE-IA.
 
 Correspondencia completa: [eu-ai-act-mapping.md](../eu-ai-act-mapping.md) (inglés)

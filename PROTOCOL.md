@@ -686,7 +686,7 @@ procedure COMPUTE_EFFECTIVE(covenant C):
 
 ### 10.0 Trust Entanglement
 
-Delegated trust relationships are **cryptographically linked**. Verifying one agent partially verifies its partners; delegation chains and breach propagation create a network where trust is entangled across agents. Composition (`@stele/composition`) and breach propagation (`@stele/breach`) implement linked verification. Network-wide verification can be achieved at sublinear cost by leveraging the transitive structure of the trust graph. See [CORE-MECHANISMS.md](docs/CORE-MECHANISMS.md) Core 9.
+Delegated trust relationships are **cryptographically linked**. Verifying one agent partially verifies its partners; delegation chains and breach propagation create a network where trust is entangled across agents. Composition (`@nobulex/composition`) and breach propagation (`@nobulex/breach`) implement linked verification. Network-wide verification can be achieved at sublinear cost by leveraging the transitive structure of the trust graph. See [CORE-MECHANISMS.md](docs/CORE-MECHANISMS.md) Core 9.
 
 ### 10.1 Endorsement Protocol
 
@@ -814,7 +814,7 @@ Kova assumes the following threat model:
 
 **Attack:** An agent creates a retroactive covenant that matches its already-executed actions, claiming it was inscribed before execution.
 
-**Mitigation:** Covenants are content-addressed and timestamped. When on-chain anchoring is used (via `@stele/evm`), the covenant's content address is recorded on an immutable ledger with a block timestamp. (Package names remain `@stele/*` for backward compatibility.) Even without on-chain anchoring, the covenant must be signed before any action records reference it, and the action records' hash chain includes the covenant ID. Backdating a covenant requires forging the entire action log.
+**Mitigation:** Covenants are content-addressed and timestamped. When on-chain anchoring is used (via `@nobulex/evm`), the covenant's content address is recorded on an immutable ledger with a block timestamp. (Package names remain `@nobulex/*` for backward compatibility.) Even without on-chain anchoring, the covenant must be signed before any action records reference it, and the action records' hash chain includes the covenant ID. Backdating a covenant requires forging the entire action log.
 
 #### 12.2.2 Action Log Omission
 

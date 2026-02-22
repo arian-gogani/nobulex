@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { MemoryStore } from './index';
 import { createTransaction } from './transaction';
 import type { Transaction } from './transaction';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
 // Test helpers

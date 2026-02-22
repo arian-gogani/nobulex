@@ -1,12 +1,12 @@
 /**
  * Metrics middleware plugin for the Stele SDK.
  *
- * Automatically records operational metrics using the @stele/types
+ * Automatically records operational metrics using the @nobulex/types
  * MetricsRegistry. Tracks total operations, errors, duration, and
  * active operation count.
  */
 
-import { MetricsRegistry, createMetricsRegistry } from '@stele/types';
+import { MetricsRegistry, createMetricsRegistry } from '@nobulex/types';
 import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────

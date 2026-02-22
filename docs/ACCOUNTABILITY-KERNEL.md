@@ -8,10 +8,10 @@ The minimal formally verifiable core. Four operations. If these four are correct
 
 | Operation | Description | Package | Function |
 |-----------|-------------|---------|----------|
-| **1. Identity binding** | Link agent to principal; unforgeable | `@stele/identity` | `createIdentity`, `evolveIdentity`, `verifyIdentity` |
-| **2. Covenant signing** | Commit to constraints; immutable | `@stele/core` | `buildCovenant`, `resignCovenant` |
-| **3. Proof verification** | Check compliance; deterministic | `@stele/verifier`, `@stele/proof` | `verifyCovenant`, `verifyComplianceProof` |
-| **4. Trust accounting** | Compute trust score; bounded | `@stele/reputation` | `computeReputationScore` |
+| **1. Identity binding** | Link agent to principal; unforgeable | `@nobulex/identity` | `createIdentity`, `evolveIdentity`, `verifyIdentity` |
+| **2. Covenant signing** | Commit to constraints; immutable | `@nobulex/core` | `buildCovenant`, `resignCovenant` |
+| **3. Proof verification** | Check compliance; deterministic | `@nobulex/verifier`, `@nobulex/proof` | `verifyCovenant`, `verifyComplianceProof` |
+| **4. Trust accounting** | Compute trust score; bounded | `@nobulex/reputation` | `computeReputationScore` |
 
 ---
 

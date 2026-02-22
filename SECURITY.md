@@ -38,7 +38,7 @@ Kova relies on the following cryptographic building blocks:
 |-----------|---------|---------|
 | **Ed25519** | `@noble/ed25519` | Covenant signing, identity signing, countersignatures, breach attestations |
 | **SHA-256** | `@noble/hashes/sha256` | Document IDs, canonical hashing, content-addressed identifiers |
-| **Poseidon** | `@stele/proof` (internal) | Zero-knowledge-style compliance proof commitments |
+| **Poseidon** | `@nobulex/proof` (internal) | Zero-knowledge-style compliance proof commitments |
 | **CSPRNG** | `@noble/hashes/utils` (`randomBytes`) | Nonce generation, key generation |
 
 All cryptographic operations use audited, pure-JavaScript implementations from the
@@ -49,7 +49,7 @@ Web3 ecosystem and have undergone independent security reviews.
 
 - **Canonical JSON (JCS / RFC 8785)**: All document hashing and signing uses
   deterministic JSON serialization to prevent signature malleability.
-- **Constant-time comparison**: The `constantTimeEqual()` function in `@stele/crypto`
+- **Constant-time comparison**: The `constantTimeEqual()` function in `@nobulex/crypto`
   prevents timing side-channel attacks when comparing signatures or hashes.
 - **Immutable documents**: Functions like `countersignCovenant()` and `resignCovenant()`
   return new document copies rather than mutating the input, preventing accidental
@@ -66,7 +66,7 @@ Web3 ecosystem and have undergone independent security reviews.
 - CCL constraint evaluation with deny-wins merge semantics
 - Chain narrowing validation (children cannot broaden parent constraints)
 - Countersignature verification
-- Input validation and sanitization (`@stele/types` guards)
+- Input validation and sanitization (`@nobulex/types` guards)
 - Constant-time comparison for cryptographic values
 - Poseidon-based compliance proof generation and verification
 
@@ -91,10 +91,10 @@ Web3 ecosystem and have undergone independent security reviews.
   encrypted storage backend for sensitive deployments.
 - **No key rotation protocol**: While `resignCovenant()` supports re-signing with a
   new key, there is no built-in key rotation ceremony or revocation list.
-- **Poseidon proofs are not full ZK-SNARKs**: The `@stele/proof` package uses
+- **Poseidon proofs are not full ZK-SNARKs**: The `@nobulex/proof` package uses
   Poseidon hashing for commitment schemes, but does not generate or verify
   zero-knowledge proofs in the formal cryptographic sense.
-- **EVM anchoring is offline**: The `@stele/evm` package produces ABI-encoded
+- **EVM anchoring is offline**: The `@nobulex/evm` package produces ABI-encoded
   calldata but does not submit transactions. On-chain verification requires a
   deployed smart contract (not included).
 

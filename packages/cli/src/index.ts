@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @stele/cli -- Command-line interface for the Stele covenant protocol.
+ * @nobulex/cli -- Command-line interface for the Stele covenant protocol.
  *
  * Provides commands for key generation, covenant creation, verification,
  * evaluation, inspection, CCL parsing, shell completions, diagnostics, and diff.
@@ -9,17 +9,17 @@
  * @packageDocumentation
  */
 
-import { generateKeyPair, toHex } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
+import { generateKeyPair, toHex } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
 import {
   buildCovenant,
   verifyCovenant,
   deserializeCovenant,
   serializeCovenant,
   PROTOCOL_VERSION,
-} from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
-import { parse, evaluate, serialize as serializeCCL } from '@stele/ccl';
+} from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
+import { parse, evaluate, serialize as serializeCCL } from '@nobulex/ccl';
 
 import {
   setColorsEnabled,
@@ -218,7 +218,7 @@ Usage: stele doctor [--json]
 
 Runs diagnostic checks on the Stele installation:
   - Node.js version >= 18
-  - All @stele/* packages importable
+  - All @nobulex/* packages importable
   - Crypto key pair generation works
   - Covenant build and verify round-trip
   - CCL parsing works
@@ -959,7 +959,7 @@ function scanAgentSignals(root: string): { hasAgentsMd: boolean; hasMcpConfig: b
         const pkg = JSON.parse(readFileSync(pkgPath, 'utf-8'));
         const deps = { ...pkg.dependencies, ...pkg.devDependencies } as Record<string, string> | undefined;
         if (deps) {
-          hasKovaDep = Object.keys(deps).some((k) => k === 'kova' || k === '@stele/sdk' || k.startsWith('@stele/'));
+          hasKovaDep = Object.keys(deps).some((k) => k === 'kova' || k === '@nobulex/sdk' || k.startsWith('@nobulex/'));
         }
       } catch {
         // ignore

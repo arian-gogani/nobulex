@@ -7,8 +7,8 @@ import {
   toHex,
   fromHex,
   timestamp,
-} from '@stele/crypto';
-import type { HashHex, KeyPair } from '@stele/crypto';
+} from '@nobulex/crypto';
+import type { HashHex, KeyPair } from '@nobulex/crypto';
 
 export type {
   RuntimeType,

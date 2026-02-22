@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateKeyPair, toHex, sha256Object } from '@stele/crypto';
+import { generateKeyPair, toHex, sha256Object } from '@nobulex/crypto';
 import {
   createAttestation,
   signAttestation,

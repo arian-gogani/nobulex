@@ -1,4 +1,4 @@
-# @stele/identity
+# @nobulex/identity
 
 Agent identity creation, evolution, lineage tracking, and DID management for the Stele covenant framework.
 
@@ -24,7 +24,7 @@ When an agent's identity evolves (model change, capability change, operator tran
 ### Usage
 
 ```typescript
-import { computeCarryForward, evolveIdentity, DEFAULT_EVOLUTION_POLICY } from '@stele/identity';
+import { computeCarryForward, evolveIdentity, DEFAULT_EVOLUTION_POLICY } from '@nobulex/identity';
 
 // Check carry-forward before evolving
 const rate = computeCarryForward('model_update', currentIdentity, {

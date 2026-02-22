@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { MetricsRegistry, createMetricsRegistry } from '@stele/types';
+import { MetricsRegistry, createMetricsRegistry } from '@nobulex/types';
 
 import { MiddlewarePipeline } from '../middleware.js';
 

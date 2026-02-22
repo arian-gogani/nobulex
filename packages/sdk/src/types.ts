@@ -1,11 +1,11 @@
 /**
- * @stele/sdk type definitions.
+ * @nobulex/sdk type definitions.
  *
  * SDK-specific types that wrap and extend the lower-level package types
  * into a unified, ergonomic API surface.
  */
 
-import type { KeyPair } from '@stele/crypto';
+import type { KeyPair } from '@nobulex/crypto';
 import type {
   CovenantDocument,
   VerificationResult,
@@ -19,19 +19,19 @@ import type {
   CovenantMetadata,
   Obligation,
   PartyRole,
-} from '@stele/core';
+} from '@nobulex/core';
 import type {
   CCLDocument,
   EvaluationResult as CCLEvaluationResult,
   Statement,
   Severity,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 import type {
   AgentIdentity,
   ModelAttestation,
   DeploymentContext,
   LineageEntry,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
 // ─── Client options ─────────────────────────────────────────────────────────
 

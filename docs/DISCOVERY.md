@@ -49,7 +49,7 @@ GET /.well-known/stele
 1. Client discovers agent (e.g., via MCP, API, or manual config).
 2. Client fetches `/.well-known/stele` from the agent's base URL.
 3. Client fetches covenant document(s) from the `url` field(s).
-4. Client verifies each covenant using `@stele/verifier`.
+4. Client verifies each covenant using `@nobulex/verifier`.
 5. Trust is established by the Ed25519 signature, not by the server that served the document.
 
 ---
@@ -69,6 +69,6 @@ The covenant's content-address (SHA-256 of canonical form) is the source of trut
 ## Implementation Status
 
 - **Convention:** Documented (this file).
-- **Server middleware:** `createWellKnownHandler` in `@stele/sdk` — use with Express: `app.get('/.well-known/stele', createWellKnownHandler({ agentId, covenants }))`.
+- **Server middleware:** `createWellKnownHandler` in `@nobulex/sdk` — use with Express: `app.get('/.well-known/stele', createWellKnownHandler({ agentId, covenants }))`.
 - **Client resolution:** SteleClient uses `MemoryChainResolver`; HTTP resolver is an extension point.
 - **Federated resolvers:** Ecosystem layer; not in core protocol.

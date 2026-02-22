@@ -1,5 +1,5 @@
 {
-  "name": "@stele/types",
+  "name": "@nobulex/types",
   "version": "0.1.0",
   "description": "Shared TypeScript type definitions and protocol schemas",
   "sideEffects": false,
@@ -34,7 +34,7 @@
   },
   "author": "Stele Labs, Inc.",
   "dependencies": {
-    "@stele/crypto": "0.1.0"
+    "@nobulex/crypto": "0.1.0"
   },
   "keywords": [
     "stele",

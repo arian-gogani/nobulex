@@ -16,7 +16,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Residual risk assessment | Breach detection; attestation; compliance record |
 | Documentation of risk management | Audit trail; LegalIdentityPackage; export to PDF/legal-XML |
 
-**Packages:** `@stele/core`, `@stele/canary`, `@stele/temporal`, `@stele/legal`
+**Packages:** `@nobulex/core`, `@nobulex/canary`, `@nobulex/temporal`, `@nobulex/legal`
 
 ---
 
@@ -28,7 +28,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Bias monitoring | Canary tests for discriminatory patterns; CCL conditions |
 | Data provenance | Behavioral provenance; audit trail links actions to covenant |
 
-**Packages:** `@stele/canary`, `@stele/enforcement`
+**Packages:** `@nobulex/canary`, `@nobulex/enforcement`
 
 ---
 
@@ -41,7 +41,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Explainability of output | Behavioral provenance; which rule permitted each action |
 | Documentation for deployers | LegalIdentityPackage; compliance record; attestations |
 
-**Packages:** `@stele/core`, `@stele/legal`, `@stele/enforcement`
+**Packages:** `@nobulex/core`, `@nobulex/legal`, `@nobulex/enforcement`
 
 ---
 
@@ -53,7 +53,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Override and intervention | CCL `require` and `deny`; operator can revoke covenant |
 | Awareness of limitations | Canary tests surface edge cases; breach attestation |
 
-**Packages:** `@stele/ccl`, `@stele/canary`, `@stele/breach`
+**Packages:** `@nobulex/ccl`, `@nobulex/canary`, `@nobulex/breach`
 
 ---
 
@@ -64,9 +64,9 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Accuracy and resilience | Canary tests; robustness package; adversarial testing |
 | Fallback for critical applications | CCL conditions; temporal triggers for degraded mode |
 | Cybersecurity | Ed25519 signing; content-addressed documents; constant-time comparison |
-| Adversarial robustness | `@stele/robustness`; fuzz testing; boundary analysis |
+| Adversarial robustness | `@nobulex/robustness`; fuzz testing; boundary analysis |
 
-**Packages:** `@stele/canary`, `@stele/robustness`, `@stele/crypto`
+**Packages:** `@nobulex/canary`, `@nobulex/robustness`, `@nobulex/crypto`
 
 ---
 
@@ -79,7 +79,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Traceability | Content-addressed documents; lineage; LegalIdentityPackage |
 | Retention | Configurable in store; export for legal hold |
 
-**Packages:** `@stele/enforcement`, `@stele/store`, `@stele/legal`
+**Packages:** `@nobulex/enforcement`, `@nobulex/store`, `@nobulex/legal`
 
 ---
 
@@ -91,7 +91,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Synthetic content identification | Out of scope (model output); Kova can enforce metadata tagging |
 | Transparency to deployers | LegalIdentityPackage; compliance record; covenant history |
 
-**Packages:** `@stele/legal`, `@stele/core`
+**Packages:** `@nobulex/legal`, `@nobulex/core`
 
 ---
 
@@ -103,7 +103,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Technical documentation | Covenant + audit trail + LegalIdentityPackage |
 | Declarations of conformity | Legal package export; jurisdictional mapping |
 
-**Packages:** `@stele/verifier`, `@stele/canary`, `@stele/legal`
+**Packages:** `@nobulex/verifier`, `@nobulex/canary`, `@nobulex/legal`
 
 ---
 
@@ -115,7 +115,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | Report serious incidents | Breach attestation; trust graph propagation |
 | Corrective action | Covenant revocation; temporal evolution; antifragile improvements |
 
-**Packages:** `@stele/reputation`, `@stele/breach`, `@stele/antifragile`, `@stele/temporal`
+**Packages:** `@nobulex/reputation`, `@nobulex/breach`, `@nobulex/antifragile`, `@nobulex/temporal`
 
 ---
 
@@ -143,11 +143,11 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 2. **Run canary tests** — Validate constraints; document in compliance record.
 3. **Enable enforcement** — Runtime gating; audit trail.
 4. **Export LegalIdentityPackage** — For conformity assessment and audits.
-5. **Map to jurisdiction** — Use `@stele/legal` EU-AI mapping.
+5. **Map to jurisdiction** — Use `@nobulex/legal` EU-AI mapping.
 
 ```typescript
-import { SteleClient } from '@stele/sdk';
-import { exportLegalPackage } from '@stele/legal';
+import { SteleClient } from '@nobulex/sdk';
+import { exportLegalPackage } from '@nobulex/legal';
 
 const client = new SteleClient();
 // ... create covenant, run canary, operate ...

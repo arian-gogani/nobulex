@@ -9,8 +9,8 @@
  */
 
 import type { SteleClient } from '../index.js';
-import type { CovenantDocument } from '@stele/core';
-import { deserializeCovenant, verifyCovenant } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
+import { deserializeCovenant, verifyCovenant } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
 
 // ─── Generic HTTP types ──────────────────────────────────────────────────────
@@ -207,7 +207,7 @@ function defaultOnError(
  * @example
  * ```typescript
  * import express from 'express';
- * import { SteleClient, steleMiddleware } from '@stele/sdk';
+ * import { SteleClient, steleMiddleware } from '@nobulex/sdk';
  *
  * const client = new SteleClient();
  * const app = express();
@@ -541,7 +541,7 @@ function defaultCovenantExtractor(req: IncomingRequest): CovenantDocument | stri
  * @example
  * ```typescript
  * import express from 'express';
- * import { SteleClient, kovaGatewayMiddleware } from '@stele/sdk';
+ * import { SteleClient, kovaGatewayMiddleware } from '@nobulex/sdk';
  *
  * const client = new SteleClient();
  * const app = express();

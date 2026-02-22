@@ -1,4 +1,4 @@
-# @stele/breach
+# @nobulex/breach
 
 Breach detection, attestation creation, verification, and trust graph propagation for the Stele protocol.
 
@@ -52,7 +52,7 @@ C (dependent of A) --> C: degraded (one level down from restricted)
 ### Usage
 
 ```typescript
-import { TrustGraph, createBreachAttestation } from '@stele/breach';
+import { TrustGraph, createBreachAttestation } from '@nobulex/breach';
 
 const graph = new TrustGraph();
 graph.registerDependency(violatorHash, dependentHash);

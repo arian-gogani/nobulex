@@ -1,4 +1,4 @@
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 import {
   parse,
   evaluate,
@@ -6,7 +6,7 @@ import {
   serialize,
   matchAction,
   matchResource,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 import type {
   CCLDocument,
   PermitDenyStatement,
@@ -16,7 +16,7 @@ import type {
   Condition,
   CompoundCondition,
   EvaluationContext,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 export type {
   CompositionProof,

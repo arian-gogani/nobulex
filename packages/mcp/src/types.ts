@@ -1,4 +1,4 @@
-import type { Severity } from '@stele/ccl';
+import type { Severity } from '@nobulex/ccl';
 
 export interface MCPServer {
   tools?: MCPTool[];
@@ -16,20 +16,20 @@ export interface SteleGuardOptions {
   constraints: string;
   mode?: 'enforce' | 'log_only';
   proofType?: 'audit_log' | 'capability_manifest';
-  operatorKeyPair?: import('@stele/crypto').KeyPair;
+  operatorKeyPair?: import('@nobulex/crypto').KeyPair;
   agentIdentifier?: string;
-  model?: import('@stele/identity').ModelAttestation;
+  model?: import('@nobulex/identity').ModelAttestation;
   onViolation?: (details: ViolationDetails) => void;
   onToolCall?: (details: ToolCallDetails) => void;
 }
 
 export interface WrappedMCPServer extends MCPServer {
-  getMonitor(): import('@stele/enforcement').Monitor;
-  getIdentity(): import('@stele/identity').AgentIdentity;
-  getAuditLog(): import('@stele/enforcement').AuditLog;
-  generateProof(): Promise<import('@stele/proof').ComplianceProof>;
-  getReceipt(): import('@stele/reputation').ExecutionReceipt | null;
-  getCovenant(): import('@stele/core').CovenantDocument;
+  getMonitor(): import('@nobulex/enforcement').Monitor;
+  getIdentity(): import('@nobulex/identity').AgentIdentity;
+  getAuditLog(): import('@nobulex/enforcement').AuditLog;
+  generateProof(): Promise<import('@nobulex/proof').ComplianceProof>;
+  getReceipt(): import('@nobulex/reputation').ExecutionReceipt | null;
+  getCovenant(): import('@nobulex/core').CovenantDocument;
 }
 
 export interface ViolationDetails {

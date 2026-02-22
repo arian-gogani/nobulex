@@ -20,9 +20,9 @@ import type {
   CovenantBuilderOptions,
   VerificationResult,
   VerificationCheck,
-} from '@stele/core';
-import type { CCLDocument, EvaluationResult as CCLEvaluationResult } from '@stele/ccl';
-import type { KeyPair } from '@stele/crypto';
+} from '@nobulex/core';
+import type { CCLDocument, EvaluationResult as CCLEvaluationResult } from '@nobulex/ccl';
+import type { KeyPair } from '@nobulex/crypto';
 
 // ─── Public interfaces ──────────────────────────────────────────────────────
 
@@ -1370,10 +1370,10 @@ export async function interopConformance(
  *
  * @example
  * ```typescript
- * import { runConformanceSuite } from '@stele/sdk/conformance';
- * import { buildCovenant, verifyCovenant } from '@stele/core';
- * import { generateKeyPair, sign, verify, sha256 } from '@stele/crypto';
- * import { parse, evaluate } from '@stele/ccl';
+ * import { runConformanceSuite } from '@nobulex/sdk/conformance';
+ * import { buildCovenant, verifyCovenant } from '@nobulex/core';
+ * import { generateKeyPair, sign, verify, sha256 } from '@nobulex/crypto';
+ * import { parse, evaluate } from '@nobulex/ccl';
  *
  * const result = await runConformanceSuite({
  *   buildCovenant,

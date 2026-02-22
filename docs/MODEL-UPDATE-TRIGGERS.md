@@ -15,12 +15,12 @@ When you fine-tune or swap the model, the covenant may no longer describe behavi
 
 ## Implementation: `model_update` Trigger
 
-The `@stele/temporal` package supports a `model_update` trigger type. When the agent's model version changes from the expected value, the trigger fires and can drive evolution (e.g., add a "pending_reverification" constraint, tighten restrictions during grace period).
+The `@nobulex/temporal` package supports a `model_update` trigger type. When the agent's model version changes from the expected value, the trigger fires and can drive evolution (e.g., add a "pending_reverification" constraint, tighten restrictions during grace period).
 
 ### Usage
 
 ```typescript
-import { defineEvolution, evaluateTriggers } from '@stele/temporal';
+import { defineEvolution, evaluateTriggers } from '@nobulex/temporal';
 
 const policy = defineEvolution(
   covenantId,
@@ -60,8 +60,8 @@ const fired = evaluateTriggers(covenant, agentState);
 
 When `model_update` fires:
 
-1. **Re-run canary tests** — Use `@stele/canary` to validate the new model against the covenant.
-2. **Re-sign or re-validate covenant** — Use `@stele/core` to produce a new signed covenant with updated model lineage.
+1. **Re-run canary tests** — Use `@nobulex/canary` to validate the new model against the covenant.
+2. **Re-sign or re-validate covenant** — Use `@nobulex/core` to produce a new signed covenant with updated model lineage.
 3. **Preserve lineage** — Link the old covenant to the new one in the audit trail.
 4. **Apply grace period** — Until re-verification completes, operate at reduced trust (e.g., via `tighten` action adding temporary constraints).
 
@@ -71,6 +71,6 @@ When `model_update` fires:
 
 | Package | Role |
 |---------|------|
-| `@stele/temporal` | `model_update` trigger, evolution policy |
-| `@stele/canary` | Re-run challenge-response tests |
-| `@stele/core` | Re-sign covenant with model lineage |
+| `@nobulex/temporal` | `model_update` trigger, evolution policy |
+| `@nobulex/canary` | Re-run challenge-response tests |
+| `@nobulex/core` | Re-sign covenant with model lineage |

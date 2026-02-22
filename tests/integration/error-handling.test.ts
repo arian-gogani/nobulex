@@ -6,7 +6,7 @@
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
-import { generateKeyPair, toHex } from '@stele/crypto';
+import { generateKeyPair, toHex } from '@nobulex/crypto';
 import {
   buildCovenant,
   verifyCovenant,
@@ -16,13 +16,13 @@ import {
   CovenantBuildError,
   PROTOCOL_VERSION,
   MAX_CHAIN_DEPTH,
-} from '@stele/core';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
-import { parse, evaluate } from '@stele/ccl';
-import { Verifier } from '@stele/verifier';
-import { MemoryStore } from '@stele/store';
-import { SteleClient } from '@stele/sdk';
-import { createIdentity } from '@stele/identity';
+} from '@nobulex/core';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
+import { parse, evaluate } from '@nobulex/ccl';
+import { Verifier } from '@nobulex/verifier';
+import { MemoryStore } from '@nobulex/store';
+import { SteleClient } from '@nobulex/sdk';
+import { createIdentity } from '@nobulex/identity';
 
 // ---------------------------------------------------------------------------
 // Helpers

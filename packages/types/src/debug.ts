@@ -162,7 +162,7 @@ export function createDebugLogger(namespace: string): DebugLogger {
  * @example
  * ```typescript
  * // Enable with: DEBUG=stele:crypto node script.js
- * import { debug } from '@stele/types';
+ * import { debug } from '@nobulex/types';
  * debug.crypto.log('keypair generated');
  * ```
  */

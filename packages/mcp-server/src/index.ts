@@ -1,17 +1,17 @@
 /**
- * @stele/mcp-server -- Model Context Protocol server that exposes
+ * @nobulex/mcp-server -- Model Context Protocol server that exposes
  * Stele tools to any AI agent.
  *
  * Implements JSON-RPC 2.0 over stdio, with tool definitions that map
- * to @stele/sdk, @stele/store, and @stele/crypto operations.
+ * to @nobulex/sdk, @nobulex/store, and @nobulex/crypto operations.
  *
  * @packageDocumentation
  */
 
-import { SteleClient } from '@stele/sdk';
-import { MemoryStore } from '@stele/store';
-import { generateKeyPair, toHex } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
+import { SteleClient } from '@nobulex/sdk';
+import { MemoryStore } from '@nobulex/store';
+import { generateKeyPair, toHex } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
 
 import type {
   JsonRpcRequest,
@@ -397,7 +397,7 @@ export class SteleServer {
         return this._toolError('Missing required field: privateKeyHex');
       }
 
-      const { fromHex } = await import('@stele/crypto');
+      const { fromHex } = await import('@nobulex/crypto');
       const privateKey = fromHex(privateKeyHex);
 
       const doc = await this.client.createCovenant({
@@ -511,7 +511,7 @@ export class SteleServer {
 
       let keyPair: KeyPair;
       if (privateKeyHex) {
-        const { keyPairFromPrivateKeyHex } = await import('@stele/crypto');
+        const { keyPairFromPrivateKeyHex } = await import('@nobulex/crypto');
         keyPair = await keyPairFromPrivateKeyHex(privateKeyHex);
       } else {
         keyPair = await generateKeyPair();

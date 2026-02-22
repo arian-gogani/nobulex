@@ -31,13 +31,13 @@ const server = await withKova(yourMCPServer, 'data-isolation');
 ### Étape 1 : Installer (2 min)
 
 ```bash
-npm install @stele/sdk
+npm install @nobulex/sdk
 ```
 
 ### Étape 2 : Créer un covenant (5 min)
 
 ```typescript
-import { SteleClient } from '@stele/sdk';
+import { SteleClient } from '@nobulex/sdk';
 
 const client = new SteleClient();
 await client.generateKeyPair();

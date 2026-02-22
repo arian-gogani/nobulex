@@ -49,7 +49,7 @@
   ],
   "scripts": {
     "build": "npm run build --workspaces",
-    "typecheck": "npm run typecheck --workspaces",
+    "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "npm run test --workspaces",
     "test:coverage": "vitest run --coverage",
     "quickstart": "npx tsx examples/get-started-with-kova.ts",
@@ -84,6 +84,7 @@
     "lint-staged": "^16.2.7",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
+    "@vitest/coverage-v8": "^4.0.18",
     "vitest": "^4.0.18"
   }
 }

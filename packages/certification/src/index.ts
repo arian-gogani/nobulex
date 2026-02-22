@@ -1,5 +1,5 @@
 /**
- * @stele/certification — Certification Authority (Improvement 66).
+ * @nobulex/certification — Certification Authority (Improvement 66).
  *
  * Certify agents like UL certifies electronics. $10K-100K per agent class per year.
  * Regulated industries (finance, healthcare, legal) need this.
@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 
 export type CertificationTier = 'class' | 'instance' | 'enterprise';
 

@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest';
-import { generateKeyPair } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
-import { buildCovenant } from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
+import { generateKeyPair } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
+import { buildCovenant } from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 import { SteleGuard, PRESETS } from './index';
 import type {

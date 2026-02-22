@@ -1,4 +1,4 @@
-import type { HashHex } from '@stele/crypto';
+import type { HashHex } from '@nobulex/crypto';
 
 /** The execution environment type for an AI agent. */
 export type RuntimeType = 'wasm' | 'container' | 'tee' | 'firecracker' | 'process' | 'browser';
@@ -112,7 +112,7 @@ export interface EvolutionPolicy {
 /** Options for creating a new agent identity via {@link createIdentity}. */
 export interface CreateIdentityOptions {
   /** The operator's Ed25519 key pair for signing. */
-  operatorKeyPair: import('@stele/crypto').KeyPair;
+  operatorKeyPair: import('@nobulex/crypto').KeyPair;
   /** Optional human-readable operator name. */
   operatorIdentifier?: string;
   /** Model attestation for the AI model. */
@@ -126,7 +126,7 @@ export interface CreateIdentityOptions {
 /** Options for evolving an existing identity via {@link evolveIdentity}. */
 export interface EvolveIdentityOptions {
   /** The operator's Ed25519 key pair for signing the evolution. */
-  operatorKeyPair: import('@stele/crypto').KeyPair;
+  operatorKeyPair: import('@nobulex/crypto').KeyPair;
   /** The type of change being made. */
   changeType: LineageEntry['changeType'];
   /** Human-readable description of the change. */

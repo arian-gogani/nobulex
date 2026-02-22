@@ -1,5 +1,5 @@
 /**
- * @stele/sdk -- High-level TypeScript SDK that unifies the entire Stele protocol.
+ * @nobulex/sdk -- High-level TypeScript SDK that unifies the entire Stele protocol.
  *
  * Provides a single entry point (SteleClient) for key management, covenant
  * lifecycle, identity management, chain operations, and CCL utilities.
@@ -13,8 +13,8 @@ import {
   generateKeyPair as cryptoGenerateKeyPair,
   timestamp,
   KeyManager,
-} from '@stele/crypto';
-import type { KeyPair, KeyRotationPolicy, ManagedKeyPair } from '@stele/crypto';
+} from '@nobulex/crypto';
+import type { KeyPair, KeyRotationPolicy, ManagedKeyPair } from '@nobulex/crypto';
 
 import {
   buildCovenant,
@@ -35,7 +35,7 @@ import {
   resignCovenant,
   serializeCovenant,
   deserializeCovenant,
-} from '@stele/core';
+} from '@nobulex/core';
 import type {
   CovenantDocument,
   VerificationResult,
@@ -43,7 +43,7 @@ import type {
   Issuer,
   Beneficiary,
   PartyRole,
-} from '@stele/core';
+} from '@nobulex/core';
 
 import {
   parse as cclParse,
@@ -54,15 +54,15 @@ import {
   serialize as cclSerialize,
   checkRateLimit as cclCheckRateLimit,
   validateNarrowing as cclValidateNarrowing,
-} from '@stele/ccl';
-import type { CCLDocument, EvaluationContext } from '@stele/ccl';
+} from '@nobulex/ccl';
+import type { CCLDocument, EvaluationContext } from '@nobulex/ccl';
 
 import {
   createIdentity as identityCreate,
   evolveIdentity as identityEvolve,
   verifyIdentity as identityVerify,
-} from '@stele/identity';
-import type { AgentIdentity } from '@stele/identity';
+} from '@nobulex/identity';
+import type { AgentIdentity } from '@nobulex/identity';
 
 import type {
   SteleClientOptions,
@@ -169,7 +169,7 @@ export type {
   ProofType,
   RevocationMethod,
   Severity,
-} from '@stele/core';
+} from '@nobulex/core';
 
 export {
   PROTOCOL_VERSION,
@@ -190,9 +190,9 @@ export {
   resolveChain as resolveChain_core,
   computeEffectiveConstraints,
   validateChainNarrowing,
-} from '@stele/core';
+} from '@nobulex/core';
 
-export type { ChainResolver } from '@stele/core';
+export type { ChainResolver } from '@nobulex/core';
 
 // Re-export crypto types and functions
 export type {
@@ -206,7 +206,7 @@ export type {
   Nonce,
   KeyRotationPolicy,
   ManagedKeyPair,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 export {
   generateKeyPair,
@@ -228,7 +228,7 @@ export {
   keyPairFromPrivateKey,
   keyPairFromPrivateKeyHex,
   KeyManager,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 // Re-export CCL types and functions
 export type {
@@ -242,7 +242,7 @@ export type {
   Condition,
   CompoundCondition,
   NarrowingViolation,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 export {
   parse as parseCCL,
@@ -260,7 +260,7 @@ export {
   parseTokens,
   CCLSyntaxError,
   CCLValidationError,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 // Re-export identity types and functions
 export type {
@@ -272,7 +272,7 @@ export type {
   CreateIdentityOptions as CoreCreateIdentityOptions,
   EvolveIdentityOptions as CoreEvolveIdentityOptions,
   RuntimeType,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
 export {
   createIdentity as createIdentity_core,
@@ -286,7 +286,7 @@ export {
   serializeIdentity,
   deserializeIdentity,
   DEFAULT_EVOLUTION_POLICY,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
 // ─── SteleClient ────────────────────────────────────────────────────────────
 

@@ -6,7 +6,7 @@ Scoped tasks for new contributors. Each is 1–2 hours. Create these as GitHub i
 
 ## Documentation
 
-- [x] Add JSDoc to `negateTrust` and `tensorTrust` in `@stele/composition`
+- [x] Add JSDoc to `negateTrust` and `tensorTrust` in `@nobulex/composition`
 - [x] Document `enforcementTier` (hard/soft) in CCL user guide
 - [x] Add example: covenant with `when` conditions to examples/
 - [x] Translate README.md first paragraph into German
@@ -53,9 +53,9 @@ Scoped tasks for new contributors. Each is 1–2 hours. Create these as GitHub i
 
 ## Package-Specific
 
-- [x] **@stele/ccl:** Add `validateCCL(source: string): boolean` convenience function
-- [x] **@stele/store:** Add `count()` method to CovenantStore interface (already exists)
-- [x] **@stele/verifier:** Export `VerificationReport` type (already exported)
+- [x] **@nobulex/ccl:** Add `validateCCL(source: string): boolean` convenience function
+- [x] **@nobulex/store:** Add `count()` method to CovenantStore interface (already exists)
+- [x] **@nobulex/verifier:** Export `VerificationReport` type (already exported)
 - [x] **kova:** Add `getPresetConstraints(preset: KovaPreset): string` for debugging
 
 ---
@@ -76,12 +76,12 @@ When the above are done, consider:
 
 Packages that could use basic test coverage:
 
-- [x] Add tests for `@stele/staking`
-- [x] Add tests for `@stele/rail`
-- [x] Add tests for `@stele/trust-data`
-- [x] Add tests for `@stele/trust-futures`
-- [x] Add tests for `@stele/marketplace`
-- [x] Add tests for `@stele/compliance-autopilot`
+- [x] Add tests for `@nobulex/staking`
+- [x] Add tests for `@nobulex/rail`
+- [x] Add tests for `@nobulex/trust-data`
+- [x] Add tests for `@nobulex/trust-futures`
+- [x] Add tests for `@nobulex/marketplace`
+- [x] Add tests for `@nobulex/compliance-autopilot`
 
 ---
 
@@ -105,7 +105,7 @@ When all above are done, consider:
 - [ ] Add E2E test for verification-service (POST /verify with covenant)
 - [x] Document TrustGraph.registerDependency semantics in [breach README](../packages/breach/README.md) (upstream/downstream)
 - [ ] Add `--format json` alias when `--json` is passed to audit (or document equivalence)
-- [x] Add README for [@stele/trust-futures](../packages/trust-futures/README.md) (Kova trade fee, createAndListFuture, executeTrade)
+- [x] Add README for [@nobulex/trust-futures](../packages/trust-futures/README.md) (Kova trade fee, createAndListFuture, executeTrade)
 
 ---
 

@@ -31,6 +31,6 @@ Capacités Kova mappées aux exigences du Règlement IA. Chemin le plus rapide v
 2. **Exécuter les tests Canary** — Valider les contraintes.
 3. **Activer l'enforcement** — Gating runtime, piste d'audit.
 4. **Exporter LegalIdentityPackage** — Pour l'évaluation de conformité.
-5. **Mapper à la juridiction** — `@stele/legal` mappage UE-IA.
+5. **Mapper à la juridiction** — `@nobulex/legal` mappage UE-IA.
 
 Correspondance complète : [eu-ai-act-mapping.md](../eu-ai-act-mapping.md) (anglais)

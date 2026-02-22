@@ -18,7 +18,7 @@
 import * as fs from 'fs/promises';
 import * as path from 'path';
 
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 import type {
   CovenantStore,

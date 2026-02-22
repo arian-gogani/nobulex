@@ -1,5 +1,5 @@
 {
-  "name": "@stele/compliance-autopilot",
+  "name": "@nobulex/compliance-autopilot",
   "version": "0.1.0",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm",
+    "typecheck": "tsc --noEmit",
     "bundle": "tsup src/index.ts --format cjs,esm",
     "dev": "tsup src/index.ts --format cjs,esm --dts --watch",
     "prepublishOnly": "npm run build"

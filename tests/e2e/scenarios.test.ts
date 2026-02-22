@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateKeyPair, sha256String, toHex } from '@stele/crypto';
-import type { KeyPair, HashHex } from '@stele/crypto';
+import { generateKeyPair, sha256String, toHex } from '@nobulex/crypto';
+import type { KeyPair, HashHex } from '@nobulex/crypto';
 import {
   buildCovenant,
   verifyCovenant,
@@ -10,17 +10,17 @@ import {
   validateChainNarrowing,
   serializeCovenant,
   deserializeCovenant,
-} from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
-import { evaluate, parse } from '@stele/ccl';
-import { Monitor, MonitorDeniedError } from '@stele/enforcement';
-import { SteleGuard } from '@stele/mcp';
-import type { MCPServer, WrappedMCPServer, ViolationDetails, ToolCallDetails } from '@stele/mcp';
-import { createReceipt, verifyReceipt, computeReputationScore, createEndorsement, verifyEndorsement } from '@stele/reputation';
-import type { ExecutionReceipt } from '@stele/reputation';
-import { generateComplianceProof, verifyComplianceProof } from '@stele/proof';
-import { createIdentity, evolveIdentity, verifyIdentity, serializeIdentity, deserializeIdentity } from '@stele/identity';
-import { createBreachAttestation, verifyBreachAttestation, TrustGraph } from '@stele/breach';
+} from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
+import { evaluate, parse } from '@nobulex/ccl';
+import { Monitor, MonitorDeniedError } from '@nobulex/enforcement';
+import { SteleGuard } from '@nobulex/mcp';
+import type { MCPServer, WrappedMCPServer, ViolationDetails, ToolCallDetails } from '@nobulex/mcp';
+import { createReceipt, verifyReceipt, computeReputationScore, createEndorsement, verifyEndorsement } from '@nobulex/reputation';
+import type { ExecutionReceipt } from '@nobulex/reputation';
+import { generateComplianceProof, verifyComplianceProof } from '@nobulex/proof';
+import { createIdentity, evolveIdentity, verifyIdentity, serializeIdentity, deserializeIdentity } from '@nobulex/identity';
+import { createBreachAttestation, verifyBreachAttestation, TrustGraph } from '@nobulex/breach';
 
 // ---------------------------------------------------------------------------
 // Scenario 1: Chain Delegation with Constraint Narrowing (3 levels)

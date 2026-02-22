@@ -1,5 +1,5 @@
 {
-  "name": "@stele/evm",
+  "name": "@nobulex/evm",
   "version": "0.1.0",
   "description": "EVM anchoring utilities with ABI encoding, Keccak-256 hashing, and JSON-RPC provider interface",
   "sideEffects": false,
@@ -17,9 +17,9 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@stele/types": "0.1.0",
-    "@stele/crypto": "0.1.0",
-    "@stele/core": "0.1.0",
+    "@nobulex/types": "0.1.0",
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/core": "0.1.0",
     "@noble/hashes": "^1.4.0"
   },
   "license": "MIT",

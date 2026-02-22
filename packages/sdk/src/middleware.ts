@@ -6,7 +6,7 @@
  * logging, metrics, validation, caching, and rate limiting.
  */
 
-import { Logger, defaultLogger } from '@stele/types';
+import { Logger, defaultLogger } from '@nobulex/types';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -173,7 +173,7 @@ export class MiddlewarePipeline {
 /**
  * Creates a logging middleware that logs operation start, completion, and errors.
  *
- * @param logger - Optional Logger instance. Defaults to the @stele/types defaultLogger.
+ * @param logger - Optional Logger instance. Defaults to the @nobulex/types defaultLogger.
  */
 export function loggingMiddleware(logger?: Logger): SteleMiddleware {
   const log = logger ?? defaultLogger;

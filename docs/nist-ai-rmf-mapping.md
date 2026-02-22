@@ -28,7 +28,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 | Governance structures | Covenant as executable governance; recursive accountability (monitors have covenants) |
 | Policies and procedures | CCL as machine-enforceable policy; audit trail as procedure evidence |
 
-**Packages:** `@stele/core`, `@stele/identity`, `@stele/legal`, `@stele/recursive`
+**Packages:** `@nobulex/core`, `@nobulex/identity`, `@nobulex/legal`, `@nobulex/recursive`
 
 ---
 
@@ -42,7 +42,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 | Stakeholder mapping | Issuer, beneficiary, counterparties (attestation) |
 | Impact assessment | Breach severity; reputation impact; trust graph propagation |
 
-**Packages:** `@stele/ccl`, `@stele/canary`, `@stele/robustness`, `@stele/breach`
+**Packages:** `@nobulex/ccl`, `@nobulex/canary`, `@nobulex/robustness`, `@nobulex/breach`
 
 ---
 
@@ -56,7 +56,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 | Monitoring | Enforcement monitor; audit trail; reputation scoring |
 | Validation | 11 specification checks; external attestation; ZK proofs |
 
-**Packages:** `@stele/enforcement`, `@stele/attestation`, `@stele/reputation`, `@stele/legal` (computeSteleScore → Kova Score)
+**Packages:** `@nobulex/enforcement`, `@nobulex/attestation`, `@nobulex/reputation`, `@nobulex/legal` (computeSteleScore → Kova Score)
 
 ---
 
@@ -70,13 +70,13 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 | Continuous improvement | Antifragile package — breaches generate constraint improvements |
 | Communication | Covenant as public commitment; attestation as bilateral verification |
 
-**Packages:** `@stele/breach`, `@stele/antifragile`, `@stele/temporal`, `@stele/legal`
+**Packages:** `@nobulex/breach`, `@nobulex/antifragile`, `@nobulex/temporal`, `@nobulex/legal`
 
 ---
 
 ## Kova Score and NIST RMF
 
-The **Kova Score** (multidimensional trust profile, `computeSteleScore` in `@stele/legal`) aligns with NIST's measurement focus:
+The **Kova Score** (multidimensional trust profile, `computeSteleScore` in `@nobulex/legal`) aligns with NIST's measurement focus:
 
 | Kova Score Dimension | NIST RMF Alignment |
 |-----------------------|--------------------|
@@ -88,7 +88,7 @@ The **Kova Score** (multidimensional trust profile, `computeSteleScore` in `@ste
 | lineageDepth | Map — governance lineage |
 
 ```typescript
-import { computeSteleScore } from '@stele/legal';
+import { computeSteleScore } from '@nobulex/legal';
 
 const profile = computeSteleScore(agentId, complianceRecord, covenantHistory, {
   reputation: reputationSnapshot,
@@ -106,8 +106,8 @@ const profile = computeSteleScore(agentId, complianceRecord, covenantHistory, {
 4. **Manage** — Enable breach detection; use antifragile improvements; evolve covenants via temporal package.
 
 ```typescript
-import { SteleClient } from '@stele/sdk';
-import { exportLegalPackage, computeSteleScore } from '@stele/legal';
+import { SteleClient } from '@nobulex/sdk';
+import { exportLegalPackage, computeSteleScore } from '@nobulex/legal';
 
 const client = new SteleClient();
 // ... create covenant, operate, run canary ...

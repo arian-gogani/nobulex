@@ -23,7 +23,7 @@ import {
   generateId,
   keyPairFromPrivateKey,
   keyPairFromPrivateKeyHex,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 import {
   parse,
@@ -33,7 +33,7 @@ import {
   validateNarrowing,
   tokenize,
   CCLSyntaxError,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 import {
   buildCovenant,
@@ -46,10 +46,10 @@ import {
   MemoryChainResolver,
   resolveChain,
   validateChainNarrowing,
-} from '@stele/core';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
+} from '@nobulex/core';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 
-import { MemoryStore } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
 
 import {
   createIdentity,
@@ -58,14 +58,14 @@ import {
   serializeIdentity,
   deserializeIdentity,
   computeIdentityHash,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
 import {
   Monitor,
   CapabilityGate,
   MonitorDeniedError,
   verifyMerkleProof,
-} from '@stele/enforcement';
+} from '@nobulex/enforcement';
 
 // ---------------------------------------------------------------------------
 // Shared helpers

@@ -1,5 +1,5 @@
 {
-  "name": "@stele/rail",
+  "name": "@nobulex/rail",
   "version": "0.1.0",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -20,8 +20,8 @@
   },
   "files": ["dist", "README.md", "LICENSE"],
   "dependencies": {
-    "@stele/crypto": "0.1.0",
-    "@stele/revenue": "0.1.0"
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/revenue": "0.1.0"
   },
   "license": "MIT",
   "engines": {

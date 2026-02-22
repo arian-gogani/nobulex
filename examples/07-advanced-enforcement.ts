@@ -15,27 +15,27 @@
 import {
   Monitor,
   type AuditEntry,
-} from '@stele/enforcement';
+} from '@nobulex/enforcement';
 
 import {
   createReceipt,
   computeReputationScore,
   createEndorsement,
   type ExecutionReceipt,
-} from '@stele/reputation';
+} from '@nobulex/reputation';
 
 import {
   createBreachAttestation,
   TrustGraph,
-} from '@stele/breach';
+} from '@nobulex/breach';
 
 import {
   buildCovenant,
   type Issuer,
   type Beneficiary,
-} from '@stele/core';
+} from '@nobulex/core';
 
-import { generateKeyPair, sha256String, toHex, type HashHex } from '@stele/crypto';
+import { generateKeyPair, sha256String, toHex, type HashHex } from '@nobulex/crypto';
 
 async function main() {
   console.log('========================================');

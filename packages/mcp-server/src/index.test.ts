@@ -7,11 +7,11 @@ import type {
   ToolDefinition,
   ToolResult,
 } from './index';
-import { MemoryStore } from '@stele/store';
-import { generateKeyPair, toHex } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
-import { buildCovenant } from '@stele/core';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
+import { MemoryStore } from '@nobulex/store';
+import { generateKeyPair, toHex } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
+import { buildCovenant } from '@nobulex/core';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────────
 

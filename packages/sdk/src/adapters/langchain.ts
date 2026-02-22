@@ -9,7 +9,7 @@
  *
  * @example
  * ```typescript
- * import { SteleClient, SteleCallbackHandler, withSteleTool } from '@stele/sdk';
+ * import { SteleClient, SteleCallbackHandler, withSteleTool } from '@nobulex/sdk';
  *
  * const handler = new SteleCallbackHandler({ client, covenant });
  * const protectedTool = withSteleTool(myTool, { client, covenant });
@@ -17,7 +17,7 @@
  */
 
 import type { SteleClient } from '../index.js';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
 import { SteleAccessDeniedError } from './vercel-ai.js';
 

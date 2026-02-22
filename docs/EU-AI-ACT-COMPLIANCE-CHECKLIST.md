@@ -10,14 +10,14 @@ Use this checklist to verify your agent deployment meets EU AI Act requirements 
 
 | # | Requirement | Kova Capability | Package | Status |
 |---|-------------|----------------|---------|--------|
-| 1 | Risk management (Art. 10) | Covenant constraints, canary tests, breach detection | @stele/core, @stele/canary, @stele/breach | ✅ |
-| 2 | Data governance (Art. 11) | Behavioral provenance, audit trail | @stele/enforcement | ✅ |
-| 3 | Transparency (Art. 13) | CCL human-readable, LegalIdentityPackage | @stele/core, @stele/legal | ✅ |
-| 4 | Human oversight (Art. 14) | CCL require/deny, revocation | @stele/ccl, @stele/breach | ✅ |
-| 5 | Accuracy & cybersecurity (Art. 15) | Canary, robustness, Ed25519 | @stele/canary, @stele/robustness, @stele/crypto | ✅ |
-| 6 | Record-keeping (Art. 17) | Hash-chained audit trail | @stele/enforcement, @stele/store | ✅ |
-| 7 | Transparency obligations (Art. 53) | Covenant disclosure, LegalIdentityPackage | @stele/legal | ✅ |
-| 8 | Conformity assessment (Art. 71) | Verification, compliance proof | @stele/verifier, @stele/proof | ✅ |
+| 1 | Risk management (Art. 10) | Covenant constraints, canary tests, breach detection | @nobulex/core, @nobulex/canary, @nobulex/breach | ✅ |
+| 2 | Data governance (Art. 11) | Behavioral provenance, audit trail | @nobulex/enforcement | ✅ |
+| 3 | Transparency (Art. 13) | CCL human-readable, LegalIdentityPackage | @nobulex/core, @nobulex/legal | ✅ |
+| 4 | Human oversight (Art. 14) | CCL require/deny, revocation | @nobulex/ccl, @nobulex/breach | ✅ |
+| 5 | Accuracy & cybersecurity (Art. 15) | Canary, robustness, Ed25519 | @nobulex/canary, @nobulex/robustness, @nobulex/crypto | ✅ |
+| 6 | Record-keeping (Art. 17) | Hash-chained audit trail | @nobulex/enforcement, @nobulex/store | ✅ |
+| 7 | Transparency obligations (Art. 53) | Covenant disclosure, LegalIdentityPackage | @nobulex/legal | ✅ |
+| 8 | Conformity assessment (Art. 71) | Verification, compliance proof | @nobulex/verifier, @nobulex/proof | ✅ |
 
 ---
 
@@ -48,12 +48,12 @@ import { withKova } from 'kova';
 const server = await withKova(yourMCPServer, 'data-isolation');
 ```
 
-Or use `@stele/enforcement` Monitor for custom agents.
+Or use `@nobulex/enforcement` Monitor for custom agents.
 
 ### 4. Export Legal Package (5 min)
 
 ```typescript
-import { exportLegalPackage } from '@stele/legal';
+import { exportLegalPackage } from '@nobulex/legal';
 const pkg = exportLegalPackage(agentId, operatorId, data, 'json');
 ```
 
@@ -74,7 +74,7 @@ For regulated industries (finance, healthcare, critical infrastructure):
 1. **Solo tier** — Run `kova init` + `kova audit`; fix gaps
 2. **Bilateral** — Add attestation; counterparty signs interactions
 3. **Network** — Enroll in Kova trust graph; publish reputation
-4. **Certified** — Use @stele/certification for agent class certification ($10K–100K)
+4. **Certified** — Use @nobulex/certification for agent class certification ($10K–100K)
 
 ---
 

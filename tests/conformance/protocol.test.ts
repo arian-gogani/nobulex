@@ -23,7 +23,7 @@ import {
   timestamp,
   base64urlEncode,
   base64urlDecode,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 import {
   buildCovenant,
@@ -40,9 +40,9 @@ import {
   resolveChain,
   computeEffectiveConstraints,
   validateChainNarrowing,
-} from '@stele/core';
+} from '@nobulex/core';
 
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 import {
   parse,
@@ -52,7 +52,7 @@ import {
   serialize,
   merge,
   checkRateLimit,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 import {
   createIdentity,
@@ -61,7 +61,7 @@ import {
   serializeIdentity,
   deserializeIdentity,
   computeIdentityHash,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -922,7 +922,7 @@ describe('Stele Protocol Conformance', () => {
     it('SPEC-130: Public key is deterministically derived from private key', async () => {
       const kp1 = await generateKeyPair();
       // Import the same private key to get the same public key
-      const { keyPairFromPrivateKey } = await import('@stele/crypto');
+      const { keyPairFromPrivateKey } = await import('@nobulex/crypto');
       const kp2 = await keyPairFromPrivateKey(kp1.privateKey);
       expect(kp2.publicKeyHex).toBe(kp1.publicKeyHex);
     });

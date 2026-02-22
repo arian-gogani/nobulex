@@ -9,11 +9,11 @@
  * @packageDocumentation
  */
 
-import type { CovenantDocument, VerificationResult } from '@stele/core';
-import type { AgentIdentity } from '@stele/identity';
-import type { CovenantStore, StoreFilter } from '@stele/store';
-import type { SteleClient, CreateCovenantOptions, EvaluationResult, CreateIdentityOptions, EvolveOptions } from '@stele/sdk';
-import type { EvaluationContext } from '@stele/ccl';
+import type { CovenantDocument, VerificationResult } from '@nobulex/core';
+import type { AgentIdentity } from '@nobulex/identity';
+import type { CovenantStore, StoreFilter } from '@nobulex/store';
+import type { SteleClient, CreateCovenantOptions, EvaluationResult, CreateIdentityOptions, EvolveOptions } from '@nobulex/sdk';
+import type { EvaluationContext } from '@nobulex/ccl';
 import { Observable, CovenantState, IdentityState, StoreState } from './index';
 
 // ─── Minimal React type interface ──────────────────────────────────────────────
@@ -39,7 +39,7 @@ function getReact(): ReactModule {
       _react = require('react') as ReactModule;
     } catch {
       throw new Error(
-        '@stele/react hooks require React >= 18 as a peer dependency. ' +
+        '@nobulex/react hooks require React >= 18 as a peer dependency. ' +
         'Install it with: npm install react',
       );
     }

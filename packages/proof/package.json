@@ -1,5 +1,5 @@
 {
-  "name": "@stele/proof",
+  "name": "@nobulex/proof",
   "version": "0.1.0",
   "description": "Proof generation and verification for the Stele covenant framework",
   "license": "MIT",
@@ -39,12 +39,13 @@
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
     "bundle": "tsup src/index.ts --format cjs,esm",
     "dev": "tsup src/index.ts --format cjs,esm --watch",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@stele/crypto": "0.1.0",
-    "@stele/ccl": "0.1.0"
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/ccl": "0.1.0"
   }
 }

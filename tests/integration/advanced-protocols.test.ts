@@ -16,8 +16,8 @@ import {
   sha256Object,
   canonicalizeJson,
   toHex,
-} from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
+} from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
 
 import {
   buildCovenant,
@@ -26,18 +26,18 @@ import {
   deserializeCovenant,
   computeId,
   canonicalForm,
-} from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
+} from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
 
-import { parse, serialize, evaluate } from '@stele/ccl';
+import { parse, serialize, evaluate } from '@nobulex/ccl';
 
 import {
   createIdentity,
   serializeIdentity,
   deserializeIdentity,
-} from '@stele/identity';
+} from '@nobulex/identity';
 
-import { MemoryStore } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
 
 import {
   generateCanary,
@@ -46,7 +46,7 @@ import {
   isExpired,
   canarySchedule,
   canaryCorrelation,
-} from '@stele/canary';
+} from '@nobulex/canary';
 
 import {
   proveHonesty,
@@ -58,7 +58,7 @@ import {
   repeatedGameEquilibrium,
   coalitionStability,
   mechanismDesign,
-} from '@stele/gametheory';
+} from '@nobulex/gametheory';
 
 import {
   compose,
@@ -68,7 +68,7 @@ import {
   decomposeCovenants,
   compositionComplexity,
   proveSystemProperty,
-} from '@stele/composition';
+} from '@nobulex/composition';
 
 // ---------------------------------------------------------------------------
 // Helpers

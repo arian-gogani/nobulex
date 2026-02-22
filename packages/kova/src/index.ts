@@ -6,16 +6,16 @@
  * @packageDocumentation
  */
 
-import { SteleGuard, PRESETS } from '@stele/mcp';
-import type { MCPServer, SteleGuardOptions, WrappedMCPServer } from '@stele/mcp';
+import { SteleGuard, PRESETS } from '@nobulex/mcp';
+import type { MCPServer, SteleGuardOptions, WrappedMCPServer } from '@nobulex/mcp';
 
 // Re-export 3 primitives for advanced users
-export { createIdentity, evolveIdentity } from '@stele/identity';
-export { buildCovenant, verifyCovenant } from '@stele/core';
-export { generateComplianceProof } from '@stele/proof';
-export { Monitor } from '@stele/enforcement';
+export { createIdentity, evolveIdentity } from '@nobulex/identity';
+export { buildCovenant, verifyCovenant } from '@nobulex/core';
+export { generateComplianceProof } from '@nobulex/proof';
+export { Monitor } from '@nobulex/enforcement';
 
-export type { MCPServer, WrappedMCPServer, SteleGuardOptions } from '@stele/mcp';
+export type { MCPServer, WrappedMCPServer, SteleGuardOptions } from '@nobulex/mcp';
 
 /** Preset constraint profiles for common use cases. */
 export type KovaPreset = 'data-isolation' | 'read-write' | 'network' | 'minimal';

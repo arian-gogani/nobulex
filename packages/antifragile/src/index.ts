@@ -1,4 +1,4 @@
-import { generateId } from '@stele/crypto';
+import { generateId } from '@nobulex/crypto';
 
 export type {
   BreachAntibody,

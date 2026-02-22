@@ -11,10 +11,10 @@ import { describe, it, expect } from 'vitest';
 
 describe('API Surface Tests', () => {
 
-  // ─── @stele/crypto ──────────────────────────────────────────────────────────
+  // ─── @nobulex/crypto ──────────────────────────────────────────────────────────
 
-  it('@stele/crypto exports', async () => {
-    const mod = await import('@stele/crypto');
+  it('@nobulex/crypto exports', async () => {
+    const mod = await import('@nobulex/crypto');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'KeyManager',
@@ -39,10 +39,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/ccl ─────────────────────────────────────────────────────────────
+  // ─── @nobulex/ccl ─────────────────────────────────────────────────────────────
 
-  it('@stele/ccl exports', async () => {
-    const mod = await import('@stele/ccl');
+  it('@nobulex/ccl exports', async () => {
+    const mod = await import('@nobulex/ccl');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'CCLSyntaxError',
@@ -63,10 +63,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/core ────────────────────────────────────────────────────────────
+  // ─── @nobulex/core ────────────────────────────────────────────────────────────
 
-  it('@stele/core exports', async () => {
-    const mod = await import('@stele/core');
+  it('@nobulex/core exports', async () => {
+    const mod = await import('@nobulex/core');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'CovenantBuildError',
@@ -96,10 +96,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/store ───────────────────────────────────────────────────────────
+  // ─── @nobulex/store ───────────────────────────────────────────────────────────
 
-  it('@stele/store exports', async () => {
-    const mod = await import('@stele/store');
+  it('@nobulex/store exports', async () => {
+    const mod = await import('@nobulex/store');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'FileStore',
@@ -113,10 +113,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/types ───────────────────────────────────────────────────────────
+  // ─── @nobulex/types ───────────────────────────────────────────────────────────
 
-  it('@stele/types exports', async () => {
-    const mod = await import('@stele/types');
+  it('@nobulex/types exports', async () => {
+    const mod = await import('@nobulex/types');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'ActiveSpan',
@@ -179,10 +179,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/identity ────────────────────────────────────────────────────────
+  // ─── @nobulex/identity ────────────────────────────────────────────────────────
 
-  it('@stele/identity exports', async () => {
-    const mod = await import('@stele/identity');
+  it('@nobulex/identity exports', async () => {
+    const mod = await import('@nobulex/identity');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'DEFAULT_EVOLUTION_POLICY',
@@ -199,10 +199,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/verifier ────────────────────────────────────────────────────────
+  // ─── @nobulex/verifier ────────────────────────────────────────────────────────
 
-  it('@stele/verifier exports', async () => {
-    const mod = await import('@stele/verifier');
+  it('@nobulex/verifier exports', async () => {
+    const mod = await import('@nobulex/verifier');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'Verifier',
@@ -210,10 +210,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/enforcement ─────────────────────────────────────────────────────
+  // ─── @nobulex/enforcement ─────────────────────────────────────────────────────
 
-  it('@stele/enforcement exports', async () => {
-    const mod = await import('@stele/enforcement');
+  it('@nobulex/enforcement exports', async () => {
+    const mod = await import('@nobulex/enforcement');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'AuditChain',
@@ -225,10 +225,10 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @stele/sdk ─────────────────────────────────────────────────────────────
+  // ─── @nobulex/sdk ─────────────────────────────────────────────────────────────
 
-  it('@stele/sdk exports', async () => {
-    const mod = await import('@stele/sdk');
+  it('@nobulex/sdk exports', async () => {
+    const mod = await import('@nobulex/sdk');
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'CCLSyntaxError',
@@ -340,32 +340,32 @@ describe('API Surface Tests', () => {
   describe('Cross-package consistency', () => {
 
     it('PROTOCOL_VERSION is consistent across core and sdk', async () => {
-      const core = await import('@stele/core');
-      const sdk = await import('@stele/sdk');
+      const core = await import('@nobulex/core');
+      const sdk = await import('@nobulex/sdk');
       expect(core.PROTOCOL_VERSION).toBe(sdk.PROTOCOL_VERSION);
     });
 
     it('MAX_CHAIN_DEPTH is consistent across core and sdk', async () => {
-      const core = await import('@stele/core');
-      const sdk = await import('@stele/sdk');
+      const core = await import('@nobulex/core');
+      const sdk = await import('@nobulex/sdk');
       expect(core.MAX_CHAIN_DEPTH).toBe(sdk.MAX_CHAIN_DEPTH);
     });
 
     it('buildCovenant is the same function in core and sdk', async () => {
-      const core = await import('@stele/core');
-      const sdk = await import('@stele/sdk');
+      const core = await import('@nobulex/core');
+      const sdk = await import('@nobulex/sdk');
       expect(core.buildCovenant).toBe(sdk.buildCovenant);
     });
 
     it('generateKeyPair is the same function in crypto and sdk', async () => {
-      const crypto = await import('@stele/crypto');
-      const sdk = await import('@stele/sdk');
+      const crypto = await import('@nobulex/crypto');
+      const sdk = await import('@nobulex/sdk');
       expect(crypto.generateKeyPair).toBe(sdk.generateKeyPair);
     });
 
     it('parse from ccl is the same function as parseCCL from sdk', async () => {
-      const ccl = await import('@stele/ccl');
-      const sdk = await import('@stele/sdk');
+      const ccl = await import('@nobulex/ccl');
+      const sdk = await import('@nobulex/sdk');
       expect(ccl.parse).toBe(sdk.parseCCL);
     });
   });

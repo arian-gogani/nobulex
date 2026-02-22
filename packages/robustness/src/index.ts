@@ -1,11 +1,11 @@
-import { parse, evaluate, matchAction, matchResource } from '@stele/ccl';
+import { parse, evaluate, matchAction, matchResource } from '@nobulex/ccl';
 import type {
   CCLDocument,
   Condition,
   CompoundCondition,
   PermitDenyStatement,
   EvaluationContext,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 export type {
   RobustnessProof,

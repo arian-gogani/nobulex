@@ -8,47 +8,47 @@ by layer: **Foundation**, **Enforcement**, **Protocol**, and **Platform**.
 ## Table of Contents
 
 - [Foundation](#foundation)
-  - [@stele/types](#steletypes)
-  - [@stele/crypto](#stelecrypto)
-  - [@stele/ccl](#steleccl)
-  - [@stele/core](#stelecore)
-  - [@stele/store](#stelestore)
-  - [@stele/verifier](#steleverifier)
-  - [@stele/sdk](#stelesdk)
-  - [@stele/identity](#steleidentity)
+  - [@nobulex/types](#steletypes)
+  - [@nobulex/crypto](#stelecrypto)
+  - [@nobulex/ccl](#steleccl)
+  - [@nobulex/core](#stelecore)
+  - [@nobulex/store](#stelestore)
+  - [@nobulex/verifier](#steleverifier)
+  - [@nobulex/sdk](#stelesdk)
+  - [@nobulex/identity](#steleidentity)
 - [Enforcement](#enforcement)
-  - [@stele/enforcement](#steleenforcement)
-  - [@stele/proof](#steleproof)
-  - [@stele/breach](#stelebreach)
-  - [@stele/reputation](#stelereputation)
-  - [@stele/mcp](#stelemcp)
+  - [@nobulex/enforcement](#steleenforcement)
+  - [@nobulex/proof](#steleproof)
+  - [@nobulex/breach](#stelebreach)
+  - [@nobulex/reputation](#stelereputation)
+  - [@nobulex/mcp](#stelemcp)
 - [Protocol](#protocol)
-  - [@stele/attestation](#steleattestation)
-  - [@stele/canary](#stelecanary)
-  - [@stele/gametheory](#stelegametheory)
-  - [@stele/composition](#stelecomposition)
-  - [@stele/antifragile](#steleantifragile)
-  - [@stele/negotiation](#stelenegotiation)
-  - [@stele/consensus](#steleconsensus)
-  - [@stele/robustness](#stelerobustness)
-  - [@stele/temporal](#steletemporal)
-  - [@stele/recursive](#stelerecursive)
-  - [@stele/alignment](#stelealignment)
-  - [@stele/norms](#stelenorms)
-  - [@stele/substrate](#stelesubstrate)
-  - [@stele/derivatives](#stelederivatives)
-  - [@stele/legal](#stelelegal)
+  - [@nobulex/attestation](#steleattestation)
+  - [@nobulex/canary](#stelecanary)
+  - [@nobulex/gametheory](#stelegametheory)
+  - [@nobulex/composition](#stelecomposition)
+  - [@nobulex/antifragile](#steleantifragile)
+  - [@nobulex/negotiation](#stelenegotiation)
+  - [@nobulex/consensus](#steleconsensus)
+  - [@nobulex/robustness](#stelerobustness)
+  - [@nobulex/temporal](#steletemporal)
+  - [@nobulex/recursive](#stelerecursive)
+  - [@nobulex/alignment](#stelealignment)
+  - [@nobulex/norms](#stelenorms)
+  - [@nobulex/substrate](#stelesubstrate)
+  - [@nobulex/derivatives](#stelederivatives)
+  - [@nobulex/legal](#stelelegal)
 - [Platform](#platform)
-  - [@stele/react](#stelereact)
-  - [@stele/evm](#steleevm)
-  - [@stele/mcp-server](#stelemcp-server)
-  - [@stele/cli](#stelecli)
+  - [@nobulex/react](#stelereact)
+  - [@nobulex/evm](#steleevm)
+  - [@nobulex/mcp-server](#stelemcp-server)
+  - [@nobulex/cli](#stelecli)
 
 ---
 
 ## Foundation
 
-### @stele/types
+### @nobulex/types
 
 Shared TypeScript type definitions, error classes, validation utilities, and protocol constants used across the entire SDK.
 
@@ -82,7 +82,7 @@ Shared TypeScript type definitions, error classes, validation utilities, and pro
 #### Usage
 
 ```typescript
-import { ValidationError, validateNonEmpty, ok, err, Result } from '@stele/types';
+import { ValidationError, validateNonEmpty, ok, err, Result } from '@nobulex/types';
 
 validateNonEmpty(input, 'agentId'); // throws if empty
 const result: Result<number> = ok(42);
@@ -91,7 +91,7 @@ if (result.ok) console.log(result.value);
 
 ---
 
-### @stele/crypto
+### @nobulex/crypto
 
 Ed25519 key management, signing, verification, SHA-256 hashing, and encoding utilities built on `@noble/ed25519` and `@noble/hashes`.
 
@@ -121,7 +121,7 @@ Ed25519 key management, signing, verification, SHA-256 hashing, and encoding uti
 #### Usage
 
 ```typescript
-import { generateKeyPair, signString, verify, sha256String, toHex } from '@stele/crypto';
+import { generateKeyPair, signString, verify, sha256String, toHex } from '@nobulex/crypto';
 
 const kp = await generateKeyPair();
 const sig = await signString('hello', kp.privateKey);
@@ -130,7 +130,7 @@ const valid = await verify(new TextEncoder().encode('hello'), sig, kp.publicKey)
 
 ---
 
-### @stele/ccl
+### @nobulex/ccl
 
 Parser, evaluator, merger, and serializer for the Covenant Constraint Language (CCL) -- the rule language that governs what actions agents may perform.
 
@@ -160,7 +160,7 @@ Parser, evaluator, merger, and serializer for the Covenant Constraint Language (
 #### Usage
 
 ```typescript
-import { parse, evaluate } from '@stele/ccl';
+import { parse, evaluate } from '@nobulex/ccl';
 
 const doc = parse("permit read on '**'\ndeny write on '/system/**'");
 const result = evaluate(doc, 'write', '/system/config');
@@ -169,7 +169,7 @@ console.log(result.permitted); // false
 
 ---
 
-### @stele/core
+### @nobulex/core
 
 Covenant document lifecycle: building, signing, verifying, countersigning, chain resolution, and serialization.
 
@@ -201,7 +201,7 @@ Covenant document lifecycle: building, signing, verifying, countersigning, chain
 #### Usage
 
 ```typescript
-import { buildCovenant, verifyCovenant } from '@stele/core';
+import { buildCovenant, verifyCovenant } from '@nobulex/core';
 
 const doc = await buildCovenant({
   issuer, beneficiary,
@@ -214,7 +214,7 @@ console.log(result.valid); // true
 
 ---
 
-### @stele/store
+### @nobulex/store
 
 Pluggable storage backends for covenant documents with event-driven notifications.
 
@@ -233,7 +233,7 @@ Pluggable storage backends for covenant documents with event-driven notification
 #### Usage
 
 ```typescript
-import { MemoryStore } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
 
 const store = new MemoryStore();
 await store.put(covenantDoc);
@@ -243,7 +243,7 @@ const all = await store.list({ issuerId: 'operator-1' });
 
 ---
 
-### @stele/verifier
+### @nobulex/verifier
 
 Standalone verification engine for third-party auditors with history tracking, batch processing, chain integrity validation, and action-level evaluation.
 
@@ -263,7 +263,7 @@ Standalone verification engine for third-party auditors with history tracking, b
 #### Usage
 
 ```typescript
-import { Verifier, verifyBatch } from '@stele/verifier';
+import { Verifier, verifyBatch } from '@nobulex/verifier';
 
 const v = new Verifier({ strictMode: true });
 const report = await v.verify(doc);
@@ -273,7 +273,7 @@ const batchReport = await verifyBatch(docs);
 
 ---
 
-### @stele/sdk
+### @nobulex/sdk
 
 High-level unified SDK that ties together all foundation packages into a single `SteleClient` entry point with an event system.
 
@@ -287,12 +287,12 @@ High-level unified SDK that ties together all foundation packages into a single 
 | `CreateCovenantOptions` | type | Options for `createCovenant`: issuer, beneficiary, constraints, privateKey, obligations, chain, enforcement, proof, revocation, metadata, expiresAt, activatesAt. |
 | `SteleEventType` | type | `'covenant:created' | 'covenant:verified' | 'covenant:countersigned' | 'identity:created' | 'identity:evolved' | 'chain:resolved' | 'chain:validated' | 'evaluation:completed'` |
 
-Also re-exports all types and functions from `@stele/core`, `@stele/crypto`, `@stele/ccl`, and `@stele/identity`.
+Also re-exports all types and functions from `@nobulex/core`, `@nobulex/crypto`, `@nobulex/ccl`, and `@nobulex/identity`.
 
 #### Usage
 
 ```typescript
-import { SteleClient, QuickCovenant } from '@stele/sdk';
+import { SteleClient, QuickCovenant } from '@nobulex/sdk';
 
 const client = new SteleClient();
 const kp = await client.generateKeyPair();
@@ -305,7 +305,7 @@ const result = await client.evaluateAction(doc, 'read', '/data');
 
 ---
 
-### @stele/identity
+### @nobulex/identity
 
 Agent identity management with lineage tracking, evolution policies, and reputation carry-forward.
 
@@ -330,7 +330,7 @@ Agent identity management with lineage tracking, evolution policies, and reputat
 #### Usage
 
 ```typescript
-import { createIdentity, evolveIdentity } from '@stele/identity';
+import { createIdentity, evolveIdentity } from '@nobulex/identity';
 
 const identity = await createIdentity({
   operatorKeyPair: kp,
@@ -350,7 +350,7 @@ const evolved = await evolveIdentity(identity, {
 
 ## Enforcement
 
-### @stele/enforcement
+### @nobulex/enforcement
 
 Runtime constraint enforcement engine with capability-based access control, monitoring, audit logging, and rate limiting.
 
@@ -369,7 +369,7 @@ Runtime constraint enforcement engine with capability-based access control, moni
 #### Usage
 
 ```typescript
-import { Monitor } from '@stele/enforcement';
+import { Monitor } from '@nobulex/enforcement';
 
 const monitor = new Monitor(covenantDoc, keyPair);
 const outcome = await monitor.execute('read', '/data', handler);
@@ -378,7 +378,7 @@ console.log(outcome.permitted, outcome.auditEntry);
 
 ---
 
-### @stele/proof
+### @nobulex/proof
 
 Zero-knowledge-style compliance proofs using Poseidon hashing for efficient audit log commitment and verification.
 
@@ -399,7 +399,7 @@ Zero-knowledge-style compliance proofs using Poseidon hashing for efficient audi
 #### Usage
 
 ```typescript
-import { generateComplianceProof, verifyComplianceProof } from '@stele/proof';
+import { generateComplianceProof, verifyComplianceProof } from '@nobulex/proof';
 
 const proof = await generateComplianceProof({
   entries: auditEntries,
@@ -411,7 +411,7 @@ console.log(result.valid);
 
 ---
 
-### @stele/breach
+### @nobulex/breach
 
 Breach detection, attestation, and trust graph management for tracking covenant violations and their impact on agent trust.
 
@@ -429,7 +429,7 @@ Breach detection, attestation, and trust graph management for tracking covenant 
 #### Usage
 
 ```typescript
-import { createBreachAttestation, verifyBreachAttestation } from '@stele/breach';
+import { createBreachAttestation, verifyBreachAttestation } from '@nobulex/breach';
 
 const attestation = await createBreachAttestation({
   covenantId: doc.id,
@@ -443,7 +443,7 @@ const valid = await verifyBreachAttestation(attestation);
 
 ---
 
-### @stele/reputation
+### @nobulex/reputation
 
 Reputation scoring, staking, delegation, and endorsement system for agents based on execution history and breach records.
 
@@ -462,7 +462,7 @@ Reputation scoring, staking, delegation, and endorsement system for agents based
 #### Usage
 
 ```typescript
-import { createReceipt, computeScore } from '@stele/reputation';
+import { createReceipt, computeScore } from '@nobulex/reputation';
 
 const receipt = createReceipt({
   agentId: 'agent-1', action: 'read',
@@ -474,7 +474,7 @@ console.log(score.overall); // 0.0 - 1.0
 
 ---
 
-### @stele/mcp
+### @nobulex/mcp
 
 MCP (Model Context Protocol) guard that wraps an MCP server with Stele covenant enforcement, audit logging, identity creation, and compliance proof generation.
 
@@ -491,7 +491,7 @@ MCP (Model Context Protocol) guard that wraps an MCP server with Stele covenant 
 #### Usage
 
 ```typescript
-import { steleGuard, PRESETS } from '@stele/mcp';
+import { steleGuard, PRESETS } from '@nobulex/mcp';
 
 const wrapped = await steleGuard(mcpServer, {
   constraints: 'standard:data-isolation',
@@ -507,7 +507,7 @@ const wrapped = await steleGuard(mcpServer, {
 
 ## Protocol
 
-### @stele/attestation
+### @nobulex/attestation
 
 External attestation creation, reconciliation, chain linking, and coverage analysis for verifying agent interactions with external counterparties.
 
@@ -525,7 +525,7 @@ External attestation creation, reconciliation, chain linking, and coverage analy
 #### Usage
 
 ```typescript
-import { createAttestation, reconcileAttestations } from '@stele/attestation';
+import { createAttestation, reconcileAttestations } from '@nobulex/attestation';
 
 const agentAtt = createAttestation(
   'agent-1', 'service-a', '/api/data',
@@ -540,7 +540,7 @@ const reconciliation = reconcileAttestations(agentAtt, serviceAtt);
 
 ---
 
-### @stele/canary
+### @nobulex/canary
 
 Canary testing framework that generates challenge payloads from CCL constraints and verifies agent compliance by probing boundary conditions.
 
@@ -558,7 +558,7 @@ Canary testing framework that generates challenge payloads from CCL constraints 
 #### Usage
 
 ```typescript
-import { createCanary, runCanary } from '@stele/canary';
+import { createCanary, runCanary } from '@nobulex/canary';
 
 const canary = createCanary("deny write on '/secrets/**'", 'agent-1');
 const result = await runCanary(canary, async (challenge) => {
@@ -569,7 +569,7 @@ console.log(result.passed);
 
 ---
 
-### @stele/gametheory
+### @nobulex/gametheory
 
 Game-theoretic analysis proving that honest behavior is the dominant strategy under Stele's incentive structure.
 
@@ -586,7 +586,7 @@ Game-theoretic analysis proving that honest behavior is the dominant strategy un
 #### Usage
 
 ```typescript
-import { proveHonesty } from '@stele/gametheory';
+import { proveHonesty } from '@nobulex/gametheory';
 
 const proof = proveHonesty({
   stakeAmount: 1000,
@@ -600,7 +600,7 @@ console.log(proof.isDominantStrategy); // true
 
 ---
 
-### @stele/composition
+### @nobulex/composition
 
 Formal composition of multiple covenant constraints with proof of system-property preservation and complexity analysis.
 
@@ -618,7 +618,7 @@ Formal composition of multiple covenant constraints with proof of system-propert
 #### Usage
 
 ```typescript
-import { composeConstraints, checkSystemProperty } from '@stele/composition';
+import { composeConstraints, checkSystemProperty } from '@nobulex/composition';
 
 const result = composeConstraints([
   "permit read on '**'",
@@ -632,7 +632,7 @@ const ok = checkSystemProperty(result.document, {
 
 ---
 
-### @stele/antifragile
+### @nobulex/antifragile
 
 Antifragility analysis that turns breach events into system improvements through antibody generation, stress testing, and governance proposals.
 
@@ -650,7 +650,7 @@ Antifragility analysis that turns breach events into system improvements through
 #### Usage
 
 ```typescript
-import { generateAntibody, assessNetworkHealth } from '@stele/antifragile';
+import { generateAntibody, assessNetworkHealth } from '@nobulex/antifragile';
 
 const antibody = generateAntibody({
   violatedConstraint: "deny write on '/secrets/**'",
@@ -662,7 +662,7 @@ const health = assessNetworkHealth(breaches, [antibody]);
 
 ---
 
-### @stele/negotiation
+### @nobulex/negotiation
 
 Multi-party covenant negotiation with proposal/counter-proposal workflows, Nash bargaining solutions, and Pareto optimality analysis.
 
@@ -680,7 +680,7 @@ Multi-party covenant negotiation with proposal/counter-proposal workflows, Nash 
 #### Usage
 
 ```typescript
-import { createSession, submitProposal } from '@stele/negotiation';
+import { createSession, submitProposal } from '@nobulex/negotiation';
 
 const session = createSession(['operator', 'agent']);
 submitProposal(session, {
@@ -693,7 +693,7 @@ submitProposal(session, {
 
 ---
 
-### @stele/consensus
+### @nobulex/consensus
 
 Accountability-score-based consensus protocol for multi-agent governance decisions and access control.
 
@@ -711,7 +711,7 @@ Accountability-score-based consensus protocol for multi-agent governance decisio
 #### Usage
 
 ```typescript
-import { computeAccountabilityScore, classifyTier } from '@stele/consensus';
+import { computeAccountabilityScore, classifyTier } from '@nobulex/consensus';
 
 const score = computeAccountabilityScore({
   covenantCompleteness: 0.9,
@@ -725,7 +725,7 @@ const tier = classifyTier(score); // 'trusted'
 
 ---
 
-### @stele/robustness
+### @nobulex/robustness
 
 Formal robustness analysis for covenant constraints: input bound verification, vulnerability scanning, contradiction detection, and robustness scoring.
 
@@ -742,7 +742,7 @@ Formal robustness analysis for covenant constraints: input bound verification, v
 #### Usage
 
 ```typescript
-import { scanVulnerabilities, computeRobustnessScore } from '@stele/robustness';
+import { scanVulnerabilities, computeRobustnessScore } from '@nobulex/robustness';
 
 const vulns = scanVulnerabilities([
   "permit read on '**'",
@@ -757,7 +757,7 @@ console.log(score.overall, score.factors);
 
 ---
 
-### @stele/temporal
+### @nobulex/temporal
 
 Temporal evolution of covenants: trigger-based constraint evolution, trust decay modeling, violation tracking, and expiration forecasting.
 
@@ -776,7 +776,7 @@ Temporal evolution of covenants: trigger-based constraint evolution, trust decay
 #### Usage
 
 ```typescript
-import { createEvolutionPolicy, modelTrustDecay } from '@stele/temporal';
+import { createEvolutionPolicy, modelTrustDecay } from '@nobulex/temporal';
 
 const policy = createEvolutionPolicy([{
   type: 'reputation_threshold',
@@ -789,7 +789,7 @@ const decay = modelTrustDecay(1.0, 0.95, [0, 30, 60, 90]);
 
 ---
 
-### @stele/recursive
+### @nobulex/recursive
 
 Meta-covenants and recursive verification: covenants that govern other covenants, termination proofs, and transitive trust analysis.
 
@@ -807,7 +807,7 @@ Meta-covenants and recursive verification: covenants that govern other covenants
 #### Usage
 
 ```typescript
-import { createMetaCovenant, proveTermination } from '@stele/recursive';
+import { createMetaCovenant, proveTermination } from '@nobulex/recursive';
 
 const meta = createMetaCovenant('ai-agent', ["deny * on '/system/**'"]);
 const proof = proveTermination([meta]);
@@ -816,7 +816,7 @@ console.log(proof.terminates); // true
 
 ---
 
-### @stele/alignment
+### @nobulex/alignment
 
 AI alignment verification: HHH (Helpful, Honest, Harmless) property checking, alignment drift detection, and decomposition analysis.
 
@@ -834,7 +834,7 @@ AI alignment verification: HHH (Helpful, Honest, Harmless) property checking, al
 #### Usage
 
 ```typescript
-import { createAlignmentCovenant, verifyAlignment, STANDARD_ALIGNMENT_PROPERTIES } from '@stele/alignment';
+import { createAlignmentCovenant, verifyAlignment, STANDARD_ALIGNMENT_PROPERTIES } from '@nobulex/alignment';
 
 const covenant = createAlignmentCovenant(STANDARD_ALIGNMENT_PROPERTIES);
 const report = verifyAlignment(covenant, executionRecords);
@@ -843,7 +843,7 @@ console.log(report.overallScore, report.propertyScores);
 
 ---
 
-### @stele/norms
+### @nobulex/norms
 
 Emergent norm discovery, clustering, governance proposal generation, and template management from observed covenant patterns.
 
@@ -862,7 +862,7 @@ Emergent norm discovery, clustering, governance proposal generation, and templat
 #### Usage
 
 ```typescript
-import { discoverNorms, clusterNorms, proposeGovernance } from '@stele/norms';
+import { discoverNorms, clusterNorms, proposeGovernance } from '@nobulex/norms';
 
 const norms = discoverNorms(covenantDataset);
 const clusters = clusterNorms(norms);
@@ -871,7 +871,7 @@ const proposals = proposeGovernance(clusters);
 
 ---
 
-### @stele/substrate
+### @nobulex/substrate
 
 Cross-substrate constraint translation for AI agents, robots, IoT devices, autonomous vehicles, smart contracts, and drones.
 
@@ -890,7 +890,7 @@ Cross-substrate constraint translation for AI agents, robots, IoT devices, auton
 #### Usage
 
 ```typescript
-import { createAdapter, translateConstraints } from '@stele/substrate';
+import { createAdapter, translateConstraints } from '@nobulex/substrate';
 
 const adapter = createAdapter('robot', { maxVelocity: 1.5, maxForce: 100 });
 const rules = translateConstraints(adapter, [
@@ -900,7 +900,7 @@ const rules = translateConstraints(adapter, [
 
 ---
 
-### @stele/derivatives
+### @nobulex/derivatives
 
 Trust derivatives: trust futures, agent insurance policies, risk assessment, and settlement for accountability-based financial instruments.
 
@@ -918,7 +918,7 @@ Trust derivatives: trust futures, agent insurance policies, risk assessment, and
 #### Usage
 
 ```typescript
-import { createInsurancePolicy, assessRisk } from '@stele/derivatives';
+import { createInsurancePolicy, assessRisk } from '@nobulex/derivatives';
 
 const risk = assessRisk({
   breachCount: 0, trustScore: 0.85,
@@ -931,7 +931,7 @@ console.log(policy.premiumRate, risk.overallRisk);
 
 ---
 
-### @stele/legal
+### @nobulex/legal
 
 Legal compliance: identity packages, jurisdictional mappings, cross-jurisdiction compliance checking, audit trail export, and regulatory gap analysis.
 
@@ -950,7 +950,7 @@ Legal compliance: identity packages, jurisdictional mappings, cross-jurisdiction
 #### Usage
 
 ```typescript
-import { createLegalIdentityPackage, checkCompliance } from '@stele/legal';
+import { createLegalIdentityPackage, checkCompliance } from '@nobulex/legal';
 
 const pkg = createLegalIdentityPackage(
   identity, covenants, reputation, attestations,
@@ -963,7 +963,7 @@ console.log(compliance.compliant, compliance.gaps);
 
 ## Platform
 
-### @stele/react
+### @nobulex/react
 
 Framework-agnostic reactive primitives (Observable, CovenantState, IdentityState) for building Stele-powered UIs.
 
@@ -980,7 +980,7 @@ Framework-agnostic reactive primitives (Observable, CovenantState, IdentityState
 #### Usage
 
 ```typescript
-import { Observable, CovenantState } from '@stele/react';
+import { Observable, CovenantState } from '@nobulex/react';
 
 const counter = new Observable(0);
 counter.subscribe((value) => console.log('Count:', value));
@@ -992,7 +992,7 @@ await state.create(options);
 
 ---
 
-### @stele/evm
+### @nobulex/evm
 
 EVM anchoring utilities for on-chain covenant verification: ABI encoding/decoding, contract interface generation, and anchor/verify helpers for Ethereum-compatible blockchains.
 
@@ -1014,7 +1014,7 @@ EVM anchoring utilities for on-chain covenant verification: ABI encoding/decodin
 #### Usage
 
 ```typescript
-import { anchorCovenant, encodeUint256, computeFunctionSelector } from '@stele/evm';
+import { anchorCovenant, encodeUint256, computeFunctionSelector } from '@nobulex/evm';
 
 const calldata = anchorCovenant(covenantDoc);
 const selector = computeFunctionSelector('anchor(bytes32,bytes32,uint256)');
@@ -1023,7 +1023,7 @@ const encoded = encodeUint256(42n);
 
 ---
 
-### @stele/mcp-server
+### @nobulex/mcp-server
 
 Model Context Protocol server exposing Stele tools to AI agents via JSON-RPC 2.0 over stdio.
 
@@ -1038,7 +1038,7 @@ Model Context Protocol server exposing Stele tools to AI agents via JSON-RPC 2.0
 #### Usage
 
 ```typescript
-import { MCPSteleServer } from '@stele/mcp-server';
+import { MCPSteleServer } from '@nobulex/mcp-server';
 
 const server = new MCPSteleServer({ storePath: './covenants' });
 const response = await server.handleRequest({
@@ -1050,7 +1050,7 @@ const response = await server.handleRequest({
 
 ---
 
-### @stele/cli
+### @nobulex/cli
 
 Command-line interface for Stele operations: key generation, covenant management, identity management, CCL parsing, and verification.
 

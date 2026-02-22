@@ -8,7 +8,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Counterparties independently verify agent interactions. Agents can't lie about what happened because the other side has a signed record too.
 
-**Package:** `@stele/attestation` — External attestation reconciliation
+**Package:** `@nobulex/attestation` — External attestation reconciliation
 
 ---
 
@@ -16,7 +16,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Mathematical framework proving honest behavior is a Nash equilibrium. Not a claim — a computable inequality with tunable parameters.
 
-**Package:** `@stele/gametheory` — Game-theoretic honesty proofs and incentive analysis
+**Package:** `@nobulex/gametheory` — Game-theoretic honesty proofs and incentive analysis
 
 ---
 
@@ -24,7 +24,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Prove properties of entire agent networks, not just individuals. If A→B→C each have covenants, derive what's provable about the system.
 
-**Package:** `@stele/composition` — Formal constraint composition and verification
+**Package:** `@nobulex/composition` — Formal constraint composition and verification
 
 ---
 
@@ -32,7 +32,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Actively test covenant boundaries with synthetic challenges. Don't wait for breach — hunt for it.
 
-**Package:** `@stele/canary` — Canary testing framework for constraint validation
+**Package:** `@nobulex/canary` — Canary testing framework for constraint validation
 
 ---
 
@@ -40,7 +40,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Breaches generate constraint antibodies that harden the network. The system gets stronger from every attack.
 
-**Package:** `@stele/antifragile` — Breach-to-improvement antifragility engine
+**Package:** `@nobulex/antifragile` — Breach-to-improvement antifragility engine
 
 ---
 
@@ -48,7 +48,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Agents negotiate behavioral commitments in real time like TLS handshakes. Strangers establish verified trust in under 100ms.
 
-**Package:** `@stele/negotiation` — Multi-party covenant negotiation sessions
+**Package:** `@nobulex/negotiation` — Multi-party covenant negotiation sessions
 
 ---
 
@@ -56,7 +56,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Financial instruments built on verifiable behavioral data. Insurance, futures, hedging on agent reliability.
 
-**Package:** `@stele/derivatives` — Trust futures, insurance & derivative instruments
+**Package:** `@nobulex/derivatives` — Trust futures, insurance & derivative instruments
 
 ---
 
@@ -64,7 +64,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Consensus mechanism where rational self-interest forces accountability adoption without central mandate.
 
-**Package:** `@stele/consensus` — Accountability-based consensus protocol
+**Package:** `@nobulex/consensus` — Accountability-based consensus protocol
 
 ---
 
@@ -72,7 +72,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Reframe alignment as a protocol problem, not a training problem. Map alignment properties to enforceable CCL constraints.
 
-**Package:** `@stele/alignment` — AI alignment property verification
+**Package:** `@nobulex/alignment` — AI alignment property verification
 
 ---
 
@@ -80,7 +80,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Evidentiary packages for courts, regulators, and insurers to treat agents as accountable entities.
 
-**Package:** `@stele/legal` — Legal identity packages, compliance mapping, audit trails
+**Package:** `@nobulex/legal` — Legal identity packages, compliance mapping, audit trails
 
 ---
 
@@ -88,7 +88,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Fuzz testing and boundary analysis to find covenant vulnerabilities before attackers do.
 
-**Package:** `@stele/robustness` — Formal robustness and coverage analysis
+**Package:** `@nobulex/robustness` — Formal robustness and coverage analysis
 
 ---
 
@@ -96,7 +96,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Extend beyond AI to robots, IoT, vehicles, drones, smart contracts. Universal accountability for all autonomous systems.
 
-**Package:** `@stele/substrate` — Cross-substrate constraint translation
+**Package:** `@nobulex/substrate` — Cross-substrate constraint translation
 
 ---
 
@@ -104,7 +104,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Covenants evolve algorithmically when capabilities change. Triggers fire, constraints adapt, everything is logged.
 
-**Package:** `@stele/temporal` — Temporal evolution, triggers & scheduled transitions
+**Package:** `@nobulex/temporal` — Temporal evolution, triggers & scheduled transitions
 
 ---
 
@@ -112,7 +112,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** The accountability system is accountable to itself. Monitors have covenants. Recursion terminates at cryptographic hardness.
 
-**Package:** `@stele/recursive` — Meta-covenants and recursive verification
+**Package:** `@nobulex/recursive` — Meta-covenants and recursive verification
 
 ---
 
@@ -120,7 +120,7 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 **Idea:** Protocol learns what behavioral norms should be from network-wide patterns and proposes them through governance.
 
-**Package:** `@stele/norms` — Emergent norm discovery from behavioral patterns
+**Package:** `@nobulex/norms` — Emergent norm discovery from behavioral patterns
 
 ---
 
@@ -128,18 +128,18 @@ The 15 feature upgrades to Kova's trust infrastructure.
 
 | # | Upgrade | Package |
 |---|---------|---------|
-| 1 | External attestation | @stele/attestation |
-| 2 | Dominant-strategy honesty | @stele/gametheory |
-| 3 | Trust composability | @stele/composition |
-| 4 | Challenge-response canaries | @stele/canary |
-| 5 | Antifragile trust networks | @stele/antifragile |
-| 6 | Covenant negotiation | @stele/negotiation |
-| 7 | Behavioral derivatives | @stele/derivatives |
-| 8 | Proof of accountability | @stele/consensus |
-| 9 | Accountability as alignment | @stele/alignment |
-| 10 | Agent legal personhood | @stele/legal |
-| 11 | Adversarial robustness | @stele/robustness |
-| 12 | Cross-substrate accountability | @stele/substrate |
-| 13 | Temporal covenant evolution | @stele/temporal |
-| 14 | Recursive accountability | @stele/recursive |
-| 15 | Emergent norm discovery | @stele/norms |
+| 1 | External attestation | @nobulex/attestation |
+| 2 | Dominant-strategy honesty | @nobulex/gametheory |
+| 3 | Trust composability | @nobulex/composition |
+| 4 | Challenge-response canaries | @nobulex/canary |
+| 5 | Antifragile trust networks | @nobulex/antifragile |
+| 6 | Covenant negotiation | @nobulex/negotiation |
+| 7 | Behavioral derivatives | @nobulex/derivatives |
+| 8 | Proof of accountability | @nobulex/consensus |
+| 9 | Accountability as alignment | @nobulex/alignment |
+| 10 | Agent legal personhood | @nobulex/legal |
+| 11 | Adversarial robustness | @nobulex/robustness |
+| 12 | Cross-substrate accountability | @nobulex/substrate |
+| 13 | Temporal covenant evolution | @nobulex/temporal |
+| 14 | Recursive accountability | @nobulex/recursive |
+| 15 | Emergent norm discovery | @nobulex/norms |

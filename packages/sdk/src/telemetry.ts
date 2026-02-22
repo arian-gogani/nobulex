@@ -316,7 +316,7 @@ export interface CreateTelemetryOptions {
  *
  * @example
  * ```typescript
- * import { createTelemetry } from '@stele/sdk';
+ * import { createTelemetry } from '@nobulex/sdk';
  *
  * // With real OTel SDK:
  * const { middleware, metrics } = createTelemetry({

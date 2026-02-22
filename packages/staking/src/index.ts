@@ -1,5 +1,5 @@
 /**
- * @stele/staking — Productive Staking Tiers (Improvement 75).
+ * @nobulex/staking — Productive Staking Tiers (Improvement 75).
  *
  * Basic ($1) → Verified ($10) → Certified ($100) → Institutional ($1,000+).
  * Higher stake = verification income + marketplace ranking + governance weight.
@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 
 export type { StakingTier, StakingTierConfig } from './types.js';
 import type { StakingTier, StakingTierConfig } from './types.js';

@@ -7,9 +7,9 @@ import {
   toHex,
   fromHex,
   timestamp,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
-import type { HashHex, KeyPair } from '@stele/crypto';
+import type { HashHex, KeyPair } from '@nobulex/crypto';
 
 import {
   parse,
@@ -18,7 +18,7 @@ import {
   checkRateLimit as cclCheckRateLimit,
   serialize as cclSerialize,
   evaluateCondition,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 import type {
   CCLDocument,
@@ -29,7 +29,7 @@ import type {
   PermitDenyStatement,
   RequireStatement,
   LimitStatement,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 /** Wrap a single Statement in a CCLDocument for serialization. */
 function wrapStatement(stmt: Statement): CCLDocument {

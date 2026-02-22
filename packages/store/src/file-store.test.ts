@@ -4,7 +4,7 @@ import * as path from 'path';
 import * as os from 'os';
 import { FileStore } from './file-store';
 import type { CovenantStore, StoreEvent, StoreEventCallback } from './types';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
 // Test helpers

@@ -3,7 +3,7 @@
  */
 import { describe, it, expect } from 'vitest';
 import { withKova, getPresetConstraints } from './index.js';
-import type { MCPServer } from '@stele/mcp';
+import type { MCPServer } from '@nobulex/mcp';
 
 describe('withKova', () => {
   it('wraps MCP server and enforces permit/deny', async () => {

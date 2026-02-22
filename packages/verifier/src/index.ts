@@ -1,5 +1,5 @@
 /**
- * @stele/verifier — Standalone verification engine for third-party auditors.
+ * @nobulex/verifier — Standalone verification engine for third-party auditors.
  *
  * Provides a stateful {@link Verifier} class that wraps the core
  * `verifyCovenant` function with history tracking, batch processing,
@@ -14,12 +14,12 @@ import {
   canonicalForm,
   validateChainNarrowing,
   MAX_CHAIN_DEPTH,
-} from '@stele/core';
+} from '@nobulex/core';
 
 import type {
   CovenantDocument,
   VerificationResult,
-} from '@stele/core';
+} from '@nobulex/core';
 
 import {
   parse,
@@ -27,11 +27,11 @@ import {
   matchAction,
   matchResource,
   validateNarrowing,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
-import type { EvaluationContext } from '@stele/ccl';
+import type { EvaluationContext } from '@nobulex/ccl';
 
-import { generateId } from '@stele/crypto';
+import { generateId } from '@nobulex/crypto';
 
 import type {
   VerifierOptions,

@@ -1,5 +1,5 @@
 /**
- * @stele/revenue — Money Machine: Trust Tax, Two-Sided Payments, Value-Proportional Pricing.
+ * @nobulex/revenue — Money Machine: Trust Tax, Two-Sided Payments, Value-Proportional Pricing.
  *
  * Improvement 67: $0.001 micro-fee on trust resolution (Trust Tax)
  * Improvement 71: $0.0002 per query paid to verified agents (Two-Sided Payments)
@@ -8,7 +8,7 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 
 export type { TrustResolutionResult, FeeTier, StakingTier } from './types.js';
 

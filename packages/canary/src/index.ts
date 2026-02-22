@@ -1,6 +1,6 @@
-import { sha256Object } from '@stele/crypto';
-import { parse, evaluate, checkRateLimit } from '@stele/ccl';
-import type { CCLDocument, Statement } from '@stele/ccl';
+import { sha256Object } from '@nobulex/crypto';
+import { parse, evaluate, checkRateLimit } from '@nobulex/ccl';
+import type { CCLDocument, Statement } from '@nobulex/ccl';
 
 export type {
   ChallengePayload,

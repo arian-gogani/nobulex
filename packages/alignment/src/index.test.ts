@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 import {
   defineAlignment,
   assessAlignment,

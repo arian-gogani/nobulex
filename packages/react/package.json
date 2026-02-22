@@ -1,5 +1,5 @@
 {
-  "name": "@stele/react",
+  "name": "@nobulex/react",
   "version": "0.1.0",
   "description": "React hooks and reactive primitives for Stele-powered UIs",
   "sideEffects": false,
@@ -17,10 +17,10 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@stele/types": "0.1.0",
-    "@stele/sdk": "0.1.0",
-    "@stele/store": "0.1.0",
-    "@stele/core": "0.1.0"
+    "@nobulex/types": "0.1.0",
+    "@nobulex/sdk": "0.1.0",
+    "@nobulex/store": "0.1.0",
+    "@nobulex/core": "0.1.0"
   },
   "peerDependencies": {
     "react": ">=18.0.0"

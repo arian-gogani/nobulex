@@ -1,5 +1,5 @@
 /**
- * @stele/eu-compliance — EU AI Act compliance checker
+ * @nobulex/eu-compliance — EU AI Act compliance checker
  *
  * Fastest path to Aug 2026 compliance for agentic systems.
  * Maps EU AI Act Articles to Kova capabilities.
@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 /** EU AI Act Article reference. */
 export interface ArticleRef {
@@ -48,49 +48,49 @@ const ARTICLE_MAP: Record<string, { title: string; requirement: string; capabili
     title: 'Risk Management',
     requirement: 'Identify and analyze known and foreseeable risks',
     capabilities: [
-      { package: '@stele/core', feature: 'Covenant constraints', coverage: 'full' },
-      { package: '@stele/canary', feature: 'Canary tests probe boundaries', coverage: 'full' },
-      { package: '@stele/temporal', feature: 'Covenant evolution', coverage: 'supporting' },
+      { package: '@nobulex/core', feature: 'Covenant constraints', coverage: 'full' },
+      { package: '@nobulex/canary', feature: 'Canary tests probe boundaries', coverage: 'full' },
+      { package: '@nobulex/temporal', feature: 'Covenant evolution', coverage: 'supporting' },
     ],
   },
   'Art.11': {
     title: 'Data Governance',
     requirement: 'Data provenance and bias monitoring',
     capabilities: [
-      { package: '@stele/enforcement', feature: 'Behavioral provenance', coverage: 'full' },
-      { package: '@stele/canary', feature: 'Discriminatory pattern tests', coverage: 'partial' },
+      { package: '@nobulex/enforcement', feature: 'Behavioral provenance', coverage: 'full' },
+      { package: '@nobulex/canary', feature: 'Discriminatory pattern tests', coverage: 'partial' },
     ],
   },
   'Art.13': {
     title: 'Transparency and Explainability',
     requirement: 'Design for interpretability, documentation',
     capabilities: [
-      { package: '@stele/core', feature: 'CCL human-readable', coverage: 'full' },
-      { package: '@stele/legal', feature: 'LegalIdentityPackage', coverage: 'full' },
+      { package: '@nobulex/core', feature: 'CCL human-readable', coverage: 'full' },
+      { package: '@nobulex/legal', feature: 'LegalIdentityPackage', coverage: 'full' },
     ],
   },
   'Art.14': {
     title: 'Human Oversight',
     requirement: 'Effective human oversight, override',
     capabilities: [
-      { package: '@stele/ccl', feature: 'require/deny rules', coverage: 'full' },
-      { package: '@stele/breach', feature: 'Breach attestation', coverage: 'supporting' },
+      { package: '@nobulex/ccl', feature: 'require/deny rules', coverage: 'full' },
+      { package: '@nobulex/breach', feature: 'Breach attestation', coverage: 'supporting' },
     ],
   },
   'Art.15': {
     title: 'Accuracy, Robustness, Cybersecurity',
     requirement: 'Adversarial robustness, fallback',
     capabilities: [
-      { package: '@stele/robustness', feature: 'Fuzz testing', coverage: 'full' },
-      { package: '@stele/crypto', feature: 'Ed25519, constant-time', coverage: 'full' },
+      { package: '@nobulex/robustness', feature: 'Fuzz testing', coverage: 'full' },
+      { package: '@nobulex/crypto', feature: 'Ed25519, constant-time', coverage: 'full' },
     ],
   },
   'Art.17': {
     title: 'Record-Keeping (Logs)',
     requirement: 'Automatic logging, traceability',
     capabilities: [
-      { package: '@stele/enforcement', feature: 'Hash-chained audit trail', coverage: 'full' },
-      { package: '@stele/canary', feature: 'Canary tests', coverage: 'supporting' },
+      { package: '@nobulex/enforcement', feature: 'Hash-chained audit trail', coverage: 'full' },
+      { package: '@nobulex/canary', feature: 'Canary tests', coverage: 'supporting' },
     ],
   },
 };

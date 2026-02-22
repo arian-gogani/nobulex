@@ -1,5 +1,5 @@
 /**
- * @stele/trust-futures — Trust Futures Market (Improvement 73).
+ * @nobulex/trust-futures — Trust Futures Market (Improvement 73).
  *
  * Financial instruments betting on agent trust score trajectories.
  * Insurers hedge policies, enterprises signal confidence, speculators trade.
@@ -8,13 +8,13 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 import {
   createFuture,
   settleFuture,
   type TrustFuture,
   type Settlement,
-} from '@stele/derivatives';
+} from '@nobulex/derivatives';
 
 /** Kova's take: 1% of trade premium. */
 export const KOVA_TRADE_FEE_RATE = 0.01;
@@ -32,7 +32,7 @@ export interface TrustFutureTrade {
 const trades: Map<string, TrustFutureTrade> = new Map();
 
 /**
- * Create and list a trust future (wraps @stele/derivatives).
+ * Create and list a trust future (wraps @nobulex/derivatives).
  */
 export function createAndListFuture(
   agentId: string,
@@ -74,7 +74,7 @@ export function executeTrade(
 }
 
 /**
- * Settle a future at expiry (wraps @stele/derivatives).
+ * Settle a future at expiry (wraps @nobulex/derivatives).
  */
 export function settleFutureAtExpiry(
   future: TrustFuture,

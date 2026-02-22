@@ -1,5 +1,5 @@
 {
-  "name": "@stele/mcp-server",
+  "name": "@nobulex/mcp-server",
   "version": "0.1.0",
   "description": "Model Context Protocol server with stdio transport that exposes Stele covenant tools to AI agents",
   "sideEffects": false,
@@ -20,12 +20,12 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@stele/types": "0.1.0",
-    "@stele/crypto": "0.1.0",
-    "@stele/core": "0.1.0",
-    "@stele/store": "0.1.0",
-    "@stele/verifier": "0.1.0",
-    "@stele/sdk": "0.1.0"
+    "@nobulex/types": "0.1.0",
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/core": "0.1.0",
+    "@nobulex/store": "0.1.0",
+    "@nobulex/verifier": "0.1.0",
+    "@nobulex/sdk": "0.1.0"
   },
   "license": "MIT",
   "engines": {

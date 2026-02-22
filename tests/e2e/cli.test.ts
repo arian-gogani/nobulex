@@ -1,7 +1,7 @@
 /**
  * Comprehensive E2E tests for the Stele CLI.
  *
- * Tests the CLI programmatically via the `run()` function from `@stele/cli`,
+ * Tests the CLI programmatically via the `run()` function from `@nobulex/cli`,
  * covering all available commands: init, create, verify, evaluate, inspect,
  * parse, completions, doctor, diff, version, and help.
  *
@@ -9,9 +9,9 @@
  */
 
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
-import { run } from '@stele/cli';
-import { buildCovenant, serializeCovenant } from '@stele/core';
-import { generateKeyPair } from '@stele/crypto';
+import { run } from '@nobulex/cli';
+import { buildCovenant, serializeCovenant } from '@nobulex/core';
+import { generateKeyPair } from '@nobulex/crypto';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';

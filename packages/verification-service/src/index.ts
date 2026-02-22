@@ -9,8 +9,8 @@
  */
 
 import express from 'express';
-import { verifyCovenant } from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
+import { verifyCovenant } from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 const app = express();
 app.use(express.json({ limit: '1mb' }));

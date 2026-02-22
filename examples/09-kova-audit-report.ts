@@ -7,9 +7,9 @@
  * Run: npx tsx examples/09-kova-audit-report.ts
  */
 
-import { computeEUCompliance } from '@stele/eu-compliance';
-import { buildCovenant } from '@stele/core';
-import { generateKeyPair } from '@stele/crypto';
+import { computeEUCompliance } from '@nobulex/eu-compliance';
+import { buildCovenant } from '@nobulex/core';
+import { generateKeyPair } from '@nobulex/crypto';
 
 async function main() {
   console.log('========================================');

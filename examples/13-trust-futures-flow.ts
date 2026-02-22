@@ -15,8 +15,8 @@ import {
   executeTrade,
   settleFutureAtExpiry,
   KOVA_TRADE_FEE_RATE,
-} from '@stele/trust-futures';
-import type { TrustFuture } from '@stele/derivatives';
+} from '@nobulex/trust-futures';
+import type { TrustFuture } from '@nobulex/derivatives';
 
 async function main() {
   console.log('========================================');

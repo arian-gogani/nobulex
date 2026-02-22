@@ -1,4 +1,4 @@
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 
 export type {
   LegalIdentityPackage,

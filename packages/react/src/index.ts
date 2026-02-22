@@ -1,5 +1,5 @@
 /**
- * @stele/react -- Reactive primitives for building Stele-powered UIs.
+ * @nobulex/react -- Reactive primitives for building Stele-powered UIs.
  *
  * Provides framework-agnostic reactive state management that can be
  * adapted to React, Vue, Svelte, or vanilla JS. No external dependencies.
@@ -7,17 +7,17 @@
  * @packageDocumentation
  */
 
-import type { CovenantDocument, VerificationResult } from '@stele/core';
-import type { AgentIdentity } from '@stele/identity';
-import type { CovenantStore, StoreFilter, StoreEvent } from '@stele/store';
+import type { CovenantDocument, VerificationResult } from '@nobulex/core';
+import type { AgentIdentity } from '@nobulex/identity';
+import type { CovenantStore, StoreFilter, StoreEvent } from '@nobulex/store';
 import type {
   CreateCovenantOptions,
   EvaluationResult,
   CreateIdentityOptions,
   EvolveOptions,
-} from '@stele/sdk';
-import { SteleClient } from '@stele/sdk';
-import type { EvaluationContext } from '@stele/ccl';
+} from '@nobulex/sdk';
+import { SteleClient } from '@nobulex/sdk';
+import type { EvaluationContext } from '@nobulex/ccl';
 
 // ---------------------------------------------------------------------------
 // Observable<T>

@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { StoreIndex } from './indexing';
 import type { IndexField } from './indexing';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
 // Test helpers

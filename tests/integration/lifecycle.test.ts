@@ -20,8 +20,8 @@ import {
   sha256Object,
   toHex,
   timestamp,
-} from '@stele/crypto';
-import type { KeyPair, HashHex } from '@stele/crypto';
+} from '@nobulex/crypto';
+import type { KeyPair, HashHex } from '@nobulex/crypto';
 
 import {
   buildCovenant,
@@ -34,17 +34,17 @@ import {
   serializeCovenant,
   deserializeCovenant,
   CovenantBuildError,
-} from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
+} from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
 
-import { parse, evaluate, merge, serialize, validateNarrowing } from '@stele/ccl';
+import { parse, evaluate, merge, serialize, validateNarrowing } from '@nobulex/ccl';
 
-import { MemoryStore } from '@stele/store';
-import type { StoreEvent } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
+import type { StoreEvent } from '@nobulex/store';
 
-import { Verifier, verifyBatch } from '@stele/verifier';
+import { Verifier, verifyBatch } from '@nobulex/verifier';
 
-import { SteleClient, QuickCovenant } from '@stele/sdk';
+import { SteleClient, QuickCovenant } from '@nobulex/sdk';
 import type {
   CovenantCreatedEvent,
   CovenantVerifiedEvent,
@@ -54,7 +54,7 @@ import type {
   ChainResolvedEvent,
   ChainValidatedEvent,
   EvaluationCompletedEvent,
-} from '@stele/sdk';
+} from '@nobulex/sdk';
 
 import {
   createIdentity,
@@ -63,14 +63,14 @@ import {
   serializeIdentity,
   deserializeIdentity,
   computeIdentityHash,
-} from '@stele/identity';
-import type { AgentIdentity } from '@stele/identity';
+} from '@nobulex/identity';
+import type { AgentIdentity } from '@nobulex/identity';
 
 import {
   Monitor,
   MonitorDeniedError,
   verifyMerkleProof,
-} from '@stele/enforcement';
+} from '@nobulex/enforcement';
 
 import {
   createReceipt,
@@ -82,15 +82,15 @@ import {
   createEndorsement,
   verifyEndorsement,
   verifyReceiptChain,
-} from '@stele/reputation';
-import type { ExecutionReceipt, Endorsement } from '@stele/reputation';
+} from '@nobulex/reputation';
+import type { ExecutionReceipt, Endorsement } from '@nobulex/reputation';
 
 import {
   createBreachAttestation,
   verifyBreachAttestation,
   TrustGraph,
-} from '@stele/breach';
-import type { BreachEvent } from '@stele/breach';
+} from '@nobulex/breach';
+import type { BreachEvent } from '@nobulex/breach';
 
 import {
   createAttestation,
@@ -99,15 +99,15 @@ import {
   reconcile,
   getDiscrepancies,
   computeAttestationCoverage,
-} from '@stele/attestation';
-import type { ReceiptSummary, AgentAction } from '@stele/attestation';
+} from '@nobulex/attestation';
+import type { ReceiptSummary, AgentAction } from '@nobulex/attestation';
 
 import {
   generateCanary,
   evaluateCanary,
   detectionProbability,
   isExpired,
-} from '@stele/canary';
+} from '@nobulex/canary';
 
 
 // ===========================================================================

@@ -1,5 +1,5 @@
 /**
- * @stele/evm — EVM anchoring utilities for on-chain covenant verification.
+ * @nobulex/evm — EVM anchoring utilities for on-chain covenant verification.
  *
  * Provides ABI encoding/decoding, contract interface definitions, and
  * anchor/verify helpers for EVM-compatible blockchains. No ethers.js dependency.
@@ -8,7 +8,7 @@
  */
 
 import { keccak_256 } from '@noble/hashes/sha3';
-import { sha256String } from '@stele/crypto';
+import { sha256String } from '@nobulex/crypto';
 
 // ─── Constants ──────────────────────────────────────────────────────────────────
 
@@ -478,7 +478,7 @@ export interface TransactionReceipt {
  *
  * @example
  * ```typescript
- * import { EVMClient } from '@stele/evm';
+ * import { EVMClient } from '@nobulex/evm';
  *
  * // Plug in any provider (ethers, viem, raw fetch, etc.)
  * const client = new EVMClient(myProvider, '0xRegistryAddress');

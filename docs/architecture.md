@@ -25,9 +25,9 @@ The protocol core is **only** these three primitives. Everything else moves to t
 
 | Primitive | Description | Packages |
 |-----------|-------------|----------|
-| **Identity Binding** | Agent proves who it is and who's responsible; composite identity hash; lineage chains | `@stele/identity`, `@stele/crypto` |
-| **Covenant Declaration** | Agent publishes signed behavioral commitments in a formal constraint language (CCL); child covenants only narrow | `@stele/core`, `@stele/ccl` |
-| **Compliance Proof** | Anyone verifies compliance via zero-knowledge proofs without seeing proprietary logic | `@stele/proof`, `@stele/enforcement` |
+| **Identity Binding** | Agent proves who it is and who's responsible; composite identity hash; lineage chains | `@nobulex/identity`, `@nobulex/crypto` |
+| **Covenant Declaration** | Agent publishes signed behavioral commitments in a formal constraint language (CCL); child covenants only narrow | `@nobulex/core`, `@nobulex/ccl` |
+| **Compliance Proof** | Anyone verifies compliance via zero-knowledge proofs without seeing proprietary logic | `@nobulex/proof`, `@nobulex/enforcement` |
 
 ## Three-Tier Package Structure
 
@@ -97,7 +97,7 @@ and legal compliance.
 
 **kova** — Single package, `withKova(server, preset)` API. One import, 30-minute integration.
 
-**sdk** — `SteleClient` (from `@stele/sdk`) for advanced use: custom covenants, identity, verification, event system.
+**sdk** — `SteleClient` (from `@nobulex/sdk`) for advanced use: custom covenants, identity, verification, event system.
 
 ### Platform
 

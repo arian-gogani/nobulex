@@ -33,7 +33,7 @@ const server = await withKova(yourMCPServer, 'data-isolation');
 ### Step 1: Install (2 min)
 
 ```bash
-npm install @stele/sdk
+npm install @nobulex/sdk
 ```
 
 ---
@@ -41,7 +41,7 @@ npm install @stele/sdk
 ## Step 2: Create a Covenant (5 min)
 
 ```typescript
-import { SteleClient } from '@stele/sdk';
+import { SteleClient } from '@nobulex/sdk';
 
 const client = new SteleClient();
 await client.generateKeyPair();
@@ -94,7 +94,7 @@ console.log('Write permitted:', writeEval.permitted); // false
 ## Step 5: Persist and Query (5 min)
 
 ```typescript
-import { FileStore } from '@stele/store';
+import { FileStore } from '@nobulex/store';
 
 const store = new FileStore({ basePath: './stele-data' });
 await store.saveCovenant(covenant);
@@ -131,7 +131,7 @@ console.log('Canary passed:', canaryPasses === challenges.length);
 Wire real data from your covenant, store, and canary results:
 
 ```typescript
-import { exportLegalPackage, computeSteleScore } from '@stele/legal';
+import { exportLegalPackage, computeSteleScore } from '@nobulex/legal';
 
 // Build covenant history from store (or use loaded covenant)
 const covenantHistory = [
@@ -177,7 +177,7 @@ const pkg = exportLegalPackage(
 
 console.log('Package hash:', pkg.packageHash);
 
-// Kova Score — multidimensional trust profile (computeSteleScore in @stele/legal)
+// Kova Score — multidimensional trust profile (computeSteleScore in @nobulex/legal)
 const kovaScore = computeSteleScore('agent-1', compliance, covenantHistory, {
   reputation,
 });

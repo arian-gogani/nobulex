@@ -1,11 +1,11 @@
 /**
- * Type definitions for the @stele/store package.
+ * Type definitions for the @nobulex/store package.
  *
  * Defines the CovenantStore interface, query/filter types, event system,
  * and batch operation contracts.
  */
 
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 // ─── Query / filter types ───────────────────────────────────────────────────────
 

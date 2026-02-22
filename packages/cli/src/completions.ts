@@ -1,5 +1,5 @@
 /**
- * @stele/cli shell completion generators.
+ * @nobulex/cli shell completion generators.
  *
  * Generates completion scripts for bash, zsh, and fish shells.
  * Each generator produces a self-contained script that can be

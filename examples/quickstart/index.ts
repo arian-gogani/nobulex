@@ -5,9 +5,9 @@
  * verify it, enforce constraints through a Monitor, and inspect
  * the tamper-evident audit log.
  */
-import { generateKeyPair } from '@stele/crypto';
-import { buildCovenant, verifyCovenant } from '@stele/core';
-import { Monitor, MonitorDeniedError } from '@stele/enforcement';
+import { generateKeyPair } from '@nobulex/crypto';
+import { buildCovenant, verifyCovenant } from '@nobulex/core';
+import { Monitor, MonitorDeniedError } from '@nobulex/enforcement';
 
 async function main() {
   // 1. Generate an Ed25519 key pair

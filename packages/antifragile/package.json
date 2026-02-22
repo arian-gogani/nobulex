@@ -1,5 +1,5 @@
 {
-  "name": "@stele/antifragile",
+  "name": "@nobulex/antifragile",
   "version": "0.1.0",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -24,7 +24,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@stele/crypto": "0.1.0"
+    "@nobulex/crypto": "0.1.0"
   },
   "license": "MIT",
   "engines": {

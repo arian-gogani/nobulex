@@ -1,5 +1,5 @@
 /**
- * Crypto hardening tests for @stele/crypto.
+ * Crypto hardening tests for @nobulex/crypto.
  *
  * Exercises edge cases, known-answer vectors, encoding roundtrips,
  * constant-time comparison, and signature manipulation scenarios
@@ -26,7 +26,7 @@ import {
   timestamp,
   keyPairFromPrivateKey,
   keyPairFromPrivateKeyHex,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 // ---------------------------------------------------------------------------
 // Key generation hardening

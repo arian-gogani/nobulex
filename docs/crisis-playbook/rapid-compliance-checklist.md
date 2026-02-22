@@ -6,7 +6,7 @@ Post-incident: get to EU AI Act / NIST AI RMF readiness in under a week.
 
 ## Day 1: Covenant + Verification
 
-- [ ] Install: `npm install kova` (or `npm install @stele/sdk` for advanced use)
+- [ ] Install: `npm install kova` (or `npm install @nobulex/sdk` for advanced use)
 - [ ] Create covenant with constraints covering the incident scenario
 - [ ] Run `client.verifyCovenant(covenant)` — all 11 checks pass
 - [ ] Persist covenant (FileStore or production backend)
@@ -62,7 +62,7 @@ Post-incident: get to EU AI Act / NIST AI RMF readiness in under a week.
 ```bash
 # Verify covenant
 npx tsx -e "
-const { SteleClient } = require('@stele/sdk');
+const { SteleClient } = require('@nobulex/sdk');
 const client = new SteleClient();
 // ... load covenant, verify
 "

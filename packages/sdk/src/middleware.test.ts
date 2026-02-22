@@ -3,7 +3,7 @@
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { Logger, LogLevel } from '@stele/types';
+import { Logger, LogLevel } from '@nobulex/types';
 
 import {
   MiddlewarePipeline,

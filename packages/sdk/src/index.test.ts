@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { generateKeyPair } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
-import type { CovenantDocument, Issuer, Beneficiary } from '@stele/core';
-import { verifyCovenant as coreVerifyCovenant } from '@stele/core';
-import { verifyIdentity } from '@stele/identity';
+import { generateKeyPair } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
+import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
+import { verifyCovenant as coreVerifyCovenant } from '@nobulex/core';
+import { verifyIdentity } from '@nobulex/identity';
 
 import {
   SteleClient,
@@ -115,7 +115,7 @@ function makeIdentityOptions(kp: KeyPair): CreateIdentityOptions {
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('@stele/sdk', () => {
+describe('@nobulex/sdk', () => {
   // ── SteleClient constructor ───────────────────────────────────────────
 
   describe('SteleClient constructor', () => {
@@ -1106,9 +1106,9 @@ describe('@stele/sdk', () => {
     });
   });
 
-  // ── Re-exports from @stele/core ───────────────────────────────────────
+  // ── Re-exports from @nobulex/core ───────────────────────────────────────
 
-  describe('re-exports from @stele/core', () => {
+  describe('re-exports from @nobulex/core', () => {
     it('exports PROTOCOL_VERSION constant', () => {
       expect(PROTOCOL_VERSION).toBe('1.0');
     });
@@ -1171,9 +1171,9 @@ describe('@stele/sdk', () => {
     });
   });
 
-  // ── Re-exports from @stele/crypto ─────────────────────────────────────
+  // ── Re-exports from @nobulex/crypto ─────────────────────────────────────
 
-  describe('re-exports from @stele/crypto', () => {
+  describe('re-exports from @nobulex/crypto', () => {
     it('exports sha256String', () => {
       const hash = sha256String('hello');
       expect(hash).toMatch(/^[0-9a-f]{64}$/);
@@ -1199,9 +1199,9 @@ describe('@stele/sdk', () => {
     });
   });
 
-  // ── Re-exports from @stele/ccl ────────────────────────────────────────
+  // ── Re-exports from @nobulex/ccl ────────────────────────────────────────
 
-  describe('re-exports from @stele/ccl', () => {
+  describe('re-exports from @nobulex/ccl', () => {
     it('exports parseCCL', () => {
       const doc = parseCCL("permit read on '/data'");
       expect(doc.permits).toHaveLength(1);
@@ -1240,9 +1240,9 @@ describe('@stele/sdk', () => {
     });
   });
 
-  // ── Re-exports from @stele/identity ───────────────────────────────────
+  // ── Re-exports from @nobulex/identity ───────────────────────────────────
 
-  describe('re-exports from @stele/identity', () => {
+  describe('re-exports from @nobulex/identity', () => {
     it('exports DEFAULT_EVOLUTION_POLICY', () => {
       expect(DEFAULT_EVOLUTION_POLICY.minorUpdate).toBe(0.95);
       expect(DEFAULT_EVOLUTION_POLICY.modelVersionChange).toBe(0.80);

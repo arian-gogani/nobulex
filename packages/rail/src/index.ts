@@ -1,5 +1,5 @@
 /**
- * @stele/rail — Trust Resolution IS Transaction Execution (Improvement 76).
+ * @nobulex/rail — Trust Resolution IS Transaction Execution (Improvement 76).
  *
  * Merge trust verification with transaction execution into one atomic operation.
  * If trust fails, transaction never happens. Kova becomes the rail, not the checkpoint.
@@ -8,12 +8,12 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 import {
   resolveTrustWithFee,
   computeTrustResolutionFee,
   type TrustResolutionResult,
-} from '@stele/revenue';
+} from '@nobulex/revenue';
 
 /** Rail fee: 0.15% of transaction volume. */
 export const RAIL_FEE_RATE = 0.0015;

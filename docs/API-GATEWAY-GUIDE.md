@@ -18,12 +18,12 @@ The Kova API Gateway middleware:
 ## Express / Node.js
 
 ```bash
-npm install @stele/sdk express
+npm install @nobulex/sdk express
 ```
 
 ```typescript
 import express from 'express';
-import { SteleClient, kovaGatewayMiddleware } from '@stele/sdk';
+import { SteleClient, kovaGatewayMiddleware } from '@nobulex/sdk';
 
 const app = express();
 const client = new SteleClient();

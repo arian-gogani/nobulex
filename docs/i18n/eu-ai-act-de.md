@@ -31,6 +31,6 @@ Kova-Funktionen der EU KI-Verordnung zugeordnet. Schnellster Weg zur Konformitä
 2. **Canary-Tests ausführen** — Einschränkungen validieren.
 3. **Enforcement aktivieren** — Runtime-Gating, Audit-Trail.
 4. **LegalIdentityPackage exportieren** — Für Konformitätsbewertung.
-5. **Rechtsordnung zuordnen** — `@stele/legal` EU-AI-Mapping.
+5. **Rechtsordnung zuordnen** — `@nobulex/legal` EU-AI-Mapping.
 
 Vollständige Zuordnung: [eu-ai-act-mapping.md](../eu-ai-act-mapping.md) (Englisch)

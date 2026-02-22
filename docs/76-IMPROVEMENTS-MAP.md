@@ -8,21 +8,21 @@ Master index mapping every KOVA improvement to its implementation (package or do
 
 | # | Improvement | Package | Doc |
 |---|-------------|---------|-----|
-| 1 | External Attestation | [@stele/attestation](../packages/attestation) | [UPGRADES.md](./UPGRADES.md#upgrade-1-external-attestation) |
-| 2 | Dominant-Strategy Honesty | [@stele/gametheory](../packages/gametheory) | [UPGRADES.md](./UPGRADES.md#upgrade-2-dominant-strategy-honesty) |
-| 3 | Trust Composability | [@stele/composition](../packages/composition) | [UPGRADES.md](./UPGRADES.md#upgrade-3-trust-composability) |
-| 4 | Challenge-Response Canaries | [@stele/canary](../packages/canary) | [UPGRADES.md](./UPGRADES.md#upgrade-4-challenge-response-canaries) |
-| 5 | Antifragile Trust Networks | [@stele/antifragile](../packages/antifragile) | [UPGRADES.md](./UPGRADES.md#upgrade-5-antifragile-trust-networks) |
-| 6 | Covenant Negotiation | [@stele/negotiation](../packages/negotiation) | [UPGRADES.md](./UPGRADES.md#upgrade-6-covenant-negotiation) |
-| 7 | Behavioral Derivatives | [@stele/derivatives](../packages/derivatives) | [UPGRADES.md](./UPGRADES.md#upgrade-7-behavioral-derivatives) |
-| 8 | Proof of Accountability | [@stele/consensus](../packages/consensus) | [UPGRADES.md](./UPGRADES.md#upgrade-8-proof-of-accountability) |
-| 9 | Accountability as Alignment | [@stele/alignment](../packages/alignment) | [UPGRADES.md](./UPGRADES.md#upgrade-9-accountability-as-alignment) |
-| 10 | Legal Personhood Infrastructure | [@stele/legal](../packages/legal) | [UPGRADES.md](./UPGRADES.md#upgrade-10-agent-legal-personhood-infrastructure) |
-| 11 | Adversarial Robustness Proofs | [@stele/robustness](../packages/robustness) | [UPGRADES.md](./UPGRADES.md#upgrade-11-adversarial-robustness-proofs) |
-| 12 | Cross-Substrate Accountability | [@stele/substrate](../packages/substrate) | [UPGRADES.md](./UPGRADES.md#upgrade-12-cross-substrate-accountability) |
-| 13 | Temporal Covenant Evolution | [@stele/temporal](../packages/temporal) | [UPGRADES.md](./UPGRADES.md#upgrade-13-temporal-covenant-evolution), [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) |
-| 14 | Recursive Accountability | [@stele/recursive](../packages/recursive) | [UPGRADES.md](./UPGRADES.md#upgrade-14-recursive-accountability) |
-| 15 | Emergent Norm Discovery | [@stele/norms](../packages/norms) | [UPGRADES.md](./UPGRADES.md#upgrade-15-emergent-norm-discovery) |
+| 1 | External Attestation | [@nobulex/attestation](../packages/attestation) | [UPGRADES.md](./UPGRADES.md#upgrade-1-external-attestation) |
+| 2 | Dominant-Strategy Honesty | [@nobulex/gametheory](../packages/gametheory) | [UPGRADES.md](./UPGRADES.md#upgrade-2-dominant-strategy-honesty) |
+| 3 | Trust Composability | [@nobulex/composition](../packages/composition) | [UPGRADES.md](./UPGRADES.md#upgrade-3-trust-composability) |
+| 4 | Challenge-Response Canaries | [@nobulex/canary](../packages/canary) | [UPGRADES.md](./UPGRADES.md#upgrade-4-challenge-response-canaries) |
+| 5 | Antifragile Trust Networks | [@nobulex/antifragile](../packages/antifragile) | [UPGRADES.md](./UPGRADES.md#upgrade-5-antifragile-trust-networks) |
+| 6 | Covenant Negotiation | [@nobulex/negotiation](../packages/negotiation) | [UPGRADES.md](./UPGRADES.md#upgrade-6-covenant-negotiation) |
+| 7 | Behavioral Derivatives | [@nobulex/derivatives](../packages/derivatives) | [UPGRADES.md](./UPGRADES.md#upgrade-7-behavioral-derivatives) |
+| 8 | Proof of Accountability | [@nobulex/consensus](../packages/consensus) | [UPGRADES.md](./UPGRADES.md#upgrade-8-proof-of-accountability) |
+| 9 | Accountability as Alignment | [@nobulex/alignment](../packages/alignment) | [UPGRADES.md](./UPGRADES.md#upgrade-9-accountability-as-alignment) |
+| 10 | Legal Personhood Infrastructure | [@nobulex/legal](../packages/legal) | [UPGRADES.md](./UPGRADES.md#upgrade-10-agent-legal-personhood-infrastructure) |
+| 11 | Adversarial Robustness Proofs | [@nobulex/robustness](../packages/robustness) | [UPGRADES.md](./UPGRADES.md#upgrade-11-adversarial-robustness-proofs) |
+| 12 | Cross-Substrate Accountability | [@nobulex/substrate](../packages/substrate) | [UPGRADES.md](./UPGRADES.md#upgrade-12-cross-substrate-accountability) |
+| 13 | Temporal Covenant Evolution | [@nobulex/temporal](../packages/temporal) | [UPGRADES.md](./UPGRADES.md#upgrade-13-temporal-covenant-evolution), [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) |
+| 14 | Recursive Accountability | [@nobulex/recursive](../packages/recursive) | [UPGRADES.md](./UPGRADES.md#upgrade-14-recursive-accountability) |
+| 15 | Emergent Norm Discovery | [@nobulex/norms](../packages/norms) | [UPGRADES.md](./UPGRADES.md#upgrade-15-emergent-norm-discovery) |
 
 ---
 
@@ -32,15 +32,15 @@ Master index mapping every KOVA improvement to its implementation (package or do
 |---|-------------|---------|-----|
 | 16 | Strip to 3 Primitives | — | [PROTOCOL.md](../PROTOCOL.md), [README.md](../README.md) |
 | 17 | Trust Infrastructure framing | — | [MANIFESTO.md](../MANIFESTO.md), [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) |
-| 18 | Bridge Web2/Web3 | [@stele/evm](../packages/evm), [@stele/legal](../packages/legal) | [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) |
-| 19 | EU AI Act target | [@stele/legal](../packages/legal), [@stele/eu-compliance](../packages/eu-compliance) | [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) |
+| 18 | Bridge Web2/Web3 | [@nobulex/evm](../packages/evm), [@nobulex/legal](../packages/legal) | [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) |
+| 19 | EU AI Act target | [@nobulex/legal](../packages/legal), [@nobulex/eu-compliance](../packages/eu-compliance) | [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) |
 | 20 | One package, 30 min | [kova](../packages/kova) | [QUICK-START.md](./QUICK-START.md) |
-| 21 | Agentic AI Foundation | [@stele/mcp](../packages/mcp) | [README.md](../README.md) |
+| 21 | Agentic AI Foundation | [@nobulex/mcp](../packages/mcp) | [README.md](../README.md) |
 | 22 | Crisis Playbook | — | [crisis-playbook/](./crisis-playbook/) |
 | 23 | Self-Bootstrapping Solo Value | — | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md), [MANIFESTO.md](../MANIFESTO.md) |
 | 24 | Trust Handshake as Distribution | — | [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) |
 | 25 | Covenant as Lingua Franca | — | [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) |
-| 26 | Define Unit of Trust | [@stele/reputation](../packages/reputation) | [UNIT-OF-TRUST.md](./UNIT-OF-TRUST.md) |
+| 26 | Define Unit of Trust | [@nobulex/reputation](../packages/reputation) | [UNIT-OF-TRUST.md](./UNIT-OF-TRUST.md) |
 
 ---
 
@@ -48,15 +48,15 @@ Master index mapping every KOVA improvement to its implementation (package or do
 
 | # | Improvement | Package | Doc |
 |---|-------------|---------|-----|
-| 27 | Self-Enforcing Covenant Runtime | [@stele/enforcement](../packages/enforcement) (CapabilityGate) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
-| 28 | Behavioral Provenance | [@stele/enforcement](../packages/enforcement) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md), [PROTOCOL.md](../PROTOCOL.md) |
-| 29 | Trust Algebra | [@stele/composition](../packages/composition) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
-| 30 | Trust as Bounded Resource | [@stele/reputation](../packages/reputation) | [HOLES-PATCHED.md](./HOLES-PATCHED.md#hole-5) |
+| 27 | Self-Enforcing Covenant Runtime | [@nobulex/enforcement](../packages/enforcement) (CapabilityGate) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
+| 28 | Behavioral Provenance | [@nobulex/enforcement](../packages/enforcement) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md), [PROTOCOL.md](../PROTOCOL.md) |
+| 29 | Trust Algebra | [@nobulex/composition](../packages/composition) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
+| 30 | Trust as Bounded Resource | [@nobulex/reputation](../packages/reputation) | [HOLES-PATCHED.md](./HOLES-PATCHED.md#hole-5) |
 | 31 | Accountability Kernel | — | [ACCOUNTABILITY-KERNEL.md](./ACCOUNTABILITY-KERNEL.md) |
-| 32 | Covenants as Executable Specs | [@stele/ccl](../packages/ccl), [@stele/enforcement](../packages/enforcement) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
-| 33 | Adversarial Trust Equilibrium (ESS) | [@stele/gametheory](../packages/gametheory) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
+| 32 | Covenants as Executable Specs | [@nobulex/ccl](../packages/ccl), [@nobulex/enforcement](../packages/enforcement) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
+| 33 | Adversarial Trust Equilibrium (ESS) | [@nobulex/gametheory](../packages/gametheory) | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) |
 | 34 | Zero-Knowledge Identity Hierarchy | — | [ZK-IDENTITY-HIERARCHY.md](./ZK-IDENTITY-HIERARCHY.md) |
-| 35 | Trust Entanglement | [@stele/recursive](../packages/recursive) | [PROTOCOL.md](../PROTOCOL.md) |
+| 35 | Trust Entanglement | [@nobulex/recursive](../packages/recursive) | [PROTOCOL.md](../PROTOCOL.md) |
 | 36 | Impossibility Conjectures | — | [IMPOSSIBILITY-CONJECTURES.md](./IMPOSSIBILITY-CONJECTURES.md) |
 | 37 | Bounded Self-Improvement | — | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md), [IMPOSSIBILITY-CONJECTURES.md](./IMPOSSIBILITY-CONJECTURES.md) |
 
@@ -73,7 +73,7 @@ Master index mapping every KOVA improvement to its implementation (package or do
 | 42 | Collateralization Bound | [HOLES-PATCHED.md](./HOLES-PATCHED.md#hole-5) |
 | 43 | Conjectures, not proofs | [IMPOSSIBILITY-CONJECTURES.md](./IMPOSSIBILITY-CONJECTURES.md) |
 | 44 | Model Updates Trigger Re-verification | [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) |
-| 45 | Federated Discovery | [DISCOVERY.md](./DISCOVERY.md), `createWellKnownHandler` in [@stele/sdk](../packages/sdk) |
+| 45 | Federated Discovery | [DISCOVERY.md](./DISCOVERY.md), `createWellKnownHandler` in [@nobulex/sdk](../packages/sdk) |
 | 46 | Multidimensional Trust Profile | [UNIT-OF-TRUST.md](./UNIT-OF-TRUST.md) |
 | 47 | Governance Bootstrap | [GOVERNANCE-BOOTSTRAP.md](./GOVERNANCE-BOOTSTRAP.md) |
 
@@ -87,8 +87,8 @@ Master index mapping every KOVA improvement to its implementation (package or do
 | 49 | Regulatory Wedge | — | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md), [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) |
 | 50 | Internal Governance Wedge | — | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md) |
 | 51 | MCP Certification Wedge | — | [MCP-CERTIFICATION-PLAN.md](./MCP-CERTIFICATION-PLAN.md), [ADOPTION-READINESS.md](./ADOPTION-READINESS.md) |
-| 52 | Kova API Gateway | [@stele/sdk](../packages/sdk) (`kovaGatewayMiddleware`) | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md) |
-| 53 | Actuarial Risk Model | [@stele/derivatives](../packages/derivatives) | [ACTUARIAL-WHITEPAPER-OUTLINE.md](./ACTUARIAL-WHITEPAPER-OUTLINE.md) |
+| 52 | Kova API Gateway | [@nobulex/sdk](../packages/sdk) (`kovaGatewayMiddleware`) | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md) |
+| 53 | Actuarial Risk Model | [@nobulex/derivatives](../packages/derivatives) | [ACTUARIAL-WHITEPAPER-OUTLINE.md](./ACTUARIAL-WHITEPAPER-OUTLINE.md) |
 
 ---
 
@@ -99,7 +99,7 @@ Master index mapping every KOVA improvement to its implementation (package or do
 | 54 | Platform Champion Targets | — | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md#gap-1) |
 | 55 | Content Engine | — | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md#gap-2) |
 | 56 | Open Source Community | — | [CONTRIBUTING.md](../CONTRIBUTING.md), [KIP-PROCESS.md](./KIP-PROCESS.md), [GOOD-FIRST-ISSUES.md](./GOOD-FIRST-ISSUES.md) |
-| 57 | Compliance Audit Trojan Horse | [@stele/cli](../packages/cli) (`kova audit`) | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md#gap-4) |
+| 57 | Compliance Audit Trojan Horse | [@nobulex/cli](../packages/cli) (`kova audit`) | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md#gap-4) |
 | 58 | Academic Strategy | — | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md#gap-8) |
 | 59 | Conference Strategy | — | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md) |
 | 60 | Open Core Pricing | — | [PRICING.md](./PRICING.md) |
@@ -115,10 +115,10 @@ Master index mapping every KOVA improvement to its implementation (package or do
 
 | # | Improvement | Package | Doc |
 |---|-------------|---------|-----|
-| 66 | Certification Authority | [@stele/certification](../packages/certification) | [CERTIFICATION-AUTHORITY-SPEC.md](./CERTIFICATION-AUTHORITY-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
-| 67 | Trust Tax (Transaction Fee) | [@stele/revenue](../packages/revenue) | [TRUST-TAX-SPEC.md](./TRUST-TAX-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
-| 68 | Trust Data Monopoly | [@stele/trust-data](../packages/trust-data) | [TRUST-DATA-SPEC.md](./TRUST-DATA-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
-| 69 | Trust-Gated Marketplace | [@stele/marketplace](../packages/marketplace) | [MARKETPLACE-SPEC.md](./MARKETPLACE-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
+| 66 | Certification Authority | [@nobulex/certification](../packages/certification) | [CERTIFICATION-AUTHORITY-SPEC.md](./CERTIFICATION-AUTHORITY-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
+| 67 | Trust Tax (Transaction Fee) | [@nobulex/revenue](../packages/revenue) | [TRUST-TAX-SPEC.md](./TRUST-TAX-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
+| 68 | Trust Data Monopoly | [@nobulex/trust-data](../packages/trust-data) | [TRUST-DATA-SPEC.md](./TRUST-DATA-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
+| 69 | Trust-Gated Marketplace | [@nobulex/marketplace](../packages/marketplace) | [MARKETPLACE-SPEC.md](./MARKETPLACE-SPEC.md), [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
 | 70 | Sovereign Licensing | — | [REVENUE-MODEL.md](./REVENUE-MODEL.md) |
 
 ---
@@ -127,11 +127,11 @@ Master index mapping every KOVA improvement to its implementation (package or do
 
 | # | Improvement | Package | Doc |
 |---|-------------|---------|-----|
-| 71 | Two-Sided Payments | [@stele/revenue](../packages/revenue) | [TWO-SIDED-PAYMENTS-SPEC.md](./TWO-SIDED-PAYMENTS-SPEC.md) |
-| 72 | Value-Proportional Pricing | [@stele/revenue](../packages/revenue) | [TRUST-TAX-SPEC.md](./TRUST-TAX-SPEC.md) |
-| 73 | Trust Futures Market | [@stele/trust-futures](../packages/trust-futures) | [TRUST-FUTURES-SPEC.md](./TRUST-FUTURES-SPEC.md) |
-| 74 | Compliance Autopilot | [@stele/compliance-autopilot](../packages/compliance-autopilot) | [COMPLIANCE-AUTOPILOT-SPEC.md](./COMPLIANCE-AUTOPILOT-SPEC.md) |
-| 75 | Productive Staking Tiers | [@stele/staking](../packages/staking) | [STAKING-TIERS-SPEC.md](./STAKING-TIERS-SPEC.md) |
+| 71 | Two-Sided Payments | [@nobulex/revenue](../packages/revenue) | [TWO-SIDED-PAYMENTS-SPEC.md](./TWO-SIDED-PAYMENTS-SPEC.md) |
+| 72 | Value-Proportional Pricing | [@nobulex/revenue](../packages/revenue) | [TRUST-TAX-SPEC.md](./TRUST-TAX-SPEC.md) |
+| 73 | Trust Futures Market | [@nobulex/trust-futures](../packages/trust-futures) | [TRUST-FUTURES-SPEC.md](./TRUST-FUTURES-SPEC.md) |
+| 74 | Compliance Autopilot | [@nobulex/compliance-autopilot](../packages/compliance-autopilot) | [COMPLIANCE-AUTOPILOT-SPEC.md](./COMPLIANCE-AUTOPILOT-SPEC.md) |
+| 75 | Productive Staking Tiers | [@nobulex/staking](../packages/staking) | [STAKING-TIERS-SPEC.md](./STAKING-TIERS-SPEC.md) |
 
 ---
 
@@ -139,7 +139,7 @@ Master index mapping every KOVA improvement to its implementation (package or do
 
 | # | Improvement | Package | Doc |
 |---|-------------|---------|-----|
-| 76 | Trust Resolution = Transaction Execution | [@stele/rail](../packages/rail) | [THE-RAIL-SPEC.md](./THE-RAIL-SPEC.md) |
+| 76 | Trust Resolution = Transaction Execution | [@nobulex/rail](../packages/rail) | [THE-RAIL-SPEC.md](./THE-RAIL-SPEC.md) |
 
 ---
 

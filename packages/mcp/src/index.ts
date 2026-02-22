@@ -1,17 +1,17 @@
-import { generateKeyPair, timestamp, sha256Object } from '@stele/crypto';
-import type { KeyPair, HashHex } from '@stele/crypto';
-import { parse } from '@stele/ccl';
-import type { Severity } from '@stele/ccl';
-import { buildCovenant } from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
-import { Monitor } from '@stele/enforcement';
-import type { AuditLog, AuditEntry } from '@stele/enforcement';
-import { createIdentity } from '@stele/identity';
-import type { AgentIdentity, ModelAttestation } from '@stele/identity';
-import { createReceipt } from '@stele/reputation';
-import type { ExecutionReceipt } from '@stele/reputation';
-import { generateComplianceProof } from '@stele/proof';
-import type { ComplianceProof, AuditEntryData } from '@stele/proof';
+import { generateKeyPair, timestamp, sha256Object } from '@nobulex/crypto';
+import type { KeyPair, HashHex } from '@nobulex/crypto';
+import { parse } from '@nobulex/ccl';
+import type { Severity } from '@nobulex/ccl';
+import { buildCovenant } from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
+import { Monitor } from '@nobulex/enforcement';
+import type { AuditLog, AuditEntry } from '@nobulex/enforcement';
+import { createIdentity } from '@nobulex/identity';
+import type { AgentIdentity, ModelAttestation } from '@nobulex/identity';
+import { createReceipt } from '@nobulex/reputation';
+import type { ExecutionReceipt } from '@nobulex/reputation';
+import { generateComplianceProof } from '@nobulex/proof';
+import type { ComplianceProof, AuditEntryData } from '@nobulex/proof';
 
 import { PRESETS } from './presets.js';
 import type {
@@ -119,7 +119,7 @@ function extractConstraint(matchedRule: unknown): string {
  *
  * Usage (2 lines):
  * ```ts
- * import { SteleGuard } from '@stele/mcp';
+ * import { SteleGuard } from '@nobulex/mcp';
  * const server = await SteleGuard.wrap(myMcpServer, { constraints: 'standard:data-isolation' });
  * ```
  */

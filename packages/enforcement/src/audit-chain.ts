@@ -15,7 +15,7 @@ import {
   generateNonce,
   toHex,
   timestamp,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 /**
  * A single entry in the audit chain.

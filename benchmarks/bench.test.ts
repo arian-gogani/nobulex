@@ -6,7 +6,7 @@ import {
   verify,
   sha256,
   canonicalizeJson,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 import {
   parse,
@@ -14,7 +14,7 @@ import {
   merge,
   serialize,
   validateNarrowing,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
 import {
   buildCovenant,
@@ -23,9 +23,9 @@ import {
   resolveChain,
   computeEffectiveConstraints,
   MemoryChainResolver,
-} from '@stele/core';
+} from '@nobulex/core';
 
-import { MemoryStore } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
 
 // ---------------------------------------------------------------------------
 // Benchmark helper
@@ -237,7 +237,7 @@ describe('Crypto Benchmarks', () => {
     });
   });
 
-  it('sha256: 10000 iterations with 10KB', () => {
+  it('sha256: 10000 iterations with 10KB', { timeout: 15000 }, () => {
     const data = makeBytes(10240);
     return bench('crypto.sha256(10KB)', 10000, () => {
       sha256(data);

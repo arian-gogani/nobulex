@@ -28,7 +28,7 @@ What to track for adoption readiness. The number that matters: **installs**.
 
 ## Dashboard Structure
 
-1. **Installs** — Weekly npm installs for `kova`, `@stele/cli`, `@stele/sdk`
+1. **Installs** — Weekly npm installs for `kova`, `@nobulex/cli`, `@nobulex/sdk`
 2. **Stars** — Repo star count, star velocity
 3. **Traffic** — Website unique visitors, doc page views
 4. **Outreach** — DMs sent, responses, positive signals

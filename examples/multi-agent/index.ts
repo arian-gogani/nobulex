@@ -6,15 +6,15 @@
  * validation, identity creation, and differential enforcement across
  * two agents operating under different constraint scopes.
  */
-import { generateKeyPair } from '@stele/crypto';
+import { generateKeyPair } from '@nobulex/crypto';
 import {
   buildCovenant,
   MemoryChainResolver,
   resolveChain,
   validateChainNarrowing,
-} from '@stele/core';
-import { Monitor, MonitorDeniedError } from '@stele/enforcement';
-import { createIdentity, verifyIdentity } from '@stele/identity';
+} from '@nobulex/core';
+import { Monitor, MonitorDeniedError } from '@nobulex/enforcement';
+import { createIdentity, verifyIdentity } from '@nobulex/identity';
 
 async function main() {
   // 1. Create two key pairs: one for the parent operator, one for the child

@@ -1,5 +1,5 @@
 /**
- * Generate API documentation from TSDoc comments across all @stele/* packages.
+ * Generate API documentation from TSDoc comments across all @nobulex/* packages.
  *
  * Usage:
  *   npx tsx scripts/generate-docs.ts

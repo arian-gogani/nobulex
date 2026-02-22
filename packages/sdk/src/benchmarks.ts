@@ -1,5 +1,5 @@
 /**
- * @stele/sdk -- Performance benchmark suite with SLA targets.
+ * @nobulex/sdk -- Performance benchmark suite with SLA targets.
  *
  * Defines production-quality SLA targets for all critical protocol operations
  * and provides a benchmark runner that validates them. This proves the protocol
@@ -8,17 +8,17 @@
  * @packageDocumentation
  */
 
-import { generateKeyPair, sign, verify, sha256, sha256String } from '@stele/crypto';
-import { buildCovenant, verifyCovenant } from '@stele/core';
-import { parse as cclParse, evaluate as cclEvaluate } from '@stele/ccl';
-import { MemoryStore } from '@stele/store';
+import { generateKeyPair, sign, verify, sha256, sha256String } from '@nobulex/crypto';
+import { buildCovenant, verifyCovenant } from '@nobulex/core';
+import { parse as cclParse, evaluate as cclEvaluate } from '@nobulex/ccl';
+import { MemoryStore } from '@nobulex/store';
 import { SteleClient } from './index.js';
 import {
   initiate as negotiationInitiate,
   propose as negotiationPropose,
   agree as negotiationAgree,
   evaluate as negotiationEvaluate,
-} from '@stele/negotiation';
+} from '@nobulex/negotiation';
 
 // ─── SLA Targets ────────────────────────────────────────────────────────────
 

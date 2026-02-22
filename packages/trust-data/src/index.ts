@@ -1,5 +1,5 @@
 /**
- * @stele/trust-data — Trust Data Monopoly (Improvement 68).
+ * @nobulex/trust-data — Trust Data Monopoly (Improvement 68).
  *
  * Cross-platform reputation graph = largest verified agent behavioral dataset.
  * Sell anonymized insights to insurers, regulators, enterprises. Bloomberg model.
@@ -7,7 +7,7 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
+import { sha256Object } from '@nobulex/crypto';
 
 export interface AnonymizedAggregate {
   agentClass: string;

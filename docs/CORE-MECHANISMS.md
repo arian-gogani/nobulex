@@ -11,7 +11,7 @@ The actual technical and conceptual improvements to Kova's trust infrastructure.
 - Not audit — **architecture**.
 - The covenant compiles into capability restrictions on the runtime itself.
 - Tool calls and API access are gated by the runtime; denied actions never reach the underlying system.
-- Enforcement monitor (`@stele/enforcement`) implements this; MCP middleware (`@stele/mcp`) gates tool calls.
+- Enforcement monitor (`@nobulex/enforcement`) implements this; MCP middleware (`@nobulex/mcp`) gates tool calls.
 
 **Status:** Implemented. Covenant constraints evaluate before execution; denied actions are blocked. CCL supports optional `enforcement hard` or `enforcement soft` per constraint: hard = runtime restriction (tool/API); soft = behavioral monitoring (outputs). See HOLES-PATCHED Hole 1.
 
@@ -26,7 +26,7 @@ The actual technical and conceptual improvements to Kova's trust infrastructure.
 - **Negation** — What trust does *not* imply.
 - **Tensor product** — Trust across parallel delegation chains.
 
-**Status:** `@stele/composition` provides `composeTrust`, `intersectTrust`, `negateTrust`, and `tensorTrust`. Negation returns deny constraints; tensor merges parallel composition proofs.
+**Status:** `@nobulex/composition` provides `composeTrust`, `intersectTrust`, `negateTrust`, and `tensorTrust`. Negation returns deny constraints; tensor merges parallel composition proofs.
 
 ---
 
@@ -50,7 +50,7 @@ The actual technical and conceptual improvements to Kova's trust infrastructure.
 - Trust has real scarcity, making it genuinely valuable.
 - Reputation and stake are linked; high trust requires staked value.
 
-**Status:** `@stele/reputation` supports stake-weighted scoring with `stakeBound` (collateralization bound). Pass `stakeData: { currentStake, totalBurned }` to `computeReputationScore` to cap trust by stake; see HOLES-PATCHED.md for formula.
+**Status:** `@nobulex/reputation` supports stake-weighted scoring with `stakeBound` (collateralization bound). Pass `stakeData: { currentStake, totalBurned }` to `computeReputationScore` to cap trust by stake; see HOLES-PATCHED.md for formula.
 
 ---
 
@@ -65,7 +65,7 @@ The actual technical and conceptual improvements to Kova's trust infrastructure.
 
 If the kernel is correct, the entire system maintains guarantees regardless of ecosystem complexity.
 
-**Status:** Foundation packages (`@stele/core`, `@stele/verifier`, `@stele/identity`) form the kernel. Formal verification is a roadmap item.
+**Status:** Foundation packages (`@nobulex/core`, `@nobulex/verifier`, `@nobulex/identity`) form the kernel. Formal verification is a roadmap item.
 
 ---
 
@@ -90,7 +90,7 @@ They can't drift because they're the same object. CCL is parsed, evaluated, and 
 - No mutant strategy can invade the population.
 - Deviations self-extinguish.
 - **Applies to operators (rational humans), not agents (stochastic systems).**
-- `@stele/gametheory` provides computable inequalities for dominant-strategy honesty.
+- `@nobulex/gametheory` provides computable inequalities for dominant-strategy honesty.
 
 **Status:** Game theory package implements honesty proofs. ESS framing is documented.
 
@@ -104,7 +104,7 @@ They can't drift because they're the same object. CCL is parsed, evaluated, and 
 - Privacy-preserving trust.
 - ZK proofs for compliance without exposing agent or operator identity.
 
-**Status:** `@stele/proof` uses Poseidon hashes. Full ZK identity hierarchy is a research direction.
+**Status:** `@nobulex/proof` uses Poseidon hashes. Full ZK identity hierarchy is a research direction.
 
 ---
 
@@ -114,7 +114,7 @@ They can't drift because they're the same object. CCL is parsed, evaluated, and 
 
 - Verifying one agent partially verifies its partners.
 - Network-wide verification at sublinear cost.
-- Composition and breach propagation (`@stele/breach`) implement linked verification.
+- Composition and breach propagation (`@nobulex/breach`) implement linked verification.
 
 **Status:** Delegation chains and breach propagation exist. Sublinear network verification is an optimization target.
 
@@ -142,7 +142,7 @@ Published as conjectures inviting formal proofs. Creates research agenda.
 - The kernel is immutable.
 - Parameters above it evolve (thresholds, decay rates, canary schedules).
 - Gets better, provably can't get worse.
-- `@stele/antifragile` — breaches generate improvements.
+- `@nobulex/antifragile` — breaches generate improvements.
 
 **Status:** Antifragile package implements breach-to-improvement. Parameter evolution within envelopes is a design principle.
 

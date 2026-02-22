@@ -3,10 +3,10 @@
  */
 
 import { describe, it, expect, vi } from 'vitest';
-import { generateKeyPair } from '@stele/crypto';
-import { verifyCovenant as coreVerifyCovenant } from '@stele/core';
-import type { KeyPair } from '@stele/crypto';
-import type { Issuer, Beneficiary } from '@stele/core';
+import { generateKeyPair } from '@nobulex/crypto';
+import { verifyCovenant as coreVerifyCovenant } from '@nobulex/core';
+import type { KeyPair } from '@nobulex/crypto';
+import type { Issuer, Beneficiary } from '@nobulex/core';
 
 import { SteleClient, KeyManager } from '../src/index.js';
 import type { KeyRotatedEvent } from '../src/index.js';
@@ -268,7 +268,7 @@ describe('SteleClient key rotation', () => {
     // The key manager should still be able to verify with the old key
     const km = client.keyManager!;
     const message = new TextEncoder().encode('test-message');
-    const { sign } = await import('@stele/crypto');
+    const { sign } = await import('@nobulex/crypto');
     const sig = await sign(message, firstKey.privateKey);
 
     const verifyResult = await km.verifyWithAnyKey(message, sig);

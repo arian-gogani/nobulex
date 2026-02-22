@@ -107,7 +107,7 @@ Follow this checklist when adding a new package:
 2. **Create `package.json`**:
    ```json
    {
-     "name": "@stele/my-package",
+     "name": "@nobulex/my-package",
      "version": "0.1.0",
      "type": "module",
      "main": "dist/index.js",
@@ -118,7 +118,7 @@ Follow this checklist when adding a new package:
        "test": "vitest run"
      },
      "dependencies": {
-       "@stele/types": "0.1.0"
+       "@nobulex/types": "0.1.0"
      }
    }
    ```
@@ -139,7 +139,7 @@ Follow this checklist when adding a new package:
 - **Pure functions**: Prefer pure functions over stateful classes where possible.
 - **Immutable returns**: Functions that transform documents return new copies rather
   than mutating the input.
-- **Explicit error types**: Use the error classes from `@stele/types` (`SteleError`,
+- **Explicit error types**: Use the error classes from `@nobulex/types` (`SteleError`,
   `ValidationError`, `CryptoError`, etc.) rather than plain `Error`.
 - **Branded types**: Use branded string types (`HashHex`, `Base64Url`, etc.) for
   type safety at API boundaries.

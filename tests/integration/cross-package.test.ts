@@ -8,8 +8,8 @@
 
 import { describe, it, expect, beforeEach } from 'vitest';
 
-import { generateKeyPair, sha256String, toHex } from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
+import { generateKeyPair, sha256String, toHex } from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
 
 import {
   buildCovenant,
@@ -25,10 +25,10 @@ import {
   serializeCovenant,
   deserializeCovenant,
   MAX_CHAIN_DEPTH,
-} from '@stele/core';
-import type { CovenantDocument } from '@stele/core';
+} from '@nobulex/core';
+import type { CovenantDocument } from '@nobulex/core';
 
-import { SteleClient, QuickCovenant } from '@stele/sdk';
+import { SteleClient, QuickCovenant } from '@nobulex/sdk';
 import type {
   SteleEventType,
   CovenantCreatedEvent,
@@ -38,14 +38,14 @@ import type {
   ChainResolvedEvent,
   ChainValidatedEvent,
   EvaluationCompletedEvent,
-} from '@stele/sdk';
+} from '@nobulex/sdk';
 
-import { MemoryStore } from '@stele/store';
-import type { StoreEvent } from '@stele/store';
+import { MemoryStore } from '@nobulex/store';
+import type { StoreEvent } from '@nobulex/store';
 
-import { Verifier, verifyBatch } from '@stele/verifier';
+import { Verifier, verifyBatch } from '@nobulex/verifier';
 
-import { parse, evaluate, merge as mergeCCL, serialize as serializeCCL } from '@stele/ccl';
+import { parse, evaluate, merge as mergeCCL, serialize as serializeCCL } from '@nobulex/ccl';
 
 import {
   createIdentity,
@@ -53,8 +53,8 @@ import {
   verifyIdentity,
   serializeIdentity,
   deserializeIdentity,
-} from '@stele/identity';
-import type { AgentIdentity } from '@stele/identity';
+} from '@nobulex/identity';
+import type { AgentIdentity } from '@nobulex/identity';
 
 
 // ---------------------------------------------------------------------------

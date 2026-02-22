@@ -25,14 +25,14 @@ The profile has five dimensions that **trade off against each other**. An agent 
 - **Broad covenant + shallow history** — Unproven. Many constraints, few executions to verify.
 - **Hard enforcement + low stake** — Mismatch. Strong runtime but little economic commitment.
 
-The open algorithm (`computeSteleScore` in `@stele/legal`, reputation scoring in `@stele/reputation`) combines these dimensions. No single number is sufficient; the full profile is the unit of trust.
+The open algorithm (`computeSteleScore` in `@nobulex/legal`, reputation scoring in `@nobulex/reputation`) combines these dimensions. No single number is sufficient; the full profile is the unit of trust.
 
 ---
 
 ## Implementation
 
-- **Reputation package:** [@stele/reputation](../packages/reputation) — `ReputationScore`, stake bounds, breach penalties.
-- **Legal package:** [@stele/legal](../packages/legal) — `computeSteleScore`, compliance mapping.
+- **Reputation package:** [@nobulex/reputation](../packages/reputation) — `ReputationScore`, stake bounds, breach penalties.
+- **Legal package:** [@nobulex/legal](../packages/legal) — `computeSteleScore`, compliance mapping.
 - **Hole 9 fix:** [HOLES-PATCHED.md](./HOLES-PATCHED.md#hole-9-single-trust-score-creates-gaming-incentives)
 
 ---

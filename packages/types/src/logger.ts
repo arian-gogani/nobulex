@@ -200,7 +200,7 @@ export function createLogger(options?: LoggerOptions): Logger {
  *
  * Suitable for quick, import-and-go usage:
  * ```ts
- * import { defaultLogger } from '@stele/types';
+ * import { defaultLogger } from '@nobulex/types';
  * defaultLogger.info('hello');
  * ```
  */

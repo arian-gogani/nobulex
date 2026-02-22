@@ -11,7 +11,7 @@
  *
  * @example
  * ```typescript
- * import { SteleClient, withStele, withSteleTools } from '@stele/sdk';
+ * import { SteleClient, withStele, withSteleTools } from '@nobulex/sdk';
  *
  * const protectedTool = withStele(myTool, { client, covenant });
  * const protectedTools = withSteleTools({ search, browse }, { client, covenant });
@@ -19,7 +19,7 @@
  */
 
 import type { SteleClient } from '../index.js';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
 
 // ─── Error ───────────────────────────────────────────────────────────────────

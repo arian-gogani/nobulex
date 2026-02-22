@@ -1,5 +1,5 @@
 /**
- * @stele/verifier type definitions.
+ * @nobulex/verifier type definitions.
  *
  * Report types, options, and records used by the Verifier class
  * and the standalone `verifyBatch` function.
@@ -9,9 +9,9 @@ import type {
   CovenantDocument,
   VerificationResult,
   VerificationCheck,
-} from '@stele/core';
+} from '@nobulex/core';
 
-import type { Statement, NarrowingViolation, EvaluationContext, Severity } from '@stele/ccl';
+import type { Statement, NarrowingViolation, EvaluationContext, Severity } from '@nobulex/ccl';
 
 // ─── Options ────────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ export interface VerifierOptions {
 
   /**
    * Optional maximum chain depth override.
-   * Defaults to MAX_CHAIN_DEPTH from @stele/core (16).
+   * Defaults to MAX_CHAIN_DEPTH from @nobulex/core (16).
    */
   maxChainDepth?: number;
 }

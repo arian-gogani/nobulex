@@ -1,4 +1,4 @@
-import type { HashHex } from '@stele/crypto';
+import type { HashHex } from '@nobulex/crypto';
 
 /**
  * A zero-knowledge compliance proof attesting that audit log entries

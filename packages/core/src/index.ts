@@ -7,17 +7,17 @@ import {
   fromHex,
   generateNonce,
   timestamp,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
-import type { KeyPair, HashHex } from '@stele/crypto';
+import type { KeyPair, HashHex } from '@nobulex/crypto';
 
 import {
   parse as cclParse,
   merge as cclMerge,
   validateNarrowing as cclValidateNarrowing,
-} from '@stele/ccl';
+} from '@nobulex/ccl';
 
-import type { CCLDocument, NarrowingViolation } from '@stele/ccl';
+import type { CCLDocument, NarrowingViolation } from '@nobulex/ccl';
 
 import {
   PROTOCOL_VERSION,
@@ -35,7 +35,7 @@ import type {
   PartyRole,
 } from './types.js';
 
-// Re-export all types so consumers only need @stele/core
+// Re-export all types so consumers only need @nobulex/core
 export type {
   EnforcementType,
   ProofType,

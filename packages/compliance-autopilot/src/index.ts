@@ -1,5 +1,5 @@
 /**
- * @stele/compliance-autopilot — Compliance Autopilot (Improvement 74).
+ * @nobulex/compliance-autopilot — Compliance Autopilot (Improvement 74).
  *
  * Continuous compliance monitoring at 0.5-1% of agent operational budget.
  * Real-time compliance scores, automatic regulatory reports, pre-violation alerts.

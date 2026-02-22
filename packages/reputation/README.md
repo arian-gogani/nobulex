@@ -1,4 +1,4 @@
-# @stele/reputation
+# @nobulex/reputation
 
 Reputation scoring, execution receipts, stakes, and delegation for the Stele protocol.
 

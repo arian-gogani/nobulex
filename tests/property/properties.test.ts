@@ -5,7 +5,7 @@
  * crypto.getRandomValues for true randomness, running 20 iterations per
  * property to cover a broad range of inputs.
  *
- * Covers: @stele/crypto, @stele/ccl, @stele/core, @stele/identity
+ * Covers: @nobulex/crypto, @nobulex/ccl, @nobulex/core, @nobulex/identity
  */
 
 import { describe, it, expect } from 'vitest';
@@ -26,8 +26,8 @@ import {
   generateNonce,
   generateId,
   constantTimeEqual,
-} from '@stele/crypto';
-import type { KeyPair } from '@stele/crypto';
+} from '@nobulex/crypto';
+import type { KeyPair } from '@nobulex/crypto';
 
 import {
   parse,
@@ -39,8 +39,8 @@ import {
   matchAction,
   matchResource,
   evaluateCondition,
-} from '@stele/ccl';
-import type { CCLDocument, EvaluationContext } from '@stele/ccl';
+} from '@nobulex/ccl';
+import type { CCLDocument, EvaluationContext } from '@nobulex/ccl';
 
 import {
   buildCovenant,
@@ -52,8 +52,8 @@ import {
   serializeCovenant,
   deserializeCovenant,
   MAX_CHAIN_DEPTH,
-} from '@stele/core';
-import type { CovenantDocument, CovenantBuilderOptions } from '@stele/core';
+} from '@nobulex/core';
+import type { CovenantDocument, CovenantBuilderOptions } from '@nobulex/core';
 
 import {
   createIdentity,
@@ -61,8 +61,8 @@ import {
   verifyIdentity,
   computeIdentityHash,
   computeCapabilityManifestHash,
-} from '@stele/identity';
-import type { AgentIdentity, CreateIdentityOptions } from '@stele/identity';
+} from '@nobulex/identity';
+import type { AgentIdentity, CreateIdentityOptions } from '@nobulex/identity';
 
 // ---------------------------------------------------------------------------
 // Random generators

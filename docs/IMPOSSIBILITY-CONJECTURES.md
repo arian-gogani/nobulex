@@ -54,6 +54,6 @@ We believe these bounds exist. We invite formal proofs or counterexamples. These
 - The **kernel** (identity binding, covenant signing, proof verification, trust accounting) is immutable.
 - **Parameters** above the kernel (thresholds, decay rates, canary schedules) can evolve.
 - Improvement is bounded: the protocol gets better, provably cannot get worse.
-- `@stele/antifragile` implements breach-to-improvement; parameter evolution within envelopes is a design principle.
+- `@nobulex/antifragile` implements breach-to-improvement; parameter evolution within envelopes is a design principle.
 
 **Informal argument:** If evolution is constrained to parameter updates that monotonically improve detection or reduce false positives, the system cannot regress. The kernel provides the invariant; everything else is optimization.

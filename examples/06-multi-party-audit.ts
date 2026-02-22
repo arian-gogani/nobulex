@@ -18,9 +18,9 @@ import {
   type Issuer,
   type Beneficiary,
   type CovenantDocument,
-} from '@stele/sdk';
+} from '@nobulex/sdk';
 
-import { Verifier } from '@stele/verifier';
+import { Verifier } from '@nobulex/verifier';
 
 async function main() {
   console.log('========================================');

@@ -1,5 +1,5 @@
 {
-  "name": "@stele/temporal",
+  "name": "@nobulex/temporal",
   "version": "0.1.0",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -14,6 +14,7 @@
   },
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm",
+    "typecheck": "tsc --noEmit",
     "bundle": "tsup src/index.ts --format cjs,esm",
     "dev": "tsup src/index.ts --format cjs,esm --watch",
     "prepublishOnly": "npm run build"
@@ -24,7 +25,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@stele/crypto": "0.1.0"
+    "@nobulex/crypto": "0.1.0"
   },
   "license": "MIT",
   "engines": {

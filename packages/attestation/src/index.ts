@@ -1,4 +1,4 @@
-import { sha256Object, signString, toHex, verify, fromHex } from '@stele/crypto';
+import { sha256Object, signString, toHex, verify, fromHex } from '@nobulex/crypto';
 
 export type {
   ExternalAttestation,

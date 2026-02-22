@@ -1,6 +1,6 @@
-import { sha256Object } from '@stele/crypto';
-import { parse, matchAction, matchResource } from '@stele/ccl';
-import type { Statement } from '@stele/ccl';
+import { sha256Object } from '@nobulex/crypto';
+import { parse, matchAction, matchResource } from '@nobulex/ccl';
+import type { Statement } from '@nobulex/ccl';
 
 export type {
   AlignmentProperty,

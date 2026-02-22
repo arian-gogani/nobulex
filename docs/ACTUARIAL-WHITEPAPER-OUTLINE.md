@@ -75,4 +75,4 @@
 - **Improvement 53:** Actuarial Risk Model
 - **ADOPTION-STRATEGY.md:** Insurance Discount: The Actuarial Play
 - **ADOPTION-READINESS.md:** Gap 2, Week 8 — Actuarial whitepaper
-- **@stele/derivatives:** Risk assessment, premium calculation
+- **@nobulex/derivatives:** Risk assessment, premium calculation

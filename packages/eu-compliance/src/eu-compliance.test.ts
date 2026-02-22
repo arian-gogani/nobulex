@@ -1,9 +1,9 @@
 /**
- * @stele/eu-compliance tests
+ * @nobulex/eu-compliance tests
  */
 import { describe, it, expect } from 'vitest';
 import { computeEUCompliance } from './index.js';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 describe('computeEUCompliance', () => {
   it('returns low score when no covenant', () => {

@@ -10,10 +10,10 @@
  * Express setup, see docs/API-GATEWAY-GUIDE.md.
  */
 
-import { SteleClient, kovaGatewayMiddleware, serializeCovenant } from '@stele/sdk';
-import { generateKeyPair } from '@stele/crypto';
-import type { CovenantDocument } from '@stele/core';
-import type { IncomingRequest, OutgoingResponse } from '@stele/sdk';
+import { SteleClient, kovaGatewayMiddleware, serializeCovenant } from '@nobulex/sdk';
+import { generateKeyPair } from '@nobulex/crypto';
+import type { CovenantDocument } from '@nobulex/core';
+import type { IncomingRequest, OutgoingResponse } from '@nobulex/sdk';
 
 async function main() {
   console.log('========================================');

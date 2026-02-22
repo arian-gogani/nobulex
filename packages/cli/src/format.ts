@@ -1,5 +1,5 @@
 /**
- * @stele/cli formatting utilities.
+ * @nobulex/cli formatting utilities.
  *
  * Pure ANSI-code based terminal formatting with zero external dependencies.
  *

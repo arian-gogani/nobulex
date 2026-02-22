@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { MemoryStore } from './index';
 import type { CovenantStore, StoreEvent, StoreEventCallback } from './index';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
 // Test helpers

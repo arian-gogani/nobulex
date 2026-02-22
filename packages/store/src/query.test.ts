@@ -2,7 +2,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { MemoryStore } from './index';
 import { QueryBuilder, createQuery } from './query';
 import type { PaginationOptions, PaginatedResult, SortField, SortOrder } from './query';
-import type { CovenantDocument } from '@stele/core';
+import type { CovenantDocument } from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
 // Test helpers

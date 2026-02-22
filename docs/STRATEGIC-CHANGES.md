@@ -33,7 +33,7 @@ Everything else moves to the **ecosystem layer**: attestation, canary, negotiati
 **Position:** Own the gap between ERC-8004 (crypto-native) and enterprise governance tools.
 
 - Nobody else bridges both worlds.
-- EVM package (`@stele/evm`) anchors covenants on-chain.
+- EVM package (`@nobulex/evm`) anchors covenants on-chain.
 - Legal package maps to SOC2, GDPR, EU AI Act, NIST AI RMF.
 - Single protocol, multiple deployment contexts.
 
@@ -45,7 +45,7 @@ Everything else moves to the **ecosystem layer**: attestation, canary, negotiati
 
 - Map every Article requirement to a Kova capability.
 - Become the fastest path to compliance.
-- `docs/eu-ai-act-mapping.md` and `@stele/legal` EU_AI_ACT standard.
+- `docs/eu-ai-act-mapping.md` and `@nobulex/legal` EU_AI_ACT standard.
 
 ---
 
@@ -65,7 +65,7 @@ Everything else moves to the **ecosystem layer**: attestation, canary, negotiati
 
 - Has no accountability primitive.
 - Kova fills the accountability gap in the Agentic AI Foundation as the trust layer for the agent economy.
-- MCP middleware (`@stele/mcp`) integrates Kova with MCP tool calls.
+- MCP middleware (`@nobulex/mcp`) integrates Kova with MCP tool calls.
 - `withKova(server, 'data-isolation')` — three lines to wrap any MCP server with covenant enforcement.
 - Covenant as the trust layer for the MCP ecosystem.
 
@@ -124,7 +124,7 @@ Everything else moves to the **ecosystem layer**: attestation, canary, negotiati
 - Compliance rate, attestation coverage, canary pass rate, breach history, stake, lineage
 - The FICO score for agents
 - Open algorithm; no black box
-- Implemented as `computeSteleScore` in `@stele/legal`; documented in HOLES-PATCHED (Hole 9)
+- Implemented as `computeSteleScore` in `@nobulex/legal`; documented in HOLES-PATCHED (Hole 9)
 
 ---
 

@@ -15,7 +15,7 @@ import {
   shareAncestor,
   type ModelAttestation,
   type DeploymentContext,
-} from '@stele/sdk';
+} from '@nobulex/sdk';
 
 async function main() {
   console.log('========================================');

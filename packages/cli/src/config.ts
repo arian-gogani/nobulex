@@ -1,5 +1,5 @@
 /**
- * @stele/cli configuration file support.
+ * @nobulex/cli configuration file support.
  *
  * Reads and writes `stele.config.json` in the current working directory.
  * Zero external dependencies -- uses only Node built-in `fs` and `path`.

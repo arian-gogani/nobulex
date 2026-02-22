@@ -5,8 +5,8 @@ export type {
   BreachEvent,
 } from './types.js';
 
-import type { KeyPair, HashHex } from '@stele/crypto';
-import type { Severity } from '@stele/ccl';
+import type { KeyPair, HashHex } from '@nobulex/crypto';
+import type { Severity } from '@nobulex/ccl';
 import {
   sha256Object,
   canonicalizeJson,
@@ -16,7 +16,7 @@ import {
   fromHex,
   timestamp,
   generateNonce,
-} from '@stele/crypto';
+} from '@nobulex/crypto';
 
 import type {
   BreachAttestation,

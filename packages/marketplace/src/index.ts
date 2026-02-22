@@ -1,5 +1,5 @@
 /**
- * @stele/marketplace — Trust-Gated Marketplace (Improvement 69).
+ * @nobulex/marketplace — Trust-Gated Marketplace (Improvement 69).
  *
  * Agent-to-agent discovery layer. Trust score determines access.
  * Premium placement, escrow, transaction fees. AWS Marketplace model.
@@ -7,8 +7,8 @@
  * @packageDocumentation
  */
 
-import { sha256Object } from '@stele/crypto';
-import { getMarketplaceRankBoost } from '@stele/staking';
+import { sha256Object } from '@nobulex/crypto';
+import { getMarketplaceRankBoost } from '@nobulex/staking';
 
 export interface MarketplaceListing {
   agentId: string;

@@ -1,4 +1,4 @@
-# @stele/trust-futures
+# @nobulex/trust-futures
 
 Trust futures market for the Stele protocol. Financial instruments betting on agent trust score trajectories. Insurers hedge policies, enterprises signal confidence, speculators trade. Kova takes 1% of every trade (CME Group model).
 
@@ -10,7 +10,7 @@ import {
   executeTrade,
   settleFutureAtExpiry,
   KOVA_TRADE_FEE_RATE,
-} from '@stele/trust-futures';
+} from '@nobulex/trust-futures';
 
 // Create a future: bet on agent's trust score reaching 0.9
 const future = createAndListFuture(
@@ -41,4 +41,4 @@ const settlement = settleFutureAtExpiry(
 ## See Also
 
 - [examples/13-trust-futures-flow.ts](../../examples/13-trust-futures-flow.ts) — Full create → trade → settle example
-- [@stele/derivatives](../derivatives) — createFuture, settleFuture primitives
+- [@nobulex/derivatives](../derivatives) — createFuture, settleFuture primitives

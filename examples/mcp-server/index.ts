@@ -5,10 +5,10 @@
  * to enforce constraints on every tool call, generate compliance proofs,
  * and produce execution receipts.
  */
-import { SteleGuard } from '@stele/mcp';
-import type { MCPServer } from '@stele/mcp';
-import { MonitorDeniedError } from '@stele/enforcement';
-import { verifyComplianceProof } from '@stele/proof';
+import { SteleGuard } from '@nobulex/mcp';
+import type { MCPServer } from '@nobulex/mcp';
+import { MonitorDeniedError } from '@nobulex/enforcement';
+import { verifyComplianceProof } from '@nobulex/proof';
 
 async function main() {
   // 1. Create a mock MCP server with three tools

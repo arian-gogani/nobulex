@@ -151,6 +151,25 @@ export function honestyMargin(params: HonestyParameters): number {
   return (stakeAmount * detectionProbability + reputationValue + coburn) - maxViolationGain;
 }
 
+/**
+ * Check whether honest behavior is an Evolutionary Stable Strategy (ESS).
+ *
+ * A strategy is ESS if (1) it is a Nash equilibrium and (2) no mutant strategy
+ * can invade the population. When honesty is the dominant strategy (margin > 0),
+ * it is also ESS: the expected cost of dishonesty exceeds the gain, so a mutant
+ * playing dishonest gets lower payoff than the honest population.
+ *
+ * @param params - HonestyParameters
+ * @returns { isESS: boolean, proof: HonestyProof } — isESS is true when honesty dominates
+ */
+export function proveESS(params: HonestyParameters): { isESS: boolean; proof: HonestyProof } {
+  const proof = proveHonesty(params);
+  return {
+    isESS: proof.isDominantStrategy,
+    proof,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Repeated Game Equilibrium (Folk Theorem)
 // ---------------------------------------------------------------------------

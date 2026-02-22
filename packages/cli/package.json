@@ -5,12 +5,13 @@
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "stele": "./dist/cli.js"
+    "stele": "./dist/index.js",
+    "kova": "./dist/index.js"
   },
   "scripts": {
-    "build": "tsup src/index.ts --format cjs --dts",
+    "build": "tsup src/index.ts --format cjs",
     "bundle": "tsup src/index.ts --format cjs",
-    "dev": "tsup src/index.ts --format cjs --dts --watch",
+    "dev": "tsup src/index.ts --format cjs --watch",
     "prepublishOnly": "npm run build"
   },
   "files": [

@@ -14,6 +14,10 @@ export interface AuditEntry {
   error?: string;
   previousHash: HashHex;
   hash: HashHex;
+  /** Behavioral provenance: CCL constraint that authorized or denied this action. */
+  authorizationConstraint?: string;
+  /** Enforcement tier of the matched rule: hard (runtime) vs soft (monitoring). */
+  enforcementTier?: 'hard' | 'soft';
 }
 
 export interface AuditLog {

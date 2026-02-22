@@ -189,7 +189,7 @@ export class QueryBuilder {
 
     const page = docs.slice(startIndex, startIndex + options.limit);
     const hasMore = startIndex + options.limit < total;
-    const nextCursor = hasMore && page.length > 0 ? page[page.length - 1].id : undefined;
+    const nextCursor = hasMore && page.length > 0 ? page[page.length - 1]!.id : undefined;
 
     return { items: page, total, hasMore, nextCursor };
   }

@@ -5,23 +5,19 @@
  * using the MiddlewarePipeline from middleware.ts.
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { MetricsRegistry, createMetricsRegistry } from '@stele/types';
 
 import { MiddlewarePipeline } from '../middleware.js';
-import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
 
 import { cachingMiddleware } from './cache.js';
-import type { CacheStats } from './cache.js';
 
 import { authMiddleware } from './auth.js';
 import type { AuthOptions } from './auth.js';
 
 import { metricsMiddleware } from './metrics-plugin.js';
-import type { MetricsPluginOptions } from './metrics-plugin.js';
 
 import { retryMiddleware, executeWithRetry } from './retry-plugin.js';
-import type { RetryPluginOptions } from './retry-plugin.js';
 
 // ─── Test helpers ────────────────────────────────────────────────────────────
 

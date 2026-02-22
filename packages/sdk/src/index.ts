@@ -255,6 +255,7 @@ export {
   merge as mergeCCL,
   validateNarrowing,
   serialize as serializeCCL,
+  validateCCL,
   tokenize,
   parseTokens,
   CCLSyntaxError,

@@ -5,10 +5,21 @@
     "outDir": "dist",
     "composite": true
   },
-  "include": ["src"],
+  "include": [
+    "src"
+  ],
   "references": [
-    { "path": "../types" },
-    { "path": "../crypto" },
-    { "path": "../core" }
+    {
+      "path": "../types"
+    },
+    {
+      "path": "../crypto"
+    },
+    {
+      "path": "../core"
+    }
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
   ]
 }

@@ -34,12 +34,15 @@ export const CONFIG_FILE_NAME = 'stele.config.json';
 /**
  * Search for a `stele.config.json` starting from `cwd` and walking up to the
  * filesystem root.  Returns the absolute path if found, or `undefined`.
+ *
+ * @param cwd - Directory to start searching from (defaults to process.cwd()).
+ * @returns Absolute path to stele.config.json, or undefined if not found.
  */
 export function findConfigFile(cwd?: string): string | undefined {
   let dir = resolve(cwd ?? '.');
 
   // Walk up directory tree
-  // eslint-disable-next-line no-constant-condition
+  // eslint-disable-next-line no-constant-condition -- Walk up dirs until root; break on found or root
   while (true) {
     const candidate = join(dir, CONFIG_FILE_NAME);
     if (existsSync(candidate)) {
@@ -57,6 +60,9 @@ export function findConfigFile(cwd?: string): string | undefined {
  * Load the `stele.config.json` starting from `cwd`.
  * Returns `undefined` if no config file is found.
  * Throws if the file exists but cannot be parsed.
+ *
+ * @param cwd - Directory to search from (defaults to process.cwd()).
+ * @returns Parsed config, or undefined if no config file found.
  */
 export function loadConfig(cwd?: string): SteleConfig | undefined {
   const filePath = findConfigFile(cwd);
@@ -70,6 +76,9 @@ export function loadConfig(cwd?: string): SteleConfig | undefined {
 /**
  * Write a `stele.config.json` to the given directory (defaults to cwd).
  * Overwrites any existing config file at that location.
+ *
+ * @param config - The config object to write.
+ * @param cwd - Directory to write to (defaults to process.cwd()).
  */
 export function saveConfig(config: SteleConfig, cwd?: string): void {
   const dir = resolve(cwd ?? '.');

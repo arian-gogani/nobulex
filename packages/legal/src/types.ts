@@ -57,7 +57,16 @@ export interface InsuranceRecord {
   status: string;
 }
 
-export type ComplianceStandard = 'SOC2' | 'ISO27001' | 'GDPR' | 'CCPA' | 'HIPAA';
+export type ComplianceStandard =
+  | 'SOC2'
+  | 'ISO27001'
+  | 'GDPR'
+  | 'CCPA'
+  | 'HIPAA'
+  | 'EU_AI_ACT'
+  | 'NIST_AI_RMF'
+  | 'UK_GDPR'
+  | 'APPI';
 
 export interface JurisdictionComplianceEntry {
   jurisdiction: string;
@@ -110,4 +119,30 @@ export interface RegulatoryGapAnalysisResult {
   readinessPercentage: number;
   criticalGapCount: number;
   estimatedRemediationEffort: 'low' | 'medium' | 'high';
+}
+
+/**
+ * Multidimensional trust profile (Stele Score).
+ * Dimensions trade off — gaming one costs another. Open algorithm.
+ * The FICO score for agents.
+ */
+export interface SteleScoreProfile {
+  agentId: string;
+  /** Covenant coverage: covenantedInteractions / totalInteractions */
+  complianceRate: number;
+  /** Fraction of interactions with attestation */
+  attestationCoverage: number;
+  /** Canary pass rate */
+  canaryPassRate: number;
+  /** 1 - breachRate; breach freedom */
+  breachFreedom: number;
+  /** Stake level 0–1 (from reputation or external) */
+  stakeLevel: number;
+  /** Covenant lineage depth (chain length) */
+  lineageDepth: number;
+  /** Composite score (weighted average); for display only */
+  composite: number;
+  /** Algorithm version for reproducibility */
+  algorithmVersion: string;
+  computedAt: number;
 }

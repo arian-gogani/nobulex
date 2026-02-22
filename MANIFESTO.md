@@ -96,7 +96,9 @@ This is not an indictment of the people building these systems. They are buildin
 
 Now it does.
 
-Stele is the accountability primitive for AI agents. A covenant is a signed, immutable behavioral commitment. An action log is a tamper-evident Merkle tree. A proof is a zero-knowledge demonstration that an agent honored its commitments. Verification is trustless, deterministic, and independent. No oracle. No intermediary. No trust assumption.
+Kova is the trust layer for the agent economy. A covenant is a signed, immutable behavioral commitment. An action log is a tamper-evident Merkle tree. A proof is a zero-knowledge demonstration that an agent honored its commitments. Verification is trustless, deterministic, and independent. No oracle. No intermediary. No trust assumption.
+
+Adoption isn't about virtue — it's about advantage. Kova-verified agents earn more: trust-gated access to premium APIs, lower insurance, marketplace priority, reduced collateral. Three wedges work without network effects: EU AI Act compliance (Aug 2026), internal agent governance, MCP server certification. The crisis becomes an accelerant, not a prerequisite.
 
 The protocol is open. The specification is public. The code is available. The standard exists for anyone to adopt, extend, and build on.
 

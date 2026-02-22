@@ -1,7 +1,7 @@
 /** Token types produced by the CCL lexer. Each value corresponds to a keyword, operator, or structural element. */
 export type TokenType =
   | 'PERMIT' | 'DENY' | 'REQUIRE' | 'LIMIT'
-  | 'ON' | 'WHEN' | 'SEVERITY' | 'PER' | 'SECONDS'
+  | 'ON' | 'WHEN' | 'SEVERITY' | 'ENFORCEMENT' | 'PER' | 'SECONDS'
   | 'ACTION' | 'RESOURCE' | 'STRING'
   | 'IDENTIFIER' | 'NUMBER'
   | 'OPERATOR'
@@ -31,6 +31,12 @@ export interface Token {
  * Use `risk_level` in conditions instead.
  */
 export type Severity = 'critical' | 'high' | 'medium' | 'low';
+
+/** Enforcement tier for constraints.
+ * - hard: Runtime restriction (tool/API blocked before execution).
+ * - soft: Behavioral monitoring (outputs monitored, no blocking).
+ */
+export type EnforcementTier = 'hard' | 'soft';
 
 /** Comparison and matching operators supported in CCL `when` conditions. */
 export type Operator =
@@ -72,6 +78,8 @@ export interface PermitDenyStatement {
   condition?: Condition | CompoundCondition;
   /** Severity level of this rule (defaults to `"high"` if not specified). */
   severity: Severity;
+  /** Enforcement tier: hard (runtime) vs soft (monitoring). Defaults to `"hard"`. */
+  enforcementTier?: EnforcementTier;
   /** Source line number where this statement was defined. */
   line: number;
 }
@@ -88,6 +96,8 @@ export interface RequireStatement {
   condition?: Condition | CompoundCondition;
   /** Severity level. */
   severity: Severity;
+  /** Enforcement tier: hard (runtime) vs soft (monitoring). Defaults to `"hard"`. */
+  enforcementTier?: EnforcementTier;
   /** Source line number. */
   line: number;
 }
@@ -104,6 +114,8 @@ export interface LimitStatement {
   periodSeconds: number;
   /** Severity level. */
   severity: Severity;
+  /** Enforcement tier: hard (runtime) vs soft (monitoring). Defaults to `"hard"`. */
+  enforcementTier?: EnforcementTier;
   /** Source line number. */
   line: number;
 }

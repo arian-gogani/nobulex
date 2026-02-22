@@ -7,6 +7,7 @@ import {
   crossJurisdictionCompliance,
   auditTrailExport,
   regulatoryGapAnalysis,
+  computeSteleScore,
   JURISDICTIONS,
   COMPLIANCE_STANDARDS,
 } from './index';
@@ -170,18 +171,18 @@ describe('mapToJurisdiction', () => {
     expect(mapping.requiredFields).toContain('reputationSnapshot');
   });
 
-  it('maps to UK jurisdiction with UK-GDPR standard', () => {
+  it('maps to UK jurisdiction with UK_GDPR standard', () => {
     const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'UK');
     expect(mapping.jurisdiction).toBe('UK');
-    expect(mapping.complianceStandard).toBe('UK-GDPR');
+    expect(mapping.complianceStandard).toBe('UK_GDPR');
   });
 
   it('maps to JP jurisdiction with APPI standard', () => {
     const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const mapping = mapToJurisdiction(pkg, 'JP');
     expect(mapping.jurisdiction).toBe('JP');
-    expect(mapping.legalFramework).toBe('Act on the Protection of Personal Information');
+    expect(mapping.legalFramework).toBe('Act on the Protection of Personal Information (Japan)');
     expect(mapping.complianceStandard).toBe('APPI');
   });
 
@@ -557,13 +558,14 @@ describe('crossJurisdictionCompliance', () => {
     expect(result.recommendations.some(r => r.includes('Address compliance gaps'))).toBe(true);
   });
 
-  it('handles unregistered compliance standard gracefully (UK-GDPR)', () => {
+  it('UK jurisdiction uses UK_GDPR standard (now registered)', () => {
     const pkg = exportLegalPackage('agent-1', 'operator-1', sampleData);
     const result = crossJurisdictionCompliance(pkg, ['UK'], sampleCompliance);
-    // UK uses UK-GDPR which is not in COMPLIANCE_STANDARDS, so it should report a gap
     const ukEntry = result.jurisdictions.find(j => j.jurisdiction === 'UK');
     expect(ukEntry).toBeDefined();
-    expect(ukEntry!.gaps.some(g => g.includes('UK-GDPR'))).toBe(true);
+    expect(ukEntry!.standard).toBe('UK_GDPR');
+    // sampleCompliance meets UK_GDPR requirements, so UK should pass
+    expect(ukEntry!.passed).toBe(true);
   });
 
   it('throws for empty jurisdictions array', () => {
@@ -893,5 +895,78 @@ describe('regulatoryGapAnalysis', () => {
     for (const gap of result.gaps) {
       expect(['critical', 'major', 'minor']).toContain(gap.severity);
     }
+  });
+});
+
+// ---------------------------------------------------------------------------
+// computeSteleScore
+// ---------------------------------------------------------------------------
+describe('computeSteleScore', () => {
+  it('returns multidimensional profile with all dimensions', () => {
+    const profile = computeSteleScore('agent-1', sampleCompliance, sampleCovenants);
+    expect(profile.agentId).toBe('agent-1');
+    expect(profile.complianceRate).toBe(0.95);
+    expect(profile.attestationCoverage).toBe(0.92);
+    expect(profile.canaryPassRate).toBe(0.97);
+    expect(profile.breachFreedom).toBe(0.995);
+    expect(profile.stakeLevel).toBe(0);
+    expect(profile.lineageDepth).toBe(0.2);
+    expect(profile.composite).toBeGreaterThanOrEqual(0);
+    expect(profile.composite).toBeLessThanOrEqual(1);
+    expect(profile.algorithmVersion).toBe('1.0.0');
+    expect(profile.computedAt).toBeGreaterThan(0);
+  });
+
+  it('derives stakeLevel from reputation tier', () => {
+    const withHigh = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+      reputation: { ...sampleReputation, tier: 'high' },
+    });
+    expect(withHigh.stakeLevel).toBe(0.9);
+
+    const withMedium = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+      reputation: { ...sampleReputation, tier: 'medium' },
+    });
+    expect(withMedium.stakeLevel).toBe(0.5);
+
+    const withLow = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+      reputation: { ...sampleReputation, tier: 'low' },
+    });
+    expect(withLow.stakeLevel).toBe(0.2);
+  });
+
+  it('allows explicit stakeLevel override', () => {
+    const profile = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+      stakeLevel: 0.75,
+      reputation: sampleReputation,
+    });
+    expect(profile.stakeLevel).toBe(0.75);
+  });
+
+  it('clamps composite to [0, 1]', () => {
+    const terrible: ComplianceRecord = {
+      totalInteractions: 10,
+      covenantedInteractions: 0,
+      breaches: 10,
+      canaryTests: 10,
+      canaryPasses: 0,
+      attestationCoverage: 0,
+    };
+    const profile = computeSteleScore('a', terrible, []);
+    expect(profile.composite).toBeGreaterThanOrEqual(0);
+    expect(profile.composite).toBeLessThanOrEqual(1);
+  });
+
+  it('throws for empty agentId', () => {
+    expect(() => computeSteleScore('', sampleCompliance, sampleCovenants)).toThrow(
+      'agentId must be a non-empty string',
+    );
+  });
+
+  it('accepts custom weights', () => {
+    const profile = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+      weights: { complianceRate: 0.5, breachFreedom: 0.5 },
+    });
+    expect(profile.composite).toBeGreaterThanOrEqual(0);
+    expect(profile.composite).toBeLessThanOrEqual(1);
   });
 });

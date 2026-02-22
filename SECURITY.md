@@ -11,7 +11,7 @@ the most recent version.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Stele, please report it responsibly.
+If you discover a security vulnerability in Kova, please report it responsibly.
 
 **Email**: security@stele.dev
 
@@ -32,7 +32,7 @@ anonymity is requested.
 
 ### Cryptographic Primitives
 
-Stele relies on the following cryptographic building blocks:
+Kova relies on the following cryptographic building blocks:
 
 | Primitive | Library | Purpose |
 |-----------|---------|---------|

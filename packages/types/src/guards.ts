@@ -152,8 +152,8 @@ export function sanitizeString(value: string, maxLength: number = 10_000): strin
     result = result.slice(0, maxLength);
   }
 
-  // Strip control characters except tab (\x09), newline (\x0A), carriage return (\x0D)
-  // eslint-disable-next-line no-control-regex
+  // Strip control characters except tab, newline, carriage return
+  // eslint-disable-next-line no-control-regex -- Intentional regex to strip unsafe control chars
   result = result.replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, '');
 
   return result;

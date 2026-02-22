@@ -8,12 +8,21 @@
  * Like the W3C Acid Tests for browsers or TLS conformance suites --
  * a standardized set of test vectors that any Stele implementation must pass.
  *
- * This module is self-contained: it does NOT import from other @stele packages.
- * It generates its own keys and test documents using the provided
- * {@link ConformanceTarget} interface.
+ * This module is self-contained at runtime: it uses the provided
+ * {@link ConformanceTarget} interface to generate keys and test documents.
+ * Type imports from @stele packages are used only for interface definitions.
  *
  * @packageDocumentation
  */
+
+import type {
+  CovenantDocument,
+  CovenantBuilderOptions,
+  VerificationResult,
+  VerificationCheck,
+} from '@stele/core';
+import type { CCLDocument, EvaluationResult as CCLEvaluationResult } from '@stele/ccl';
+import type { KeyPair } from '@stele/crypto';
 
 // ─── Public interfaces ──────────────────────────────────────────────────────
 
@@ -51,18 +60,18 @@ export interface ConformanceFailure {
  */
 export interface ConformanceTarget {
   /** Build a signed covenant document from builder options. */
-  buildCovenant: (options: any) => Promise<any>;
+  buildCovenant: (options: CovenantBuilderOptions) => Promise<CovenantDocument>;
   /** Verify a covenant document. Returns `{ valid, checks }`. */
-  verifyCovenant: (doc: any) => Promise<any>;
+  verifyCovenant: (doc: CovenantDocument) => Promise<VerificationResult>;
   /** Evaluate an action/resource against a covenant's CCL constraints. */
   evaluateAction: (
-    doc: any,
+    doc: CovenantDocument,
     action: string,
     resource: string,
-    context?: any,
-  ) => Promise<any>;
+    context?: Record<string, unknown>,
+  ) => Promise<CCLEvaluationResult>;
   /** Generate an Ed25519 key pair. Returns `{ privateKey, publicKey, publicKeyHex }`. */
-  generateKeyPair: () => Promise<any>;
+  generateKeyPair: () => Promise<KeyPair>;
   /** Sign a message with an Ed25519 private key. */
   sign: (message: Uint8Array, privateKey: Uint8Array) => Promise<Uint8Array>;
   /** Verify an Ed25519 signature. */
@@ -74,7 +83,7 @@ export interface ConformanceTarget {
   /** SHA-256 hash returning a lowercase hex string. */
   sha256: (data: Uint8Array) => Promise<string> | string;
   /** Parse CCL source text into a CCLDocument. */
-  parseCCL: (source: string) => any;
+  parseCCL: (source: string) => CCLDocument;
 }
 
 // ─── Internal types ─────────────────────────────────────────────────────────
@@ -128,7 +137,7 @@ function referenceCanonicalizeJson(obj: unknown): string {
  * Reference canonical form: strips `id`, `signature`, `countersignatures`
  * and produces deterministic JSON.
  */
-function referenceCanonicalForm(doc: any): string {
+function referenceCanonicalForm(doc: CovenantDocument): string {
   const { id: _id, signature: _sig, countersignatures: _cs, ...body } = doc;
   return referenceCanonicalizeJson(body);
 }
@@ -424,7 +433,7 @@ export async function cclConformance(
     constraints: string,
     action: string,
     resource: string,
-    context?: any,
+    context?: Record<string, unknown>,
   ): Promise<{ permitted: boolean }> {
     const kp = await target.generateKeyPair();
     const doc = await target.buildCovenant({
@@ -592,23 +601,33 @@ export async function cclConformance(
       });
     } else {
       const limit = cclDoc.limits[0];
-      if (limit.count !== 1000) {
+      if (!limit) {
         failures.push({
           test: 'ccl-rate-limit-count',
           category,
           expected: 1000,
-          actual: limit.count,
-          message: 'Rate limit count must be 1000',
+          actual: 0,
+          message: 'Rate limit statement not found',
         });
-      }
-      if (limit.periodSeconds !== 3600) {
-        failures.push({
-          test: 'ccl-rate-limit-period',
-          category,
-          expected: 3600,
-          actual: limit.periodSeconds,
-          message: 'Rate limit period must be 3600 seconds (1 hour)',
-        });
+      } else {
+        if (limit.count !== 1000) {
+          failures.push({
+            test: 'ccl-rate-limit-count',
+            category,
+            expected: 1000,
+            actual: limit.count,
+            message: 'Rate limit count must be 1000',
+          });
+        }
+        if (limit.periodSeconds !== 3600) {
+          failures.push({
+            test: 'ccl-rate-limit-period',
+            category,
+            expected: 3600,
+            actual: limit.periodSeconds,
+            message: 'Rate limit period must be 3600 seconds (1 hour)',
+          });
+        }
       }
     }
   } catch (err) {
@@ -745,7 +764,7 @@ export async function covenantConformance(
   const category = 'covenant';
 
   // Helper: build a standard test covenant with optional overrides.
-  async function buildTestCovenant(overrides?: any) {
+  async function buildTestCovenant(overrides?: Partial<CovenantBuilderOptions>) {
     const kp = await target.generateKeyPair();
     const defaults = {
       issuer: {
@@ -774,8 +793,8 @@ export async function covenantConformance(
     const result = await target.verifyCovenant(doc);
     if (!result.valid) {
       const failedChecks = result.checks
-        ?.filter((c: any) => !c.passed)
-        .map((c: any) => c.name)
+        ?.filter((c: VerificationCheck) => !c.passed)
+        .map((c: VerificationCheck) => c.name)
         .join(', ');
       failures.push({
         test: 'covenant-build-verify-roundtrip',
@@ -836,7 +855,7 @@ export async function covenantConformance(
     });
     const result = await target.verifyCovenant(doc);
     const expiryCheck = result.checks?.find(
-      (c: any) => c.name === 'not_expired',
+      (c: VerificationCheck) => c.name === 'not_expired',
     );
     if (!expiryCheck || expiryCheck.passed) {
       failures.push({
@@ -867,7 +886,7 @@ export async function covenantConformance(
       id: '0000000000000000000000000000000000000000000000000000000000000000',
     };
     const result = await target.verifyCovenant(badId);
-    const idCheck = result.checks?.find((c: any) => c.name === 'id_match');
+    const idCheck = result.checks?.find((c: VerificationCheck) => c.name === 'id_match');
     if (!idCheck || idCheck.passed) {
       failures.push({
         test: 'covenant-id-integrity',
@@ -888,7 +907,7 @@ export async function covenantConformance(
     const badCCL = { ...doc, constraints: 'not valid ccl at all ###' };
     const result = await target.verifyCovenant(badCCL);
     const cclCheck = result.checks?.find(
-      (c: any) => c.name === 'ccl_parses',
+      (c: VerificationCheck) => c.name === 'ccl_parses',
     );
     if (!cclCheck || cclCheck.passed) {
       failures.push({
@@ -911,7 +930,7 @@ export async function covenantConformance(
     const badNonce = { ...doc, nonce: '' };
     const result = await target.verifyCovenant(badNonce);
     const nonceCheck = result.checks?.find(
-      (c: any) => c.name === 'nonce_present',
+      (c: VerificationCheck) => c.name === 'nonce_present',
     );
     if (!nonceCheck || nonceCheck.passed) {
       failures.push({
@@ -966,7 +985,9 @@ export async function covenantConformance(
       'signature',
     ];
     const missing = requiredFields.filter(
-      (f) => (doc as any)[f] === undefined || (doc as any)[f] === null,
+      (f) =>
+        (doc as unknown as Record<string, unknown>)[f] === undefined ||
+        (doc as unknown as Record<string, unknown>)[f] === null,
     );
     if (missing.length > 0) {
       failures.push({

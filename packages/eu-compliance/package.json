@@ -1,0 +1,21 @@
+{
+  "name": "@stele/eu-compliance",
+  "version": "0.1.0",
+  "description": "EU AI Act compliance checker — fastest path to Aug 2026 compliance for agentic systems",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@stele/core": "0.1.0",
+    "@stele/legal": "0.1.0",
+    "@stele/enforcement": "0.1.0",
+    "@stele/canary": "0.1.0"
+  },
+  "keywords": ["stele", "kova", "eu-ai-act", "compliance", "regulation"],
+  "license": "MIT",
+  "engines": { "node": ">=18" }
+}

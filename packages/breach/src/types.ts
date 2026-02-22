@@ -16,6 +16,8 @@ export interface BreachAttestation {
   reporterPublicKey: string;
   reporterSignature: string;
   reportedAt: string;
+  /** Cryptographic nonce ensuring unique ID when timestamp is identical. */
+  nonce: HashHex;
   affectedCovenants: HashHex[];
 }
 

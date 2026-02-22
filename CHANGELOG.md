@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Localization**: README intro translations for Italian and Portuguese (`docs/i18n/README-it.md`, `README-pt.md`).
+- **Examples**: `12-breach-attestation-flow.ts` (create → violate → attest → process); `13-trust-futures-flow.ts` (create → trade → settle).
+- **CLI**: `--verbose` and `--format markdown` for `kova audit`; scoring breakdown and covenant file paths in verbose mode.
+- **Express adapter**: `requiredConstraints` check in `kovaGatewayMiddleware`; integration tests for Bearer token and x-kova-covenant header.
+- **Documentation**: TrustGraph propagation rules in `packages/breach/README.md`; `computeCarryForward` evolution policy in `packages/identity/README.md`.
+- **Tests**: Basic test coverage for certification, revenue, staking, rail, trust-data, trust-futures, marketplace, compliance-autopilot; multi-statement CCL for `validateCCL`; kovaGatewayMiddleware with real HTTP headers.
+- **Vitest**: Added certification, rail, revenue, staking, trust-data, trust-futures, marketplace, compliance-autopilot to package aliases.
+
+### Changed
+
+- **README**: Updated test count (5,052), coverage (92 suites), and packages (39) badges.
+
 ## [0.1.0] - 2025-02-07
 
 ### Added

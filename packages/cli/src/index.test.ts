@@ -37,7 +37,7 @@ async function makeCovenantJson(constraints = "permit read on '**'"): Promise<st
 // ---------------------------------------------------------------------------
 
 function hasAnsi(s: string): boolean {
-  // eslint-disable-next-line no-control-regex
+  // eslint-disable-next-line no-control-regex -- ANSI escape codes use \x1b[ in test output
   return /\x1b\[/.test(s);
 }
 
@@ -87,6 +87,38 @@ describe('stele help', () => {
     expect(r.stderr).toBe('');
   });
 
+  it('create --help shows CREATE_HELP', async () => {
+    const r = await run(['create', '--help']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('stele create');
+    expect(r.stdout).toContain('--issuer');
+    expect(r.stdout).toContain('--beneficiary');
+    expect(r.stdout).toContain('--constraints');
+  });
+
+  it('audit --help shows AUDIT_HELP', async () => {
+    const r = await run(['audit', '--help']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('stele audit');
+    expect(r.stdout).toContain('EU AI Act Readiness');
+    expect(r.stdout).toContain('--verbose');
+  });
+
+  it('audit --verbose shows detailed output', async () => {
+    const r = await run(['audit', '.', '--verbose', '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(stripAnsi(r.stdout)).toContain('Details (--verbose)');
+    expect(stripAnsi(r.stdout)).toContain('scoring breakdown');
+  });
+
+  it('audit --format markdown outputs markdown', async () => {
+    const r = await run(['audit', '.', '--format', 'markdown', '--no-color']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout).toContain('# Kova Compliance Audit Report');
+    expect(r.stdout).toContain('| Metric | Value |');
+    expect(r.stdout).toContain('## Recommended');
+  });
+
   it('includes ANSI codes in help when colors enabled', async () => {
     const r = await run([]);
     expect(hasAnsi(r.stdout)).toBe(true);
@@ -118,6 +150,18 @@ describe('stele version', () => {
     expect(parsed.version).toBe('0.1.0');
     expect(parsed.protocol).toBe(PROTOCOL_VERSION);
     expect(r.stderr).toBe('');
+  });
+
+  it('--version flag prints version (before command)', async () => {
+    const r = await run(['--version']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout.trim()).toBe('0.1.0');
+  });
+
+  it('-v flag prints version', async () => {
+    const r = await run(['-v']);
+    expect(r.exitCode).toBe(0);
+    expect(r.stdout.trim()).toBe('0.1.0');
   });
 });
 

@@ -760,6 +760,9 @@ function serializePermitDeny(stmt: PermitDenyStatement): string {
   if (stmt.severity !== 'high') {
     line += ` severity ${stmt.severity}`;
   }
+  if (stmt.enforcementTier !== undefined) {
+    line += ` enforcement ${stmt.enforcementTier}`;
+  }
   return line;
 }
 
@@ -770,6 +773,9 @@ function serializeRequire(stmt: RequireStatement): string {
   }
   if (stmt.severity !== 'high') {
     line += ` severity ${stmt.severity}`;
+  }
+  if (stmt.enforcementTier !== undefined) {
+    line += ` enforcement ${stmt.enforcementTier}`;
   }
   return line;
 }
@@ -792,6 +798,9 @@ function serializeLimit(stmt: LimitStatement): string {
   let line = `limit ${stmt.action} ${stmt.count} per ${value} ${unit}`;
   if (stmt.severity !== 'high') {
     line += ` severity ${stmt.severity}`;
+  }
+  if (stmt.enforcementTier !== undefined) {
+    line += ` enforcement ${stmt.enforcementTier}`;
   }
   return line;
 }

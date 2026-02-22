@@ -3,11 +3,12 @@ import * as path from 'path';
 
 const packages = [
   'alignment', 'antifragile', 'attestation', 'breach', 'canary', 'ccl',
-  'cli', 'composition', 'consensus', 'core', 'crypto', 'derivatives',
-  'enforcement', 'evm', 'gametheory', 'identity', 'legal', 'mcp-server',
-  'mcp', 'negotiation', 'norms', 'proof', 'react', 'recursive',
-  'reputation', 'robustness', 'sdk', 'store', 'substrate', 'temporal',
-  'types', 'verifier',
+  'certification', 'cli', 'compliance-autopilot', 'composition', 'consensus',
+  'core', 'crypto', 'derivatives', 'enforcement', 'eu-compliance', 'evm',
+  'gametheory', 'identity', 'legal', 'marketplace', 'mcp-server', 'mcp',
+  'negotiation', 'norms', 'proof', 'rail', 'react', 'recursive', 'reputation',
+  'revenue', 'robustness', 'sdk', 'staking', 'store', 'substrate', 'temporal',
+  'trust-data', 'trust-futures', 'types', 'verifier',
 ];
 
 const alias: Record<string, string> = {};

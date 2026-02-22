@@ -58,6 +58,7 @@ describe('API Surface Tests', () => {
       'serialize',
       'specificity',
       'tokenize',
+      'validateCCL',
       'validateNarrowing',
     ].sort());
   });
@@ -275,6 +276,7 @@ describe('API Surface Tests', () => {
       'createIdentity_core',
       'createTelemetry',
       'createToolGuard',
+      'createWellKnownHandler',
       'cryptoConformance',
       'deserializeCovenant',
       'deserializeIdentity',
@@ -290,6 +292,7 @@ describe('API Surface Tests', () => {
       'interopConformance',
       'keyPairFromPrivateKey',
       'keyPairFromPrivateKeyHex',
+      'kovaGatewayMiddleware',
       'loggingMiddleware',
       'matchAction',
       'matchResource',
@@ -319,6 +322,7 @@ describe('API Surface Tests', () => {
       'timingMiddleware',
       'toHex',
       'tokenize',
+      'validateCCL',
       'validateChainNarrowing',
       'validateNarrowing',
       'validationMiddleware',

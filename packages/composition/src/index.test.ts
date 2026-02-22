@@ -1,6 +1,10 @@
 import { describe, it, expect } from 'vitest';
 import {
   compose,
+  composeTrust,
+  intersectTrust,
+  negateTrust,
+  tensorTrust,
   proveSystemProperty,
   validateComposition,
   intersectConstraints,
@@ -405,6 +409,96 @@ describe('intersectConstraints', () => {
   // Input validation
   it('throws when arguments are not arrays', () => {
     expect(() => intersectConstraints(null as any, [])).toThrow();
+  });
+});
+
+// ---------------------------------------------------------------------------
+// composeTrust / intersectTrust (trust algebra wrappers)
+// ---------------------------------------------------------------------------
+
+describe('composeTrust', () => {
+  it('equals compose for same covenants', () => {
+    const covenants = [
+      makeCovenant('c1', 'a', ["permit read on '/data'"]),
+      makeCovenant('c2', 'b', ["deny write on '/system'"]),
+    ];
+    const composed = composeTrust(...covenants);
+    const composedViaCompose = compose(covenants);
+    expect(composed.agents).toEqual(composedViaCompose.agents);
+    expect(composed.proof).toBe(composedViaCompose.proof);
+  });
+
+  it('handles single covenant', () => {
+    const cov = makeCovenant('c1', 'a', ["permit read on '**'"]);
+    const result = composeTrust(cov);
+    expect(result.agents).toEqual(['a']);
+    expect(result.composedConstraints).toHaveLength(1);
+  });
+
+  it('handles single covenant with empty constraints', () => {
+    const cov = makeCovenant('c1', 'a', []);
+    const result = composeTrust(cov);
+    expect(result.agents).toEqual(['a']);
+    expect(result.composedConstraints).toHaveLength(0);
+    expect(result.proof).toBeDefined();
+  });
+});
+
+describe('intersectTrust', () => {
+  it('equals intersectConstraints', () => {
+    const a = ["deny x on '**'", "permit y on '/'"];
+    const b = ["deny x on '**'", "permit z on '/'"];
+    expect(intersectTrust(a, b)).toEqual(intersectConstraints(a, b));
+  });
+});
+
+describe('negateTrust', () => {
+  it('returns deny constraints from covenant', () => {
+    const c = makeCovenant('c1', 'a', ["deny write on '/system'", "permit read on '/data'"]);
+    const result = negateTrust(c);
+    expect(result).toContain("deny write on '/system'");
+  });
+
+  it('returns empty array when no denies', () => {
+    const c = makeCovenant('c1', 'a', ["permit read on '/data'"]);
+    const result = negateTrust(c);
+    expect(result).toEqual([]);
+  });
+
+  it('returns empty array for empty covenant', () => {
+    const c = makeCovenant('c1', 'a', []);
+    const result = negateTrust(c);
+    expect(result).toEqual([]);
+  });
+});
+
+describe('tensorTrust', () => {
+  it('merges two composition proofs', () => {
+    const a = composeTrust(
+      makeCovenant('c1', 'a', ["permit read on '/data'"]),
+    );
+    const b = composeTrust(
+      makeCovenant('c2', 'b', ["deny write on '/system'"]),
+    );
+    const result = tensorTrust(a, b);
+    expect(result.agents).toContain('a');
+    expect(result.agents).toContain('b');
+    expect(result.individualCovenants).toContain('c1');
+    expect(result.individualCovenants).toContain('c2');
+    expect(result.composedConstraints.length).toBe(
+      a.composedConstraints.length + b.composedConstraints.length,
+    );
+    expect(validateComposition(result)).toBe(true);
+  });
+
+  it('deduplicates overlapping agents', () => {
+    const a = composeTrust(makeCovenant('c1', 'agent-x', ["permit read on '/data'"]));
+    const b = composeTrust(makeCovenant('c2', 'agent-x', ["deny write on '/system'"]));
+    const result = tensorTrust(a, b);
+    expect(result.agents).toHaveLength(1);
+    expect(result.agents).toContain('agent-x');
+    expect(result.individualCovenants).toHaveLength(2);
+    expect(validateComposition(result)).toBe(true);
   });
 });
 

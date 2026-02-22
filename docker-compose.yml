@@ -1,0 +1,13 @@
+# Kova — Local development
+# Usage: docker-compose run kova help
+#        docker-compose run kova audit ./
+
+services:
+  kova:
+    build: .
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["help"]
+    environment:
+      - NODE_ENV=production

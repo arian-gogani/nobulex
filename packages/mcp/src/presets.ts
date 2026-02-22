@@ -1,5 +1,7 @@
 export const PRESETS: Record<string, string> = {
   'standard:data-isolation': `permit file.read on '/data/**'
+permit tool.read_file on '/data/**'
+permit tool.* on '/data/**'
 deny file.write on '**' severity high
 deny network.send on '**' severity critical
 deny network.send on '**' when payload.contains_pii = true severity critical

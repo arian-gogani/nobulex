@@ -357,6 +357,70 @@ export function validateComposition(proof: CompositionProof): boolean {
 }
 
 /**
+ * Compose trust from two or more covenant summaries (trust algebra: composition).
+ * Thin wrapper over {@link compose}.
+ *
+ * @param covenants - One or more covenant summaries to compose.
+ * @returns CompositionProof with merged constraints and proof hash.
+ */
+export function composeTrust(...covenants: CovenantSummary[]): CompositionProof {
+  return compose(covenants);
+}
+
+/**
+ * Intersect trust constraints from two sets (trust algebra: intersection).
+ * Thin wrapper over {@link intersectConstraints}.
+ *
+ * @param a - First array of constraint strings.
+ * @param b - Second array of constraint strings.
+ * @returns Constraints present in both arrays (by string equality).
+ */
+export function intersectTrust(a: string[], b: string[]): string[] {
+  return intersectConstraints(a, b);
+}
+
+/**
+ * Negation: constraints representing what trust does NOT imply.
+ * Research direction. Returns explicit deny statements for actions/resources
+ * not covered by the covenant's permits (conservative over-approximation).
+ *
+ * @param covenant - Covenant summary to negate.
+ * @returns Array of deny constraints for the complement of permitted actions.
+ * @alpha Research direction; semantics may evolve.
+ */
+export function negateTrust(covenant: CovenantSummary): string[] {
+  const doc = parseConstraints(covenant.constraints);
+  const result: string[] = [];
+  for (const deny of doc.denies) {
+    result.push(serializeOne(deny));
+  }
+  return result;
+}
+
+/**
+ * Tensor product: compose trust across parallel delegation chains.
+ * Combines two CompositionProofs from independent chains into one.
+ *
+ * @param a - First composition proof.
+ * @param b - Second composition proof.
+ * @returns Combined proof with merged agents, constraints, and recomputed hash.
+ */
+export function tensorTrust(a: CompositionProof, b: CompositionProof): CompositionProof {
+  const agents = [...new Set([...a.agents, ...b.agents])];
+  const individualCovenants = [...new Set([...a.individualCovenants, ...b.individualCovenants])];
+  const composedConstraints = [...a.composedConstraints, ...b.composedConstraints];
+  const systemProperties = [...a.systemProperties, ...b.systemProperties];
+  const proof = sha256Object(composedConstraints);
+  return {
+    agents,
+    individualCovenants,
+    composedConstraints,
+    systemProperties,
+    proof,
+  };
+}
+
+/**
  * Return constraints present in both arrays (simple string equality).
  */
 export function intersectConstraints(a: string[], b: string[]): string[] {

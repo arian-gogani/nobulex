@@ -341,6 +341,16 @@ describe('toHex / fromHex', () => {
     expect(() => fromHex('abc')).toThrow('Invalid hex string: odd length');
   });
 
+  it('fromHex throws on invalid hex characters', () => {
+    expect(() => fromHex('ffzz')).toThrow('Invalid hex string: invalid character');
+    expect(() => fromHex('gg00')).toThrow('Invalid hex string: invalid character');
+  });
+
+  it('fromHex throws on non-string input', () => {
+    expect(() => fromHex(null as unknown as string)).toThrow('Invalid hex: expected string');
+    expect(() => fromHex(123 as unknown as string)).toThrow('Invalid hex: expected string');
+  });
+
   it('round-trips 32-byte keys', () => {
     const data = new Uint8Array(32);
     for (let i = 0; i < 32; i++) data[i] = i * 8;

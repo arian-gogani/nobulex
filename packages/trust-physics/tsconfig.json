@@ -1,0 +1,29 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "dist",
+    "rootDir": "src",
+    "composite": true,
+    "emitDeclarationOnly": true
+  },
+  "include": [
+    "src/**/*"
+  ],
+  "references": [
+    {
+      "path": "../crypto"
+    },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../identity"
+    },
+    {
+      "path": "../proof"
+    }
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
+  ]
+}

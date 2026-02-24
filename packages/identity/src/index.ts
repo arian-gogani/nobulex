@@ -735,3 +735,22 @@ export function deserializeIdentity(json: string): AgentIdentity {
 
   return parsed as AgentIdentity;
 }
+
+// ─── DID support ─────────────────────────────────────────────────────────────
+
+export {
+  createDID,
+  didFromKeyPair,
+  publicKeyToDid,
+  signWithDID,
+  verifyWithDID,
+  parseDID,
+  DIDResolver,
+} from './did';
+
+export type {
+  DIDDocument,
+  DIDVerificationMethod,
+  DIDKeyPair,
+  DIDResolutionResult,
+} from './did';

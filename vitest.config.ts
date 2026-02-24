@@ -9,6 +9,8 @@ const packages = [
   'negotiation', 'norms', 'proof', 'rail', 'react', 'recursive', 'reputation',
   'revenue', 'robustness', 'sdk', 'staking', 'store', 'substrate', 'temporal',
   'trust-data', 'trust-futures', 'types', 'verifier',
+  'core-types', 'covenant-lang', 'action-log', 'middleware', 'verification', 'composability',
+  'tee', 'contracts', 'elizaos-plugin',
 ];
 
 const alias: Record<string, string> = {};

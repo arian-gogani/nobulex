@@ -186,16 +186,23 @@ describe('API Surface Tests', () => {
     const exports = Object.keys(mod).sort();
     expect(exports).toEqual([
       'DEFAULT_EVOLUTION_POLICY',
+      'DIDResolver',
       'computeCapabilityManifestHash',
       'computeCarryForward',
       'computeIdentityHash',
+      'createDID',
       'createIdentity',
       'deserializeIdentity',
+      'didFromKeyPair',
       'evolveIdentity',
       'getLineage',
+      'parseDID',
+      'publicKeyToDid',
       'serializeIdentity',
       'shareAncestor',
+      'signWithDID',
       'verifyIdentity',
+      'verifyWithDID',
     ].sort());
   });
 
@@ -233,6 +240,7 @@ describe('API Surface Tests', () => {
     expect(exports).toEqual([
       'CCLSyntaxError',
       'CCLValidationError',
+      'CovenantAgent',
       'CovenantBuildError',
       'CovenantVerificationError',
       'DEFAULT_EVOLUTION_POLICY',
@@ -300,6 +308,7 @@ describe('API Surface Tests', () => {
       'metricsMiddleware',
       'parseCCL',
       'parseTokens',
+      'protect',
       'rateLimitMiddleware',
       'resignCovenant',
       'resolveChain_core',

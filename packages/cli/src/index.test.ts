@@ -1087,3 +1087,52 @@ describe('round-trip workflow', () => {
     expect(inspected.beneficiary.id).toBe('bob');
   });
 });
+
+// ---------------------------------------------------------------------------
+// deploy command
+// ---------------------------------------------------------------------------
+
+describe('deploy', () => {
+  it('deploy --help shows usage', async () => {
+    const result = await run(['deploy', '--help']);
+    expect(result.exitCode).toBe(0);
+    expect(result.stdout).toContain('deploy');
+  });
+
+  it('deploy without input shows error', async () => {
+    const result = await run(['deploy']);
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('required');
+  });
+
+  it('deploy with inline DSL', async () => {
+    const result = await run(['deploy', 'covenant Test { permit read; forbid delete; }', '--json']);
+    expect(result.exitCode).toBe(0);
+    const data = JSON.parse(result.stdout);
+    expect(data.covenantName).toBe('Test');
+    expect(data.statements).toBe(2);
+    expect(data.covenantHash).toBeTruthy();
+    expect(data.status).toBe('ready');
+  });
+
+  it('deploy with --dry-run', async () => {
+    const result = await run(['deploy', 'covenant DryRun { permit read; }', '--dry-run', '--json']);
+    expect(result.exitCode).toBe(0);
+    const data = JSON.parse(result.stdout);
+    expect(data.dryRun).toBe(true);
+    expect(data.status).toBe('validated');
+  });
+
+  it('deploy with invalid DSL shows error', async () => {
+    const result = await run(['deploy', 'not valid covenant']);
+    expect(result.exitCode).toBe(1);
+    expect(result.stderr).toContain('Error');
+  });
+
+  it('deploy shows human-readable output without --json', async () => {
+    const result = await run(['deploy', 'covenant HumanTest { permit read; permit write; forbid delete; }']);
+    expect(result.exitCode).toBe(0);
+    expect(stripAnsi(result.stdout)).toContain('HumanTest');
+    expect(stripAnsi(result.stdout)).toContain('Deployment');
+  });
+});

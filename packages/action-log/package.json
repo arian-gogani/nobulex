@@ -1,0 +1,39 @@
+{
+  "name": "@nobulex/action-log",
+  "version": "0.1.0",
+  "description": "Hash-chained tamper-evident action log with SHA-256 integrity verification",
+  "license": "MIT",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "sideEffects": false,
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/nobulex.git",
+    "directory": "packages/action-log"
+  },
+  "homepage": "https://stele.dev",
+  "bugs": { "url": "https://github.com/agbusiness195/stele/issues" },
+  "author": "Stele Labs, Inc.",
+  "keywords": ["nobulex", "covenant", "action-log", "hash-chain", "tamper-evident"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "bundle": "tsup src/index.ts --format cjs,esm",
+    "dev": "tsup src/index.ts --format cjs,esm --watch",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@nobulex/core-types": "0.1.0",
+    "@nobulex/crypto": "0.1.0"
+  }
+}

@@ -1,0 +1,41 @@
+{
+  "name": "@nobulex/elizaos-plugin",
+  "version": "0.1.0",
+  "description": "ElizaOS plugin — actions, evaluators, providers, and plugin registration for covenant-governed AI agents",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nobulex/core-types": "0.1.0",
+    "@nobulex/crypto": "0.1.0",
+    "@nobulex/identity": "0.1.0",
+    "@nobulex/covenant-lang": "0.1.0",
+    "@nobulex/action-log": "0.1.0",
+    "@nobulex/middleware": "0.1.0",
+    "@nobulex/verification": "0.1.0"
+  },
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/nobulex.git",
+    "directory": "packages/elizaos-plugin"
+  },
+  "homepage": "https://stele.dev",
+  "bugs": { "url": "https://github.com/agbusiness195/stele/issues" },
+  "author": "Stele Labs, Inc.",
+  "keywords": ["nobulex", "covenant", "ai-accountability", "elizaos", "plugin", "ai-agent"]
+}

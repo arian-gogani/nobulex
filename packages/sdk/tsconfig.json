@@ -32,6 +32,24 @@
     },
     {
       "path": "../negotiation"
+    },
+    {
+      "path": "../core-types"
+    },
+    {
+      "path": "../covenant-lang"
+    },
+    {
+      "path": "../action-log"
+    },
+    {
+      "path": "../middleware"
+    },
+    {
+      "path": "../verification"
+    },
+    {
+      "path": "../composability"
     }
   ],
   "exclude": [

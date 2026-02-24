@@ -20,7 +20,7 @@
     "packages/derivatives",
     "packages/enforcement",
     "packages/eu-compliance",
-"packages/evm",
+    "packages/evm",
     "packages/gametheory",
     "packages/identity",
     "packages/kova",
@@ -45,7 +45,16 @@
     "packages/trust-data",
     "packages/trust-futures",
     "packages/types",
-    "packages/verifier"
+    "packages/verifier",
+    "packages/core-types",
+    "packages/covenant-lang",
+    "packages/action-log",
+    "packages/middleware",
+    "packages/verification",
+    "packages/composability",
+    "packages/tee",
+    "packages/contracts",
+    "packages/elizaos-plugin"
   ],
   "scripts": {
     "build": "npm run build --workspaces",
@@ -79,12 +88,13 @@
     "@types/node": "^25.2.3",
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
+    "@vitest/coverage-v8": "^4.0.18",
     "eslint": "^8.0.0",
     "husky": "^9.1.7",
     "lint-staged": "^16.2.7",
+    "solc": "^0.8.34",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
-    "@vitest/coverage-v8": "^4.0.18",
     "vitest": "^4.0.18"
   }
 }

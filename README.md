@@ -1,165 +1,201 @@
 # Nobulex
 
-**The trust layer for AI agents.**
+**The accountability primitive for AI agents. Cryptographic behavioral commitments with trustless verification.**
 
-Nobulex is an open cryptographic protocol (MIT license) that enables AI agents to declare behavioral commitments, prove compliance, and build verifiable reputation across platforms. The way HTTPS enabled e-commerce, Nobulex enables agents to transact safely across organizational boundaries.
+Nobulex is an open protocol (MIT license) that enables autonomous AI agents to declare what they will and won't do, prove they followed through, and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex enables the agent economy by making behavior trustworthy.
 
-![Tests](https://img.shields.io/badge/tests-5%2C053%20passing-brightgreen)
-![Packages](https://img.shields.io/badge/packages-44-orange)
+![Tests](https://img.shields.io/badge/tests-5%2C493%20passing-brightgreen)
+![Packages](https://img.shields.io/badge/core%20packages-9-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
-![Lines](https://img.shields.io/badge/lines-106%2C000%2B-blue)
+
+## The Core Insight
+
+You can't audit a neural network. But you **can** audit actions against stated commitments.
+
+```
+verify(covenant, actionLog) → { compliant: boolean, violations: Violation[] }
+```
+
+This is always decidable, always deterministic, always efficient.
 
 ## Quick Start
+
 ```bash
-npm install @nobulex/core @nobulex/crypto
+npm install @nobulex/identity @nobulex/covenant-lang @nobulex/middleware @nobulex/verification
 ```
+
 ```typescript
-const { buildCovenant, verifyCovenant } = require('@nobulex/core');
-const { generateKeyPair } = require('@nobulex/crypto');
+import { createDID } from '@nobulex/identity';
+import { parseSource } from '@nobulex/covenant-lang';
+import { EnforcementMiddleware } from '@nobulex/middleware';
+import { verify } from '@nobulex/verification';
 
-const issuerKeys = await generateKeyPair();
-const agentKeys = await generateKeyPair();
+// 1. Create an agent identity
+const agent = await createDID();
 
-const covenant = await buildCovenant({
-  issuer: { id: 'operator-1', publicKey: issuerKeys.publicKeyHex, role: 'issuer' },
-  beneficiary: { id: 'my-agent', publicKey: agentKeys.publicKeyHex, role: 'beneficiary' },
-  privateKey: issuerKeys.privateKey,
-  constraints: "permit read on '/data/**'\ndeny write on '/system/**'"
-});
+// 2. Write a covenant in the DSL
+const spec = parseSource(`
+  covenant SafeTrader {
+    permit read;
+    permit transfer (amount <= 500);
+    forbid transfer (amount > 500);
+    forbid delete;
+  }
+`);
 
-const result = await verifyCovenant(covenant);
-console.log(result.valid);  // true — 11 cryptographic checks passed
+// 3. Enforce with middleware
+const mw = new EnforcementMiddleware({ agentDid: agent.did, spec });
+
+// $300 transfer — allowed
+await mw.execute(
+  { action: 'transfer', params: { amount: 300 } },
+  async () => ({ success: true }),
+);
+
+// $600 transfer — BLOCKED by covenant
+await mw.execute(
+  { action: 'transfer', params: { amount: 600 } },
+  async () => ({ success: true }),  // never executes
+);
+
+// 4. Verify compliance
+const result = verify(spec, mw.getLog());
+console.log(result.compliant);    // true
+console.log(result.violations);   // []
 ```
 
-## The Protocol
+## The Six Primitives
 
-**Three primitives. One protocol.**
+| # | Primitive | What It Does | Package |
+|---|-----------|-------------|---------|
+| 1 | **Identity** | W3C DID for every agent (`did:nobulex:`) with Ed25519 keys | `@nobulex/identity` |
+| 2 | **Covenant** | Cedar-inspired DSL: `permit`, `forbid`, `require` with conditions | `@nobulex/covenant-lang` |
+| 3 | **Attestation** | W3C Verifiable Credential binding agent to covenant | `@nobulex/core-types` |
+| 4 | **Action Log** | SHA-256 hash-chained tamper-evident record with Merkle proofs | `@nobulex/action-log` |
+| 5 | **Verification** | Deterministic `verify(covenant, log)` with violation proofs | `@nobulex/verification` |
+| 6 | **Enforcement** | On-chain staking/slashing with escalation | `@nobulex/contracts` |
 
-1. **Inscribe** — Agent publishes a signed Covenant specifying behavioral constraints
-2. **Operate** — Every action evaluated against constraints in real-time
-3. **Verify** — Anyone verifies compliance using 11 specification checks with just the public key
+## Two-Tier Guarantee Model
 
-## Verification Output
-```
-✓ id_match          — Document ID matches canonical hash
-✓ signature_valid   — Ed25519 issuer signature is valid
-✓ not_expired       — Covenant has not expired
-✓ active            — Covenant is active
-✓ ccl_parses        — CCL constraints parsed successfully
-✓ enforcement_valid — Enforcement config valid
-✓ proof_valid       — Proof config valid
-✓ chain_depth       — Chain depth within limits
-✓ document_size     — Document size within limits
-✓ countersignatures — Countersignatures valid
-✓ nonce_present     — Cryptographic nonce present (replay protection)
-```
-
-## CCL (Covenant Constraint Language)
-```ccl
-permit read on '/data/**'
-deny write on '/system/**'
-permit api.call on 'openai.com/**' when request.token_count < 10000
-require audit.log on '**'
-limit api.call 500 per 3600 seconds
-```
-
-Deny wins. Most specific match wins. Default deny. Resource globs supported.
-
-## Packages (44)
-
-### Foundation
-| Package | Description |
-|---------|-------------|
-| @nobulex/types | Error hierarchy, validation guards, logging, tracing |
-| @nobulex/crypto | Ed25519 signing, SHA-256 hashing, JCS canonicalization |
-| @nobulex/ccl | Covenant Constraint Language parser & evaluator |
-| @nobulex/core | Covenant build, verify, chain, serialize, countersign |
-| @nobulex/store | MemoryStore + FileStore pluggable persistence |
-| @nobulex/verifier | Stateful verification engine with 11 checks |
-| @nobulex/identity | Agent identity creation, evolution & lineage tracking |
-
-### Enforcement
-| Package | Description |
-|---------|-------------|
-| @nobulex/enforcement | Runtime enforcement monitor with audit trail |
-| @nobulex/proof | Poseidon-based compliance proof generation |
-| @nobulex/breach | Breach detection, attestation & trust graph propagation |
-| @nobulex/reputation | Trust scoring with decay and stake-weighted reputation |
-| @nobulex/mcp | MCP middleware guard for tool-call enforcement |
-
-### Protocol
-| Package | Description |
-|---------|-------------|
-| @nobulex/attestation | External attestation reconciliation |
-| @nobulex/canary | Canary testing framework |
-| @nobulex/gametheory | Game-theoretic honesty proofs |
-| @nobulex/composition | Formal constraint composition |
-| @nobulex/antifragile | Breach-to-improvement engine |
-| @nobulex/negotiation | Multi-party covenant negotiation |
-| @nobulex/consensus | Accountability-based consensus |
-| @nobulex/robustness | Formal robustness analysis |
-| @nobulex/temporal | Temporal evolution & triggers |
-| @nobulex/recursive | Meta-covenants and recursive verification |
-| @nobulex/alignment | AI alignment property verification |
-| @nobulex/norms | Emergent norm discovery |
-| @nobulex/substrate | Cross-substrate constraint translation |
-| @nobulex/derivatives | Trust futures & derivative instruments |
-| @nobulex/legal | Legal compliance mapping |
-| @nobulex/eu-compliance | EU AI Act compliance mapping |
-
-### Platform
-| Package | Description |
-|---------|-------------|
-| @nobulex/sdk | Unified API and QuickCovenant builders |
-| @nobulex/react | Reactive UI primitives |
-| @nobulex/evm | EVM anchoring & on-chain registry |
-| @nobulex/mcp-server | JSON-RPC 2.0 MCP server |
-| @nobulex/cli | Command-line interface |
+| Tier | Mechanism | Guarantee | When to Use |
+|------|-----------|-----------|-------------|
+| **Tier 1** | TEE Middleware (Intel SGX / AMD SEV) | Forbidden actions **physically cannot execute** | High-stakes: financial, medical, legal |
+| **Tier 2** | Staking / Slashing (on-chain) | Violations are **economically irrational** | General purpose: commerce, data access |
 
 ## Architecture
+
 ```
-+-----------------------------------------------------+
-|                      Platform                        |
-|        react  .  evm  .  mcp-server  .  cli          |
-+-----------------------------------------------------+
-|                        SDK                           |
-+-----------------------------------------------------+
-|                      Protocol                        |
-|    attestation . canary . gametheory . composition    |
-|    antifragile . negotiation . consensus . robustness |
-|    temporal . recursive . alignment . norms           |
-|    substrate . derivatives . legal . eu-compliance    |
-+-----------------------------------------------------+
-|                    Enforcement                       |
-|     enforcement . proof . breach . reputation . mcp   |
-+-----------------------------------------------------+
-|                    Foundation                        |
-|   types . crypto . ccl . core . store . verifier .   |
-|   identity                                           |
-+-----------------------------------------------------+
+┌─────────────────────────────────────────────────────────────┐
+│                        Platform                              │
+│          cli  ·  sdk  ·  elizaos-plugin                      │
+├─────────────────────────────────────────────────────────────┤
+│                    Covenant Primitives                        │
+│                                                              │
+│  ┌──────────┐  ┌──────────────┐  ┌────────────┐             │
+│  │ identity │  │ covenant-lang│  │ action-log │             │
+│  │  (DID)   │  │    (DSL)     │  │(hash-chain)│             │
+│  └──────────┘  └──────────────┘  └────────────┘             │
+│                                                              │
+│  ┌────────────┐  ┌──────────────┐  ┌───────────────┐        │
+│  │ middleware  │  │ verification │  │ composability │        │
+│  │(pre-exec)  │  │ (post-hoc)   │  │(trust graph)  │        │
+│  └────────────┘  └──────────────┘  └───────────────┘        │
+│                                                              │
+│  ┌─────┐  ┌───────────┐                                     │
+│  │ tee │  │ contracts │                                     │
+│  │(SGX)│  │(Solidity) │                                     │
+│  └─────┘  └───────────┘                                     │
+├─────────────────────────────────────────────────────────────┤
+│                      Foundation                              │
+│        core-types  ·  crypto  ·  evm                         │
+└─────────────────────────────────────────────────────────────┘
 ```
 
-## EU AI Act Compliance
+## The Covenant DSL
 
-Enforcement deadline: **August 2, 2026**. Fines up to **€35M or 7% of global turnover**.
+```
+covenant SafeTrader {
+  permit read;
+  permit transfer (amount <= 500);
+  forbid transfer (amount > 500);
+  forbid delete;
+  require counterparty.compliance_score >= 0.8;
+}
+```
 
-Nobulex maps directly to EU AI Act requirements. See @nobulex/eu-compliance for templates.
+**Forbid wins.** If any `forbid` matches, the action is blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
+
+## Core Packages (9)
+
+| Package | Description |
+|---------|-------------|
+| [`@nobulex/core-types`](packages/core-types/) | TypeScript interfaces for the six primitives |
+| [`@nobulex/identity`](packages/identity/) | W3C DID creation, Ed25519 signing, DID document management |
+| [`@nobulex/covenant-lang`](packages/covenant-lang/) | Cedar-inspired DSL: lexer, parser, compiler, serializer |
+| [`@nobulex/action-log`](packages/action-log/) | Hash-chained action log with Merkle tree proofs |
+| [`@nobulex/middleware`](packages/middleware/) | Pre-execution enforcement — blocks forbidden actions |
+| [`@nobulex/verification`](packages/verification/) | Post-hoc verification with deterministic compliance checking |
+| [`@nobulex/composability`](packages/composability/) | Covenant compatibility, agent matching, trust topology |
+| [`@nobulex/tee`](packages/tee/) | TEE attestation for SGX, TDX, SEV-SNP with DID binding |
+| [`@nobulex/contracts`](packages/contracts/) | Solidity staking/slashing contracts with TypeScript bindings |
+
+## Platform Packages
+
+| Package | Description |
+|---------|-------------|
+| [`@nobulex/sdk`](packages/sdk/) | Unified API combining all primitives |
+| [`@nobulex/cli`](packages/cli/) | Command-line: `nobulex init`, `verify`, `deploy`, `inspect` |
+| [`@nobulex/elizaos-plugin`](packages/elizaos-plugin/) | ElizaOS plugin: actions, evaluators, providers |
+
+## On-Chain Contracts (Solidity)
+
+Three contracts deployed to Ethereum (Sepolia testnet):
+
+| Contract | Purpose |
+|----------|---------|
+| `CovenantRegistry` | Register covenant hashes on-chain, prevent duplicates |
+| `StakeManager` | Stake ETH on covenants, lock/slash on violation |
+| `SlashingJudge` | Submit violations, compute escalating penalties |
+
+## Live Demo
+
+```bash
+npx tsx demo/covenant-demo.ts
+```
+
+Creates two agents, authors a covenant, enforces it via middleware, blocks a forbidden transfer, and verifies compliance — all in one script.
 
 ## Development
+
 ```bash
 git clone https://github.com/agbusiness195/NOBULEX.git
 cd NOBULEX
 npm install
-npm run build
-npx vitest run    # 5,053 tests across 92 suites
+npx vitest run    # 5,493 tests, 106 files, 0 failures
 ```
+
+## Documentation
+
+- **[White Paper](docs/whitepaper.md)** — Formal protocol specification
+- **[Getting Started](docs/getting-started.md)** — Developer guide with code examples
+- **[Pitch Deck](docs/pitch-deck.md)** — 12-slide overview
+- **[NIST RFI Response](docs/nist-rfi.md)** — AI agent security positioning
+
+## Comparison
+
+| | Bitcoin | Ethereum | Nobulex |
+|---|---------|----------|---------|
+| **What it trusts** | Monetary transfers | Contract execution | Agent behavior |
+| **Trust mechanism** | Proof of Work | Proof of Stake | Proof of Compliance |
+| **What's verified** | Transaction validity | State transitions | Behavioral commitments |
+| **Guarantee** | Trustless money | Trustless agreements | Trustless agents |
 
 ## Links
 
 - **Website:** [nobulex.com](https://nobulex.com)
 - **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
-- **X:** [@nobulexlabs](https://x.com/nobulexlabs)
+- **GitHub:** [github.com/agbusiness195/NOBULEX](https://github.com/agbusiness195/NOBULEX)
 
 ## License
 

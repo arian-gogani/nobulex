@@ -24,7 +24,13 @@
     "@nobulex/identity": "0.1.0",
     "@nobulex/store": "0.1.0",
     "@nobulex/verifier": "0.1.0",
-    "@nobulex/negotiation": "0.1.0"
+    "@nobulex/negotiation": "0.1.0",
+    "@nobulex/core-types": "0.1.0",
+    "@nobulex/covenant-lang": "0.1.0",
+    "@nobulex/action-log": "0.1.0",
+    "@nobulex/middleware": "0.1.0",
+    "@nobulex/verification": "0.1.0",
+    "@nobulex/composability": "0.1.0"
   },
   "license": "MIT",
   "engines": {

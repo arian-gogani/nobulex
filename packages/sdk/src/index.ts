@@ -1096,3 +1096,9 @@ export class QuickCovenant {
 
 // Re-export adapters
 export * from './adapters/index.js';
+
+// ─── Covenant Primitives ─────────────────────────────────────────────────────
+// High-level API combining all six primitives: Identity (DID), Covenant DSL,
+// Attestation (VC), Action Log, Verification, and Enforcement.
+export { CovenantAgent } from './primitives.js';
+export type { DIDKeyPair as PrimitivesDIDKeyPair } from './primitives.js';

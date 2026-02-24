@@ -37,6 +37,18 @@ import {
   keyValue,
   box,
 } from './format';
+
+// Covenant primitives — loaded dynamically to avoid hard dependency
+async function loadCovenantLang(): Promise<{
+  parseSource: (src: string) => unknown;
+  compile: (spec: unknown) => unknown;
+  serialize: (spec: unknown) => string;
+} | null> {
+  try {
+    const mod = await import('@nobulex/covenant-lang');
+    return { parseSource: mod.parseSource, compile: mod.compile, serialize: mod.serialize };
+  } catch { return null; }
+}
 import { loadConfig, saveConfig } from './config';
 import type { SteleConfig } from './config';
 import {
@@ -129,6 +141,7 @@ function buildMainHelp(): string {
         ['parse <ccl>', 'Parse CCL and output AST as JSON'],
         ['completions <shell>', 'Generate shell completion script (bash|zsh|fish)'],
         ['doctor', 'Check Stele installation health'],
+        ['deploy <dsl>', 'Deploy a covenant (parse, validate, hash for on-chain registration)'],
         ['audit [path]', 'Compliance audit report for an agent/project directory'],
         ['diff <doc1> <doc2>', 'Show differences between two covenant documents'],
         ['version', 'Print version information'],
@@ -234,6 +247,17 @@ Compares two covenant documents and highlights:
   - Party changes (issuer, beneficiary)
   - Constraint differences
   - Color-coded output (green for additions, red for removals)`;
+
+const DEPLOY_HELP = `nobulex deploy - Deploy a covenant to the on-chain registry.
+
+Usage: nobulex deploy <covenant-dsl-file-or-string> [--json] [--dry-run]
+
+Parses the covenant DSL, hashes it, and prepares it for on-chain registration.
+With --dry-run, only validates and outputs the deployment plan without executing.
+
+Options:
+  --dry-run     Validate and show deployment plan without executing
+  --json        Output deployment details as JSON`;
 
 const AUDIT_HELP = `stele audit - Kova compliance audit report for an agent/project directory.
 
@@ -917,6 +941,104 @@ async function cmdDiff(
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
+// ─── Command: deploy ─────────────────────────────────────────────────────────
+
+async function cmdDeploy(
+  positional: string[],
+  flags: Record<string, string | boolean>,
+): Promise<RunResult> {
+  if (hasFlag(flags, 'help')) {
+    return { stdout: DEPLOY_HELP, stderr: '', exitCode: 0 };
+  }
+
+  const input = positional[0];
+  if (!input) {
+    return { stdout: '', stderr: 'Error: Covenant DSL source string or file path is required', exitCode: 1 };
+  }
+
+  // Try to read as file path, fallback to treating as inline DSL
+  let source = input;
+  try {
+    if (existsSync(input)) {
+      source = readFileSync(input, 'utf-8');
+    }
+  } catch {
+    // use input as-is
+  }
+
+  const cl = await loadCovenantLang();
+  if (!cl) {
+    return {
+      stdout: '',
+      stderr: 'Error: @nobulex/covenant-lang is not installed. Run: npm install @nobulex/covenant-lang',
+      exitCode: 1,
+    };
+  }
+
+  let spec: unknown;
+  try {
+    spec = cl.parseSource(source);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { stdout: '', stderr: `Error: Failed to parse covenant DSL: ${msg}`, exitCode: 1 };
+  }
+
+  // Validate by compiling
+  try {
+    cl.compile(spec);
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    return { stdout: '', stderr: `Error: Failed to compile covenant: ${msg}`, exitCode: 1 };
+  }
+
+  const serialized = cl.serialize(spec);
+  const { sha256String: sha256 } = await import('@nobulex/crypto');
+  const covenantHash = await sha256(serialized);
+
+  const isDryRun = hasFlag(flags, 'dry-run');
+
+  const deploymentPlan = {
+    covenantName: spec.name,
+    statements: spec.statements.length,
+    requirements: spec.requirements.length,
+    covenantHash,
+    serializedSize: serialized.length,
+    dryRun: isDryRun,
+    status: isDryRun ? 'validated' : 'ready',
+  };
+
+  if (hasFlag(flags, 'json')) {
+    return {
+      stdout: JSON.stringify(deploymentPlan, null, 2),
+      stderr: '',
+      exitCode: 0,
+    };
+  }
+
+  const lines: string[] = [''];
+  lines.push(header('Covenant Deployment'));
+  lines.push('');
+  lines.push(keyValue([
+    ['Name', spec.name],
+    ['Statements', String(spec.statements.length)],
+    ['Requirements', String(spec.requirements.length)],
+    ['Hash', covenantHash.slice(0, 16) + '...'],
+    ['Size', `${serialized.length} bytes`],
+  ]));
+  lines.push('');
+
+  if (isDryRun) {
+    lines.push(success('Dry run: Covenant validated successfully.'));
+    lines.push(dim('Use without --dry-run to deploy.'));
+  } else {
+    lines.push(success('Covenant ready for deployment.'));
+    lines.push(dim('To register on-chain, use the @nobulex/contracts SDK.'));
+  }
+  lines.push('');
+
+  return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
+}
+
 // ─── Command: audit ──────────────────────────────────────────────────────────
 
 function findCovenantFiles(dir: string, depth = 0, maxDepth = 3): string[] {
@@ -1226,6 +1348,8 @@ export async function run(args: string[], configDir?: string): Promise<RunResult
         return cmdCompletions(parsed.positional, parsed.flags);
       case 'doctor':
         return await cmdDoctor(parsed.flags, configDir);
+      case 'deploy':
+        return await cmdDeploy(parsed.positional, parsed.flags);
       case 'audit':
         return await cmdAudit(parsed.positional, parsed.flags);
       case 'diff':

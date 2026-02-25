@@ -326,10 +326,10 @@ jobs:
           echo "**Total size: ${total_kb} KB**"
           echo ""
 
-          # Fail if total bundle size exceeds 5 MB
-          max_bytes=5242880
+          # Fail if total bundle size exceeds 2 MB
+          max_bytes=2097152
           if [ "$total_bytes" -gt "$max_bytes" ]; then
-            echo "::error::Total bundle size (${total_kb} KB) exceeds the 5120 KB limit"
+            echo "::error::Total bundle size (${total_kb} KB) exceeds the 2048 KB limit"
             exit 1
           else
             echo "Bundle size is within limits."

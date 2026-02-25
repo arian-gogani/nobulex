@@ -6,7 +6,6 @@
   "types": "dist/index.d.ts",
   "bin": {
     "nobulex": "./dist/index.js",
-    "nobulex": "./dist/index.js",
     "kova": "./dist/index.js"
   },
   "scripts": {

@@ -57,7 +57,7 @@
     "packages/cli"
   ],
   "scripts": {
-    "build": "npm run build --workspaces",
+    "build": "npm run build -w packages/types -w packages/crypto -w packages/core-types && npm run build -w packages/ccl -w packages/core -w packages/identity -w packages/enforcement -w packages/proof -w packages/covenant-lang -w packages/action-log -w packages/middleware -w packages/verification -w packages/composability -w packages/tee -w packages/elizaos-plugin && npm run build -w packages/store -w packages/verifier -w packages/evm && npm run build -w packages/contracts -w packages/sdk && npm run build -w packages/react -w packages/mcp-server -w packages/cli && npm run build -w packages/kova -w packages/alignment -w packages/antifragile -w packages/attestation -w packages/breach -w packages/canary -w packages/certification -w packages/compliance-autopilot -w packages/composition -w packages/consensus -w packages/derivatives -w packages/eu-compliance -w packages/gametheory -w packages/legal -w packages/marketplace -w packages/mcp -w packages/negotiation -w packages/norms -w packages/rail -w packages/recursive -w packages/reputation -w packages/revenue -w packages/robustness -w packages/staking -w packages/substrate -w packages/temporal -w packages/trust-data -w packages/trust-futures",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

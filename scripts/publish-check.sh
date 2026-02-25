@@ -6,7 +6,7 @@ echo ""
 echo "=== Pack dry-run ==="
 for pkg in packages/*/; do
   name=$(basename "$pkg")
-  echo "--- @stele/$name ---"
+  echo "--- @nobulex/$name ---"
   cd "$pkg"
   npm pack --dry-run 2>&1 | tail -3
   cd ../..

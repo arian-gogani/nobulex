@@ -150,7 +150,7 @@ jobs:
             if [ -d "${pkg_dir}dist" ]; then
               file_count=$(find "${pkg_dir}dist" -type f | wc -l)
               size=$(du -sh "${pkg_dir}dist" | cut -f1)
-              echo "  @stele/${pkg_name}: ${file_count} files, ${size}"
+              echo "  @nobulex/${pkg_name}: ${file_count} files, ${size}"
             fi
           done
 
@@ -203,9 +203,9 @@ jobs:
           echo ""
           for pkg_dir in packages/*/; do
             pkg_name=$(basename "$pkg_dir")
-            echo "--- @stele/${pkg_name} ---"
+            echo "--- @nobulex/${pkg_name} ---"
             (cd "$pkg_dir" && npm pack --dry-run 2>&1) || {
-              echo "::error::@stele/${pkg_name} failed to pack cleanly"
+              echo "::error::@nobulex/${pkg_name} failed to pack cleanly"
               exit 1
             }
             echo ""
@@ -314,7 +314,7 @@ jobs:
               name=$(basename "$(dirname "$pkg_dist")")
               file_count=$(find "$pkg_dist" -type f | wc -l)
               size_kb=$(awk "BEGIN {printf \"%.2f\", $size_bytes / 1024}")
-              echo "| @stele/${name} | ${size_kb} | ${file_count} |"
+              echo "| @nobulex/${name} | ${size_kb} | ${file_count} |"
               total_bytes=$((total_bytes + size_bytes))
             fi
           done

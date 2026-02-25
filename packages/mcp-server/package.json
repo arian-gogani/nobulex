@@ -1,12 +1,12 @@
 {
   "name": "@nobulex/mcp-server",
-  "version": "0.1.0",
-  "description": "Model Context Protocol server with stdio transport that exposes Stele covenant tools to AI agents",
+  "version": "0.2.0",
+  "description": "Model Context Protocol server with stdio transport that exposes Nobulex covenant tools to AI agents",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "bin": {
-    "stele-mcp": "dist/bin.js"
+    "nobulex-mcp": "dist/bin.js"
   },
   "files": [
     "dist",
@@ -20,12 +20,12 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/types": "0.1.0",
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/core": "0.1.0",
-    "@nobulex/store": "0.1.0",
-    "@nobulex/verifier": "0.1.0",
-    "@nobulex/sdk": "0.1.0"
+    "@nobulex/types": "0.2.0",
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/core": "0.2.0",
+    "@nobulex/store": "0.2.0",
+    "@nobulex/verifier": "0.2.0",
+    "@nobulex/sdk": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -36,16 +36,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/mcp-server"
   },
-  "homepage": "https://stele.dev",
+  "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+    "url": "https://github.com/agbusiness195/nobulex/issues"
   },
-  "author": "Stele Labs, Inc.",
+  "author": "Nobulex Labs, Inc.",
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "mcp",

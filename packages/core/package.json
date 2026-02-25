@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/core",
-  "version": "0.1.0",
-  "description": "Core covenant lifecycle management for the Stele framework",
+  "version": "0.2.0",
+  "description": "Core covenant lifecycle management for the Nobulex framework",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,11 +26,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/core"
   },
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "core",
@@ -45,7 +45,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/ccl": "0.1.0"
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/ccl": "0.2.0"
   }
 }

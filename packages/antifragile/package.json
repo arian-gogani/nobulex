@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/antifragile",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,7 +24,7 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@nobulex/crypto": "0.1.0"
+    "@nobulex/crypto": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -35,11 +35,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/antifragile"
   },
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability"
   ]

@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/trust-physics",
-  "version": "0.1.0",
-  "description": "Multidimensional, directional, time-decaying, context-dependent, composable trust framework for the Stele covenant protocol",
+  "version": "0.2.0",
+  "description": "Multidimensional, directional, time-decaying, context-dependent, composable trust framework for the Nobulex covenant protocol",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,11 +26,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/trust-physics"
   },
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "trust",
@@ -47,9 +47,9 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/core": "0.1.0",
-    "@nobulex/identity": "0.1.0",
-    "@nobulex/proof": "0.1.0"
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/core": "0.2.0",
+    "@nobulex/identity": "0.2.0",
+    "@nobulex/proof": "0.2.0"
   }
 }

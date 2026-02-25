@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/sdk",
-  "version": "0.1.0",
-  "description": "TypeScript SDK for embedding Stele into agent frameworks and applications",
+  "version": "0.2.0",
+  "description": "TypeScript SDK for embedding Nobulex into agent frameworks and applications",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -17,20 +17,20 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/types": "0.1.0",
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/core": "0.1.0",
-    "@nobulex/ccl": "0.1.0",
-    "@nobulex/identity": "0.1.0",
-    "@nobulex/store": "0.1.0",
-    "@nobulex/verifier": "0.1.0",
-    "@nobulex/negotiation": "0.1.0",
-    "@nobulex/core-types": "0.1.0",
-    "@nobulex/covenant-lang": "0.1.0",
-    "@nobulex/action-log": "0.1.0",
-    "@nobulex/middleware": "0.1.0",
-    "@nobulex/verification": "0.1.0",
-    "@nobulex/composability": "0.1.0"
+    "@nobulex/types": "0.2.0",
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/core": "0.2.0",
+    "@nobulex/ccl": "0.2.0",
+    "@nobulex/identity": "0.2.0",
+    "@nobulex/store": "0.2.0",
+    "@nobulex/verifier": "0.2.0",
+    "@nobulex/negotiation": "0.2.0",
+    "@nobulex/core-types": "0.2.0",
+    "@nobulex/covenant-lang": "0.2.0",
+    "@nobulex/action-log": "0.2.0",
+    "@nobulex/middleware": "0.2.0",
+    "@nobulex/verification": "0.2.0",
+    "@nobulex/composability": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -41,16 +41,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/sdk"
   },
-  "homepage": "https://stele.dev",
+  "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+    "url": "https://github.com/agbusiness195/nobulex/issues"
   },
-  "author": "Stele Labs, Inc.",
+  "author": "Nobulex Labs, Inc.",
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "sdk"

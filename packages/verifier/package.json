@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/verifier",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Standalone verification engine for third-party auditors",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -17,10 +17,10 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/types": "0.1.0",
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/ccl": "0.1.0",
-    "@nobulex/core": "0.1.0"
+    "@nobulex/types": "0.2.0",
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/ccl": "0.2.0",
+    "@nobulex/core": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -31,16 +31,16 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/verifier"
   },
-  "homepage": "https://stele.dev",
+  "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+    "url": "https://github.com/agbusiness195/nobulex/issues"
   },
-  "author": "Stele Labs, Inc.",
+  "author": "Nobulex Labs, Inc.",
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability"
   ]

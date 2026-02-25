@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/types",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Shared TypeScript type definitions and protocol schemas",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -25,19 +25,19 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/types"
   },
-  "homepage": "https://stele.dev",
+  "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+    "url": "https://github.com/agbusiness195/nobulex/issues"
   },
-  "author": "Stele Labs, Inc.",
+  "author": "Nobulex Labs, Inc.",
   "dependencies": {
-    "@nobulex/crypto": "0.1.0"
+    "@nobulex/crypto": "0.2.0"
   },
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "types"

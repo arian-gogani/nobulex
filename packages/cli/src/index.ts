@@ -40,9 +40,9 @@ import {
 
 // Covenant primitives — loaded dynamically to avoid hard dependency
 async function loadCovenantLang(): Promise<{
-  parseSource: (src: string) => unknown;
-  compile: (spec: unknown) => unknown;
-  serialize: (spec: unknown) => string;
+  parseSource: (src: string) => import('@nobulex/core-types').CovenantSpec;
+  compile: (spec: import('@nobulex/core-types').CovenantSpec) => import('@nobulex/covenant-lang').EnforcementFn;
+  serialize: (spec: import('@nobulex/core-types').CovenantSpec) => string;
 } | null> {
   try {
     const mod = await import('@nobulex/covenant-lang');
@@ -975,7 +975,7 @@ async function cmdDeploy(
     };
   }
 
-  let spec: unknown;
+  let spec: import('@nobulex/core-types').CovenantSpec;
   try {
     spec = cl.parseSource(source);
   } catch (err) {

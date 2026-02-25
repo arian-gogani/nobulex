@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/reputation",
-  "version": "0.1.0",
-  "description": "Reputation scoring and trust management for the Stele covenant framework",
+  "version": "0.2.0",
+  "description": "Reputation scoring and trust management for the Nobulex covenant framework",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,11 +26,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/reputation"
   },
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "reputation",
@@ -44,8 +44,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/core": "0.1.0",
-    "@nobulex/identity": "0.1.0"
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/core": "0.2.0",
+    "@nobulex/identity": "0.2.0"
   }
 }

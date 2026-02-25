@@ -50,7 +50,7 @@ jobs:
   # Tier 1: Foundation packages with no internal dependencies
   # ──────────────────────────────────────────────
   publish-foundation:
-    name: "Publish @stele/${{ matrix.package }}"
+    name: "Publish @nobulex/${{ matrix.package }}"
     needs: validate
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -75,7 +75,7 @@ jobs:
       - name: Build all packages
         run: npm run build
 
-      - name: Publish @stele/${{ matrix.package }}
+      - name: Publish @nobulex/${{ matrix.package }}
         run: npm publish --provenance --access public
         working-directory: packages/${{ matrix.package }}
         env:
@@ -85,7 +85,7 @@ jobs:
   # Tier 2: Core packages that depend on foundation
   # ──────────────────────────────────────────────
   publish-core:
-    name: "Publish @stele/${{ matrix.package }}"
+    name: "Publish @nobulex/${{ matrix.package }}"
     needs: publish-foundation
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -110,7 +110,7 @@ jobs:
       - name: Build all packages
         run: npm run build
 
-      - name: Publish @stele/${{ matrix.package }}
+      - name: Publish @nobulex/${{ matrix.package }}
         run: npm publish --provenance --access public
         working-directory: packages/${{ matrix.package }}
         env:
@@ -120,7 +120,7 @@ jobs:
   # Tier 3: SDK, CLI, integrations, and protocol packages
   # ──────────────────────────────────────────────
   publish-ecosystem:
-    name: "Publish @stele/${{ matrix.package }}"
+    name: "Publish @nobulex/${{ matrix.package }}"
     needs: publish-core
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -166,7 +166,7 @@ jobs:
       - name: Build all packages
         run: npm run build
 
-      - name: Publish @stele/${{ matrix.package }}
+      - name: Publish @nobulex/${{ matrix.package }}
         run: npm publish --provenance --access public
         working-directory: packages/${{ matrix.package }}
         env:
@@ -204,12 +204,12 @@ jobs:
           echo ""
 
           for pkg in "${packages[@]}"; do
-            published=$(npm view "@stele/${pkg}" version 2>/dev/null || echo "NOT_FOUND")
+            published=$(npm view "@nobulex/${pkg}" version 2>/dev/null || echo "NOT_FOUND")
             if [ "$published" = "$expected" ]; then
-              echo "[PASS] @stele/${pkg}@${published}"
+              echo "[PASS] @nobulex/${pkg}@${published}"
               passed=$((passed + 1))
             else
-              echo "[FAIL] @stele/${pkg} - expected ${expected}, got ${published}"
+              echo "[FAIL] @nobulex/${pkg} - expected ${expected}, got ${published}"
               failed=$((failed + 1))
             fi
           done

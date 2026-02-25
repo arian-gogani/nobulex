@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/eu-compliance",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "EU AI Act compliance checker — fastest path to Aug 2026 compliance for agentic systems",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -10,12 +10,12 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/core": "0.1.0",
-    "@nobulex/legal": "0.1.0",
-    "@nobulex/enforcement": "0.1.0",
-    "@nobulex/canary": "0.1.0"
+    "@nobulex/core": "0.2.0",
+    "@nobulex/legal": "0.2.0",
+    "@nobulex/enforcement": "0.2.0",
+    "@nobulex/canary": "0.2.0"
   },
-  "keywords": ["stele", "kova", "eu-ai-act", "compliance", "regulation"],
+  "keywords": ["nobulex", "kova", "eu-ai-act", "compliance", "regulation"],
   "license": "MIT",
   "engines": { "node": ">=18" }
 }

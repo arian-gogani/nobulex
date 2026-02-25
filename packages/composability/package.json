@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/composability",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Covenant compatibility checking, agent matching, and trust topology analysis",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -21,9 +21,9 @@
     "url": "https://github.com/agbusiness195/nobulex.git",
     "directory": "packages/composability"
   },
-  "homepage": "https://stele.dev",
-  "bugs": { "url": "https://github.com/agbusiness195/stele/issues" },
-  "author": "Stele Labs, Inc.",
+  "homepage": "https://nobulex.dev",
+  "bugs": { "url": "https://github.com/agbusiness195/nobulex/issues" },
+  "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "composability", "compatibility", "trust-topology"],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
@@ -33,7 +33,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/core-types": "0.1.0",
-    "@nobulex/covenant-lang": "0.1.0"
+    "@nobulex/core-types": "0.2.0",
+    "@nobulex/covenant-lang": "0.2.0"
   }
 }

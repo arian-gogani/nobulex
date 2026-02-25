@@ -1,6 +1,6 @@
 {
   "name": "kova",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Open cryptographic protocol (MIT) \u2014 the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation.",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -24,17 +24,17 @@
     "LICENSE"
   ],
   "dependencies": {
-    "@nobulex/cli": "0.1.0",
-    "@nobulex/sdk": "0.1.0",
-    "@nobulex/mcp": "0.1.0",
-    "@nobulex/enforcement": "0.1.0",
-    "@nobulex/core": "0.1.0",
-    "@nobulex/ccl": "0.1.0",
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/identity": "0.1.0",
-    "@nobulex/proof": "0.1.0",
-    "@nobulex/store": "0.1.0",
-    "@nobulex/verifier": "0.1.0"
+    "@nobulex/cli": "0.2.0",
+    "@nobulex/sdk": "0.2.0",
+    "@nobulex/mcp": "0.2.0",
+    "@nobulex/enforcement": "0.2.0",
+    "@nobulex/core": "0.2.0",
+    "@nobulex/ccl": "0.2.0",
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/identity": "0.2.0",
+    "@nobulex/proof": "0.2.0",
+    "@nobulex/store": "0.2.0",
+    "@nobulex/verifier": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -45,14 +45,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele.git",
+    "url": "https://github.com/agbusiness195/nobulex.git",
     "directory": "packages/kova"
   },
-  "homepage": "https://stele.dev",
+  "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+    "url": "https://github.com/agbusiness195/nobulex/issues"
   },
-  "author": "Stele Labs, Inc.",
+  "author": "Nobulex Labs, Inc.",
   "keywords": [
     "kova",
     "trust",

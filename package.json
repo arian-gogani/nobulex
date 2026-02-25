@@ -1,5 +1,5 @@
 {
-  "name": "kova",
+  "name": "nobulex",
   "private": true,
   "version": "0.1.0",
   "description": "Open cryptographic protocol (MIT) — the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation.",
@@ -59,7 +59,7 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "typecheck": "npm run typecheck --workspaces --if-present",
-    "test": "npm run test --workspaces",
+    "test": "vitest run",
     "test:coverage": "vitest run --coverage",
     "quickstart": "npx tsx examples/get-started-with-kova.ts",
     "lint": "eslint packages/*/src/**/*.ts",
@@ -71,13 +71,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/stele"
+    "url": "https://github.com/agbusiness195/NOBULEX"
   },
-  "homepage": "https://stele.dev",
+  "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/stele/issues"
+    "url": "https://github.com/agbusiness195/NOBULEX/issues"
   },
-  "author": "Stele Labs, Inc.",
+  "author": "Nobulex, Inc.",
   "license": "MIT",
   "lint-staged": {
     "packages/*/src/**/*.ts": [

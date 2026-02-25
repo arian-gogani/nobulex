@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/revenue",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
   },
   "files": ["dist", "README.md", "LICENSE"],
   "dependencies": {
-    "@nobulex/crypto": "0.1.0"
+    "@nobulex/crypto": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -31,8 +31,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/revenue"
   },
-  "keywords": ["stele", "kova", "revenue", "trust-tax", "money-machine"]
+  "keywords": ["nobulex", "kova", "revenue", "trust-tax", "money-machine"]
 }

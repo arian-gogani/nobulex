@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/enforcement",
-  "version": "0.1.0",
-  "description": "Covenant enforcement and policy execution for the Stele framework",
+  "version": "0.2.0",
+  "description": "Covenant enforcement and policy execution for the Nobulex framework",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -26,11 +26,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Stele.git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
     "directory": "packages/enforcement"
   },
   "keywords": [
-    "stele",
+    "nobulex",
     "covenant",
     "ai-accountability",
     "enforcement",
@@ -45,8 +45,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/ccl": "0.1.0",
-    "@nobulex/core": "0.1.0"
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/ccl": "0.2.0",
+    "@nobulex/core": "0.2.0"
   }
 }

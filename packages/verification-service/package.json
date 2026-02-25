@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/verification-service",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Hosted verification API — verify covenants via HTTP",
   "type": "module",
   "main": "dist/index.js",
@@ -10,8 +10,8 @@
     "dev": "tsx watch src/index.ts"
   },
   "dependencies": {
-    "@nobulex/core": "0.1.0",
-    "@nobulex/verifier": "0.1.0",
+    "@nobulex/core": "0.2.0",
+    "@nobulex/verifier": "0.2.0",
     "express": "^4.21.0"
   },
   "devDependencies": {

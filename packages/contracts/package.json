@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/contracts",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Solidity staking/slashing contracts — covenant registry, stake management, slashing on violation, TypeScript ABI bindings",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -19,9 +19,9 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@nobulex/core-types": "0.1.0",
-    "@nobulex/crypto": "0.1.0",
-    "@nobulex/evm": "0.1.0"
+    "@nobulex/core-types": "0.2.0",
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/evm": "0.2.0"
   },
   "license": "MIT",
   "engines": { "node": ">=18" },
@@ -31,8 +31,8 @@
     "url": "https://github.com/agbusiness195/nobulex.git",
     "directory": "packages/contracts"
   },
-  "homepage": "https://stele.dev",
-  "bugs": { "url": "https://github.com/agbusiness195/stele/issues" },
-  "author": "Stele Labs, Inc.",
+  "homepage": "https://nobulex.dev",
+  "bugs": { "url": "https://github.com/agbusiness195/nobulex/issues" },
+  "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "ai-accountability", "solidity", "staking", "slashing", "smart-contracts"]
 }

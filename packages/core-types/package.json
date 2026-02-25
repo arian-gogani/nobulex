@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/core-types",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "TypeScript interfaces for the six Nobulex covenant primitives: Identity, Covenant, Attestation, ActionLog, Verification, Enforcement",
   "license": "MIT",
   "main": "dist/index.js",
@@ -21,9 +21,9 @@
     "url": "https://github.com/agbusiness195/nobulex.git",
     "directory": "packages/core-types"
   },
-  "homepage": "https://stele.dev",
-  "bugs": { "url": "https://github.com/agbusiness195/stele/issues" },
-  "author": "Stele Labs, Inc.",
+  "homepage": "https://nobulex.dev",
+  "bugs": { "url": "https://github.com/agbusiness195/nobulex/issues" },
+  "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "ai-accountability", "types", "did"],
   "scripts": {
     "build": "tsc --project tsconfig.json",

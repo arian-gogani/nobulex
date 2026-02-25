@@ -6,7 +6,7 @@ for pkg in packages/*/dist; do
   if [ -d "$pkg" ]; then
     size=$(du -sk "$pkg" | cut -f1)
     total=$((total + size))
-    printf "  @stele/%-20s %6dKB\n" "$name" "$size"
+    printf "  @nobulex/%-20s %6dKB\n" "$name" "$size"
   fi
 done
 echo "---"

@@ -196,12 +196,14 @@ describe('API Surface Tests', () => {
       'didFromKeyPair',
       'evolveIdentity',
       'getLineage',
+      'issueSessionCertificate',
       'parseDID',
       'publicKeyToDid',
       'serializeIdentity',
       'shareAncestor',
       'signWithDID',
       'verifyIdentity',
+      'verifySessionCertificate',
       'verifyWithDID',
     ].sort());
   });

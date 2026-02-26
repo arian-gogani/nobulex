@@ -123,6 +123,72 @@ export interface CreateIdentityOptions {
   deployment: DeploymentContext;
 }
 
+// ─── Ephemeral session certificates ─────────────────────────────────────────
+
+/** OIDC claims extracted from an identity provider token. */
+export interface OIDCClaims {
+  /** Issuer URL (e.g. "https://accounts.google.com"). */
+  iss: string;
+  /** Subject identifier. */
+  sub: string;
+  /** Audience. */
+  aud: string;
+  /** Expiration time (unix seconds). */
+  exp: number;
+  /** Issued-at time (unix seconds). */
+  iat: number;
+  /** Optional email. */
+  email?: string;
+}
+
+/** An ephemeral session certificate binding an agent to short-lived keys. */
+export interface SessionCertificate {
+  /** Unique certificate ID (content-addressed). */
+  id: HashHex;
+  /** DID of the agent this certificate is for. */
+  agentDid: string;
+  /** The agent's long-lived identity hash. */
+  identityHash: HashHex;
+  /** Hex-encoded ephemeral public key for this session. */
+  sessionPublicKey: string;
+  /** Model attestation for the session. */
+  model: ModelAttestation;
+  /** Capabilities granted for this session. */
+  capabilities: string[];
+  /** Deployer identifier (organization or individual). */
+  deployer: string;
+  /** Deployment environment for this session. */
+  environment: DeploymentContext;
+  /** ISO-8601 timestamp when the certificate was issued. */
+  issuedAt: string;
+  /** ISO-8601 timestamp when the certificate expires. */
+  expiresAt: string;
+  /** Duration in seconds. */
+  ttlSeconds: number;
+  /** OIDC claims from the identity provider, if authenticated via OIDC. */
+  oidcClaims: OIDCClaims | null;
+  /** Hex-encoded signature by the operator's long-lived key over the certificate. */
+  signature: string;
+}
+
+/** Options for issuing a session certificate. */
+export interface IssueSessionOptions {
+  /** The agent's full identity. */
+  identity: AgentIdentity;
+  /** The operator's long-lived key pair for signing. */
+  operatorKeyPair: import('@nobulex/crypto').KeyPair;
+  /** The ephemeral session key pair. */
+  sessionKeyPair: import('@nobulex/crypto').KeyPair;
+  /** Deployer identifier. */
+  deployer: string;
+  /** Session duration in seconds (default: 3600). */
+  ttlSeconds?: number;
+  /** Subset of identity capabilities to grant (default: all). */
+  capabilities?: string[];
+  /** OIDC claims if authenticated via OIDC. */
+  oidcClaims?: OIDCClaims;
+}
+
 /** Options for evolving an existing identity via {@link evolveIdentity}. */
 export interface EvolveIdentityOptions {
   /** The operator's Ed25519 key pair for signing the evolution. */

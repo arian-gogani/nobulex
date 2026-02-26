@@ -19,6 +19,9 @@ export type {
   EvolutionPolicy,
   CreateIdentityOptions,
   EvolveIdentityOptions,
+  OIDCClaims,
+  SessionCertificate,
+  IssueSessionOptions,
 } from './types';
 
 import type {
@@ -29,6 +32,8 @@ import type {
   LineageEntry,
   ModelAttestation,
   DeploymentContext,
+  SessionCertificate,
+  IssueSessionOptions,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -754,3 +759,128 @@ export type {
   DIDKeyPair,
   DIDResolutionResult,
 } from './did';
+
+// ---------------------------------------------------------------------------
+// Ephemeral session certificates
+// ---------------------------------------------------------------------------
+
+/**
+ * Issue an ephemeral session certificate.
+ *
+ * The certificate binds a short-lived session key pair to the agent's
+ * long-lived identity. It encodes: agent identity, model, capabilities,
+ * deployer, and environment. Signed by the operator's long-lived key.
+ *
+ * @param options - Session certificate options.
+ * @returns A signed SessionCertificate.
+ */
+export async function issueSessionCertificate(
+  options: IssueSessionOptions,
+): Promise<SessionCertificate> {
+  const {
+    identity,
+    operatorKeyPair,
+    sessionKeyPair,
+    deployer,
+    ttlSeconds = 3600,
+    capabilities,
+    oidcClaims,
+  } = options;
+
+  const now = timestamp();
+  const expiresAt = new Date(Date.now() + ttlSeconds * 1000).toISOString();
+
+  // Use subset of capabilities if specified, otherwise all
+  const grantedCapabilities = capabilities
+    ? [...capabilities].sort()
+    : [...identity.capabilities];
+
+  const certContent = {
+    agentDid: `did:nobulex:${identity.id.slice(0, 32)}`,
+    identityHash: identity.id,
+    sessionPublicKey: sessionKeyPair.publicKeyHex,
+    model: identity.model,
+    capabilities: grantedCapabilities,
+    deployer,
+    environment: identity.deployment,
+    issuedAt: now,
+    expiresAt,
+    ttlSeconds,
+    oidcClaims: oidcClaims ?? null,
+  };
+
+  const id = sha256Object(certContent);
+  const sigPayload = canonicalizeJson({ ...certContent, id });
+  const sig = await signString(sigPayload, operatorKeyPair.privateKey);
+
+  return {
+    id,
+    ...certContent,
+    signature: toHex(sig),
+  };
+}
+
+/**
+ * Verify a session certificate's signature and expiration.
+ *
+ * @param cert - The session certificate to verify.
+ * @param operatorPublicKeyHex - Hex-encoded operator public key.
+ * @returns Verification result with detailed checks.
+ */
+export async function verifySessionCertificate(
+  cert: SessionCertificate,
+  operatorPublicKeyHex: string,
+): Promise<{ valid: boolean; checks: VerificationCheck[] }> {
+  const checks: VerificationCheck[] = [];
+
+  // 1. Check hash/ID integrity
+  const certContent = {
+    agentDid: cert.agentDid,
+    identityHash: cert.identityHash,
+    sessionPublicKey: cert.sessionPublicKey,
+    model: cert.model,
+    capabilities: cert.capabilities,
+    deployer: cert.deployer,
+    environment: cert.environment,
+    issuedAt: cert.issuedAt,
+    expiresAt: cert.expiresAt,
+    ttlSeconds: cert.ttlSeconds,
+    oidcClaims: cert.oidcClaims,
+  };
+
+  const expectedId = sha256Object(certContent);
+  const idValid = expectedId === cert.id;
+  checks.push({
+    name: 'certificate_id',
+    passed: idValid,
+    message: idValid ? 'Certificate ID is valid' : 'Certificate ID mismatch',
+  });
+
+  // 2. Check signature
+  const sigPayload = canonicalizeJson({ ...certContent, id: cert.id });
+  const sigBytes = fromHex(cert.signature);
+  const pubBytes = fromHex(operatorPublicKeyHex);
+  const sigMsg = new TextEncoder().encode(sigPayload);
+
+  let sigValid = false;
+  try {
+    sigValid = await verify(sigMsg, sigBytes, pubBytes);
+  } catch {
+    sigValid = false;
+  }
+  checks.push({
+    name: 'certificate_signature',
+    passed: sigValid,
+    message: sigValid ? 'Signature is valid' : 'Signature verification failed',
+  });
+
+  // 3. Check expiration
+  const expired = new Date(cert.expiresAt).getTime() < Date.now();
+  checks.push({
+    name: 'certificate_expiry',
+    passed: !expired,
+    message: expired ? 'Certificate has expired' : 'Certificate is not expired',
+  });
+
+  return { valid: checks.every((c) => c.passed), checks };
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@nobulex/transparency-log",
+  "version": "0.2.0",
+  "description": "Append-only transparency log for epoch Merkle roots — self-hosted or managed",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "module": "dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "dependencies": {
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/merkle": "0.2.0"
+  },
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "directory": "packages/transparency-log"
+  },
+  "keywords": ["nobulex", "transparency", "audit", "rekor"]
+}

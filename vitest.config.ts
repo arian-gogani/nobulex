@@ -10,7 +10,7 @@ const packages = [
   'revenue', 'robustness', 'sdk', 'staking', 'store', 'substrate', 'temporal',
   'trust-data', 'trust-futures', 'types', 'verifier',
   'core-types', 'covenant-lang', 'action-log', 'middleware', 'verification', 'composability',
-  'tee', 'contracts', 'elizaos-plugin',
+  'tee', 'contracts', 'elizaos-plugin', 'transparency-log', 'merkle',
 ];
 
 const alias: Record<string, string> = {};

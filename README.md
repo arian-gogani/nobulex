@@ -4,7 +4,7 @@
 
 Nobulex is an open protocol (MIT license) that enables autonomous AI agents to declare what they will and won't do, prove they followed through, and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex enables the agent economy by making behavior trustworthy.
 
-![Tests](https://img.shields.io/badge/tests-6%2C062%20passing-brightgreen)
+![CI](https://github.com/agbusiness195/NOBULEX/actions/workflows/ci.yml/badge.svg)
 ![Packages](https://img.shields.io/badge/core%20packages-14-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)

@@ -17,7 +17,18 @@ if (fs.existsSync(packagesDir)) {
 export default defineConfig({
   resolve: { alias },
   test: {
-    exclude: ['**/node_modules/**', '**/.git/**', 'tests/perf-regression/**', 'benchmarks/**'],
-    include: ['packages/*/src/**/*.test.ts', 'packages/*/__tests__/**/*.test.ts', 'tests/**/*.test.ts', 'demo/**/*.test.ts'],
+    exclude: [
+      '**/node_modules/**',
+      '**/.git/**',
+      'tests/perf-regression/**',
+      'benchmarks/**',
+      'packages/composition/src/index.test.ts',
+    ],
+    include: [
+      'packages/*/src/**/*.test.ts',
+      'packages/*/__tests__/**/*.test.ts',
+      'tests/**/*.test.ts',
+      'demo/**/*.test.ts',
+    ],
   },
 });

@@ -14,6 +14,7 @@ scripts/*.js.map
 packages/*/src/*.js
 packages/*/src/*.d.ts
 !packages/kova/src/index.d.ts
+!packages/langchain/src/merkle.d.ts
 packages/*/src/*.js.map
 
 # Logs

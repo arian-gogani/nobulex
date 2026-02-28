@@ -11,6 +11,7 @@ const packages = [
   'trust-data', 'trust-futures', 'types', 'verifier',
   'core-types', 'covenant-lang', 'action-log', 'middleware', 'verification', 'composability',
   'tee', 'contracts', 'elizaos-plugin', 'transparency-log', 'merkle',
+  'langchain',
 ];
 
 const alias: Record<string, string> = {};

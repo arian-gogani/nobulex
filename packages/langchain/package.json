@@ -1,0 +1,45 @@
+{
+  "name": "@nobulex/langchain",
+  "version": "0.2.0",
+  "description": "LangChain integration — cryptographic audit trails for AI agents with EU AI Act compliance",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/merkle": "0.2.0"
+  },
+  "peerDependencies": {
+    "@langchain/core": ">=0.2.0"
+  },
+  "peerDependenciesMeta": {
+    "@langchain/core": {
+      "optional": true
+    }
+  },
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "directory": "packages/langchain"
+  },
+  "homepage": "https://nobulex.dev",
+  "bugs": { "url": "https://github.com/agbusiness195/nobulex/issues" },
+  "author": "Nobulex Labs, Inc.",
+  "keywords": ["nobulex", "langchain", "ai-accountability", "audit-trail", "eu-ai-act", "compliance", "ai-agent"]
+}

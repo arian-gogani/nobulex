@@ -1,14 +1,13 @@
 {
   "name": "@nobulex/store",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Pluggable storage backends — SQLite, PostgreSQL, S3",
   "sideEffects": false,
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "files": [
     "dist",
-    "README.md",
-    "LICENSE"
+    "README.md"
   ],
   "scripts": {
     "build": "tsc --project tsconfig.json",
@@ -43,5 +42,13 @@
     "covenant",
     "ai-accountability",
     "storage"
-  ]
+  ],
+  "module": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  }
 }

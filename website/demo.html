@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Demo — Nobulex</title>
+  <meta name="description" content="See Nobulex enforce a covenant: allowed transfer, blocked transfer, verifiable log.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .demo-page { max-width: 800px; margin: 0 auto; padding: 3rem 1.5rem; font-family: var(--font-sans); }
+    .demo-page h1 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    .demo-page__intro { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2rem; }
+    .demo-flow { display: flex; flex-wrap: wrap; gap: 0.35rem; justify-content: center; margin-bottom: 1.5rem; font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; }
+    .demo-flow__step { padding: 0.4rem 0.6rem; border-radius: var(--radius-sm); background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-muted); transition: all 0.3s ease; cursor: pointer; }
+    .demo-flow__step:hover { background: rgba(255,255,255,0.08); color: var(--text-secondary); }
+    .demo-flow__step.active { background: rgba(255,255,255,0.1); border-color: var(--accent); color: var(--text); }
+    .demo-flow__step.past { opacity: 0.6; }
+    .demo-flow__step.blocked { border-color: #f87171; background: rgba(248,113,113,0.1); color: #f87171; }
+    .demo-full { background: rgba(0,0,0,0.5); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; font-family: var(--font-mono); }
+    .demo-full__header { display: flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1rem; background: rgba(255,255,255,0.04); border-bottom: 1px solid var(--border); }
+    .demo-full__dot { width: 10px; height: 10px; border-radius: 50%; }
+    .demo-full__dot:nth-child(1) { background: #ff5f56; }
+    .demo-full__dot:nth-child(2) { background: #ffbd2e; }
+    .demo-full__dot:nth-child(3) { background: #27c93f; }
+    .demo-full__title { margin-left: 0.5rem; font-size: 0.75rem; color: var(--text-muted); }
+    .demo-full__body { padding: 1.5rem 1.5rem; font-size: 0.8125rem; line-height: 1.9; min-height: 220px; }
+    .demo-step { display: none; opacity: 0; transition: opacity 0.3s ease; }
+    .demo-step.active { display: block; opacity: 1; }
+    .demo-step__explain { font-family: var(--font-sans); font-size: 0.9375rem; color: var(--text-secondary); margin-bottom: 1rem; line-height: 1.6; }
+    .demo-step__explain code { font-family: var(--font-mono); font-size: 0.875em; background: rgba(255,255,255,0.06); padding: 0.15em 0.4em; border-radius: 3px; }
+    .demo-step__code { font-family: var(--font-mono); }
+    .demo-step__line { margin-bottom: 0.35rem; }
+    .demo-step__prompt { color: var(--accent); margin-right: 0.5rem; }
+    .demo-step__comment { color: var(--text-muted); }
+    .demo-step__blocked { color: #f87171; font-weight: 600; animation: demo-pulse 0.6s ease; }
+    .demo-step__allowed { color: #4ade80; font-weight: 600; }
+    @keyframes demo-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    .demo-nav { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; background: rgba(255,255,255,0.04); border-top: 1px solid var(--border); gap: 1rem; }
+    .demo-nav__progress { font-size: 0.75rem; color: var(--text-muted); }
+    .demo-nav__hint { opacity: 0.6; font-size: 0.6875rem; }
+    .demo-nav__btns { display: flex; gap: 0.5rem; }
+    .demo-nav__btn { padding: 0.5rem 1rem; font-size: 0.8125rem; font-weight: 500; color: var(--text); background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: var(--radius-md); cursor: pointer; transition: all 0.2s; }
+    .demo-nav__btn:hover:not(:disabled) { background: rgba(255,255,255,0.1); border-color: var(--border-hover); }
+    .demo-nav__btn#demo-next { background: rgba(255,255,255,0.1); min-width: 5rem; }
+    .demo-nav__btn#demo-next:hover:not(:disabled) { background: rgba(255,255,255,0.15); }
+    .demo-nav__btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    .demo-page__links { margin-top: 2rem; display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; }
+    .demo-page__contact { font-size: 0.8125rem; color: var(--text-muted); }
+    .demo-page__contact a { color: var(--accent); text-decoration: none; }
+    .demo-page__contact a:hover { text-decoration: underline; }
+    @media (prefers-reduced-motion: reduce) { .demo-step__blocked { animation: none; } }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span></button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">×</span></button>
+      <div class="header__links">
+        <a href="index.html#problem">Problem</a>
+        <a href="index.html#demo">Demo</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="demo-page" id="main">
+    <h1>Live Demo</h1>
+    <p class="demo-page__intro">Click <strong>Next</strong> to walk through: define a rule (max $500), set up an agent, try an allowed transfer ($300), try a blocked transfer ($600), then verify the log.</p>
+
+    <div class="demo-flow" id="demo-flow" aria-label="Demo steps">
+      <span class="demo-flow__step" data-flow="0">1. Covenant</span>
+      <span class="demo-flow__step" data-flow="1">2. Setup</span>
+      <span class="demo-flow__step" data-flow="2">3. Allowed</span>
+      <span class="demo-flow__step" data-flow="3">4. Blocked</span>
+      <span class="demo-flow__step" data-flow="4">5. Verify</span>
+    </div>
+
+    <div class="demo-full">
+      <div class="demo-full__header">
+        <span class="demo-full__dot"></span>
+        <span class="demo-full__dot"></span>
+        <span class="demo-full__dot"></span>
+        <span class="demo-full__title">nobulex covenant-demo</span>
+      </div>
+      <div class="demo-full__body" id="demo-output">
+        <div class="demo-step active" data-step="0">
+          <p class="demo-step__explain"><strong>Step 1:</strong> We define a rule: transfers up to $500 are allowed; anything over $500 is forbidden.</p>
+          <div class="demo-step__code">
+            <div class="demo-step__line"><span class="demo-step__prompt">></span> covenant SafeTrader { permit transfer (amount <= 500); forbid transfer (amount > 500); }</div>
+          </div>
+        </div>
+        <div class="demo-step" data-step="1">
+          <p class="demo-step__explain"><strong>Step 2:</strong> We create an agent and wrap it with middleware. Every action the agent tries will be checked against the covenant before it runs.</p>
+          <div class="demo-step__code">
+            <div class="demo-step__line"><span class="demo-step__prompt">></span> const agent = await createDID();</div>
+            <div class="demo-step__line"><span class="demo-step__prompt">></span> const mw = new EnforcementMiddleware({ agentDid: agent.did, spec });</div>
+          </div>
+        </div>
+        <div class="demo-step" data-step="2">
+          <p class="demo-step__explain"><strong>Step 3:</strong> Agent tries to transfer $300. That's under $500, so middleware allows it and adds an entry to the log.</p>
+          <div class="demo-step__code">
+            <div class="demo-step__line"><span class="demo-step__prompt">></span> mw.execute({ action: 'transfer', params: { amount: 300 } }, ...)</div>
+            <div class="demo-step__line"><span class="demo-step__comment">← <span class="demo-step__allowed">ALLOWED</span> — within covenant</span></div>
+            <div class="demo-step__line"><span class="demo-step__comment">   Log: { action: "transfer", amount: 300, result: "allowed", hash: "0x2b..." }</span></div>
+          </div>
+        </div>
+        <div class="demo-step" data-step="3">
+          <p class="demo-step__explain"><strong>Step 4:</strong> Agent tries to transfer $600. Over the limit — middleware blocks it. The transfer never executes. The block is logged.</p>
+          <div class="demo-step__code">
+            <div class="demo-step__line"><span class="demo-step__prompt">></span> mw.execute({ action: 'transfer', params: { amount: 600 } }, ...)</div>
+            <div class="demo-step__line"><span class="demo-step__comment">← <span class="demo-step__blocked">BLOCKED</span> — covenant: amount > 500</span></div>
+            <div class="demo-step__line"><span class="demo-step__comment">   Callback never runs. Log: { action: "transfer", amount: 600, result: "blocked", hash: "0x7a..." }</span></div>
+          </div>
+        </div>
+        <div class="demo-step" data-step="4">
+          <p class="demo-step__explain"><strong>Step 5:</strong> Anyone can run <code>verify()</code> on the log. No need to trust the operator — the proof is in the data.</p>
+          <div class="demo-step__code">
+            <div class="demo-step__line"><span class="demo-step__prompt">></span> verify(spec, mw.getLog())</div>
+            <div class="demo-step__line"><span class="demo-step__comment">← { compliant: true, violations: [] } ✓</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="demo-nav">
+        <span class="demo-nav__progress"><span id="demo-progress">Step 1 of 5</span> · <span class="demo-nav__hint">← → keys</span></span>
+        <div class="demo-nav__btns">
+          <button type="button" class="demo-nav__btn" id="demo-prev" disabled>Prev</button>
+          <button type="button" class="demo-nav__btn" id="demo-next">Next</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="demo-page__links">
+      <a href="https://github.com/nobulexdev/nobulex#quick-start" class="section__cta" rel="noopener noreferrer">Run real demo on your machine →</a>
+      <a href="index.html#demo" class="section__cta">← Home demo</a>
+      <span class="demo-page__contact">Questions? <a href="mailto:nobulex.dev@gmail.com">nobulex.dev@gmail.com</a></span>
+    </div>
+  </main>
+
+  <script src="main.js"></script>
+  <script>
+    (function() {
+      const steps = document.querySelectorAll('.demo-step');
+      const flowSteps = document.querySelectorAll('.demo-flow__step');
+      const prevBtn = document.getElementById('demo-prev');
+      const nextBtn = document.getElementById('demo-next');
+      const progressEl = document.getElementById('demo-progress');
+
+      const BLOCKED_STEP = 3;
+
+      let currentStep = 0;
+      const totalSteps = steps.length;
+
+      function showStep(n) {
+        currentStep = Math.max(0, Math.min(n, totalSteps - 1));
+        steps.forEach((s, i) => s.classList.toggle('active', i === currentStep));
+
+        flowSteps.forEach((f, i) => {
+          f.classList.remove('active', 'past', 'blocked');
+          if (i < currentStep) f.classList.add('past');
+          else if (i === currentStep) {
+            f.classList.add('active');
+            if (currentStep === BLOCKED_STEP) f.classList.add('blocked');
+          }
+        });
+
+        prevBtn.disabled = currentStep === 0;
+        nextBtn.disabled = currentStep === totalSteps - 1;
+        progressEl.textContent = 'Step ' + (currentStep + 1) + ' of ' + totalSteps;
+      }
+
+      prevBtn?.addEventListener('click', () => showStep(currentStep - 1));
+      nextBtn?.addEventListener('click', () => showStep(currentStep + 1));
+      flowSteps.forEach((f, i) => f.addEventListener('click', () => showStep(i)));
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') showStep(currentStep - 1);
+        if (e.key === 'ArrowRight') showStep(currentStep + 1);
+      });
+      showStep(0);
+    })();
+  </script>
+</body>
+</html>

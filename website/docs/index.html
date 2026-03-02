@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Docs — Nobulex</title>
+  <meta name="description" content="Nobulex documentation: accountability primitives for AI agents.">
+  <meta property="og:title" content="Docs — Nobulex">
+  <meta property="og:description" content="Nobulex documentation: accountability primitives for AI agents.">
+  <meta property="og:type" content="article">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .docs-index { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; font-family: var(--font-sans); overflow-x: hidden; box-sizing: border-box; width: 100%; min-width: 0; }
+    .docs-index * { box-sizing: border-box; }
+    .docs-index h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    .docs-index__intro { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .docs-index__list { list-style: none; padding: 0; margin: 0; }
+    .docs-index__item { margin-bottom: 1rem; }
+    .docs-index__link { display: block; padding: 1rem 1.25rem; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); border-radius: var(--radius-md); color: var(--text); text-decoration: none; font-weight: 500; transition: border-color 0.2s, background 0.2s; }
+    .docs-index__link:hover { border-color: var(--border-hover); background: rgba(255, 255, 255, 0.05); }
+    .docs-index__link small { display: block; font-size: 0.8125rem; font-weight: 400; color: var(--text-muted); margin-top: 0.35rem; }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="../index.html" class="header__logo" aria-label="Nobulex home"><img src="../images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="header__links">
+        <a href="what-it-is.html">What it is</a>
+        <a href="threat-model.html">Threat model</a>
+        <a href="integrations.html">Integrations</a>
+        <a href="../eu-ai-act.html">Compliance</a>
+        <a href="quickstart.html">Quickstart</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="../index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="docs-index" id="main">
+    <h1>Docs</h1>
+    <p class="docs-index__intro">Everything you need to understand and build with Nobulex.</p>
+    <ul class="docs-index__list">
+      <li class="docs-index__item">
+        <a href="what-it-is.html" class="docs-index__link">
+          What it is
+          <small>Plain English + flow diagram — what it blocks, what proof you get</small>
+        </a>
+      </li>
+      <li class="docs-index__item">
+        <a href="threat-model.html" class="docs-index__link">
+          Threat model
+          <small>TEE assumptions, trust boundaries, enclave compromise</small>
+        </a>
+      </li>
+      <li class="docs-index__item">
+        <a href="integrations.html" class="docs-index__link">
+          Integrations
+          <small>MCP, LangGraph, OpenAI tools, ElizaOS</small>
+        </a>
+      </li>
+      <li class="docs-index__item">
+        <a href="../demo.html" class="docs-index__link">
+          Live demo
+          <small>Covenant setup → allowed transfer → blocked transfer → verify</small>
+        </a>
+      </li>
+      <li class="docs-index__item">
+        <a href="quickstart.html" class="docs-index__link">
+          Quickstart
+          <small>Add accountability in minutes — install, configure, run</small>
+        </a>
+      </li>
+      <li class="docs-index__item">
+        <a href="../eu-ai-act.html" class="docs-index__link">
+          EU AI Act compliance
+          <small>How Nobulex helps meet transparency and accountability requirements</small>
+        </a>
+      </li>
+    </ul>
+    <p style="margin-top: 2rem;">
+      <a href="../index.html" class="section__cta">← Back to Nobulex</a>
+      <span style="margin-left: 1rem; font-size: 0.8125rem; color: var(--text-muted);">Questions? <a href="mailto:nobulex.dev@gmail.com" style="color: var(--accent);">nobulex.dev@gmail.com</a></span>
+    </p>
+  </main>
+
+  <script src="../main.js"></script>
+</body>
+</html>

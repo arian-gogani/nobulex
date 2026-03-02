@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Threat Model — Nobulex</title>
+  <meta name="description" content="TEE assumptions, trust boundaries, and what Nobulex guarantees.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .doc-page { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; font-family: var(--font-sans); }
+    .doc-page h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text); margin-bottom: 1rem; }
+    .doc-page h2 { font-size: 1.125rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; }
+    .doc-page p { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .doc-page ul { margin: 0 0 1rem 1.25rem; color: var(--text-secondary); line-height: 1.7; }
+    .doc-page .doc-page__assumption { background: rgba(255,255,255,0.04); border-left: 3px solid var(--accent); padding: 1rem 1.25rem; margin: 1rem 0; }
+    .doc-page a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="../index.html" class="header__logo" aria-label="Nobulex home"><img src="../images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span></button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">×</span></button>
+      <div class="header__links">
+        <a href="what-it-is.html">What it is</a>
+        <a href="threat-model.html">Threat model</a>
+        <a href="integrations.html">Integrations</a>
+        <a href="../eu-ai-act.html">Compliance</a>
+        <a href="quickstart.html">Quickstart</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="../index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="doc-page" id="main">
+    <h1>Threat Model</h1>
+    <p>What Nobulex guarantees, what it assumes, and what happens when those assumptions fail.</p>
+
+    <h2>Assumptions</h2>
+    <div class="doc-page__assumption">
+      <p><strong>TEE integrity:</strong> We assume the Trusted Execution Environment (TEE) is uncompromised and correctly attests its identity. The enclave intercepts all agent actions before execution; forbidden actions never reach the host.</p>
+    </div>
+    <ul>
+      <li><strong>Attestation:</strong> You can verify which software is running inside the enclave via remote attestation.</li>
+      <li><strong>Enforcement boundary:</strong> Policy bypass is prevented inside the enforcement boundary (TEE + attestation assumptions).</li>
+    </ul>
+
+    <h2>What happens if the enclave is compromised?</h2>
+    <p>An attacker with control of the enclave could bypass enforcement. Attestation lets you detect this: if the attested software doesn’t match the expected build, you know something is wrong.</p>
+
+    <h2>Tier 2 (staking / slashing)</h2>
+    <p>When TEE isn’t used, enforcement relies on economic incentives. Stake is at risk; violations trigger slashing. Rational agents don’t violate when the cost exceeds the gain.</p>
+
+    <p style="margin-top: 2rem;"><a href="https://github.com/nobulexdev/nobulex/blob/main/PROTOCOL.md" class="section__cta" rel="noopener noreferrer">Full Spec →</a> · <a href="../index.html" class="section__cta">← Home</a></p>
+  </main>
+
+  <script src="../main.js"></script>
+</body>
+</html>

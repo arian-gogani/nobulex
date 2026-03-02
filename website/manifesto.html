@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Uncovenanted Agent Problem — Nobulex</title>
+  <meta name="description" content="Why we need a protocol-level trust layer for the agent economy.">
+  <meta property="og:title" content="The Uncovenanted Agent Problem — Nobulex">
+  <meta property="og:description" content="Why we need a protocol-level trust layer for the agent economy.">
+  <meta property="og:type" content="article">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=Sora:wght@600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .manifesto-page { font-family: 'Instrument Serif', Georgia, serif; }
+    .manifesto-page .manifesto-page__body { max-width: 56rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .manifesto-page h1 { font-size: clamp(2rem, 5vw, 3rem); font-weight: 400; color: var(--text); margin-bottom: 2rem; line-height: 1.2; }
+    .manifesto-page .manifesto-page__meta { font-family: var(--font-sans); font-size: 0.75rem; color: var(--text-muted); margin-bottom: 3rem; }
+    .manifesto-page p { font-size: 1.25rem; line-height: 1.7; color: var(--text-secondary); margin-bottom: 1.5rem; }
+    .manifesto-page p.lead { font-size: 1.5rem; color: var(--text); }
+    .manifesto-page .manifesto-page__back { font-family: var(--font-sans); display: inline-block; margin-top: 3rem; font-size: 0.875rem; color: var(--accent); text-decoration: none; transition: color 0.2s; }
+    .manifesto-page .manifesto-page__back:hover { color: var(--accent-hover); }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="header__links">
+        <a href="index.html#problem">What is Nobulex</a>
+        <a href="index.html#manifesto">Why it matters</a>
+        <a href="index.html#regulatory">Compliance</a>
+        <a href="docs/quickstart.html">Guides</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="manifesto-page" id="main">
+    <article class="manifesto-page__body">
+      <h1>The Uncovenanted Agent Problem</h1>
+      <p class="manifesto-page__meta">A manifesto for protocol-level trust in the agent economy</p>
+      <p class="lead">AI agents book flights, execute trades, manage infrastructure, negotiate contracts, and call other agents to do the same. By 2027, autonomous systems will manage trillions in economic value. Every one of them operates on a handshake.</p>
+      <p>There is no protocol-level mechanism for an agent to declare what it will do, prove that it did, or face consequences when it doesn't. We are building the most powerful autonomous systems in history on a foundation of trust me.</p>
+      <p><strong>This is the Uncovenanted Agent Problem.</strong></p>
+      <p>The question is not whether AI agents will manage trillions in economic value. The question is whether they will do so with any mechanism for accountability at all. Without a trust layer, every transaction is a leap of faith. Every integration is a vulnerability. Every delegation is a blind spot.</p>
+      <p>Nobulex changes that. A protocol that makes honesty the only rational strategy. Verifiable commitments for every AI agent. Carved in stone. Verified in code.</p>
+      <a href="index.html" class="manifesto-page__back">← Back to Nobulex</a>
+    </article>
+  </main>
+
+  <!-- AI Help widget -->
+  <button type="button" class="help-widget__toggle" id="help-toggle" aria-label="Get help understanding Nobulex" aria-expanded="false"><span class="help-widget__icon" aria-hidden="true">?</span></button>
+  <div class="help-widget__panel" id="help-panel" aria-hidden="true">
+    <div class="help-widget__header"><h3>Need help?</h3><button type="button" class="help-widget__close" id="help-close" aria-label="Close help">×</button></div>
+    <p class="help-widget__intro">Not sure where to start? Ask any question. We'll answer in plain language — no jargon.</p>
+    <div class="help-widget__links">
+      <a href="index.html#problem">What is Nobulex</a>
+      <a href="index.html#manifesto">Why it matters</a>
+      <a href="eu-ai-act.html">EU compliance</a>
+      <a href="index.html">Home</a>
+    </div>
+    <div class="help-widget__chat">
+      <div class="help-widget__messages" id="help-messages"></div>
+      <div class="help-widget__input-wrap">
+        <input type="text" id="help-query" placeholder="e.g. What is Nobulex, in simple terms?" autocomplete="off">
+        <button type="button" class="help-widget__ask" id="help-ask" aria-label="Send">→</button>
+      </div>
+      <p class="help-widget__hint" id="help-hint">Type your question and press Enter</p>
+    </div>
+  </div>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script src="main.js"></script>
+</body>
+</html>

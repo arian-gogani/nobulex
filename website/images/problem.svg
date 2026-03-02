@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 400" fill="none">
+  <defs>
+    <linearGradient id="pg1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a67c52;stop-opacity:0.12"/>
+      <stop offset="100%" style="stop-color:#c49a6c;stop-opacity:0.04"/>
+    </linearGradient>
+  </defs>
+  <rect width="600" height="400" fill="#f5f2ed"/>
+  <rect width="600" height="400" fill="url(#pg1)"/>
+  <rect x="80" y="60" width="120" height="80" rx="6" fill="#fffefb" stroke="#a67c52" stroke-width="1" opacity="0.45"/>
+  <rect x="250" y="100" width="120" height="80" rx="6" fill="#fffefb" stroke="#a67c52" stroke-width="1" opacity="0.45"/>
+  <rect x="400" y="50" width="120" height="80" rx="6" fill="#fffefb" stroke="#a67c52" stroke-width="1" opacity="0.45"/>
+  <rect x="150" y="220" width="140" height="100" rx="8" fill="#fffefb" stroke="#c49a6c" stroke-width="1" opacity="0.4"/>
+  <rect x="350" y="200" width="140" height="100" rx="8" fill="#fffefb" stroke="#c49a6c" stroke-width="1" opacity="0.4"/>
+  <path d="M200 140 L280 180 M320 180 L400 120" stroke="#a67c52" stroke-width="1" opacity="0.25"/>
+</svg>

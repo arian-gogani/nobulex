@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>What is Nobulex — Nobulex</title>
+  <meta name="description" content="Plain English explanation of Nobulex: middleware that enforces signed rules and produces verifiable logs.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .doc-page { max-width: 640px; margin: 0 auto; padding: 4rem 1.5rem; font-family: var(--font-sans); }
+    .doc-page h1 { font-family: var(--font-display); font-size: 1.5rem; font-weight: 600; color: var(--text); margin-bottom: 1rem; }
+    .doc-page h2 { font-size: 1.125rem; font-weight: 600; color: var(--text); margin: 2rem 0 0.75rem; }
+    .doc-page p { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .doc-page .doc-page__plain { background: rgba(255,255,255,0.04); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 1.25rem; margin: 1.5rem 0; }
+    .doc-page .doc-page__flow { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 1.5rem 0; font-size: 0.875rem; }
+    .doc-page .doc-page__flow span { padding: 0.4rem 0.75rem; background: rgba(255,255,255,0.06); border-radius: var(--radius-sm); color: var(--text-secondary); }
+    .doc-page a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="../index.html" class="header__logo" aria-label="Nobulex home"><img src="../images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false"><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span></button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">×</span></button>
+      <div class="header__links">
+        <a href="what-it-is.html">What it is</a>
+        <a href="threat-model.html">Threat model</a>
+        <a href="integrations.html">Integrations</a>
+        <a href="../eu-ai-act.html">Compliance</a>
+        <a href="quickstart.html">Quickstart</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="../index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="doc-page" id="main">
+    <h1>What is Nobulex?</h1>
+
+    <div class="doc-page__plain">
+      <p><strong>Plain English:</strong> Nobulex is middleware that forces agents to follow signed rules. It blocks forbidden actions at runtime and logs every decision. Anyone can verify compliance from the log—without trusting the operator.</p>
+    </div>
+
+    <h2>What does it block?</h2>
+    <p>Whatever you declare in the covenant (behavioral spec). Examples: no writes to sensitive paths, read-only mode, no data exfiltration, no external API calls. Rules are signed and immutable—only narrowable, never loosened.</p>
+
+    <h2>What proof do I get?</h2>
+    <p>A hash-chained action log. Every allowed or blocked action is recorded. The log is tamper-evident and deterministically verifiable—same inputs, same result. Third parties can audit compliance without seeing how the agent works.</p>
+
+    <h2>How does it work?</h2>
+    <div class="doc-page__flow" aria-label="Flow">
+      <span>1. Agent decides action</span>
+      <span>→</span>
+      <span>2. Middleware intercepts</span>
+      <span>→</span>
+      <span>3. Evaluate covenant</span>
+      <span>→</span>
+      <span>4. Block or allow</span>
+      <span>→</span>
+      <span>5. Log to action log</span>
+      <span>→</span>
+      <span>6. Verifiable by anyone</span>
+    </div>
+
+    <p><a href="../index.html#primitives">See the six primitives</a> (DID, behavioral spec, W3C VC, hash-chained log, deterministic verification, staking/slashing) for the full technical picture.</p>
+
+    <p style="margin-top: 2rem;"><a href="quickstart.html" class="section__cta">Quickstart →</a> · <a href="../index.html" class="section__cta">← Home</a></p>
+  </main>
+
+  <script src="../main.js"></script>
+</body>
+</html>

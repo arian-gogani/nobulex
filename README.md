@@ -1,5 +1,17 @@
 # Nobulex
 
+> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
+
+
+> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
+
+
+> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
+
+
+> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
+
+
 **The accountability primitive for AI agents. Cryptographic behavioral commitments with trustless verification.**
 
 Nobulex is an open protocol (MIT license) that enables autonomous AI agents to declare what they will and won't do, prove they followed through, and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex enables the agent economy by making behavior trustworthy.

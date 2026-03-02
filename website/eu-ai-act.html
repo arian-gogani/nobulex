@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EU AI Act Compliance — Nobulex</title>
+  <meta name="description" content="How Nobulex maps to EU AI Act requirements for high-risk AI systems.">
+  <meta property="og:title" content="EU AI Act Compliance — Nobulex">
+  <meta property="og:description" content="How Nobulex maps to EU AI Act requirements for high-risk AI systems.">
+  <meta property="og:type" content="article">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .compliance-page { max-width: var(--w); margin: 0 auto; padding: 4rem 1.5rem; }
+    .compliance-page h1 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    .compliance-page .compliance-page__intro { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .compliance-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    .compliance-grid__col h3 { font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; }
+    .compliance-row { padding: 1rem 0; border-bottom: 1px solid var(--border); }
+    .compliance-row:last-child { border-bottom: none; }
+    .compliance-row__art { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--accent); margin-bottom: 0.25rem; }
+    .compliance-row__txt { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.5; }
+    .compliance-row__nobulex { font-size: 0.8125rem; color: var(--text); margin-top: 0.5rem; padding-left: 0.75rem; border-left: 2px solid var(--accent); }
+    @media (max-width: 768px) { .compliance-grid { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="compliance-page" id="main">
+    <h1>EU AI Act Compliance Guide</h1>
+    <p class="compliance-page__intro">The EU AI Act is currently scheduled to apply from 2 August 2026 (<a href="https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32024R1689" rel="noopener noreferrer">Regulation (EU) 2024/1689</a>). Penalties can reach €35 million or 7% of global revenue. Timelines for high-risk obligations may be subject to further guidance. This guide explains how Nobulex helps you meet those requirements — in plain language.</p>
+    <div class="compliance-grid">
+      <div class="compliance-grid__col">
+        <h3>EU AI Act Requirement</h3>
+        <div class="compliance-row">
+          <span class="compliance-row__art">Art. 12 · Risk management</span>
+          <p class="compliance-row__txt">Ongoing identification and mitigation of risks throughout the lifecycle.</p>
+        </div>
+        <div class="compliance-row">
+          <span class="compliance-row__art">Art. 13 · Data governance</span>
+          <p class="compliance-row__txt">Training and validation data quality and relevance.</p>
+        </div>
+        <div class="compliance-row">
+          <span class="compliance-row__art">Art. 14 · Technical documentation</span>
+          <p class="compliance-row__txt">Documentation of design, development, and operation.</p>
+        </div>
+        <div class="compliance-row">
+          <span class="compliance-row__art">Art. 15 · Record-keeping</span>
+          <p class="compliance-row__txt">Automatic logging of events and decisions.</p>
+        </div>
+        <div class="compliance-row">
+          <span class="compliance-row__art">Art. 17 · Transparency</span>
+          <p class="compliance-row__txt">Human oversight and interpretability.</p>
+        </div>
+      </div>
+      <div class="compliance-grid__col">
+        <h3>How Nobulex Helps</h3>
+        <div class="compliance-row">
+          <p class="compliance-row__nobulex">Agents declare their rules. You can verify they followed them without seeing how they work.</p>
+        </div>
+        <div class="compliance-row">
+          <p class="compliance-row__nobulex">Rules are linked to data handling. You can trace what was allowed.</p>
+        </div>
+        <div class="compliance-row">
+          <p class="compliance-row__nobulex">Every action produces a record. Technical evidence is built in.</p>
+        </div>
+        <div class="compliance-row">
+          <p class="compliance-row__nobulex">Automatic logging of what happened and why. No manual tracking.</p>
+        </div>
+        <div class="compliance-row">
+          <p class="compliance-row__nobulex">Third parties can verify compliance. Human oversight is supported.</p>
+        </div>
+      </div>
+    </div>
+    <a href="index.html" class="section__cta" style="margin-top: 2rem; display: inline-block;">← Back to Nobulex</a>
+  </main>
+
+  <!-- AI Help widget -->
+  <button type="button" class="help-widget__toggle" id="help-toggle" aria-label="Get help understanding Nobulex" aria-expanded="false"><span class="help-widget__icon" aria-hidden="true">?</span></button>
+  <div class="help-widget__panel" id="help-panel" aria-hidden="true">
+    <div class="help-widget__header"><h3>Need help?</h3><button type="button" class="help-widget__close" id="help-close" aria-label="Close help">×</button></div>
+    <p class="help-widget__intro">Not sure where to start? Ask any question. We'll answer in plain language — no jargon.</p>
+    <div class="help-widget__links">
+      <a href="index.html#problem">What is Nobulex</a>
+      <a href="index.html#manifesto">Why it matters</a>
+      <a href="eu-ai-act.html">EU compliance</a>
+      <a href="index.html">Home</a>
+    </div>
+    <div class="help-widget__chat">
+      <div class="help-widget__messages" id="help-messages"></div>
+      <div class="help-widget__input-wrap">
+        <input type="text" id="help-query" placeholder="e.g. What is Nobulex, in simple terms?" autocomplete="off">
+        <button type="button" class="help-widget__ask" id="help-ask" aria-label="Send">→</button>
+      </div>
+      <p class="help-widget__hint" id="help-hint">Type your question and press Enter</p>
+    </div>
+  </div>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script src="main.js"></script>
+</body>
+</html>

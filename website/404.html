@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Page not found — Nobulex</title>
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/styles.css">
+  <style>
+    .error-page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 2rem; text-align: center; }
+    .error-page__code { font-family: var(--font-mono); font-size: 4rem; font-weight: 600; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .error-page__title { font-size: 1.25rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    .error-page__desc { font-size: 0.9375rem; color: var(--text-secondary); margin-bottom: 2rem; max-width: 28ch; }
+    .error-page__links { display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center; }
+    .error-page__links a { font-size: 0.875rem; color: var(--accent); text-decoration: none; }
+    .error-page__links a:hover { text-decoration: underline; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header__top">
+      <a href="/" class="header__logo" aria-label="Nobulex home"><img src="/images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">×</span></button>
+      <div class="header__links">
+        <a href="/docs/what-it-is.html">What it is</a>
+        <a href="/docs/quickstart.html">Quickstart</a>
+        <a href="/eu-ai-act.html">Compliance</a>
+        <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="/#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+  <main class="error-page" id="main">
+    <p class="error-page__code">404</p>
+    <h1 class="error-page__title">Page not found</h1>
+    <p class="error-page__desc">This page doesn't exist or has moved.</p>
+    <div class="error-page__links">
+      <a href="/">← Home</a>
+      <a href="/demo.html">Demo</a>
+      <a href="/docs/">Docs</a>
+      <a href="/docs/quickstart.html">Quickstart</a>
+      <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">GitHub</a>
+      <a href="mailto:nobulex.dev@gmail.com">Questions? Email us</a>
+    </div>
+  </main>
+  <script src="/main.js"></script>
+</body>
+</html>

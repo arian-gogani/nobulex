@@ -3,20 +3,14 @@
 > **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
 
 
-> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
 
-
-> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
-
-
-> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
 
 
 **The accountability primitive for AI agents. Cryptographic behavioral commitments with trustless verification.**
 
 Nobulex is an open protocol (MIT license) that enables autonomous AI agents to declare what they will and won't do, prove they followed through, and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex enables the agent economy by making behavior trustworthy.
 
-![CI](https://github.com/agbusiness195/NOBULEX/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/nobulexdev/nobulex/actions/workflows/ci.yml/badge.svg)
 ![Packages](https://img.shields.io/badge/core%20packages-14-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
@@ -34,7 +28,7 @@ This is always decidable, always deterministic, always efficient.
 ## Quick Start
 
 ```bash
-npm install @nobulex/identity @nobulex/covenant-lang @nobulex/middleware @nobulex/verification
+npm install @nobulex/sdk
 ```
 
 ```typescript
@@ -181,7 +175,7 @@ Creates two agents, authors a covenant, enforces it via middleware, blocks a for
 ## Development
 
 ```bash
-git clone https://github.com/agbusiness195/NOBULEX.git
+git clone https://github.com/nobulexdev/nobulex.git
 cd NOBULEX
 npm install
 npx vitest run    # 6,062 tests, 112 files, 0 failures
@@ -207,7 +201,7 @@ npx vitest run    # 6,062 tests, 112 files, 0 failures
 
 - **Website:** [nobulex.com](https://nobulex.com)
 - **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
-- **GitHub:** [github.com/agbusiness195/NOBULEX](https://github.com/agbusiness195/NOBULEX)
+- **GitHub:** [github.com/nobulexdev/nobulex](https://github.com/nobulexdev/nobulex)
 
 ## License
 

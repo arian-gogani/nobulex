@@ -104,17 +104,14 @@ export async function verifyCompliance(
 
   for (const entry of log) {
     try {
-      const result = cclEvaluate(ccl, {
-        action: entry.action,
-        resource: entry.resource,
-      });
+      const result = cclEvaluate(ccl, entry.action, entry.resource);
 
-      if (result.decision === 'deny') {
+      if (!result.permitted) {
         violations.push({
           actionId: entry.id,
           action: entry.action,
           resource: entry.resource,
-          reason: result.reason ?? 'Action denied by covenant constraints',
+          reason: 'Action denied by covenant constraints',
         });
       }
     } catch {

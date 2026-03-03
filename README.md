@@ -1,6 +1,6 @@
 # Nobulex
 
-> **Note:** This repository consolidates months of development across multiple protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
+> **Note:** This repository consolidates months of development across many different protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
 
 
 
@@ -8,7 +8,7 @@
 
 **The accountability primitive for AI agents. Cryptographic behavioral commitments with trustless verification.**
 
-Nobulex is an open protocol (MIT license) that enables autonomous AI agents to declare what they will and won't do, prove they followed through, and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex enables the agent economy by making behavior trustworthy.
+Nobulex is considered an open protocol (MIT license). It enables autonomous AI agents to declare what they will and what they won't do, follwoing with prove they followed through and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex will enable the agent economy by making behavior trustworthy.
 
 ![CI](https://github.com/nobulexdev/nobulex/actions/workflows/ci.yml/badge.svg)
 ![Packages](https://img.shields.io/badge/core%20packages-14-blue)
@@ -23,7 +23,7 @@ You can't audit a neural network. But you **can** audit actions against stated c
 verify(covenant, actionLog) → { compliant: boolean, violations: Violation[] }
 ```
 
-This is always decidable, always deterministic, always efficient.
+This will ALWAYS be decidable, always deterministic, always efficient.
 
 ## Quick Start
 
@@ -93,28 +93,28 @@ console.log(result.violations);   // []
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Platform                              │
-│          cli  ·  sdk  ·  elizaos-plugin                      │
+│                        Platform                             │
+│          cli  ·  sdk  ·  elizaos-plugin                     │
 ├─────────────────────────────────────────────────────────────┤
-│                    Covenant Primitives                        │
-│                                                              │
+│                    Covenant Primitives                      │
+│                                                             │
 │  ┌──────────┐  ┌──────────────┐  ┌────────────┐             │
 │  │ identity │  │ covenant-lang│  │ action-log │             │
 │  │  (DID)   │  │    (DSL)     │  │(hash-chain)│             │
 │  └──────────┘  └──────────────┘  └────────────┘             │
-│                                                              │
+│                                                             │
 │  ┌────────────┐  ┌──────────────┐  ┌───────────────┐        │
-│  │ middleware  │  │ verification │  │ composability │        │
+│  │ middleware  │  │ verification │  │ composability │       │
 │  │(pre-exec)  │  │ (post-hoc)   │  │(trust graph)  │        │
 │  └────────────┘  └──────────────┘  └───────────────┘        │
-│                                                              │
+│                                                             │
 │  ┌─────┐  ┌───────────┐                                     │
 │  │ tee │  │ contracts │                                     │
 │  │(SGX)│  │(Solidity) │                                     │
 │  └─────┘  └───────────┘                                     │
 ├─────────────────────────────────────────────────────────────┤
-│                      Foundation                              │
-│        core-types  ·  crypto  ·  evm                         │
+│                      Foundation                             │
+│        core-types  ·  crypto  ·  evm                        │
 └─────────────────────────────────────────────────────────────┘
 ```
 
@@ -130,7 +130,7 @@ covenant SafeTrader {
 }
 ```
 
-**Forbid wins.** If any `forbid` matches, the action is blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
+**Forbid wins.** If any `forbid` matches, the action is immedietly blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
 
 ## Core Packages (9)
 

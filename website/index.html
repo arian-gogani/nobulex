@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nobulex — The accountability primitive for AI agents</title>
+  <title>Nobulex — Compliance-ready audit trails for AI agents</title>
   <meta name="description" content="Make agents commit to rules and prove they followed them. Signed covenants. Runtime enforcement. Verifiable logs.">
   <meta property="og:title" content="Nobulex — Verifiable Agents">
   <meta property="og:description" content="Make agents commit to rules and prove they followed them. Signed covenants. Runtime enforcement. Verifiable logs.">
@@ -45,11 +45,12 @@
         <a href="#guarantee">Guarantee</a>
         <a href="demo.html">Demo</a>
         <a href="#traction">Traction</a>
+        <a href="#pricing">Pricing</a>
         <a href="demo.html">Full demo</a>
         <a href="docs/index.html">Docs</a>
         <a href="https://github.com/nobulexdev/nobulex" rel="noopener noreferrer">GitHub</a>
       </div>
-      <a href="https://github.com/nobulexdev/nobulex" class="header__cta" rel="noopener noreferrer">View on GitHub</a>
+      <a href="mailto:nobulex.dev@gmail.com?subject=Nobulex%20Demo%20Request" class="header__cta">Book a Demo</a>
     </nav>
   </header>
 
@@ -61,8 +62,9 @@
       </div>
       <div class="hero__bg" aria-hidden="true"></div>
       <div class="hero__inner">
-        <p class="hero__tagline" data-reveal>Make agents commit to rules — and prove they followed them.</p>
-        <p class="hero__tagline hero__tagline--sub" data-reveal>Signed covenants. Runtime enforcement. Verifiable logs.</p>
+        <div class="hero__urgency" data-reveal style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.25);color:#f44;font-size:0.82rem;font-weight:600;padding:0.45rem 1.1rem;border-radius:100px;margin-bottom:1.5rem"><span style="width:7px;height:7px;background:#f44;border-radius:50%;display:inline-block"></span>EU AI Act high-risk deadline: August 2, 2026</div>
+        <p class="hero__tagline" data-reveal>Make AI agents prove they followed the rules.</p>
+        <p class="hero__tagline hero__tagline--sub" data-reveal>Cryptographic audit trails. Runtime enforcement. Independent verification.</p>
         <h1 class="hero__title">
           <span class="hero__line" data-split="words">Verifiable Agents</span>
         </h1>
@@ -71,8 +73,8 @@
           <p><strong>Plain English:</strong> Nobulex is middleware that forces agents to follow signed rules. It blocks forbidden actions at runtime and logs every decision. Anyone can verify compliance from the log—without trusting the operator.</p>
         </div>
         <div class="hero__cta hero__cta-buttons" data-reveal>
-          <a href="https://github.com/nobulexdev/nobulex" class="btn btn--primary" rel="noopener noreferrer">GitHub</a>
-          <a href="https://github.com/nobulexdev/nobulex/blob/main/PROTOCOL.md" class="btn btn--ghost" rel="noopener noreferrer">Protocol / Spec</a>
+          <a href="mailto:nobulex.dev@gmail.com?subject=Nobulex%20Demo%20Request" class="btn btn--primary">Book a Demo</a>
+          <a href="https://github.com/nobulexdev/nobulex" class="btn btn--ghost" rel="noopener noreferrer">View on GitHub</a>
         </div>
       </div>
       <div class="hero__scroll-hint" aria-hidden="true">
@@ -279,11 +281,11 @@
         <p class="section__label section__label--center" data-reveal>TRACTION</p>
         <h2 class="traction__title" data-reveal>Built in the open</h2>
         <div class="traction__stats" data-reveal>
-          <div class="traction__stat"><span class="traction__stat-val">134K+</span><span class="traction__stat-lbl">Lines TypeScript</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">6,115</span><span class="traction__stat-lbl">Tests</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">60</span><span class="traction__stat-lbl">Packages</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">CLI</span><span class="traction__stat-lbl">Tooling</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">ElizaOS</span><span class="traction__stat-lbl">Plugin</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">3 lines</span><span class="traction__stat-lbl">To integrate</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">6,100+</span><span class="traction__stat-lbl">Tests passing</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">61</span><span class="traction__stat-lbl">npm packages</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">LangChain</span><span class="traction__stat-lbl">Integration</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">Independent</span><span class="traction__stat-lbl">Verifier</span></div>
         </div>
         <p class="traction__meta" data-reveal>MIT · Open source · No vendor lock-in</p>
       </div>
@@ -298,14 +300,16 @@
         <div class="code-block code-block--wide" data-reveal>
           <span class="code-block__lang">JAVASCRIPT</span>
           <button type="button" class="code-block__copy" aria-label="Copy code">Copy</button>
-          <pre><code><span class="token-key">const</span> { protect } = <span class="token-key">require</span>(<span class="token-str">'@nobulex/sdk'</span>);
+          <pre><code><span class="token-key">import</span> { createDID } <span class="token-key">from</span> <span class="token-str">'@nobulex/identity'</span>;
+<span class="token-key">import</span> { parseSource } <span class="token-key">from</span> <span class="token-str">'@nobulex/covenant-lang'</span>;
+<span class="token-key">import</span> { EnforcementMiddleware } <span class="token-key">from</span> <span class="token-str">'@nobulex/middleware'</span>;
 
-<span class="token-key">const</span> agent = <span class="token-key">await</span> protect({
-  name: <span class="token-str">'my-agent'</span>,
-  rules: [<span class="token-str">'no-data-leak'</span>, <span class="token-str">'read-only'</span>]
-});</code></pre>
+<span class="token-cmt">// 3 lines to add compliance-ready audit trails</span>
+<span class="token-key">const</span> agent = <span class="token-key">await</span> createDID();
+<span class="token-key">const</span> spec = parseSource(<span class="token-str">`covenant MyAgent { permit read; forbid write; }`</span>);
+<span class="token-key">const</span> mw = <span class="token-key">new</span> EnforcementMiddleware({ agentDid: agent.did, spec });</code></pre>
           <div class="code-block__footer">
-            <button type="button" class="npm-copy" data-copy="npm install @nobulex/sdk" aria-label="Copy npm command">npm install @nobulex/sdk</button>
+            <button type="button" class="npm-copy" data-copy="npm install @nobulex/identity @nobulex/covenant-lang @nobulex/middleware" aria-label="Copy npm command">npm install @nobulex/identity @nobulex/covenant-lang @nobulex/middleware</button>
             <span class="code-block__meta">MIT Licensed</span>
           </div>
         </div>
@@ -313,6 +317,56 @@
     </section>
   </main>
 
+
+    <!-- Pricing -->
+    <section class="section section--pricing" id="pricing" data-section="pricing" style="padding:5rem 2rem">
+      <div class="section__content" style="max-width:960px;margin:0 auto">
+        <p class="section__label section__label--center" data-reveal>PRICING</p>
+        <h2 style="text-align:center;margin-bottom:0.5rem" data-reveal>Start free. Scale when ready.</h2>
+        <p style="text-align:center;color:#888;margin-bottom:3rem" data-reveal>EU AI Act Article 12 compliance for your AI agents.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem" data-reveal>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:2rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:0.5rem">Free</p>
+            <p style="font-size:2.5rem;font-weight:700;margin-bottom:0.25rem">$0</p>
+            <p style="color:#888;font-size:0.9rem;margin-bottom:1.5rem">For testing &amp; evaluation</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;color:#ccc;font-size:0.9rem">
+              <li>✓ 10,000 verifications/month</li>
+              <li>✓ Single agent</li>
+              <li>✓ Hash-chained audit logs</li>
+              <li>✓ Community support</li>
+            </ul>
+          </div>
+          <div style="background:rgba(79,125,249,0.06);border:1px solid rgba(79,125,249,0.3);border-radius:12px;padding:2rem;position:relative">
+            <span style="position:absolute;top:-10px;right:16px;background:#4f7df9;color:#fff;font-size:0.7rem;font-weight:700;padding:0.2rem 0.7rem;border-radius:100px">RECOMMENDED</span>
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#4f7df9;margin-bottom:0.5rem">Team</p>
+            <p style="font-size:2.5rem;font-weight:700;margin-bottom:0.25rem">$99<span style="font-size:1rem;color:#888">/mo</span></p>
+            <p style="color:#888;font-size:0.9rem;margin-bottom:1.5rem">For teams shipping AI agents</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;color:#ccc;font-size:0.9rem">
+              <li>✓ 100,000 verifications/month</li>
+              <li>✓ Unlimited agents</li>
+              <li>✓ Compliance dashboard</li>
+              <li>✓ Audit-ready reports</li>
+              <li>✓ Email support</li>
+            </ul>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:2rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:0.5rem">Enterprise</p>
+            <p style="font-size:2.5rem;font-weight:700;margin-bottom:0.25rem">Custom</p>
+            <p style="color:#888;font-size:0.9rem;margin-bottom:1.5rem">For regulated industries</p>
+            <ul style="list-style:none;display:flex;flex-direction:column;gap:0.6rem;color:#ccc;font-size:0.9rem">
+              <li>✓ Unlimited verifications</li>
+              <li>✓ EU AI Act compliance packs</li>
+              <li>✓ Custom covenants</li>
+              <li>✓ On-prem deployment</li>
+              <li>✓ Dedicated support &amp; SLA</li>
+            </ul>
+            <a href="mailto:nobulex.dev@gmail.com?subject=Nobulex%20Enterprise%20Inquiry" style="display:inline-block;margin-top:1.25rem;color:#4f7df9;font-weight:600;font-size:0.9rem;text-decoration:none">Contact us →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider" aria-hidden="true"></div>
   <footer class="footer" data-section="footer">
     <div class="footer__brand">
       <h3 class="footer__logo">NOBULEX</h3>

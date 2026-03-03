@@ -203,6 +203,10 @@ npx vitest run    # 6,062 tests, 112 files, 0 failures
 - **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
 - **GitHub:** [github.com/nobulexdev/nobulex](https://github.com/nobulexdev/nobulex)
 
+## Pricing
+
+Open source and free forever. Nobulex Cloud available for managed compliance infrastructure.
+
 ## License
 
 MIT

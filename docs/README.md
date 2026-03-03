@@ -59,7 +59,7 @@ The trust layer for the agent economy. Kova is an open cryptographic protocol (M
 | [COMPLIANCE-AUTOPILOT-SPEC.md](./COMPLIANCE-AUTOPILOT-SPEC.md) | 0.5–1% budget, Salesforce stickiness |
 | [STAKING-TIERS-SPEC.md](./STAKING-TIERS-SPEC.md) | $1/$10/$100/$1000, governance weight |
 | [THE-RAIL-SPEC.md](./THE-RAIL-SPEC.md) | Trust = transaction, 0.15% of volume |
-| [PRICING.md](./PRICING.md) | Open core tiers: Free, Pro ($99/mo), Enterprise ($2K–20K/mo), Certification, Trust API |
+| [PRICING.md](./PRICING.md) | Nobulex Cloud: per-verification toll model — per-action toll ($0.005+/verification), certification badges, compliance intelligence, insurance-linked coverage, embedded middleware |
 | [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) | Model update triggers (Hole 7/39) — re-verification workflow |
 | [METRICS-DASHBOARD.md](./METRICS-DASHBOARD.md) | What to track — npm installs, stars, DMs |
 | [DISCOVERY.md](./DISCOVERY.md) | Federated covenant discovery (`.well-known/stele`) |

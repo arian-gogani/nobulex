@@ -5,7 +5,7 @@
  * Body: { covenant: CovenantDocument }
  * Response: { valid: boolean, checks: VerificationCheck[] }
  *
- * Pro tier: $99/mo for hosted verification + dashboard
+ * Nobulex Cloud: per-verification pricing
  */
 
 import express from 'express';

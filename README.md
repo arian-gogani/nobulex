@@ -8,7 +8,7 @@
 
 **The accountability primitive for AI agents. Cryptographic behavioral commitments with trustless verification.**
 
-Nobulex is considered an open protocol (MIT license). It enables autonomous AI agents to declare what they will and what they won't do, follwoing with prove they followed through and face economic consequences if they didn't. The way HTTPS enabled e-commerce by making connections trustworthy, Nobulex will enable the agent economy by making behavior trustworthy.
+AI agents have been making decisions that affect real money and real people. Although, right now there is no real way to prove what an agent actually did. You just have to trust whoever runs it. Nobulex fixes that. It is an open-source middleware that lets all agents commit to specific rules before they can run, which blocks them if they break those rules, and creates a log that ANYONE can verify after the fact with no trust required.
 
 ![CI](https://github.com/nobulexdev/nobulex/actions/workflows/ci.yml/badge.svg)
 ![Packages](https://img.shields.io/badge/core%20packages-14-blue)

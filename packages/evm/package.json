@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/evm",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "EVM anchoring utilities with ABI encoding, Keccak-256 hashing, and JSON-RPC provider interface",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -31,12 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/evm"
   },
-  "homepage": "https://nobulex.dev",
+  "homepage": "https://nobulex.com",
   "bugs": {
-    "url": "https://github.com/agbusiness195/nobulex/issues"
+    "url": "https://github.com/nobulexdev/nobulex/issues"
   },
   "author": "Nobulex Labs, Inc.",
   "keywords": [

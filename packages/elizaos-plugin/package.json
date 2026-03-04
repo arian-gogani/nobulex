@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/elizaos-plugin",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "ElizaOS plugin — actions, evaluators, providers, and plugin registration for covenant-governed AI agents",
   "sideEffects": false,
   "main": "./dist/index.js",
@@ -31,11 +31,11 @@
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/elizaos-plugin"
   },
-  "homepage": "https://nobulex.dev",
-  "bugs": { "url": "https://github.com/agbusiness195/nobulex/issues" },
+  "homepage": "https://nobulex.com",
+  "bugs": { "url": "https://github.com/nobulexdev/nobulex/issues" },
   "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "ai-accountability", "elizaos", "plugin", "ai-agent"]
 }

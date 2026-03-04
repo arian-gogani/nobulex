@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/quickstart",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Zero-config entry point wrapping identity, covenant-lang, and middleware into a single protect() function.",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ariangogani/nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/quickstart"
   },
   "keywords": [

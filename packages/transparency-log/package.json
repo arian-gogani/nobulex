@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/transparency-log",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Append-only transparency log for epoch Merkle roots — self-hosted or managed",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -28,7 +28,7 @@
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/transparency-log"
   },
   "keywords": ["nobulex", "transparency", "audit", "rekor"]

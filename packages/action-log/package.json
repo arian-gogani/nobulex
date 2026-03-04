@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/action-log",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Hash-chained tamper-evident action log with SHA-256 integrity verification",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -18,11 +18,11 @@
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/action-log"
   },
-  "homepage": "https://nobulex.dev",
-  "bugs": { "url": "https://github.com/agbusiness195/nobulex/issues" },
+  "homepage": "https://nobulex.com",
+  "bugs": { "url": "https://github.com/nobulexdev/nobulex/issues" },
   "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "action-log", "hash-chain", "tamper-evident"],
   "scripts": {

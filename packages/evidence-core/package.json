@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/evidence-core",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Evidence item data structure — signed hash-chained records of AI agent actions",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -27,7 +27,7 @@
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/evidence-core"
   },
   "keywords": ["nobulex", "evidence", "ai-accountability", "hash-chain"]

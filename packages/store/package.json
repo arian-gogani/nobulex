@@ -29,12 +29,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/store"
   },
-  "homepage": "https://nobulex.dev",
+  "homepage": "https://nobulex.com",
   "bugs": {
-    "url": "https://github.com/agbusiness195/nobulex/issues"
+    "url": "https://github.com/nobulexdev/nobulex/issues"
   },
   "author": "Nobulex Labs, Inc.",
   "keywords": [

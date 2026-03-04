@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/marketplace",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -32,7 +32,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/marketplace"
   },
   "keywords": ["nobulex", "kova", "marketplace", "trust-gated"]

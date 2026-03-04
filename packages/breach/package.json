@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/breach",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Breach detection and violation reporting for the Nobulex covenant framework",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/breach"
   },
   "keywords": [

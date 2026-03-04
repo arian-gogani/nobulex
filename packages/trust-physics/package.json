@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/trust-physics",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Multidimensional, directional, time-decaying, context-dependent, composable trust framework for the Nobulex covenant protocol",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -26,7 +26,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/trust-physics"
   },
   "keywords": [

@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/verifier",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Standalone verification engine for third-party auditors",
   "sideEffects": false,
   "main": "dist/index.js",
@@ -31,12 +31,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/Nobulex.git",
+    "url": "https://github.com/nobulexdev/nobulex.git",
     "directory": "packages/verifier"
   },
-  "homepage": "https://nobulex.dev",
+  "homepage": "https://nobulex.com",
   "bugs": {
-    "url": "https://github.com/agbusiness195/nobulex/issues"
+    "url": "https://github.com/nobulexdev/nobulex/issues"
   },
   "author": "Nobulex Labs, Inc.",
   "keywords": [

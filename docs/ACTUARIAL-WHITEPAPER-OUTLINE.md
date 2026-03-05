@@ -8,9 +8,8 @@
 
 ## Target Audience
 
-- Cyber insurance actuaries at **Coalition**, **At-Bay**, **Corvus**, **Resilience**
-- They already write AI-related riders
-- They need a risk framework; nobody's given them one
+- Cyber insurance actuaries writing AI-related riders
+- Organizations needing a structured risk framework for autonomous agents
 
 ---
 
@@ -64,15 +63,6 @@
 
 ### 8. Next Steps
 
-- Publish whitepaper (arXiv, insurer outreach)
-- Share with 4 target insurers
-- Iterate based on actuarial feedback
-
----
-
-## Relation to Adoption
-
-- **Improvement 53:** Actuarial Risk Model
-- **ADOPTION-STRATEGY.md:** Insurance Discount: The Actuarial Play
-- **ADOPTION-READINESS.md:** Gap 2, Week 8 — Actuarial whitepaper
-- **@nobulex/derivatives:** Risk assessment, premium calculation
+- Publish whitepaper
+- Gather actuarial feedback
+- Iterate on risk model

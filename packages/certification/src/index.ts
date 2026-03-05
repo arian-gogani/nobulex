@@ -1,7 +1,7 @@
 /**
  * @nobulex/certification — Certification Authority (Improvement 66).
  *
- * Certify agents like UL certifies electronics. $10K-100K per agent class per year.
+ * Certify agents against covenant compliance standards.
  * Regulated industries (finance, healthcare, legal) need this.
  *
  * @packageDocumentation
@@ -29,7 +29,7 @@ export interface CertificationResult {
   rejectionReason?: string;
 }
 
-/** Pricing: $10K-25K class, $25K-50K instance, $50K-100K enterprise. */
+/** Certification tiers: class, instance, enterprise. */
 export const CERTIFICATION_PRICE: Record<CertificationTier, { min: number; max: number }> = {
   class: { min: 10_000, max: 25_000 },
   instance: { min: 25_000, max: 50_000 },

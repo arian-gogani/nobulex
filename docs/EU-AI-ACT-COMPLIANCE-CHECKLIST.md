@@ -74,7 +74,7 @@ For regulated industries (finance, healthcare, critical infrastructure):
 1. **Solo tier** — Run `kova init` + `kova audit`; fix gaps
 2. **Bilateral** — Add attestation; counterparty signs interactions
 3. **Network** — Enroll in Nobulex trust graph; publish reputation
-4. **Certified** — Use @nobulex/certification for agent class certification ($10K–100K)
+4. **Certified** — Use @nobulex/certification for agent class certification
 
 ---
 

@@ -339,7 +339,7 @@ export interface WellKnownOptions {
 }
 
 /**
- * Creates a handler for GET /.well-known/stele (federated covenant discovery).
+ * Creates a handler for GET /.well-known/nobulex (federated covenant discovery).
  * Trust the Ed25519 signature on the covenant, not the resolver.
  *
  * @param options - Discovery metadata.
@@ -351,7 +351,7 @@ export interface WellKnownOptions {
  *   agentId: 'agent-1',
  *   covenants: [{ id: doc.id, url: 'https://example.com/covenants/abc.json', status: 'active' }],
  * });
- * app.get('/.well-known/stele', handler);
+ * app.get('/.well-known/nobulex', handler);
  * ```
  */
 export function createWellKnownHandler(options: WellKnownOptions): AsyncHandler {

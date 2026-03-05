@@ -25,7 +25,7 @@ Cross-platform reputation graph = largest verified agent behavioral dataset. Blo
 
 ## Pricing
 
-- **Per-verification toll** — $0.005+ per verification action
+- **Per-verification toll — fee per verification action
 - **API access** — Per-query pricing for compliance intelligence
 - **Custom reports** — Enterprise contracts via Nobulex Cloud
 

@@ -231,9 +231,7 @@ The `TEERegistry` maintains an in-memory registry of DID-to-TEE bindings, enabli
 
 The Nobulex protocol's economic design aligns the incentives of all participants -- agent operators, verifiers, and affected counterparties -- toward honest behavior and accurate reporting.
 
-**Five-layer per-verification toll model**: The protocol monetizes through a five-layer revenue architecture. (1) Per-action toll ($0.005+/verification) — collected programmatically at the verification layer, negligible relative to the trust assurance provided. (2) Certification badges — agents and operators pay for third-party certification of covenant compliance ($10K–100K per agent class). (3) Compliance intelligence — anonymized, aggregated behavioral data sold to insurers, regulators, and enterprises. (4) Insurance-linked coverage — verification data enables actuarial pricing for AI agent risk, with Nobulex providing the risk infrastructure. (5) Embedded middleware — licensed middleware integrations for platforms that embed Nobulex verification natively.
-
-**Revenue scaling**: The protocol's revenue scales linearly with the volume of agent-mediated economic activity. Industry estimates project that the agent economy will exceed $4 trillion annually by 2028 [1][2]. Even conservative adoption assumptions yield substantial protocol revenue through compounding per-verification tolls across all five revenue layers.
+**The protocol is designed for sustainable operation through verification fees, certification services, compliance intelligence, and middleware licensing.**
 
 **Staking economics**: Agent operators stake ETH on their covenants, creating skin-in-the-game that aligns operator incentives with honest agent behavior. The minimum stake requirement is configurable per deployment and should be calibrated to the economic value of the transactions the covenant governs. Stakes are locked during violation adjudication to prevent front-running withdrawals.
 

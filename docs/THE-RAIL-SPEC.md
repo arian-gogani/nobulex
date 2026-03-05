@@ -12,20 +12,11 @@ Trust resolution and transaction execution merged into one atomic operation. Nob
 
 ---
 
-## Model
-
-- **Fee:** 0.15% of transaction volume
-- **Visa model:** Equifax ($30B) vs. Visa ($550B) — the rail is worth more than the credit report
-- **Atomicity:** Trust verification + transaction = single operation
-
----
-
 ## Architecture
 
-1. **Transaction request** — Agent A wants to pay Agent B $X
+1. **Transaction request** — Agent A wants to pay Agent B
 2. **Trust resolution** — Nobulex verifies A's covenant, B's covenant, compliance
 3. **Execution** — If trust passes: transaction executes. If not: rejected. No partial state.
-4. **Fee** — 0.15% of $X to Nobulex
 
 ---
 
@@ -35,8 +26,6 @@ Trust resolution and transaction execution merged into one atomic operation. Nob
 |------------|------|
 | Verify, then transact elsewhere | Verify + transact in one op |
 | Trust is advisory | Trust is mandatory for execution |
-| Revenue from verification only | Revenue from transaction volume |
-| Equifax model | Visa model |
 
 ---
 
@@ -45,12 +34,3 @@ Trust resolution and transaction execution merged into one atomic operation. Nob
 - **Phase 1:** Trust resolution API (exists)
 - **Phase 2:** Transaction execution layer (escrow, settlement)
 - **Phase 3:** Atomic integration — single API for "verify and execute"
-- **Phase 4:** Volume; 0.15% of $1B = $1.5M
-
----
-
-## Relation
-
-- **Improvement 76:** The Rail
-- **TRUST-TAX-SPEC.md:** Fee structure; 0.15% at rail scale
-- **MARKETPLACE-SPEC.md:** Escrow as rail component

@@ -1,8 +1,8 @@
 /**
  * @nobulex/revenue — Money Machine: Trust Tax, Two-Sided Payments, Value-Proportional Pricing.
  *
- * Improvement 67: $0.001 micro-fee on trust resolution (Trust Tax)
- * Improvement 71: $0.0002 per query paid to verified agents (Two-Sided Payments)
+ * Micro-fee on trust resolution.
+ * Per-query payments to verified agents.
  * Improvement 72: Value-proportional fee scaling
  *
  * @packageDocumentation
@@ -22,7 +22,7 @@ export const TRUST_TAX_BASE_FEE = 0.001;
 /** Amount paid to agent per query about them (Improvement 71). */
 export const TWO_SIDED_AGENT_EARNINGS = 0.0002;
 
-/** Value-proportional fee tiers: $0.001 for sub-$1 up to $10 for $1M+ (Improvement 72). */
+/** Value-proportional fee tiers scaled to transaction size. */
 export const VALUE_PROPORTIONAL_TIERS: Array<{ minValue: number; maxValue: number; fee: number }> = [
   { minValue: 0, maxValue: 1, fee: 0.001 },
   { minValue: 1, maxValue: 100, fee: 0.01 },
@@ -58,7 +58,7 @@ export function computeTrustResolutionFee(
 
 /**
  * Compute earnings for the queried agent when their trust is resolved.
- * Verified agents earn $0.0002 per query about them.
+ * Verified agents earn per-query revenue.
  */
 export function computeAgentQueryEarnings(trustScore: number): number {
   if (trustScore <= 0) return 0;

@@ -932,7 +932,7 @@ describe('Express/HTTP middleware adapter', () => {
         ],
       });
 
-      const req = mockRequest({ method: 'GET', path: '/.well-known/stele' });
+      const req = mockRequest({ method: 'GET', path: '/.well-known/nobulex' });
       const res = mockResponse();
 
       await handler(req, res);

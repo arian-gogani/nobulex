@@ -1,9 +1,6 @@
 # Nobulex
 
 
-
-
-
 **The accountability primitive for AI agents. Cryptographic behavioral commitments with trustless verification.**
 
 AI agents have been making decisions that affect real money and real people. Although, right now there is no real way to prove what an agent actually did. You just have to trust whoever runs it. Nobulex fixes that. It is an open-source middleware that lets all agents commit to specific rules before they can run, which blocks them if they break those rules, and creates a log that ANYONE can verify after the fact with no trust required.
@@ -183,7 +180,6 @@ npx vitest run    # 6,062 tests, 112 files, 0 failures
 
 - **[White Paper](docs/whitepaper.md)** — Formal protocol specification
 - **[Getting Started](docs/getting-started.md)** — Developer guide with code examples
-- **[Pitch Deck](docs/pitch-deck.md)** — 12-slide overview
 - **[NIST RFI Response](docs/nist-rfi.md)** — AI agent security positioning
 
 ## Comparison

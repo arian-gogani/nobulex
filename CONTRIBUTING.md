@@ -4,7 +4,7 @@ Thank you for your interest in contributing to Nobulex, the trust layer for the 
 
 ## Good First Issues
 
-New to the project? See [docs/GOOD-FIRST-ISSUES.md](./docs/GOOD-FIRST-ISSUES.md) for scoped 1–2 hour tasks. These will also be created as GitHub issues labeled `good first issue`. Pick one, comment that you're taking it, and open a PR.
+New to the project? Check the GitHub issues labeled `good first issue` for scoped 1–2 hour tasks. Pick one, comment that you're taking it, and open a PR.
 
 ## Nobulex Improvement Proposals (KIPs)
 

@@ -3,7 +3,7 @@
  *
  * Merge trust verification with transaction execution into one atomic operation.
  * If trust fails, transaction never happens. Nobulex becomes the rail, not the checkpoint.
- * 0.15% of transaction volume (Visa model).
+ * Fee on transaction volume.
  *
  * @packageDocumentation
  */

@@ -1,4 +1,4 @@
-# Quick Start — 30 Minutes to Your First Verified Covenant
+# Quickstart: Verified Covenant in 5 minutes (MCP in 60 seconds)
 
 Get from zero to a signed, verified covenant in under 30 minutes.
 

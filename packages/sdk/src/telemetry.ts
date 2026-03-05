@@ -1,5 +1,5 @@
 /**
- * OpenTelemetry-compatible instrumentation for the Stele SDK.
+ * OpenTelemetry-compatible instrumentation for the Nobulex SDK.
  *
  * Follows the "bring your own tracer" pattern: all OTel interfaces are
  * defined inline so consumers can plug in their own OTel SDK without
@@ -102,7 +102,7 @@ export interface TelemetryMiddlewareOptions {
 }
 
 /**
- * Create a SteleMiddleware that wraps each operation with an OTel span.
+ * Create a NobulexMiddleware that wraps each operation with an OTel span.
  *
  * For every operation that passes through the middleware pipeline, this
  * middleware:
@@ -193,10 +193,10 @@ export interface EventSource {
 }
 
 /**
- * Metrics collector for Stele SDK operations.
+ * Metrics collector for Nobulex SDK operations.
  *
  * Creates OTel-compatible counters and histograms and exposes a `record()`
- * method to update them from SteleClient lifecycle events.
+ * method to update them from NobulexClient lifecycle events.
  */
 export class SteleMetrics {
   private readonly _covenantsCreated: Counter;
@@ -224,7 +224,7 @@ export class SteleMetrics {
   }
 
   /**
-   * Record a SteleClient event, updating the appropriate metrics.
+   * Record a NobulexClient event, updating the appropriate metrics.
    *
    * @param event - A SteleClient lifecycle event (from the `on()` callback).
    */
@@ -307,7 +307,7 @@ export interface CreateTelemetryOptions {
 /**
  * Create a matched pair of telemetry middleware and metrics collector.
  *
- * This is the recommended entry point for instrumenting the Stele SDK.
+ * This is the recommended entry point for instrumenting the Nobulex SDK.
  * If no tracer or meter is provided, no-op implementations are used
  * so that application code compiles and runs without any OTel dependency.
  *

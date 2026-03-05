@@ -1,5 +1,5 @@
 /**
- * Property-based and fuzz-style tests for the Stele SDK.
+ * Property-based and fuzz-style tests for the Nobulex SDK.
  *
  * Since fast-check is unavailable, we use manual random generators with
  * crypto.getRandomValues for true randomness, running 20 iterations per

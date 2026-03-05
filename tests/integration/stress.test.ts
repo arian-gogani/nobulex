@@ -1,5 +1,5 @@
 /**
- * Stress tests for the Stele SDK.
+ * Stress tests for the Nobulex SDK.
  *
  * Exercises high-volume, concurrent, and boundary-condition scenarios
  * across crypto, core, CCL, store, and verifier packages.

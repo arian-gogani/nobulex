@@ -1,5 +1,5 @@
 /**
- * Middleware system for the Stele SDK.
+ * Middleware system for the Nobulex SDK.
  *
  * Provides a composable pipeline that intercepts SteleClient operations
  * (create, verify, evaluate, etc.) for cross-cutting concerns like

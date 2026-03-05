@@ -137,7 +137,7 @@ describe('zshCompletions', () => {
     const result = zshCompletions();
     expect(result).toContain('Generate an Ed25519 key pair');
     expect(result).toContain('Verify a covenant document');
-    expect(result).toContain('Check Stele installation health');
+    expect(result).toContain('Check Nobulex installation health');
   });
 
   it('includes evaluate action suggestions', () => {
@@ -197,7 +197,7 @@ describe('fishCompletions', () => {
     const result = fishCompletions();
     expect(result).toContain('Generate an Ed25519 key pair');
     expect(result).toContain('Verify a covenant document');
-    expect(result).toContain('Check Stele installation health');
+    expect(result).toContain('Check Nobulex installation health');
   });
 
   it('includes evaluate action suggestions', () => {

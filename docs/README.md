@@ -1,6 +1,6 @@
-# Kova Documentation
+# Nobulex Documentation
 
-The trust layer for the agent economy. Kova is an open cryptographic protocol (MIT license) that enables AI agents to declare behavioral commitments, prove compliance, and build verifiable reputation across platforms. This index links to all documentation.
+The trust layer for the agent economy. Nobulex is an open cryptographic protocol (MIT license) that enables AI agents to declare behavioral commitments, prove compliance, and build verifiable reputation across platforms. This index links to all documentation.
 
 ---
 
@@ -18,7 +18,7 @@ The trust layer for the agent economy. Kova is an open cryptographic protocol (M
 
 | Doc | Description |
 |-----|-------------|
-| [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) | EU AI Act (Regulation 2024/1689) — Article-by-Article mapping to Kova. **Deadline: Aug 2, 2026** |
+| [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) | EU AI Act (Regulation 2024/1689) — Article-by-Article mapping to Nobulex. **Deadline: Aug 2, 2026** |
 | [i18n/](./i18n/) | Localized docs — EU AI Act + Quick Start in German, French, Spanish |
 | [nist-ai-rmf-mapping.md](./nist-ai-rmf-mapping.md) | NIST AI Risk Management Framework — Govern, Map, Measure, Manage |
 
@@ -42,7 +42,7 @@ The trust layer for the agent economy. Kova is an open cryptographic protocol (M
 | [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) | 13 strategic changes (positioning, 3 primitives, adoption mechanics) |
 | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md) | Incentive alignment + three wedges (regulatory, internal, MCP) |
 | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md) | 10-gap closure: champions, content, community, kova audit, academic, conferences, pricing, moat, localization, milestones |
-| [KIP-PROCESS.md](./KIP-PROCESS.md) | Kova Improvement Proposals — structured process for protocol changes |
+| [KIP-PROCESS.md](./KIP-PROCESS.md) | Nobulex Improvement Proposals — structured process for protocol changes |
 | [GOOD-FIRST-ISSUES.md](./GOOD-FIRST-ISSUES.md) | 20+ scoped tasks for new contributors (1–2 hr each) |
 | [HOLES-PATCHED.md](./HOLES-PATCHED.md) | 10 preemptive defenses against known objections |
 | [ACCOUNTABILITY-KERNEL.md](./ACCOUNTABILITY-KERNEL.md) | Four operations: identity binding, covenant signing, proof verification, trust accounting |

@@ -1,5 +1,5 @@
 /**
- * @nobulex/sdk -- High-level TypeScript SDK that unifies the entire Stele protocol.
+ * @nobulex/sdk -- High-level TypeScript SDK that unifies the entire Nobulex protocol.
  *
  * Provides a single entry point (SteleClient) for key management, covenant
  * lifecycle, identity management, chain operations, and CCL utilities.
@@ -293,9 +293,9 @@ export {
 // ─── SteleClient ────────────────────────────────────────────────────────────
 
 /**
- * The main entry point for the Stele SDK.
+ * The main entry point for the Nobulex SDK.
  *
- * Provides a unified, high-level API for the entire Stele protocol:
+ * Provides a unified, high-level API for the entire Nobulex protocol:
  * key management, covenant lifecycle, identity management, chain
  * operations, and CCL utilities.
  *

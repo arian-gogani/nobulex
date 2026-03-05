@@ -1,7 +1,7 @@
 /**
- * Stele adapter for LangChain.
+ * Nobulex adapter for LangChain.
  *
- * Provides a callback handler that logs agent actions to the Stele
+ * Provides a callback handler that logs agent actions to the Nobulex
  * audit trail, and tool/chain wrappers that enforce covenant constraints
  * before execution.
  *
@@ -50,7 +50,7 @@ export interface LangChainToolLike {
 }
 
 /**
- * Options for wrapping LangChain tools with Stele enforcement.
+ * Options for wrapping LangChain tools with Nobulex enforcement.
  */
 export interface SteleLangChainOptions {
   /** The SteleClient instance for covenant evaluation. */
@@ -77,7 +77,7 @@ export interface SteleLangChainOptions {
 
 // ─── Callback handler event ──────────────────────────────────────────────────
 
-/** A recorded event from the SteleCallbackHandler audit trail. */
+/** A recorded event from the NobulexCallbackHandler audit trail. */
 export interface CallbackEvent {
   /** The event type (e.g. 'tool:start', 'chain:end', 'tool:error'). */
   type: string;
@@ -91,7 +91,7 @@ export interface CallbackEvent {
 
 /**
  * A LangChain-compatible callback handler that records agent actions
- * to a Stele audit trail.
+ * to a Nobulex audit trail.
  *
  * This handler does not enforce constraints; it only observes and
  * logs. Use it alongside `withSteleTool` for enforcement + auditing.
@@ -200,7 +200,7 @@ export class SteleCallbackHandler {
 // ─── withSteleTool ───────────────────────────────────────────────────────────
 
 /**
- * Wrap a LangChain-style tool with Stele covenant enforcement.
+ * Wrap a LangChain-style tool with Nobulex covenant enforcement.
  *
  * Wraps all three call patterns (`call`, `invoke`, `_call`) when present.
  * Before delegation, evaluates the action/resource against the covenant.

@@ -58,7 +58,7 @@ async function main() {
   console.log('  Buyer:        ', trade.buyer);
   console.log('  Seller:       ', trade.seller);
   console.log('  Price:        ', trade.price);
-  console.log('  Kova fee (1%):', trade.kovaFee);
+  console.log('  Nobulex fee (1%):', trade.kovaFee);
   console.log('  Trade ID:     ', trade.tradeId.slice(0, 32) + '...');
 
   // Simulate future now held by buyer (for settle step)
@@ -90,7 +90,7 @@ async function main() {
   // ── Summary ─────────────────────────────────────────────────────────────
 
   console.log('\n--- Summary ---\n');
-  console.log('Kova fee rate:      ', (KOVA_TRADE_FEE_RATE * 100).toFixed(0) + '%');
+  console.log('Nobulex fee rate:      ', (KOVA_TRADE_FEE_RATE * 100).toFixed(0) + '%');
   console.log('Trade fee paid:     ', trade.kovaFee);
   console.log('Net to buyer:       ', settlement.payout - trade.price);
 

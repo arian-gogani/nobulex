@@ -1,7 +1,7 @@
 /**
- * Cross-package integration tests for the Stele SDK.
+ * Cross-package integration tests for the Nobulex SDK.
  *
- * This test exercises the full lifecycle of the Stele protocol across
+ * This test exercises the full lifecycle of the Nobulex protocol across
  * all core packages:
  *
  *   @nobulex/crypto     - Key generation and hashing primitives
@@ -102,7 +102,7 @@ const CONSTRAINTS = [
 // Top-level describe
 // ---------------------------------------------------------------------------
 
-describe('Stele SDK: Full cross-package integration flow', () => {
+describe('Nobulex SDK: Full cross-package integration flow', () => {
   // Shared state across sequential test blocks. Each describe block
   // produces artifacts consumed by the next one, mirroring a real
   // deployment lifecycle.

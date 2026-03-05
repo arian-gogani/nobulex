@@ -35,7 +35,7 @@ import type {
 
 // ─── Client options ─────────────────────────────────────────────────────────
 
-/** Options for constructing a SteleClient instance. */
+/** Options for constructing a NobulexClient instance. */
 export interface SteleClientOptions {
   /** Optional pre-generated key pair for signing operations. */
   keyPair?: KeyPair;

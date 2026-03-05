@@ -1,5 +1,5 @@
 /**
- * Stele SDK - Multi-Agent Chain Delegation
+ * Nobulex SDK - Multi-Agent Chain Delegation
  *
  * Demonstrates parent-child covenant chains where a child covenant
  * narrows the parent's constraints. Shows chain resolution, narrowing

@@ -1,8 +1,8 @@
 /**
- * Debug/verbose logging system for the Stele SDK.
+ * Debug/verbose logging system for the Nobulex SDK.
  *
  * Controlled by the `DEBUG` environment variable. Supports namespace
- * filtering with patterns like `stele`, `stele:*`, or `stele:crypto`.
+ * filtering with patterns like `stele`, `nobulex:*`, or `stele:crypto`.
  *
  * When debug is not enabled, all logging methods are no-ops with zero overhead.
  *
@@ -16,15 +16,15 @@
  *
  * Reads the `DEBUG` environment variable and checks for matching patterns.
  * Supported patterns:
- * - `stele`     — enables all Stele debug logging
- * - `stele:*`   — enables all Stele debug logging (wildcard)
+ * - `stele`     — enables all Nobulex debug logging
+ * - `nobulex:*`   — enables all Nobulex debug logging (wildcard)
  * - `stele:ccl` — enables only the `stele:ccl` namespace
  * - `*`         — enables all debug logging
  *
  * Multiple patterns can be separated by commas.
  *
  * @param namespace - Optional namespace to check (e.g., `'stele:crypto'`).
- *   If omitted, checks whether any Stele debug logging is enabled.
+ *   If omitted, checks whether any Nobulex debug logging is enabled.
  * @returns `true` if debug output should be produced for this namespace.
  */
 export function isDebugEnabled(namespace?: string): boolean {
@@ -42,15 +42,15 @@ export function isDebugEnabled(namespace?: string): boolean {
     }
 
     // Exact match for "stele" enables all stele namespaces
-    if (pattern === 'stele') {
-      if (!namespace || namespace === 'stele' || namespace.startsWith('stele:')) {
+    if (pattern === 'nobulex') {
+      if (!namespace || namespace === 'nobulex' || namespace.startsWith('stele:')) {
         return true;
       }
     }
 
-    // "stele:*" enables all stele namespaces
-    if (pattern === 'stele:*') {
-      if (!namespace || namespace === 'stele' || namespace.startsWith('stele:')) {
+    // "nobulex:*" enables all stele namespaces
+    if (pattern === 'nobulex:*') {
+      if (!namespace || namespace === 'nobulex' || namespace.startsWith('stele:')) {
         return true;
       }
     }
@@ -154,7 +154,7 @@ export function createDebugLogger(namespace: string): DebugLogger {
 // ─── Pre-created loggers ────────────────────────────────────────────────────────
 
 /**
- * Pre-created debug loggers for each Stele subsystem.
+ * Pre-created debug loggers for each Nobulex subsystem.
  *
  * Each logger is scoped to its subsystem namespace and will only produce
  * output when the corresponding DEBUG pattern is set.

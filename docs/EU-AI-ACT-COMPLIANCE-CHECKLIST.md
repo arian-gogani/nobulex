@@ -1,14 +1,14 @@
-# EU AI Act Compliance Checklist — Kova Mapping
+# EU AI Act Compliance Checklist — Nobulex Mapping
 
 **Deadline: August 2, 2026** for general obligations on high-risk AI systems.
 
-Use this checklist to verify your agent deployment meets EU AI Act requirements via Kova.
+Use this checklist to verify your agent deployment meets EU AI Act requirements via Nobulex.
 
 ---
 
 ## High-Level Checklist
 
-| # | Requirement | Kova Capability | Package | Status |
+| # | Requirement | Nobulex Capability | Package | Status |
 |---|-------------|----------------|---------|--------|
 | 1 | Risk management (Art. 10) | Covenant constraints, canary tests, breach detection | @nobulex/core, @nobulex/canary, @nobulex/breach | ✅ |
 | 2 | Data governance (Art. 11) | Behavioral provenance, audit trail | @nobulex/enforcement | ✅ |
@@ -63,7 +63,7 @@ Court-ready evidentiary package for regulators and insurers.
 
 ## Article-by-Article Mapping
 
-See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article → Kova capability mapping.
+See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article → Nobulex capability mapping.
 
 ---
 
@@ -73,7 +73,7 @@ For regulated industries (finance, healthcare, critical infrastructure):
 
 1. **Solo tier** — Run `kova init` + `kova audit`; fix gaps
 2. **Bilateral** — Add attestation; counterparty signs interactions
-3. **Network** — Enroll in Kova trust graph; publish reputation
+3. **Network** — Enroll in Nobulex trust graph; publish reputation
 4. **Certified** — Use @nobulex/certification for agent class certification ($10K–100K)
 
 ---
@@ -82,4 +82,4 @@ For regulated industries (finance, healthcare, critical infrastructure):
 
 - [QUICK-START.md](./QUICK-START.md)
 - [CONTRIBUTING.md](../CONTRIBUTING.md)
-- GitHub Issues: https://github.com/agbusiness195/stele/issues
+- GitHub Issues: https://github.com/nobulexdev/nobulex/issues

@@ -1,12 +1,12 @@
-# Contributing to Kova
+# Contributing to Nobulex
 
-Thank you for your interest in contributing to Kova, the trust layer for the agent economy. This guide covers everything you need to get started.
+Thank you for your interest in contributing to Nobulex, the trust layer for the agent economy. This guide covers everything you need to get started.
 
 ## Good First Issues
 
 New to the project? See [docs/GOOD-FIRST-ISSUES.md](./docs/GOOD-FIRST-ISSUES.md) for scoped 1–2 hour tasks. These will also be created as GitHub issues labeled `good first issue`. Pick one, comment that you're taking it, and open a PR.
 
-## Kova Improvement Proposals (KIPs)
+## Nobulex Improvement Proposals (KIPs)
 
 Proposing protocol changes? See [docs/KIP-PROCESS.md](./docs/KIP-PROCESS.md) for the structured KIP process. Anyone can propose changes through a KIP.
 
@@ -20,8 +20,8 @@ Proposing protocol changes? See [docs/KIP-PROCESS.md](./docs/KIP-PROCESS.md) for
 
 ```bash
 # Clone the repository
-git clone https://github.com/agbusiness195/stele.git
-cd stele
+git clone https://github.com/nobulexdev/nobulex.git
+cd nobulex
 
 # Install all dependencies (npm workspaces resolves inter-package deps automatically)
 npm install
@@ -57,7 +57,7 @@ npx vitest run --coverage
 ## Project Structure
 
 ```
-stele/
+nobulex/
   packages/           # All 30+ packages live here
     types/            # Shared types, error classes, validation
     crypto/           # Ed25519 signing, SHA-256, encoding
@@ -65,8 +65,8 @@ stele/
     core/             # Covenant lifecycle (build, verify, chain)
     store/            # Pluggable storage backends
     verifier/         # Standalone verification engine
-    sdk/              # High-level SteleClient unified SDK
-    kova/             # Single-package Kova (withKova, presets)
+    sdk/              # High-level unified SDK
+    kova/             # Single-package Nobulex (presets)
     eu-compliance/   # EU AI Act compliance checker
     identity/         # Agent identity with lineage tracking
     enforcement/      # Runtime constraint enforcement
@@ -74,7 +74,7 @@ stele/
     breach/           # Breach detection and trust graph
     reputation/       # Reputation scoring and staking
     mcp/              # MCP guard for tool enforcement
-    cli/              # Command-line interface (stele, kova)
+    cli/              # Command-line interface
     attestation/      # External attestation and reconciliation
     canary/           # Canary testing framework
     gametheory/       # Game-theoretic honesty proofs
@@ -194,5 +194,5 @@ npm run docs
 
 ## License
 
-By contributing to Stele, you agree that your contributions will be licensed
+By contributing to Nobulex, you agree that your contributions will be licensed
 under the MIT License.

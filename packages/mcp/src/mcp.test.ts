@@ -42,7 +42,7 @@ function createMockServer(): MCPServer {
 /** Convenience wrapper: wrap with enforce mode (the default). */
 async function wrapEnforce(
   server?: MCPServer,
-  overrides?: Partial<Parameters<typeof SteleGuard.wrap>[1]>,
+  overrides?: Partial<Parameters<typeof NobulexGuard.wrap>[1]>,
 ): Promise<WrappedMCPServer> {
   return SteleGuard.wrap(server ?? createMockServer(), {
     constraints: TEST_CONSTRAINTS,
@@ -54,7 +54,7 @@ async function wrapEnforce(
 /** Convenience wrapper: wrap with log_only mode. */
 async function wrapLogOnly(
   server?: MCPServer,
-  overrides?: Partial<Parameters<typeof SteleGuard.wrap>[1]>,
+  overrides?: Partial<Parameters<typeof NobulexGuard.wrap>[1]>,
 ): Promise<WrappedMCPServer> {
   return SteleGuard.wrap(server ?? createMockServer(), {
     constraints: TEST_CONSTRAINTS,
@@ -73,7 +73,7 @@ describe('SteleGuard.wrap', () => {
     expect(typeof wrapped.handleToolCall).toBe('function');
   });
 
-  it('wrapped server has all Stele accessors', async () => {
+  it('wrapped server has all Nobulex accessors', async () => {
     const wrapped = await wrapEnforce();
     expect(typeof wrapped.getMonitor).toBe('function');
     expect(typeof wrapped.getIdentity).toBe('function');
@@ -227,7 +227,7 @@ describe('PRESETS', () => {
     expect(PRESETS['standard:minimal']).toContain('deny network.send');
   });
 
-  it('resolves a preset name via SteleGuard.wrap without error', async () => {
+  it('resolves a preset name via NobulexGuard.wrap without error', async () => {
     const server = createMockServer();
     const wrapped = await SteleGuard.wrap(server, {
       constraints: 'standard:data-isolation',

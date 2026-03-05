@@ -1,7 +1,7 @@
 /**
  * @nobulex/cli doctor command.
  *
- * Checks the health of the Stele installation by running a series of
+ * Checks the health of the Nobulex installation by running a series of
  * diagnostic tests: Node.js version, package importability, crypto
  * operations, covenant build/verify round-trip, CCL parsing, config
  * file readability, and stale dist file detection.

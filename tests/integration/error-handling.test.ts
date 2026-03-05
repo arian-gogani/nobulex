@@ -1,5 +1,5 @@
 /**
- * Integration tests for error handling across the Stele SDK.
+ * Integration tests for error handling across the Nobulex SDK.
  *
  * Exercises error paths in crypto, CCL, core covenant operations,
  * verification, store, deserialization, and SteleClient.

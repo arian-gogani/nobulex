@@ -1,7 +1,7 @@
 /**
  * Example 01: Basic Covenant
  *
- * Getting started with the Stele SDK. Demonstrates:
+ * Getting started with the Nobulex SDK. Demonstrates:
  * - Generating Ed25519 key pairs for issuer and beneficiary
  * - Creating a simple permit/deny covenant
  * - Verifying the covenant's cryptographic integrity
@@ -52,7 +52,7 @@ async function main() {
     name: 'Data Analyst Agent v1',
   };
 
-  // ── Step 3: Create the SteleClient ─────────────────────────────────────
+  // ── Step 3: Create the NobulexClient ─────────────────────────────────────
   // The client manages key pairs and provides the high-level API.
 
   const client = new SteleClient({ keyPair: issuerKeys });

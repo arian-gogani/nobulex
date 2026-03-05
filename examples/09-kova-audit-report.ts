@@ -1,5 +1,5 @@
 /**
- * Example 09: Kova Audit Report
+ * Example 09: Nobulex Audit Report
  *
  * Generates a mock EU AI Act compliance report using computeEUCompliance.
  * Demonstrates how to programmatically assess agent deployment readiness.
@@ -13,7 +13,7 @@ import { generateKeyPair } from '@nobulex/crypto';
 
 async function main() {
   console.log('========================================');
-  console.log('  Example 09: Kova Audit Report');
+  console.log('  Example 09: Nobulex Audit Report');
   console.log('========================================\n');
 
   // Scenario 1: No covenant, minimal signals
@@ -26,7 +26,7 @@ async function main() {
   printReport(report1);
 
   // Scenario 2: With covenant and full signals
-  console.log('\n--- Scenario 2: Project with covenant + Kova ---\n');
+  console.log('\n--- Scenario 2: Project with covenant + Nobulex ---\n');
   const kp = await generateKeyPair();
   const covenant = await buildCovenant({
     issuer: {

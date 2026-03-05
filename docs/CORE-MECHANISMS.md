@@ -1,6 +1,6 @@
 # Core Mechanism Improvements
 
-The actual technical and conceptual improvements to Kova's trust infrastructure.
+The actual technical and conceptual improvements to Nobulex's trust infrastructure.
 
 ---
 

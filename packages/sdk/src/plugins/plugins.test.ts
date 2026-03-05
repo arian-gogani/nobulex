@@ -1,5 +1,5 @@
 /**
- * Comprehensive tests for all Stele SDK plugins.
+ * Comprehensive tests for all Nobulex SDK plugins.
  *
  * Tests the caching, authentication, metrics, and retry middleware plugins
  * using the MiddlewarePipeline from middleware.ts.

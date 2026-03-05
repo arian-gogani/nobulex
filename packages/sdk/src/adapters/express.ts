@@ -1,8 +1,8 @@
 /**
- * Express/HTTP middleware adapter for the Stele SDK.
+ * Express/HTTP middleware adapter for the Nobulex SDK.
  *
  * Provides zero-config HTTP middleware that wraps any Express/Connect-compatible
- * handler with Stele covenant enforcement. Uses generic request/response types
+ * handler with Nobulex covenant enforcement. Uses generic request/response types
  * so it works with Express, Koa, Hono, Fastify, and any Connect-compatible server.
  *
  * @packageDocumentation
@@ -191,7 +191,7 @@ function defaultOnError(
 // ─── steleMiddleware ─────────────────────────────────────────────────────────
 
 /**
- * Connect-compatible middleware factory that enforces a Stele covenant
+ * Connect-compatible middleware factory that enforces a Nobulex covenant
  * on every incoming HTTP request.
  *
  * For each request:
@@ -264,7 +264,7 @@ export function steleMiddleware(
 export type AsyncHandler = (req: IncomingRequest, res: OutgoingResponse) => Promise<void>;
 
 /**
- * Wraps an async handler with Stele covenant enforcement for standalone use
+ * Wraps an async handler with Nobulex covenant enforcement for standalone use
  * (no next function required).
  *
  * Evaluates the request against the covenant before invoking the handler.
@@ -324,7 +324,7 @@ export function steleGuardHandler(
 // ─── createWellKnownHandler ───────────────────────────────────────────────────
 
 /**
- * Options for the well-known Stele discovery endpoint.
+ * Options for the well-known Nobulex discovery endpoint.
  * See docs/DISCOVERY.md for the convention.
  */
 export interface WellKnownOptions {
@@ -483,10 +483,10 @@ export function createCovenantRouter(options: CovenantRouterOptions): CovenantRo
   };
 }
 
-// ─── Kova API Gateway ────────────────────────────────────────────────────────
+// ─── Nobulex API Gateway ────────────────────────────────────────────────────────
 
 /**
- * Options for the Kova API Gateway middleware.
+ * Options for the Nobulex API Gateway middleware.
  *
  * Drop-in middleware that sits in front of any API and requires agents
  * to present a valid covenant before granting access. Protects API providers
@@ -531,7 +531,7 @@ function defaultCovenantExtractor(req: IncomingRequest): CovenantDocument | stri
 }
 
 /**
- * Kova API Gateway middleware — requires agents to present a valid covenant before API access.
+ * Nobulex API Gateway middleware — requires agents to present a valid covenant before API access.
  *
  * Drop-in middleware for Express/Connect. Every agent calling the API must present
  * a covenant (via `x-kova-covenant` header or `Authorization: Bearer <base64>`).

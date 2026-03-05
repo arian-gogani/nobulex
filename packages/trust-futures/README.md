@@ -1,6 +1,6 @@
 # @nobulex/trust-futures
 
-Trust futures market for the Stele protocol. Financial instruments betting on agent trust score trajectories. Insurers hedge policies, enterprises signal confidence, speculators trade. Kova takes 1% of every trade (CME Group model).
+Trust futures market for the Nobulex protocol. Financial instruments betting on agent trust score trajectories.
 
 ## Usage
 
@@ -22,7 +22,7 @@ const future = createAndListFuture(
   'holder-initial',
 );
 
-// Trade: transfer future to new buyer (Kova takes 1% fee)
+// Trade: transfer future to new buyer (Nobulex takes 1% fee)
 const trade = executeTrade(future, 'buyer-speculator', 85);
 // trade.kovaFee === 0.85 (1% of 85)
 
@@ -33,7 +33,7 @@ const settlement = settleFutureAtExpiry(
 );
 ```
 
-## Kova Trade Fee
+## Nobulex Trade Fee
 
 - **Rate**: 1% (`KOVA_TRADE_FEE_RATE = 0.01`)
 - **Applied**: On every secondary-market trade (executeTrade)

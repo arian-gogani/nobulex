@@ -1,15 +1,15 @@
-# Règlement IA — Correspondance Kova (Résumé)
+# Règlement IA — Correspondance Nobulex (Résumé)
 
 **Règlement (UE) 2024/1689** — Intelligence artificielle  
 **Échéance :** 2 août 2026 (obligations générales pour les systèmes d'IA à haut risque)
 
-Capacités Kova mappées aux exigences du Règlement IA. Chemin le plus rapide vers la conformité.
+Capacités Nobulex mappées aux exigences du Règlement IA. Chemin le plus rapide vers la conformité.
 
 ---
 
-## Résumé : Kova → Règlement IA
+## Résumé : Nobulex → Règlement IA
 
-| Article | Couverture Kova |
+| Article | Couverture Nobulex |
 |---------|-----------------|
 | 10 — Gestion des risques | Covenant, Canary, Temporal, Legal |
 | 11 — Gouvernance des données | Partielle (provenance comportementale) |
@@ -21,7 +21,7 @@ Capacités Kova mappées aux exigences du Règlement IA. Chemin le plus rapide v
 | 71 — Évaluation de conformité | Verifier, Canary, Legal |
 | 72 — Surveillance du marché | Reputation, Breach, Antifragile |
 
-**Lacunes :** Qualité des données d'entraînement (Art. 11) et identification du contenu synthétique (Art. 53) sont au niveau du modèle ; Kova opère au niveau agent/comportement.
+**Lacunes :** Qualité des données d'entraînement (Art. 11) et identification du contenu synthétique (Art. 53) sont au niveau du modèle ; Nobulex opère au niveau agent/comportement.
 
 ---
 

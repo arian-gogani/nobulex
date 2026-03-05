@@ -1,5 +1,5 @@
 /**
- * Kova — The trust layer for the agent economy.
+ * Nobulex — The trust layer for the agent economy.
  */
 
 import type { MCPServer, SteleGuardOptions, WrappedMCPServer } from '@nobulex/mcp';

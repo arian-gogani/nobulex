@@ -1,5 +1,5 @@
 /**
- * Cross-package integration tests for the Stele monorepo.
+ * Cross-package integration tests for the Nobulex monorepo.
  *
  * Validates that packages interact correctly when composed together:
  *   SDK + Store, SDK + Verifier, Core + Identity, CCL + Verifier,
@@ -58,7 +58,7 @@ import type { AgentIdentity } from '@nobulex/identity';
 
 
 // ---------------------------------------------------------------------------
-// SDK + Store: Create covenants via SteleClient, store, retrieve, verify
+// SDK + Store: Create covenants via NobulexClient, store, retrieve, verify
 // ---------------------------------------------------------------------------
 
 describe('SDK + Store integration', () => {
@@ -72,7 +72,7 @@ describe('SDK + Store integration', () => {
     store = new MemoryStore();
   });
 
-  it('should create a covenant via SteleClient and store it in MemoryStore', async () => {
+  it('should create a covenant via NobulexClient and store it in MemoryStore', async () => {
     const doc = await client.createCovenant({
       issuer: { id: 'issuer-1', publicKey: kp.publicKeyHex, role: 'issuer' },
       beneficiary: { id: 'ben-1', publicKey: kp.publicKeyHex, role: 'beneficiary' },
@@ -203,7 +203,7 @@ describe('SDK + Store integration', () => {
 
 
 // ---------------------------------------------------------------------------
-// SDK + Verifier: Create via SteleClient, verify via standalone Verifier
+// SDK + Verifier: Create via NobulexClient, verify via standalone Verifier
 // ---------------------------------------------------------------------------
 
 describe('SDK + Verifier integration', () => {
@@ -1207,7 +1207,7 @@ describe('Chain operations spanning multiple packages', () => {
     expect(narrowing.violations.length).toBeGreaterThan(0);
   });
 
-  it('should validate a valid narrowing chain via SteleClient.validateChain', async () => {
+  it('should validate a valid narrowing chain via NobulexClient.validateChain', async () => {
     const client = new SteleClient({ keyPair: kpRoot });
 
     const root = await client.createCovenant({

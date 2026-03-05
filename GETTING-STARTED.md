@@ -1,4 +1,4 @@
-# Getting Started with Kova
+# Getting Started with Nobulex
 
 **5 minutes to your first trusted agent.**
 
@@ -35,7 +35,7 @@ Shows EU AI Act readiness, covenant coverage, and recommended next steps.
 npx kova init
 ```
 
-Generates key pair and `stele.config.json` for custom covenants.
+Generates key pair and `nobulex.config.json` for custom covenants.
 
 ---
 

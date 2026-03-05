@@ -1,4 +1,4 @@
-# Kova Improvement Proposals (KIPs)
+# Nobulex Improvement Proposals (KIPs)
 
 Structured process for proposing protocol changes. Anyone can submit a KIP.
 

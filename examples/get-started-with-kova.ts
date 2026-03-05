@@ -1,11 +1,11 @@
 #!/usr/bin/env npx tsx
 /**
- * Get Started with Kova — 3 lines of code
+ * Get Started with Nobulex — 3 lines of code
  *
  * Run: npx tsx examples/get-started-with-kova.ts
  *
  * This example shows the minimal integration: wrap any MCP server
- * with Kova trust enforcement. No covenant setup required.
+ * with Nobulex trust enforcement. No covenant setup required.
  */
 import { withKova } from 'kova';
 
@@ -30,11 +30,11 @@ const mockMCPServer = {
 };
 
 async function main() {
-  console.log('Kova — The trust layer for the agent economy\n');
+  console.log('Nobulex — The trust layer for the agent economy\n');
 
-  // Three lines: wrap your MCP server with Kova
+  // Three lines: wrap your MCP server with Nobulex
   const server = await withKova(mockMCPServer, 'data-isolation');
-  console.log('✓ Server wrapped with Kova (data-isolation preset)');
+  console.log('✓ Server wrapped with Nobulex (data-isolation preset)');
   console.log('  Constraints: file.read on /data/**, deny writes, require audit');
 
   // The wrapped server enforces covenant constraints on every tool call

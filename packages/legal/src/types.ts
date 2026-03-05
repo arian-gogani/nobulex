@@ -122,7 +122,7 @@ export interface RegulatoryGapAnalysisResult {
 }
 
 /**
- * Multidimensional trust profile (Stele Score).
+ * Multidimensional trust profile (Nobulex Score).
  * Dimensions trade off — gaming one costs another. Open algorithm.
  * The FICO score for agents.
  */

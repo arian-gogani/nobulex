@@ -1,5 +1,5 @@
 /**
- * Cross-package lifecycle integration tests for the Stele SDK.
+ * Cross-package lifecycle integration tests for the Nobulex SDK.
  *
  * Tests FULL LIFECYCLE flows that span multiple packages working together:
  *

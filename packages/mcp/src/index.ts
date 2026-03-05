@@ -115,7 +115,7 @@ function extractConstraint(matchedRule: unknown): string {
 // ---------------------------------------------------------------------------
 
 /**
- * SteleGuard wraps any MCP server with Stele accountability.
+ * NobulexGuard wraps any MCP server with Nobulex accountability.
  *
  * Usage (2 lines):
  * ```ts
@@ -128,7 +128,7 @@ export class SteleGuard {
   private constructor() {}
 
   /**
-   * Wrap an MCP server with Stele accountability using constraint text
+   * Wrap an MCP server with Nobulex accountability using constraint text
    * (either a preset name or raw CCL).
    *
    * Generates a keypair if one is not provided, creates an agent identity,
@@ -391,7 +391,7 @@ export class SteleGuard {
     };
 
     // Build the wrapped server object by copying all original properties
-    // and adding the Stele methods
+    // and adding the Nobulex methods
     const wrapped: WrappedMCPServer = Object.create(null);
 
     // Copy all properties from the original server
@@ -410,7 +410,7 @@ export class SteleGuard {
     // Set the intercepted handler
     wrapped.handleToolCall = interceptedHandleToolCall;
 
-    // Expose Stele accessors
+    // Expose Nobulex accessors
     wrapped.getMonitor = (): Monitor => monitor;
     wrapped.getIdentity = (): AgentIdentity => identity;
     wrapped.getAuditLog = (): AuditLog => monitor.getAuditLog();

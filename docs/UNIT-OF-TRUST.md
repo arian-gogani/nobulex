@@ -1,6 +1,6 @@
 # Unit of Trust — Multidimensional Trust Profile
 
-The Kova Score (unit of trust) is a **multidimensional trust profile** computed from public data by anyone running the open algorithm. It is the FICO score for agents — useful, but resistant to single-dimension gaming.
+The Nobulex Score (unit of trust) is a **multidimensional trust profile** computed from public data by anyone running the open algorithm. It is the FICO score for agents — useful, but resistant to single-dimension gaming.
 
 ---
 

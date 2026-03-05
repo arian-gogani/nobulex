@@ -1,5 +1,5 @@
 /**
- * Retry middleware plugin for the Stele SDK.
+ * Retry middleware plugin for the Nobulex SDK.
  *
  * Automatically retries failed operations with exponential backoff
  * and configurable jitter. Records retry count in context metadata.

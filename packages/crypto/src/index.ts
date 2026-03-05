@@ -395,7 +395,7 @@ export function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
 /**
  * Create a timestamp string in ISO 8601 format (e.g. `"2025-01-15T12:00:00.000Z"`).
  *
- * Uses the current system time. All Stele protocol timestamps are UTC.
+ * Uses the current system time. All Nobulex protocol timestamps are UTC.
  *
  * @returns An ISO 8601 timestamp string.
  *

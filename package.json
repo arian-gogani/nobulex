@@ -78,11 +78,11 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/agbusiness195/NOBULEX"
+    "url": "https://github.com/nobulexdev/nobulex"
   },
   "homepage": "https://nobulex.dev",
   "bugs": {
-    "url": "https://github.com/agbusiness195/NOBULEX/issues"
+    "url": "https://github.com/nobulexdev/nobulex/issues"
   },
   "author": "Nobulex, Inc.",
   "license": "MIT",

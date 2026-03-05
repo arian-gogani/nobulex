@@ -1,5 +1,5 @@
 /**
- * Tests for key rotation integration in SteleClient.
+ * Tests for key rotation integration in NobulexClient.
  */
 
 import { describe, it, expect, vi } from 'vitest';

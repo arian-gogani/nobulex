@@ -3,7 +3,7 @@
  *
  * Continuous compliance monitoring at 0.5-1% of agent operational budget.
  * Real-time compliance scores, automatic regulatory reports, pre-violation alerts.
- * Never churns because compliance history lives on Kova. Salesforce stickiness model.
+ * Never churns because compliance history lives on Nobulex. Salesforce stickiness model.
  *
  * @packageDocumentation
  */

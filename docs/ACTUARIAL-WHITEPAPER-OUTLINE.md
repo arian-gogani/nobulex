@@ -2,7 +2,7 @@
 
 **Title:** Quantifying AI Agent Risk: A Framework for Underwriting Autonomous Systems
 
-**Purpose:** Build the actuarial case for Kova verification. Share with cyber insurance actuaries. Let insurers price Kova verification into premiums themselves.
+**Purpose:** Build the actuarial case for Nobulex verification. Share with cyber insurance actuaries. Let insurers price Nobulex verification into premiums themselves.
 
 ---
 
@@ -20,7 +20,7 @@
 
 - AI agents are a new risk class
 - Behavioral covenants + compliance proofs = verifiable risk reduction
-- Kova provides the data structure; insurers provide the pricing
+- Nobulex provides the data structure; insurers provide the pricing
 
 ### 2. The Accountability Gap
 
@@ -28,7 +28,7 @@
 - Operator logs, platform dashboards — not independently verifiable
 - Liability uncertainty for insurers
 
-### 3. Kova as Risk Infrastructure
+### 3. Nobulex as Risk Infrastructure
 
 - **Identity binding** — Who is responsible
 - **Covenant declaration** — What the agent committed to
@@ -38,7 +38,7 @@
 
 | Factor | Data Source | Weight |
 |--------|-------------|--------|
-| Covenant coverage | Kova audit | % of actions governed |
+| Covenant coverage | Nobulex audit | % of actions governed |
 | Hard enforcement | CapabilityGate presence | Binary / tier |
 | Attestation coverage | External attestations | % of interactions |
 | Breach history | Breach attestations | Count, severity |
@@ -47,20 +47,20 @@
 ### 5. Proposed Risk Model
 
 - **Base rate** — Unverified agents
-- **Kova discount** — Verified agents: X% lower incident rate (simulated → validated)
+- **Nobulex discount** — Verified agents: X% lower incident rate (simulated → validated)
 - **Tiered pricing** — Solo / Bilateral / Network verification
 
 ### 6. Data Requirements
 
-- What Kova can provide: covenant hashes, compliance proofs, breach attestations
+- What Nobulex can provide: covenant hashes, compliance proofs, breach attestations
 - What insurers need: loss events, claim correlation
 - Privacy: anonymized aggregates, no PII
 
 ### 7. Implementation Path
 
-- Insurer doesn't need to "partner with Kova"
+- Insurer doesn't need to "partner with Nobulex"
 - Insurer adopts standard because actuarial data shows lower risk
-- Kova publishes framework; insurers price it themselves
+- Nobulex publishes framework; insurers price it themselves
 
 ### 8. Next Steps
 

@@ -420,9 +420,9 @@ describe('Scenario 2: MCP Server Wrap, Execute, Receipt, and Reputation', () => 
     };
   }
 
-  // ── Step 1: Wrap the MCP server with SteleGuard ───────────────────────
+  // ── Step 1: Wrap the MCP server with NobulexGuard ───────────────────────
 
-  it('Step 1: wraps the MCP server with SteleGuard and constraints', async () => {
+  it('Step 1: wraps the MCP server with NobulexGuard and constraints', async () => {
     operatorKeyPair = await generateKeyPair();
 
     wrappedServer = await SteleGuard.wrap(createMockMCPServer(), {

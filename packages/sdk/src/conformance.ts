@@ -1,12 +1,12 @@
 /**
- * Stele Protocol Conformance Suite
+ * Nobulex Protocol Conformance Suite
  *
  * Provides test vectors and validation functions for any implementation
- * of the Stele protocol. Implementations that pass all conformance checks
+ * of the Nobulex protocol. Implementations that pass all conformance checks
  * are considered spec-compliant.
  *
  * Like the W3C Acid Tests for browsers or TLS conformance suites --
- * a standardized set of test vectors that any Stele implementation must pass.
+ * a standardized set of test vectors that any Nobulex implementation must pass.
  *
  * This module is self-contained at runtime: it uses the provided
  * {@link ConformanceTarget} interface to generate keys and test documents.
@@ -55,7 +55,7 @@ export interface ConformanceFailure {
 /**
  * Functions that the implementation under test must provide.
  *
- * Any Stele-compatible implementation can be tested by wiring up these
+ * Any Nobulex-compatible implementation can be tested by wiring up these
  * functions and passing the resulting object to {@link runConformanceSuite}.
  */
 export interface ConformanceTarget {
@@ -1359,7 +1359,7 @@ export async function interopConformance(
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Run the complete Stele Protocol Conformance Suite.
+ * Run the complete Nobulex Protocol Conformance Suite.
  *
  * Executes all four categories (crypto, CCL, covenant, interop) and
  * aggregates the results. An implementation that returns

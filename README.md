@@ -1,7 +1,5 @@
 # Nobulex
 
-> **Note:** This repository consolidates months of development across many different protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
-
 
 
 
@@ -130,9 +128,9 @@ covenant SafeTrader {
 }
 ```
 
-**Forbid wins.** If any `forbid` matches, the action is immedietly blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
+**Forbid wins.** If any `forbid` matches, the action is immediately blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
 
-## Core Packages (9)
+## Core Packages
 
 | Package | Description |
 |---------|-------------|
@@ -176,7 +174,7 @@ Creates two agents, authors a covenant, enforces it via middleware, blocks a for
 
 ```bash
 git clone https://github.com/nobulexdev/nobulex.git
-cd NOBULEX
+cd nobulex
 npm install
 npx vitest run    # 6,062 tests, 112 files, 0 failures
 ```

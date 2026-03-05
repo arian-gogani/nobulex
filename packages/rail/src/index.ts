@@ -2,7 +2,7 @@
  * @nobulex/rail — Trust Resolution IS Transaction Execution (Improvement 76).
  *
  * Merge trust verification with transaction execution into one atomic operation.
- * If trust fails, transaction never happens. Kova becomes the rail, not the checkpoint.
+ * If trust fails, transaction never happens. Nobulex becomes the rail, not the checkpoint.
  * 0.15% of transaction volume (Visa model).
  *
  * @packageDocumentation

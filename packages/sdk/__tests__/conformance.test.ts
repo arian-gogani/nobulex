@@ -1,7 +1,7 @@
 /**
- * Stele Protocol Conformance Test Suite
+ * Nobulex Protocol Conformance Test Suite
  *
- * Runs the conformance suite against the real Stele implementation
+ * Runs the conformance suite against the real Nobulex implementation
  * to prove that the reference implementation is spec-compliant.
  */
 import { describe, it, expect } from 'vitest';
@@ -45,7 +45,7 @@ function formatFailures(failures: Array<{ test: string; message: string }>): str
 // Full suite
 // ═══════════════════════════════════════════════════════════════════════════
 
-describe('Stele Protocol Conformance Suite', () => {
+describe('Nobulex Protocol Conformance Suite', () => {
   it('passes the full conformance suite', async () => {
     const result = await runConformanceSuite(steleTarget);
 

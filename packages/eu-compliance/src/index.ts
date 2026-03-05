@@ -2,7 +2,7 @@
  * @nobulex/eu-compliance — EU AI Act compliance checker
  *
  * Fastest path to Aug 2026 compliance for agentic systems.
- * Maps EU AI Act Articles to Kova capabilities.
+ * Maps EU AI Act Articles to Nobulex capabilities.
  *
  * @packageDocumentation
  */
@@ -16,7 +16,7 @@ export interface ArticleRef {
   requirement: string;
 }
 
-/** Kova capability that satisfies an article. */
+/** Nobulex capability that satisfies an article. */
 export interface Capability {
   package: string;
   feature: string;
@@ -98,7 +98,7 @@ const ARTICLE_MAP: Record<string, { title: string; requirement: string; capabili
 /**
  * Compute EU AI Act compliance report for an agent deployment.
  *
- * Maps EU AI Act Articles (10, 11, 13, 14, 15, 17) to Kova capabilities.
+ * Maps EU AI Act Articles (10, 11, 13, 14, 15, 17) to Nobulex capabilities.
  * Use this to assess readiness for the Aug 2026 deadline.
  *
  * @param covenant - The covenant document (optional; if absent, reports gaps).
@@ -151,7 +151,7 @@ export function computeEUCompliance(
     recommendations.push('Add kova: npm install kova — wrap MCP server with withKova(server, "data-isolation")');
   }
   if (score < 100) {
-    recommendations.push('See docs/eu-ai-act-mapping.md for full Article-to-Kova mapping');
+    recommendations.push('See docs/eu-ai-act-mapping.md for full Article-to-Nobulex mapping');
   }
 
   return {

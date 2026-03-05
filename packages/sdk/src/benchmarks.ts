@@ -33,7 +33,7 @@ export interface SLATarget {
 }
 
 /**
- * Production SLA targets for all critical Stele protocol operations.
+ * Production SLA targets for all critical Nobulex protocol operations.
  *
  * These targets are conservative and should be met by any modern machine.
  * All latencies are p99 in milliseconds.
@@ -211,7 +211,7 @@ export async function runBenchmarkSuite(): Promise<BenchmarkSuiteResult> {
   // Pre-generate keys for benchmarks that need them
   const kp = await generateKeyPair();
   const kp2 = await generateKeyPair();
-  const message = new TextEncoder().encode('benchmark payload for Stele protocol');
+  const message = new TextEncoder().encode('benchmark payload for Nobulex protocol');
   const signature = await sign(message, kp.privateKey);
   const oneKBData = new Uint8Array(1024);
   for (let i = 0; i < 1024; i++) oneKBData[i] = i & 0xff;
@@ -392,7 +392,7 @@ export function formatBenchmarkResults(results: BenchmarkSuiteResult): string {
   // Header
   const sep = '+' + '-'.repeat(32) + '+' + '-'.repeat(10) + '+' + '-'.repeat(10) + '+' + '-'.repeat(10) + '+' + '-'.repeat(10) + '+' + '-'.repeat(8) + '+';
   lines.push('');
-  lines.push('  Stele Performance Benchmark Suite');
+  lines.push('  Nobulex Performance Benchmark Suite');
   lines.push('  ' + results.timestamp);
   lines.push('');
   lines.push(sep);

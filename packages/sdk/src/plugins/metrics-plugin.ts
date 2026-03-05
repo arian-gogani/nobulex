@@ -1,5 +1,5 @@
 /**
- * Metrics middleware plugin for the Stele SDK.
+ * Metrics middleware plugin for the Nobulex SDK.
  *
  * Automatically records operational metrics using the @nobulex/types
  * MetricsRegistry. Tracks total operations, errors, duration, and

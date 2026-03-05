@@ -1,15 +1,15 @@
-# EU KI-Verordnung — Kova-Zuordnung (Zusammenfassung)
+# EU KI-Verordnung — Nobulex-Zuordnung (Zusammenfassung)
 
 **Verordnung (EU) 2024/1689** — Künstliche Intelligenz  
 **Frist:** 2. August 2026 (allgemeine Pflichten für Hochrisiko-KI-Systeme)
 
-Kova-Funktionen der EU KI-Verordnung zugeordnet. Schnellster Weg zur Konformität.
+Nobulex-Funktionen der EU KI-Verordnung zugeordnet. Schnellster Weg zur Konformität.
 
 ---
 
-## Zusammenfassung: Kova → EU KI-Verordnung
+## Zusammenfassung: Nobulex → EU KI-Verordnung
 
-| Artikel | Kova-Abdeckung |
+| Artikel | Nobulex-Abdeckung |
 |---------|----------------|
 | 10 — Risikomanagement | Covenant, Canary, Temporal, Legal |
 | 11 — Daten-Governance | Teilweise (Verhaltensherkunft) |
@@ -21,7 +21,7 @@ Kova-Funktionen der EU KI-Verordnung zugeordnet. Schnellster Weg zur Konformitä
 | 71 — Konformitätsbewertung | Verifier, Canary, Legal |
 | 72 — Marktüberwachung | Reputation, Breach, Antifragile |
 
-**Lücken:** Schulungsdatenqualität (Art. 11) und synthetische Inhaltskennzeichnung (Art. 53) sind modellbezogen; Kova arbeitet auf Agenten-/Verhaltensebene.
+**Lücken:** Schulungsdatenqualität (Art. 11) und synthetische Inhaltskennzeichnung (Art. 53) sind modellbezogen; Nobulex arbeitet auf Agenten-/Verhaltensebene.
 
 ---
 

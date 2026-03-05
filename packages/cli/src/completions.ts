@@ -125,7 +125,7 @@ _stele() {
         'inspect:Pretty-print covenant details'
         'parse:Parse CCL and output AST'
         'completions:Generate shell completion script'
-        'doctor:Check Stele installation health'
+        'doctor:Check Nobulex installation health'
         'diff:Show differences between two covenant documents'
         'version:Print version information'
         'help:Show help message'
@@ -195,7 +195,7 @@ export function fishCompletions(): string {
     ['inspect', 'Pretty-print covenant details'],
     ['parse', 'Parse CCL and output AST'],
     ['completions', 'Generate shell completion script'],
-    ['doctor', 'Check Stele installation health'],
+    ['doctor', 'Check Nobulex installation health'],
     ['diff', 'Show differences between two covenant documents'],
     ['version', 'Print version information'],
     ['help', 'Show help message'],

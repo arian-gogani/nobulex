@@ -491,7 +491,7 @@ describe('Result type', () => {
     }
   });
 
-  it('err() works with SteleError', () => {
+  it('err() works with NobulexError', () => {
     const error = new SteleError('bad', SteleErrorCode.CRYPTO_FAILURE);
     const result = err(error);
     expect(result.ok).toBe(false);

@@ -3,7 +3,7 @@
  *
  * Financial instruments betting on agent trust score trajectories.
  * Insurers hedge policies, enterprises signal confidence, speculators trade.
- * Kova takes % of every trade. CME Group model.
+ * Trade fee on every secondary market trade.
  *
  * @packageDocumentation
  */
@@ -16,7 +16,7 @@ import {
   type Settlement,
 } from '@nobulex/derivatives';
 
-/** Kova's take: 1% of trade premium. */
+/** Trade fee: 1% of trade premium. */
 export const KOVA_TRADE_FEE_RATE = 0.01;
 
 export interface TrustFutureTrade {
@@ -46,7 +46,7 @@ export function createAndListFuture(
 }
 
 /**
- * Execute a trade: transfer future from seller to buyer. Kova takes 1% fee.
+ * Execute a trade: transfer future from seller to buyer. Takes 1% fee.
  */
 export function executeTrade(
   future: TrustFuture,

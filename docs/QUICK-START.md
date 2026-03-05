@@ -177,11 +177,11 @@ const pkg = exportLegalPackage(
 
 console.log('Package hash:', pkg.packageHash);
 
-// Kova Score — multidimensional trust profile (computeSteleScore in @nobulex/legal)
-const kovaScore = computeSteleScore('agent-1', compliance, covenantHistory, {
+// Nobulex Score — multidimensional trust profile (computeSteleScore in @nobulex/legal)
+const nobulexScore = computeSteleScore('agent-1', compliance, covenantHistory, {
   reputation,
 });
-console.log('Kova Score:', kovaScore.composite, kovaScore);
+console.log('Nobulex Score:', nobulexScore.composite, nobulexScore);
 ```
 
 **Note:** `challenges` and `canaryPasses` come from Step 6. In production, wire `compliance` from your enforcement monitor, breach tracker, and attestation service.
@@ -198,6 +198,6 @@ You now have:
 - Persistence
 - Canary validation
 - Legal export for compliance
-- Kova Score (multidimensional trust profile)
+- Nobulex Score (multidimensional trust profile)
 
 **Next:** See [docs/README.md](./README.md) for the full doc index, [architecture.md](./architecture.md) for the protocol, or [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for EU AI Act compliance.

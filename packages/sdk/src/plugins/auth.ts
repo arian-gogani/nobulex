@@ -1,5 +1,5 @@
 /**
- * Authentication middleware plugin for the Stele SDK.
+ * Authentication middleware plugin for the Nobulex SDK.
  *
  * Enforces authentication requirements on operations by validating
  * API keys or key pair credentials before allowing operations to proceed.

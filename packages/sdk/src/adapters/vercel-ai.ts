@@ -1,5 +1,5 @@
 /**
- * Stele adapter for Vercel AI SDK.
+ * Nobulex adapter for Vercel AI SDK.
  *
  * Wraps AI SDK tool definitions with covenant enforcement.
  * Before a tool's `execute()` is called, the action/resource pair is
@@ -25,7 +25,7 @@ import type { EvaluationResult } from '../types.js';
 // ─── Error ───────────────────────────────────────────────────────────────────
 
 /**
- * Error thrown when a tool call is denied by a Stele covenant.
+ * Error thrown when a tool call is denied by a Nobulex covenant.
  *
  * Carries the full `EvaluationResult` so callers can inspect the
  * matched rule, severity, and reason for the denial.
@@ -57,7 +57,7 @@ export interface ToolLike {
 }
 
 /**
- * Options for wrapping Vercel AI SDK tools with Stele enforcement.
+ * Options for wrapping Vercel AI SDK tools with Nobulex enforcement.
  */
 export interface SteleToolOptions {
   /** The SteleClient instance for covenant evaluation. */
@@ -85,7 +85,7 @@ export interface SteleToolOptions {
 // ─── withStele ───────────────────────────────────────────────────────────────
 
 /**
- * Wrap a single Vercel AI SDK tool with Stele covenant enforcement.
+ * Wrap a single Vercel AI SDK tool with Nobulex covenant enforcement.
  *
  * Returns a new tool object whose `execute()` evaluates the
  * action/resource against the covenant before delegating to the
@@ -140,7 +140,7 @@ export function withStele<T extends ToolLike>(tool: T, options: SteleToolOptions
 // ─── withSteleTools ──────────────────────────────────────────────────────────
 
 /**
- * Wrap an array of tools with Stele covenant enforcement.
+ * Wrap an array of tools with Nobulex covenant enforcement.
  *
  * @param tools   - Array of tools to wrap.
  * @param options - Enforcement options.
@@ -152,7 +152,7 @@ export function withSteleTools(
 ): ToolLike[];
 
 /**
- * Wrap a record of tools with Stele covenant enforcement.
+ * Wrap a record of tools with Nobulex covenant enforcement.
  *
  * @param tools   - Record of named tools to wrap.
  * @param options - Enforcement options.

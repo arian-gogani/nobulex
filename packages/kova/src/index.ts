@@ -1,5 +1,5 @@
 /**
- * Kova — The trust layer for the agent economy.
+ * Nobulex — The trust layer for the agent economy.
  *
  * Single package, one import, 30-minute integration.
  *
@@ -37,7 +37,7 @@ export function getPresetConstraints(preset: KovaPreset): string {
 }
 
 /**
- * Wrap an MCP server with Kova trust enforcement.
+ * Wrap an MCP server with Nobulex trust enforcement.
  *
  * Three lines of code to integrate:
  * ```typescript

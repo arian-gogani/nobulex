@@ -1,5 +1,5 @@
 /**
- * Caching middleware plugin for the Stele SDK.
+ * Caching middleware plugin for the Nobulex SDK.
  *
  * Caches verification and evaluation results to avoid redundant crypto
  * operations. Uses LRU eviction and TTL-based expiration.

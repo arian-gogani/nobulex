@@ -1,5 +1,5 @@
 /**
- * Deprecation warning system for the Stele SDK.
+ * Deprecation warning system for the Nobulex SDK.
  *
  * Provides utilities to emit deprecation warnings to stderr (once per API
  * per process), wrap functions with deprecation notices, and inspect

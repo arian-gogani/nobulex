@@ -3,24 +3,24 @@
 **NIST AI Risk Management Framework** — January 2023  
 Govern, Map, Measure, Manage AI risks.
 
-Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongside [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for comprehensive AI compliance.
+Nobulex capabilities mapped to the four pillars of the NIST AI RMF. Use this alongside [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for comprehensive AI compliance.
 
 ---
 
 ## Overview: Four Pillars
 
-| Pillar | Kova Capability |
+| Pillar | Nobulex Capability |
 |--------|------------------|
 | **Govern** | Covenant as governance artifact; identity binding; operator accountability |
 | **Map** | CCL constraints map permitted/denied actions; scope and resources |
-| **Measure** | Canary tests, attestation, compliance record, Kova Score |
+| **Measure** | Canary tests, attestation, compliance record, Nobulex Score |
 | **Manage** | Breach detection, antifragile improvements, temporal evolution |
 
 ---
 
 ## Govern
 
-| RMF Requirement | Kova Capability |
+| RMF Requirement | Nobulex Capability |
 |-----------------|------------------|
 | Culture of risk management | Covenant commits operator to behavioral bounds; breach has consequences |
 | Roles and responsibilities | Issuer (operator), beneficiary; identity binding |
@@ -34,7 +34,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 
 ## Map
 
-| RMF Requirement | Kova Capability |
+| RMF Requirement | Nobulex Capability |
 |-----------------|------------------|
 | Context mapping | Covenant scope (capabilities, resources); CCL constraints |
 | Risk identification | Canary tests probe boundaries; robustness package finds vulnerabilities |
@@ -48,21 +48,21 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 
 ## Measure
 
-| RMF Requirement | Kova Capability |
+| RMF Requirement | Nobulex Capability |
 |-----------------|------------------|
 | Performance metrics | Compliance record (covenant coverage, breach rate, canary pass rate) |
-| Risk metrics | Attestation coverage; breach count; Kova Score dimensions |
+| Risk metrics | Attestation coverage; breach count; Nobulex Score dimensions |
 | Benchmarking | Canary tests as synthetic benchmarks; pass rate over time |
 | Monitoring | Enforcement monitor; audit trail; reputation scoring |
 | Validation | 11 specification checks; external attestation; ZK proofs |
 
-**Packages:** `@nobulex/enforcement`, `@nobulex/attestation`, `@nobulex/reputation`, `@nobulex/legal` (computeSteleScore → Kova Score)
+**Packages:** `@nobulex/enforcement`, `@nobulex/attestation`, `@nobulex/reputation`, `@nobulex/legal` (computeSteleScore → Nobulex Score)
 
 ---
 
 ## Manage
 
-| RMF Requirement | Kova Capability |
+| RMF Requirement | Nobulex Capability |
 |-----------------|------------------|
 | Risk response | Breach attestation; stake burn; trust graph propagation |
 | Allocation of resources | Covenant constraints; rate limits; capability restrictions |
@@ -74,11 +74,11 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 
 ---
 
-## Kova Score and NIST RMF
+## Nobulex Score and NIST RMF
 
-The **Kova Score** (multidimensional trust profile, `computeSteleScore` in `@nobulex/legal`) aligns with NIST's measurement focus:
+The **Nobulex Score** (multidimensional trust profile, `computeSteleScore` in `@nobulex/legal`) aligns with NIST's measurement focus:
 
-| Kova Score Dimension | NIST RMF Alignment |
+| Nobulex Score Dimension | NIST RMF Alignment |
 |-----------------------|--------------------|
 | complianceRate | Map + Measure — covenant coverage |
 | attestationCoverage | Measure — external verification |

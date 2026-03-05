@@ -1,8 +1,8 @@
-# Kova
+# Nobulex
 
 **The trust layer for the agent economy.**
 
-Kova is an open cryptographic protocol (MIT license) that enables AI agents to declare behavioral commitments, prove compliance, and build verifiable reputation across platforms. Single package, one import, 30-minute integration.
+Nobulex is an open cryptographic protocol (MIT license) that enables AI agents to declare behavioral commitments, prove compliance, and build verifiable reputation across platforms. Single package, one import, 30-minute integration.
 
 ## Install
 
@@ -31,7 +31,7 @@ Three lines of code. Your MCP server is now wrapped with covenant enforcement.
 
 ## Advanced: 3 Primitives
 
-For custom integrations, Kova re-exports the protocol primitives:
+For custom integrations, Nobulex re-exports the protocol primitives:
 
 - **Identity Binding**: `createIdentity`, `evolveIdentity`
 - **Covenant Declaration**: `buildCovenant`, `verifyCovenant`

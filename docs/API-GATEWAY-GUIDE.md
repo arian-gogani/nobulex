@@ -1,12 +1,12 @@
-# Kova API Gateway — Trust-Gated Access in 10 Minutes
+# Nobulex API Gateway — Trust-Gated Access in 10 Minutes
 
-Protect your API with covenant verification. No Kova = no access.
+Protect your API with covenant verification. No Nobulex = no access.
 
 ---
 
 ## What It Does
 
-The Kova API Gateway middleware:
+The Nobulex API Gateway middleware:
 
 1. **Extracts** the covenant from the request (header, body, or query)
 2. **Verifies** the covenant (signature, expiration, chain)
@@ -29,7 +29,7 @@ const app = express();
 const client = new SteleClient();
 await client.generateKeyPair();
 
-// Protect all routes under /api (uses default extractor: X-Kova-Covenant or Bearer)
+// Protect all routes under /api (uses default extractor: X-Nobulex-Covenant or Bearer)
 app.use('/api', kovaGatewayMiddleware({
   client,
   // Optional: enforce minimum constraints
@@ -53,15 +53,15 @@ The default covenant extractor checks (in order):
 
 | Source | Format |
 |--------|--------|
-| `X-Kova-Covenant` | Raw JSON string or base64-encoded covenant |
+| `X-Nobulex-Covenant` | Raw JSON string or base64-encoded covenant |
 | `Authorization: Bearer <token>` | Base64-encoded covenant JSON |
 
 | Header | Description |
 |--------|-------------|
-| `X-Kova-Covenant` | Raw JSON string, or base64-encoded covenant |
+| `X-Nobulex-Covenant` | Raw JSON string, or base64-encoded covenant |
 | `Authorization: Bearer <base64>` | Base64-encoded covenant JSON (fallback) |
-| `X-Kova-Action` | (Optional) Override action (default: HTTP method) |
-| `X-Kova-Resource` | (Optional) Override resource (default: path) |
+| `X-Nobulex-Action` | (Optional) Override action (default: HTTP method) |
+| `X-Nobulex-Resource` | (Optional) Override resource (default: path) |
 
 ### Required Constraints
 

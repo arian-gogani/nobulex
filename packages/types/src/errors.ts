@@ -1,5 +1,5 @@
 /**
- * Comprehensive error code system for the Stele SDK.
+ * Comprehensive error code system for the Nobulex SDK.
  *
  * Every error has a unique, documentable code (STELE_Exxx) that maps
  * to a specific, documented failure mode. This enables structured error
@@ -10,7 +10,7 @@
 
 // ─── Error codes ────────────────────────────────────────────────────────────────
 
-/** All Stele error codes. Each maps to a specific, documented failure mode. */
+/** All Nobulex error codes. Each maps to a specific, documented failure mode. */
 export enum SteleErrorCode {
   // Key management (1xx)
   /** A required private key was not provided or not available. */
@@ -97,7 +97,7 @@ export enum SteleErrorCode {
 
 // ─── Error class ────────────────────────────────────────────────────────────────
 
-/** Options for constructing a SteleError. */
+/** Options for constructing a NobulexError. */
 export interface SteleErrorOptions {
   /** Additional structured context for diagnostics and logging. */
   context?: Record<string, unknown>;
@@ -108,7 +108,7 @@ export interface SteleErrorOptions {
 }
 
 /**
- * Base error class for all Stele errors.
+ * Base error class for all Nobulex errors.
  *
  * Includes a unique error code, optional context for structured logging,
  * and an optional hint for user-facing diagnostics.
@@ -163,7 +163,7 @@ const DOCS_BASE_URL = 'https://stele.dev/errors';
 /**
  * Look up the documentation URL for an error code.
  *
- * @param code - The Stele error code.
+ * @param code - The Nobulex error code.
  * @returns A URL pointing to the documentation page for this error code.
  *
  * @example

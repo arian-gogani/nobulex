@@ -1,7 +1,7 @@
 /**
- * React hooks for Stele.
+ * React hooks for Nobulex.
  *
- * Provides idiomatic React hooks for subscribing to Stele observables,
+ * Provides idiomatic React hooks for subscribing to Nobulex observables,
  * managing covenant state, identity state, and store queries.
  *
  * Requires React >= 18 as a peer dependency.
@@ -69,7 +69,7 @@ export function _resetReact(): void {
 // ─── useObservable ─────────────────────────────────────────────────────────────
 
 /**
- * Subscribe to a Stele {@link Observable} and re-render when it changes.
+ * Subscribe to a Nobulex {@link Observable} and re-render when it changes.
  *
  * Uses `useSyncExternalStore` for tear-free reads that are compatible
  * with React concurrent features.

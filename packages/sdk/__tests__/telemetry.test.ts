@@ -596,7 +596,7 @@ describe('createTelemetry()', () => {
     expect(middleware.onError).toBeDefined();
   });
 
-  it('metrics is a SteleMetrics instance', () => {
+  it('metrics is a NobulexMetrics instance', () => {
     const { metrics } = createTelemetry();
     expect(metrics).toBeInstanceOf(SteleMetrics);
   });

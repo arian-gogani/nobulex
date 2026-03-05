@@ -1,6 +1,6 @@
 # @nobulex/reputation
 
-Reputation scoring, execution receipts, stakes, and delegation for the Stele protocol.
+Reputation scoring, execution receipts, stakes, and delegation for the Nobulex protocol.
 
 ## Stake-Bound Formula
 

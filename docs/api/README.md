@@ -1,6 +1,6 @@
-# Stele API Reference
+# Nobulex API Reference
 
-Complete API reference for all packages in the Stele monorepo. Packages are grouped
+Complete API reference for all packages in the Nobulex monorepo. Packages are grouped
 by layer: **Foundation**, **Enforcement**, **Protocol**, and **Platform**.
 
 ---
@@ -476,13 +476,13 @@ console.log(score.overall); // 0.0 - 1.0
 
 ### @nobulex/mcp
 
-MCP (Model Context Protocol) guard that wraps an MCP server with Stele covenant enforcement, audit logging, identity creation, and compliance proof generation.
+MCP (Model Context Protocol) guard that wraps an MCP server with Nobulex covenant enforcement, audit logging, identity creation, and compliance proof generation.
 
 #### Key Exports
 
 | Export | Kind | Description |
 |--------|------|-------------|
-| `steleGuard(server, options)` | function | Wrap an MCP server with Stele enforcement. Returns `WrappedMCPServer` with audit log, identity, and compliance proof. |
+| `steleGuard(server, options)` | function | Wrap an MCP server with Nobulex enforcement. Returns `WrappedMCPServer` with audit log, identity, and compliance proof. |
 | `PRESETS` | const | Named constraint presets (e.g., `"standard:data-isolation"`, `"standard:read-only"`). |
 | `MCPServer`, `WrappedMCPServer` | type | MCP server interfaces. |
 | `SteleGuardOptions` | type | Guard configuration: constraints, key pair, operator identifier, model, capabilities, deployment. |
@@ -571,7 +571,7 @@ console.log(result.passed);
 
 ### @nobulex/gametheory
 
-Game-theoretic analysis proving that honest behavior is the dominant strategy under Stele's incentive structure.
+Game-theoretic analysis proving that honest behavior is the dominant strategy under Nobulex's incentive structure.
 
 #### Key Exports
 
@@ -965,7 +965,7 @@ console.log(compliance.compliant, compliance.gaps);
 
 ### @nobulex/react
 
-Framework-agnostic reactive primitives (Observable, CovenantState, IdentityState) for building Stele-powered UIs.
+Framework-agnostic reactive primitives (Observable, CovenantState, IdentityState) for building Nobulex-powered UIs.
 
 #### Key Exports
 
@@ -1009,7 +1009,7 @@ EVM anchoring utilities for on-chain covenant verification: ABI encoding/decodin
 | `computeFunctionSelector(signature)` | function | Compute the 4-byte function selector from a signature string. |
 | `anchorCovenant(doc)` | function | Prepare a covenant for on-chain anchoring (returns encoded calldata). |
 | `verifyAnchor(anchorData, doc)` | function | Verify that anchor data matches a covenant document. |
-| `STELE_CONTRACT_ABI` | const | ABI definition for the Stele covenant anchor contract. |
+| `STELE_CONTRACT_ABI` | const | ABI definition for the Nobulex covenant anchor contract. |
 
 #### Usage
 
@@ -1025,7 +1025,7 @@ const encoded = encodeUint256(42n);
 
 ### @nobulex/mcp-server
 
-Model Context Protocol server exposing Stele tools to AI agents via JSON-RPC 2.0 over stdio.
+Model Context Protocol server exposing Nobulex tools to AI agents via JSON-RPC 2.0 over stdio.
 
 #### Key Exports
 
@@ -1052,36 +1052,36 @@ const response = await server.handleRequest({
 
 ### @nobulex/cli
 
-Command-line interface for Stele operations: key generation, covenant management, identity management, CCL parsing, and verification.
+Command-line interface for Nobulex operations: key generation, covenant management, identity management, CCL parsing, and verification.
 
 #### Commands
 
 | Command | Description |
 |---------|-------------|
-| `stele keygen` | Generate a new Ed25519 key pair and write to files. |
-| `stele build --issuer <file> --beneficiary <file> --constraints <ccl> --key <file>` | Build and sign a new covenant document. |
-| `stele verify <file>` | Verify a covenant document from a JSON file. |
-| `stele inspect <file>` | Display details of a covenant document. |
-| `stele resign <file> --key <file>` | Re-sign a covenant with a new nonce. |
-| `stele parse <ccl>` | Parse CCL source text and display the AST. |
-| `stele identity create --key <file> --model <json> --capabilities <list> --deployment <json>` | Create a new agent identity. |
-| `stele identity evolve <file> --key <file> --change-type <type> --description <text>` | Evolve an existing agent identity. |
+| `nobulex keygen` | Generate a new Ed25519 key pair and write to files. |
+| `nobulex build --issuer <file> --beneficiary <file> --constraints <ccl> --key <file>` | Build and sign a new covenant document. |
+| `nobulex verify <file>` | Verify a covenant document from a JSON file. |
+| `nobulex inspect <file>` | Display details of a covenant document. |
+| `nobulex resign <file> --key <file>` | Re-sign a covenant with a new nonce. |
+| `nobulex parse <ccl>` | Parse CCL source text and display the AST. |
+| `nobulex identity create --key <file> --model <json> --capabilities <list> --deployment <json>` | Create a new agent identity. |
+| `nobulex identity evolve <file> --key <file> --change-type <type> --description <text>` | Evolve an existing agent identity. |
 
 #### Usage
 
 ```bash
 # Generate a key pair
-stele keygen --output ./keys
+nobulex keygen --output ./keys
 
 # Build a covenant
-stele build --issuer issuer.json --beneficiary beneficiary.json \
+nobulex build --issuer issuer.json --beneficiary beneficiary.json \
   --constraints "permit read on '**'" --key ./keys/private.hex
 
 # Verify a covenant
-stele verify covenant.json
+nobulex verify covenant.json
 
 # Parse CCL
-stele parse "deny write on '/system/**'"
+nobulex parse "deny write on '/system/**'"
 ```
 
 ---

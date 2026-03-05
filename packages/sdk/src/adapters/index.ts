@@ -1,5 +1,5 @@
 /**
- * Framework adapters for the Stele SDK.
+ * Framework adapters for the Nobulex SDK.
  *
  * Re-exports all adapter factories and their associated types for
  * Express/HTTP, Vercel AI SDK, and LangChain integrations.

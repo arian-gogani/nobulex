@@ -37,5 +37,5 @@ app.get('/health', (_req, res) => {
 
 const port = Number(process.env.PORT) || 3001;
 app.listen(port, () => {
-  console.log(`Kova verification service listening on port ${port}`);
+  console.log(`Nobulex verification service listening on port ${port}`);
 });

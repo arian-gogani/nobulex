@@ -1,5 +1,5 @@
 /**
- * Stele Protocol Conformance Test Suite
+ * Nobulex Protocol Conformance Test Suite
  *
  * These tests verify that the protocol implementation conforms to its specification.
  * Each test is a real assertion that exercises the actual implementation, not a stub.
@@ -89,7 +89,7 @@ async function makeTestCovenant(constraints = "permit read on '/data/**'") {
 
 // ─── Test Suite ───────────────────────────────────────────────────────────────
 
-describe('Stele Protocol Conformance', () => {
+describe('Nobulex Protocol Conformance', () => {
 
   // ── Covenant Document Specification ─────────────────────────────────────────
 

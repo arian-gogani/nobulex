@@ -1,6 +1,6 @@
 /**
  * @nobulex/mcp-server -- Model Context Protocol server that exposes
- * Stele tools to any AI agent.
+ * Nobulex tools to any AI agent.
  *
  * Implements JSON-RPC 2.0 over stdio, with tool definitions that map
  * to @nobulex/sdk, @nobulex/store, and @nobulex/crypto operations.
@@ -211,7 +211,7 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
 // ─── SteleServer ────────────────────────────────────────────────────────────────
 
 /**
- * MCP server that exposes Stele protocol operations as tools via JSON-RPC 2.0.
+ * MCP server that exposes Nobulex protocol operations as tools via JSON-RPC 2.0.
  *
  * Accepts a {@link MemoryStore} for persisting covenant documents and provides
  * methods for handling MCP protocol messages, listing tools, and calling tools.

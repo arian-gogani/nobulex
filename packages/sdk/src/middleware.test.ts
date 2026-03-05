@@ -1,5 +1,5 @@
 /**
- * Tests for the Stele SDK middleware system.
+ * Tests for the Nobulex SDK middleware system.
  */
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';

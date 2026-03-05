@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trust graph management, and cryptographic verification.
 - **@nobulex/reputation**: Reputation scoring with recency decay, breach penalties,
   staking, delegation, and endorsements.
-- **@nobulex/mcp**: MCP guard wrapping MCP servers with Stele enforcement, audit
+- **@nobulex/mcp**: MCP guard wrapping MCP servers with Nobulex enforcement, audit
   logging, identity creation, and compliance proof generation; named presets.
 
 #### Protocol Layer

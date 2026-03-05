@@ -9,7 +9,7 @@
 
 // ─── Error codes ────────────────────────────────────────────────────────────────
 
-/** Enumeration of all error codes used across the Stele SDK. */
+/** Enumeration of all error codes used across the Nobulex SDK. */
 export enum SteleErrorCode {
   /** A required input was empty, missing, or otherwise invalid. */
   INVALID_INPUT = 'INVALID_INPUT',
@@ -40,7 +40,7 @@ export enum SteleErrorCode {
 // ─── Error classes ──────────────────────────────────────────────────────────────
 
 /**
- * Base error class for the Stele SDK.
+ * Base error class for the Nobulex SDK.
  *
  * Every Stele error carries a {@link SteleErrorCode} so callers can
  * programmatically distinguish error categories without parsing messages.
@@ -217,18 +217,18 @@ export function validateProbability(value: number, name: string): void {
 
 // ─── Protocol constants ─────────────────────────────────────────────────────────
 
-/** Current Stele SDK version string. */
+/** Current Nobulex SDK version string. */
 export const STELE_VERSION = '0.1.0';
 
 /** Default severity level for CCL statements. */
 export const DEFAULT_SEVERITY = 'must';
 
-/** Hash algorithms supported by the Stele protocol. */
+/** Hash algorithms supported by the Nobulex protocol. */
 export const SUPPORTED_HASH_ALGORITHMS: readonly string[] = [
   'sha256',
 ] as const;
 
-/** Signature schemes supported by the Stele protocol. */
+/** Signature schemes supported by the Nobulex protocol. */
 export const SUPPORTED_SIGNATURE_SCHEMES: readonly string[] = [
   'ed25519',
 ] as const;

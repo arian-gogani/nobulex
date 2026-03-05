@@ -1,5 +1,5 @@
 /**
- * Advanced protocol integration tests for the Stele SDK.
+ * Advanced protocol integration tests for the Nobulex SDK.
  *
  * Covers:
  *   1. Canary System     - Canary generation, evaluation, scheduling, correlation

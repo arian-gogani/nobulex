@@ -57,7 +57,7 @@ describe('stele help', () => {
   it('shows help with no arguments', async () => {
     const r = await run([]);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('Stele CLI');
+    expect(r.stdout).toContain('Nobulex CLI');
     expect(r.stdout).toContain('Commands');
     expect(r.stdout).toContain('init');
     expect(r.stdout).toContain('create');
@@ -76,7 +76,7 @@ describe('stele help', () => {
   it('shows help with "help" command', async () => {
     const r = await run(['help']);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('Stele CLI');
+    expect(r.stdout).toContain('Nobulex CLI');
     expect(r.stderr).toBe('');
   });
 
@@ -114,7 +114,7 @@ describe('stele help', () => {
   it('audit --format markdown outputs markdown', async () => {
     const r = await run(['audit', '.', '--format', 'markdown', '--no-color']);
     expect(r.exitCode).toBe(0);
-    expect(r.stdout).toContain('# Kova Compliance Audit Report');
+    expect(r.stdout).toContain('# Nobulex Compliance Audit Report');
     expect(r.stdout).toContain('| Metric | Value |');
     expect(r.stdout).toContain('## Recommended');
   });
@@ -127,7 +127,7 @@ describe('stele help', () => {
   it('strips ANSI from help when --no-color is set', async () => {
     const r = await run(['--no-color']);
     expect(hasAnsi(r.stdout)).toBe(false);
-    expect(r.stdout).toContain('Stele CLI');
+    expect(r.stdout).toContain('Nobulex CLI');
   });
 });
 
@@ -861,7 +861,7 @@ describe('stele doctor', () => {
   it('returns checks with colored output', async () => {
     const r = await run(['doctor']);
     expect(r.exitCode).toBe(0);
-    expect(stripAnsi(r.stdout)).toContain('Stele Doctor');
+    expect(stripAnsi(r.stdout)).toContain('Nobulex Doctor');
     expect(stripAnsi(r.stdout)).toContain('Node.js version');
     expect(stripAnsi(r.stdout)).toContain('Crypto');
     expect(stripAnsi(r.stdout)).toContain('Core');
@@ -896,7 +896,7 @@ describe('stele doctor', () => {
     const r = await run(['doctor', '--no-color']);
     expect(r.exitCode).toBe(0);
     expect(hasAnsi(r.stdout)).toBe(false);
-    expect(r.stdout).toContain('Stele Doctor');
+    expect(r.stdout).toContain('Nobulex Doctor');
   });
 
   it('doctor output includes summary box', async () => {

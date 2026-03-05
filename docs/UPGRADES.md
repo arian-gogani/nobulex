@@ -1,6 +1,6 @@
 # Upgrades — Feature Additions
 
-The 15 feature upgrades to Kova's trust infrastructure.
+The 15 feature upgrades to Nobulex's trust infrastructure.
 
 ---
 

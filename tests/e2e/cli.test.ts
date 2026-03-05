@@ -1,5 +1,5 @@
 /**
- * Comprehensive E2E tests for the Stele CLI.
+ * Comprehensive E2E tests for the Nobulex CLI.
  *
  * Tests the CLI programmatically via the `run()` function from `@nobulex/cli`,
  * covering all available commands: init, create, verify, evaluate, inspect,
@@ -76,7 +76,7 @@ describe('CLI help and version', () => {
     expect(r.exitCode).toBe(0);
     expect(r.stderr).toBe('');
     const plain = stripAnsi(r.stdout);
-    expect(plain).toContain('Stele CLI');
+    expect(plain).toContain('Nobulex CLI');
     expect(plain).toContain('Commands');
     expect(plain).toContain('init');
     expect(plain).toContain('create');
@@ -103,7 +103,7 @@ describe('CLI help and version', () => {
     expect(r.exitCode).toBe(0);
     expect(r.stderr).toBe('');
     const plain = stripAnsi(r.stdout);
-    expect(plain).toContain('Stele CLI');
+    expect(plain).toContain('Nobulex CLI');
     expect(plain).toContain('Commands');
   });
 
@@ -496,7 +496,7 @@ describe('CLI doctor', () => {
     const r = await run(['doctor']);
     expect(r.exitCode).toBe(0);
     const plain = stripAnsi(r.stdout);
-    expect(plain).toContain('Stele Doctor');
+    expect(plain).toContain('Nobulex Doctor');
     expect(plain).toContain('Summary');
     expect(plain).toContain('passed');
   });
@@ -529,7 +529,7 @@ describe('CLI error handling', () => {
     const r = await run([]);
     expect(r.exitCode).toBe(0);
     const plain = stripAnsi(r.stdout);
-    expect(plain).toContain('Stele CLI');
+    expect(plain).toContain('Nobulex CLI');
     expect(plain).toContain('Commands');
   });
 

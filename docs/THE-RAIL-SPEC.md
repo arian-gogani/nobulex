@@ -1,6 +1,6 @@
 # The Rail Spec
 
-Trust resolution and transaction execution merged into one atomic operation. Kova becomes the rail, not just the checkpoint.
+Trust resolution and transaction execution merged into one atomic operation. Nobulex becomes the rail, not just the checkpoint.
 
 ---
 
@@ -23,9 +23,9 @@ Trust resolution and transaction execution merged into one atomic operation. Kov
 ## Architecture
 
 1. **Transaction request** — Agent A wants to pay Agent B $X
-2. **Trust resolution** — Kova verifies A's covenant, B's covenant, compliance
+2. **Trust resolution** — Nobulex verifies A's covenant, B's covenant, compliance
 3. **Execution** — If trust passes: transaction executes. If not: rejected. No partial state.
-4. **Fee** — 0.15% of $X to Kova
+4. **Fee** — 0.15% of $X to Nobulex
 
 ---
 

@@ -10,7 +10,7 @@
 
 AI agents have been making decisions that affect real money and real people. Although, right now there is no real way to prove what an agent actually did. You just have to trust whoever runs it. Nobulex fixes that. It is an open-source middleware that lets all agents commit to specific rules before they can run, which blocks them if they break those rules, and creates a log that ANYONE can verify after the fact with no trust required.
 
-![CI](https://github.com/nobulexdev/nobulex/actions/workflows/ci.yml/badge.svg)
+![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)
 ![Packages](https://img.shields.io/badge/core%20packages-14-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
@@ -175,7 +175,7 @@ Creates two agents, authors a covenant, enforces it via middleware, blocks a for
 ## Development
 
 ```bash
-git clone https://github.com/nobulexdev/nobulex.git
+git clone https://github.com/arian-gogani/nobulex.git
 cd NOBULEX
 npm install
 npx vitest run    # 6,062 tests, 112 files, 0 failures
@@ -201,7 +201,7 @@ npx vitest run    # 6,062 tests, 112 files, 0 failures
 
 - **Website:** [nobulex.com](https://nobulex.com)
 - **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
-- **GitHub:** [github.com/nobulexdev/nobulex](https://github.com/nobulexdev/nobulex)
+- **GitHub:** [github.com/arian-gogani/nobulex](https://github.com/arian-gogani/nobulex)
 
 ## Pricing
 

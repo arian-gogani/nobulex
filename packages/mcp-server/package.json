@@ -36,12 +36,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nobulexdev/nobulex.git",
+    "url": "https://github.com/arian-gogani/nobulex.git",
     "directory": "packages/mcp-server"
   },
   "homepage": "https://nobulex.com",
   "bugs": {
-    "url": "https://github.com/nobulexdev/nobulex/issues"
+    "url": "https://github.com/arian-gogani/nobulex/issues"
   },
   "author": "Nobulex Labs, Inc.",
   "keywords": [

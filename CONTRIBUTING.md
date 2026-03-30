@@ -20,7 +20,7 @@ Proposing protocol changes? See [docs/KIP-PROCESS.md](./docs/KIP-PROCESS.md) for
 
 ```bash
 # Clone the repository
-git clone https://github.com/agbusiness195/stele.git
+git clone https://github.com/arian-gogani/stele.git
 cd stele
 
 # Install all dependencies (npm workspaces resolves inter-package deps automatically)

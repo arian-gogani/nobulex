@@ -28,11 +28,11 @@
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nobulexdev/nobulex.git",
+    "url": "https://github.com/arian-gogani/nobulex.git",
     "directory": "packages/contracts"
   },
   "homepage": "https://nobulex.com",
-  "bugs": { "url": "https://github.com/nobulexdev/nobulex/issues" },
+  "bugs": { "url": "https://github.com/arian-gogani/nobulex/issues" },
   "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "ai-accountability", "solidity", "staking", "slashing", "smart-contracts"]
 }

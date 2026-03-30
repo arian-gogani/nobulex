@@ -111,4 +111,4 @@ the attack surface. We pin exact versions and review updates before merging.
 ## Security Contacts
 
 - **Primary**: security@stele.dev
-- **GitHub**: https://github.com/agbusiness195/stele/security
+- **GitHub**: https://github.com/arian-gogani/stele/security

@@ -223,7 +223,7 @@ async function main(): Promise<void> {
   console.log('  The Nobulex Covenant Protocol provides cryptographic');
   console.log('  behavioral accountability for autonomous AI agents.');
   console.log();
-  console.log('  Learn more: https://github.com/agbusiness195/NOBULEX');
+  console.log('  Learn more: https://github.com/arian-gogani/nobulex');
   console.log();
 }
 

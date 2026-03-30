@@ -18,11 +18,11 @@
   "publishConfig": { "access": "public" },
   "repository": {
     "type": "git",
-    "url": "https://github.com/nobulexdev/nobulex.git",
+    "url": "https://github.com/arian-gogani/nobulex.git",
     "directory": "packages/composability"
   },
   "homepage": "https://nobulex.com",
-  "bugs": { "url": "https://github.com/nobulexdev/nobulex/issues" },
+  "bugs": { "url": "https://github.com/arian-gogani/nobulex/issues" },
   "author": "Nobulex Labs, Inc.",
   "keywords": ["nobulex", "covenant", "composability", "compatibility", "trust-topology"],
   "scripts": {

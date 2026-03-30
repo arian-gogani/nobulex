@@ -82,4 +82,4 @@ For regulated industries (finance, healthcare, critical infrastructure):
 
 - [QUICK-START.md](./QUICK-START.md)
 - [CONTRIBUTING.md](../CONTRIBUTING.md)
-- GitHub Issues: https://github.com/agbusiness195/stele/issues
+- GitHub Issues: https://github.com/arian-gogani/stele/issues

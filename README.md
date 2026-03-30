@@ -86,7 +86,7 @@ console.log(result.violations);   // []
 
 | Tier | Mechanism | Guarantee | When to Use |
 |------|-----------|-----------|-------------|
-| **Tier 1** | TEE Middleware (Intel SGX / AMD SEV) | Forbidden actions **physically cannot execute** | High-stakes: financial, medical, legal |
+| **Tier 1** | TEE Middleware (simulation mode — hardware integration planned) | Forbidden actions **physically cannot execute** (when hardware TEE is available) | High-stakes: financial, medical, legal |
 | **Tier 2** | Staking / Slashing (on-chain) | Violations are **economically irrational** | General purpose: commerce, data access |
 
 ## Architecture
@@ -130,7 +130,7 @@ covenant SafeTrader {
 }
 ```
 
-**Forbid wins.** If any `forbid` matches, the action is immedietly blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
+**Forbid wins.** If any `forbid` matches, the action is immediately blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
 
 ## Core Packages (9)
 
@@ -143,7 +143,7 @@ covenant SafeTrader {
 | [`@nobulex/middleware`](packages/middleware/) | Pre-execution enforcement — blocks forbidden actions |
 | [`@nobulex/verification`](packages/verification/) | Post-hoc verification with deterministic compliance checking |
 | [`@nobulex/composability`](packages/composability/) | Covenant compatibility, agent matching, trust topology |
-| [`@nobulex/tee`](packages/tee/) | TEE attestation for SGX, TDX, SEV-SNP with DID binding |
+| [`@nobulex/tee`](packages/tee/) | TEE attestation interfaces (simulation mode — hardware TEE integration planned) |
 | [`@nobulex/contracts`](packages/contracts/) | Solidity staking/slashing contracts with TypeScript bindings |
 
 ## Platform Packages
@@ -156,7 +156,7 @@ covenant SafeTrader {
 
 ## On-Chain Contracts (Solidity)
 
-Three contracts deployed to Ethereum (Sepolia testnet):
+Three Solidity contracts (ready for testnet deployment):
 
 | Contract | Purpose |
 |----------|---------|
@@ -178,7 +178,7 @@ Creates two agents, authors a covenant, enforces it via middleware, blocks a for
 git clone https://github.com/arian-gogani/nobulex.git
 cd NOBULEX
 npm install
-npx vitest run    # 6,062 tests, 112 files, 0 failures
+npx vitest run    # 6,138 tests, 115 files
 ```
 
 ## Documentation
@@ -188,7 +188,7 @@ npx vitest run    # 6,062 tests, 112 files, 0 failures
 - **[Pitch Deck](docs/pitch-deck.md)** — 12-slide overview
 - **[NIST RFI Response](docs/nist-rfi.md)** — AI agent security positioning
 
-## Comparison
+## Conceptual Comparison
 
 | | Bitcoin | Ethereum | Nobulex |
 |---|---------|----------|---------|

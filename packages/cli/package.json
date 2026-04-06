@@ -28,7 +28,6 @@
     "@nobulex/enforcement": "0.2.0",
     "@nobulex/proof": "0.2.0",
     "@nobulex/reputation": "0.2.0",
-    "@nobulex/breach": "0.2.0",
     "@nobulex/mcp": "0.2.0"
   },
   "license": "MIT",

@@ -32,9 +32,6 @@
       "path": "../verifier"
     },
     {
-      "path": "../negotiation"
-    },
-    {
       "path": "../core-types"
     },
     {

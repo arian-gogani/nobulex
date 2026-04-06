@@ -2,16 +2,12 @@ import { defineConfig } from 'vitest/config';
 import * as path from 'path';
 
 const packages = [
-  'alignment', 'antifragile', 'attestation', 'breach', 'canary', 'ccl',
-  'certification', 'cli', 'compliance-autopilot', 'composition', 'consensus',
-  'core', 'crypto', 'derivatives', 'enforcement', 'eu-compliance', 'evm',
-  'gametheory', 'identity', 'legal', 'marketplace', 'mcp-server', 'mcp',
-  'negotiation', 'norms', 'proof', 'rail', 'react', 'recursive', 'reputation',
-  'revenue', 'robustness', 'sdk', 'staking', 'store', 'substrate', 'temporal',
-  'trust-data', 'trust-futures', 'types', 'verifier',
+  'ccl', 'cli', 'core', 'crypto', 'enforcement', 'evm',
+  'identity', 'mcp-server', 'mcp', 'proof', 'react', 'sdk',
+  'store', 'types', 'verifier',
   'core-types', 'covenant-lang', 'action-log', 'middleware', 'verification', 'composability',
-  'tee', 'contracts', 'elizaos-plugin', 'transparency-log', 'merkle',
-  'langchain',
+  'tee', 'elizaos-plugin', 'transparency-log', 'merkle',
+  'langchain', 'evidence-core', 'reputation', 'otel', 'quickstart', 'kova',
 ];
 
 const alias: Record<string, string> = {};
@@ -23,11 +19,27 @@ export default defineConfig({
   resolve: { alias },
   test: {
     globals: true,
-    include: ['packages/*/src/**/*.test.ts', 'packages/*/__tests__/**/*.test.ts', 'tests/**/*.test.ts', 'benchmarks/**/*.test.ts', 'demo/**/*.test.ts'],
+    include: [
+      'packages/*/src/**/*.test.ts',
+      'packages/*/__tests__/**/*.test.ts',
+      'tests/**/*.test.ts',
+      'benchmarks/**/*.test.ts',
+      'demo/**/*.test.ts',
+    ],
+    exclude: [
+      'packages/experimental/**',
+      'tests/experimental/**',
+      'node_modules/**',
+    ],
     coverage: {
       provider: 'v8',
       include: ['packages/*/src/**/*.ts'],
-      exclude: ['packages/*/src/**/*.test.ts', 'packages/*/src/**/*.d.ts'],
+      exclude: [
+        'packages/*/src/**/*.test.ts',
+        'packages/*/src/**/*.d.ts',
+        'packages/experimental/**',
+      'tests/experimental/**',
+      ],
       thresholds: {
         statements: 80,
         branches: 75,

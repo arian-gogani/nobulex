@@ -60,9 +60,9 @@ describe('Performance SLAs', () => {
     expect(output).toContain('Nobulex Performance Benchmark Suite');
   });
 
-  it('PERFORMANCE_SLAS has all 13 targets', () => {
+  it('PERFORMANCE_SLAS has all 12 targets', () => {
     const keys = Object.keys(PERFORMANCE_SLAS);
-    expect(keys.length).toBe(13);
+    expect(keys.length).toBe(12);
   });
 
   it('all SLA targets have required fields', () => {

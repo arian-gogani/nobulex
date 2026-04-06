@@ -11,7 +11,7 @@
 AI agents have been making decisions that affect real money and real people. Although, right now there is no real way to prove what an agent actually did. You just have to trust whoever runs it. Nobulex fixes that. It is an open-source middleware that lets all agents commit to specific rules before they can run, which blocks them if they break those rules, and creates a log that ANYONE can verify after the fact with no trust required.
 
 ![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)
-![Packages](https://img.shields.io/badge/core%20packages-14-blue)
+![Packages](https://img.shields.io/badge/packages-30-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 
@@ -163,12 +163,6 @@ Three Solidity contracts (ready for testnet deployment):
 | `CovenantRegistry` | Register covenant hashes on-chain, prevent duplicates |
 | `StakeManager` | Stake ETH on covenants, lock/slash on violation |
 | `SlashingJudge` | Submit violations, compute escalating penalties |
-
-## Experimental Packages
-
-The monorepo includes additional packages exploring future protocol directions. These are early-stage implementations and should not be considered production-ready:
-
-`alignment`, `antifragile`, `attestation`, `breach`, `c2pa`, `canary`, `certification`, `compliance-autopilot`, `composition`, `consensus`, `derivatives`, `eu-compliance`, `evidence-core`, `gametheory`, `legal`, `marketplace`, `negotiation`, `norms`, `rail`, `recursive`, `reputation`, `revenue`, `robustness`, `staking`, `substrate`, `temporal`, `trust-data`, `trust-futures`, `trust-physics`
 
 ## Live Demo
 

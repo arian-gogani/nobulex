@@ -13,12 +13,6 @@ import { buildCovenant, verifyCovenant } from '@nobulex/core';
 import { parse as cclParse, evaluate as cclEvaluate } from '@nobulex/ccl';
 import { MemoryStore } from '@nobulex/store';
 import { NobulexClient } from './index.js';
-import {
-  initiate as negotiationInitiate,
-  propose as negotiationPropose,
-  agree as negotiationAgree,
-  evaluate as negotiationEvaluate,
-} from '@nobulex/negotiation';
 
 // ─── SLA Targets ────────────────────────────────────────────────────────────
 
@@ -51,7 +45,6 @@ export const PERFORMANCE_SLAS = {
   'store.get':                { p99: 1,    unit: 'ms', description: 'MemoryStore get' },
   'store.list_1000':          { p99: 100,  unit: 'ms', description: 'MemoryStore list with 1000 docs' },
   'sdk.evaluateAction':       { p99: 15,   unit: 'ms', description: 'Full SDK evaluate pipeline' },
-  'negotiation.handshake':    { p99: 100,  unit: 'ms', description: 'Two-party covenant negotiation' },
 } as const;
 
 /** All SLA operation names. */
@@ -332,34 +325,6 @@ export async function runBenchmarkSuite(): Promise<BenchmarkSuiteResult> {
     await client.evaluateAction(covenantDoc, 'read', '/data/users');
   }, MEDIUM_ITERS));
 
-  // negotiation.handshake (full two-party initiate -> propose -> evaluate -> agree cycle)
-  results.push(await benchmark('negotiation.handshake', () => {
-    const policyA = {
-      requiredConstraints: ['deny:exfiltrate-data', 'require:audit-log'],
-      preferredConstraints: ['permit:read-public'],
-      dealbreakers: ['permit:delete-all'],
-      maxRounds: 10,
-      timeoutMs: 30000,
-    };
-
-    // Initiate session
-    let session = negotiationInitiate('alice', 'bob', policyA);
-
-    // Bob counter-proposes
-    const counterProposal = {
-      from: 'bob',
-      constraints: ['deny:exfiltrate-data', 'require:audit-log', 'permit:read-public', 'require:encryption'],
-      requirements: ['deny:exfiltrate-data', 'require:encryption'],
-      timestamp: Date.now(),
-    };
-    session = negotiationPropose(session, counterProposal);
-
-    // Alice evaluates Bob's proposal
-    negotiationEvaluate(counterProposal, policyA);
-
-    // Reach agreement
-    negotiationAgree(session);
-  }, MEDIUM_ITERS));
 
   // ── Aggregate ────────────────────────────────────────────────────────────
 

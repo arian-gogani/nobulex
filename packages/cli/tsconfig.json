@@ -10,7 +10,6 @@
     { "path": "../enforcement" },
     { "path": "../proof" },
     { "path": "../reputation" },
-    { "path": "../breach" },
     { "path": "../mcp" }
   ]
 }

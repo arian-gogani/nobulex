@@ -2,7 +2,10 @@
   "compilerOptions": {
     "target": "ES2022",
     "module": "ESNext",
-    "lib": ["ES2022","DOM"],
+    "lib": [
+      "ES2022",
+      "DOM"
+    ],
     "moduleResolution": "bundler",
     "declaration": true,
     "declarationMap": true,
@@ -17,32 +20,98 @@
     "resolveJsonModule": true
   },
   "references": [
-    { "path": "packages/crypto" },
-    { "path": "packages/ccl" },
-    { "path": "packages/core" },
-    { "path": "packages/identity" },
-    { "path": "packages/enforcement" },
-    { "path": "packages/proof" },
-    { "path": "packages/reputation" },
-    { "path": "packages/breach" },
-    { "path": "packages/mcp" },
-    { "path": "packages/cli" },
-    { "path": "packages/attestation" },
-    { "path": "packages/canary" },
-    { "path": "packages/gametheory" },
-    { "path": "packages/composition" },
-    { "path": "packages/antifragile" },
-    { "path": "packages/negotiation" },
-    { "path": "packages/consensus" },
-    { "path": "packages/robustness" },
-    { "path": "packages/temporal" },
-    { "path": "packages/recursive" },
-    { "path": "packages/alignment" },
-    { "path": "packages/norms" },
-    { "path": "packages/substrate" },
-    { "path": "packages/derivatives" },
-{ "path": "packages/legal" },
-    { "path": "packages/kova" }
-]
+    {
+      "path": "packages/types"
+    },
+    {
+      "path": "packages/crypto"
+    },
+    {
+      "path": "packages/core-types"
+    },
+    {
+      "path": "packages/ccl"
+    },
+    {
+      "path": "packages/core"
+    },
+    {
+      "path": "packages/covenant-lang"
+    },
+    {
+      "path": "packages/action-log"
+    },
+    {
+      "path": "packages/middleware"
+    },
+    {
+      "path": "packages/verification"
+    },
+    {
+      "path": "packages/composability"
+    },
+    {
+      "path": "packages/identity"
+    },
+    {
+      "path": "packages/enforcement"
+    },
+    {
+      "path": "packages/proof"
+    },
+    {
+      "path": "packages/tee"
+    },
+    {
+      "path": "packages/store"
+    },
+    {
+      "path": "packages/verifier"
+    },
+    {
+      "path": "packages/evm"
+    },
+    {
+      "path": "packages/sdk"
+    },
+    {
+      "path": "packages/react"
+    },
+    {
+      "path": "packages/mcp-server"
+    },
+    {
+      "path": "packages/mcp"
+    },
+    {
+      "path": "packages/cli"
+    },
+    {
+      "path": "packages/evidence-core"
+    },
+    {
+      "path": "packages/merkle"
+    },
+    {
+      "path": "packages/transparency-log"
+    },
+    {
+      "path": "packages/otel"
+    },
+    {
+      "path": "packages/langchain"
+    },
+    {
+      "path": "packages/quickstart"
+    },
+    {
+      "path": "packages/elizaos-plugin"
+    },
+    {
+      "path": "packages/kova"
+    },
+    {
+      "path": "packages/reputation"
+    }
+  ]
 }
-

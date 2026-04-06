@@ -1032,7 +1032,7 @@ async function cmdDeploy(
     lines.push(dim('Use without --dry-run to deploy.'));
   } else {
     lines.push(success('Covenant ready for deployment.'));
-    lines.push(dim('To register on-chain, use the @nobulex/contracts SDK.'));
+    lines.push(dim('On-chain registration is planned for a future release.'));
   }
   lines.push('');
 

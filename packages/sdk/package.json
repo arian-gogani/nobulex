@@ -24,7 +24,6 @@
     "@nobulex/identity": "0.2.0",
     "@nobulex/store": "0.2.0",
     "@nobulex/verifier": "0.2.0",
-    "@nobulex/negotiation": "0.2.0",
     "@nobulex/core-types": "0.2.0",
     "@nobulex/covenant-lang": "0.2.0",
     "@nobulex/action-log": "0.2.0",

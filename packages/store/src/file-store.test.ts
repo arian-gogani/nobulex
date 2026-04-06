@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, beforeEach, afterEach } from 'vitest';
 import * as fs from 'fs/promises';
 import * as path from 'path';
@@ -35,7 +36,7 @@ function makeDoc(overrides: Partial<CovenantDocument> & { id: string }): Covenan
 let testDir: string;
 
 beforeEach(async () => {
-  testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'stele-filestore-test-'));
+  testDir = await fs.mkdtemp(path.join(os.tmpdir(), 'nobulex-filestore-test-'));
 });
 
 afterEach(async () => {

@@ -1,6 +1,6 @@
 # @nobulex/breach
 
-Breach detection, attestation creation, verification, and trust graph propagation for the Stele protocol.
+Breach detection, attestation creation, verification, and trust graph propagation for the Nobulex protocol.
 
 ## TrustGraph Propagation Rules
 

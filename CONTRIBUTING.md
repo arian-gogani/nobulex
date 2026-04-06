@@ -20,8 +20,8 @@ Proposing protocol changes? See [docs/KIP-PROCESS.md](./docs/KIP-PROCESS.md) for
 
 ```bash
 # Clone the repository
-git clone https://github.com/arian-gogani/stele.git
-cd stele
+git clone https://github.com/arian-gogani/nobulex.git
+cd nobulex
 
 # Install all dependencies (npm workspaces resolves inter-package deps automatically)
 npm install
@@ -57,7 +57,7 @@ npx vitest run --coverage
 ## Project Structure
 
 ```
-stele/
+nobulex/
   packages/           # All 30+ packages live here
     types/            # Shared types, error classes, validation
     crypto/           # Ed25519 signing, SHA-256, encoding
@@ -65,7 +65,7 @@ stele/
     core/             # Covenant lifecycle (build, verify, chain)
     store/            # Pluggable storage backends
     verifier/         # Standalone verification engine
-    sdk/              # High-level SteleClient unified SDK
+    sdk/              # High-level NobulexClient unified SDK
     kova/             # Single-package Kova (withKova, presets)
     eu-compliance/   # EU AI Act compliance checker
     identity/         # Agent identity with lineage tracking
@@ -74,7 +74,7 @@ stele/
     breach/           # Breach detection and trust graph
     reputation/       # Reputation scoring and staking
     mcp/              # MCP guard for tool enforcement
-    cli/              # Command-line interface (stele, kova)
+    cli/              # Command-line interface (nobulex, kova)
     attestation/      # External attestation and reconciliation
     canary/           # Canary testing framework
     gametheory/       # Game-theoretic honesty proofs
@@ -139,7 +139,7 @@ Follow this checklist when adding a new package:
 - **Pure functions**: Prefer pure functions over stateful classes where possible.
 - **Immutable returns**: Functions that transform documents return new copies rather
   than mutating the input.
-- **Explicit error types**: Use the error classes from `@nobulex/types` (`SteleError`,
+- **Explicit error types**: Use the error classes from `@nobulex/types` (`NobulexError`,
   `ValidationError`, `CryptoError`, etc.) rather than plain `Error`.
 - **Branded types**: Use branded string types (`HashHex`, `Base64Url`, etc.) for
   type safety at API boundaries.
@@ -194,5 +194,5 @@ npm run docs
 
 ## License
 
-By contributing to Stele, you agree that your contributions will be licensed
+By contributing to Nobulex, you agree that your contributions will be licensed
 under the MIT License.

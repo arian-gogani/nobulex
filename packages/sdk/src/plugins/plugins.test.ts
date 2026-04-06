@@ -1,5 +1,5 @@
 /**
- * Comprehensive tests for all Stele SDK plugins.
+ * Comprehensive tests for all Nobulex SDK plugins.
  *
  * Tests the caching, authentication, metrics, and retry middleware plugins
  * using the MiddlewarePipeline from middleware.ts.
@@ -450,7 +450,7 @@ describe('metricsMiddleware', () => {
     expect(mw.registry).toBeInstanceOf(MetricsRegistry);
   });
 
-  it('uses default prefix "stele" when none provided', () => {
+  it('uses default prefix "nobulex" when none provided', () => {
     const mw = metricsMiddleware();
     const pipeline2 = new MiddlewarePipeline();
     pipeline2.use(mw);
@@ -459,7 +459,7 @@ describe('metricsMiddleware', () => {
     pipeline2.execute('op', {}, echoOp('ok'));
 
     const snapshot = mw.registry.getAll();
-    expect(snapshot.counters).toHaveProperty('stele.operations.total');
+    expect(snapshot.counters).toHaveProperty('nobulex.operations.total');
   });
 
   // ── Counters ─────────────────────────────────────────────────────────

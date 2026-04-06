@@ -41,9 +41,9 @@ npm install @nobulex/sdk
 ## Step 2: Create a Covenant (5 min)
 
 ```typescript
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 
-const client = new SteleClient();
+const client = new NobulexClient();
 await client.generateKeyPair();
 
 const covenant = await client.createCovenant({
@@ -96,7 +96,7 @@ console.log('Write permitted:', writeEval.permitted); // false
 ```typescript
 import { FileStore } from '@nobulex/store';
 
-const store = new FileStore({ basePath: './stele-data' });
+const store = new FileStore({ basePath: './nobulex-data' });
 await store.saveCovenant(covenant);
 
 const loaded = await store.loadCovenant(covenant.id);
@@ -131,7 +131,7 @@ console.log('Canary passed:', canaryPasses === challenges.length);
 Wire real data from your covenant, store, and canary results:
 
 ```typescript
-import { exportLegalPackage, computeSteleScore } from '@nobulex/legal';
+import { exportLegalPackage, computeNobulexScore } from '@nobulex/legal';
 
 // Build covenant history from store (or use loaded covenant)
 const covenantHistory = [
@@ -177,8 +177,8 @@ const pkg = exportLegalPackage(
 
 console.log('Package hash:', pkg.packageHash);
 
-// Kova Score — multidimensional trust profile (computeSteleScore in @nobulex/legal)
-const kovaScore = computeSteleScore('agent-1', compliance, covenantHistory, {
+// Kova Score — multidimensional trust profile (computeNobulexScore in @nobulex/legal)
+const kovaScore = computeNobulexScore('agent-1', compliance, covenantHistory, {
   reputation,
 });
 console.log('Kova Score:', kovaScore.composite, kovaScore);

@@ -145,7 +145,7 @@ export function computeEUCompliance(
   score = Math.min(100, score);
 
   if (score < 50) {
-    recommendations.push('Run `kova init` to create covenants and stele.config.json');
+    recommendations.push('Run `kova init` to create covenants and nobulex.config.json');
   }
   if (!sig.hasKovaDep && sig.hasMcpConfig) {
     recommendations.push('Add kova: npm install kova — wrap MCP server with withKova(server, "data-isolation")');

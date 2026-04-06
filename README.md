@@ -1,6 +1,6 @@
 # Nobulex
 
-> **Note:** This repository consolidates months of development across many different protocol iterations (Stele → Kova → Kervyx → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
+> **Note:** This repository consolidates months of development across many different protocol iterations (Nobulex → Kova → Nobulex → Nobulex). The compressed git history reflects a repo migration, not the actual development timeline.
 
 
 
@@ -164,6 +164,12 @@ Three Solidity contracts (ready for testnet deployment):
 | `StakeManager` | Stake ETH on covenants, lock/slash on violation |
 | `SlashingJudge` | Submit violations, compute escalating penalties |
 
+## Experimental Packages
+
+The monorepo includes additional packages exploring future protocol directions. These are early-stage implementations and should not be considered production-ready:
+
+`alignment`, `antifragile`, `attestation`, `breach`, `c2pa`, `canary`, `certification`, `compliance-autopilot`, `composition`, `consensus`, `derivatives`, `eu-compliance`, `evidence-core`, `gametheory`, `legal`, `marketplace`, `negotiation`, `norms`, `rail`, `recursive`, `reputation`, `revenue`, `robustness`, `staking`, `substrate`, `temporal`, `trust-data`, `trust-futures`, `trust-physics`
+
 ## Live Demo
 
 ```bash
@@ -176,7 +182,7 @@ Creates two agents, authors a covenant, enforces it via middleware, blocks a for
 
 ```bash
 git clone https://github.com/arian-gogani/nobulex.git
-cd NOBULEX
+cd nobulex
 npm install
 npx vitest run    # 6,138 tests, 115 files
 ```

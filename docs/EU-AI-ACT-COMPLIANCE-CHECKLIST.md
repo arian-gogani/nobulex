@@ -31,7 +31,7 @@ kova init
 npx kova init
 ```
 
-Creates `stele.config.json` and key pair. Add constraints in CCL.
+Creates `nobulex.config.json` and key pair. Add constraints in CCL.
 
 ### 2. Run Compliance Audit (1 min)
 
@@ -82,4 +82,4 @@ For regulated industries (finance, healthcare, critical infrastructure):
 
 - [QUICK-START.md](./QUICK-START.md)
 - [CONTRIBUTING.md](../CONTRIBUTING.md)
-- GitHub Issues: https://github.com/arian-gogani/stele/issues
+- GitHub Issues: https://github.com/arian-gogani/nobulex/issues

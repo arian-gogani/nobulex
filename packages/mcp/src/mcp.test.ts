@@ -4,7 +4,7 @@ import type { KeyPair } from '@nobulex/crypto';
 import { buildCovenant } from '@nobulex/core';
 import type { CovenantDocument } from '@nobulex/core';
 
-import { SteleGuard, PRESETS } from './index';
+import { NobulexGuard, PRESETS } from './index';
 import type {
   MCPServer,
   WrappedMCPServer,
@@ -42,9 +42,9 @@ function createMockServer(): MCPServer {
 /** Convenience wrapper: wrap with enforce mode (the default). */
 async function wrapEnforce(
   server?: MCPServer,
-  overrides?: Partial<Parameters<typeof SteleGuard.wrap>[1]>,
+  overrides?: Partial<Parameters<typeof NobulexGuard.wrap>[1]>,
 ): Promise<WrappedMCPServer> {
-  return SteleGuard.wrap(server ?? createMockServer(), {
+  return NobulexGuard.wrap(server ?? createMockServer(), {
     constraints: TEST_CONSTRAINTS,
     mode: 'enforce',
     ...overrides,
@@ -54,9 +54,9 @@ async function wrapEnforce(
 /** Convenience wrapper: wrap with log_only mode. */
 async function wrapLogOnly(
   server?: MCPServer,
-  overrides?: Partial<Parameters<typeof SteleGuard.wrap>[1]>,
+  overrides?: Partial<Parameters<typeof NobulexGuard.wrap>[1]>,
 ): Promise<WrappedMCPServer> {
-  return SteleGuard.wrap(server ?? createMockServer(), {
+  return NobulexGuard.wrap(server ?? createMockServer(), {
     constraints: TEST_CONSTRAINTS,
     mode: 'log_only',
     ...overrides,
@@ -64,16 +64,16 @@ async function wrapLogOnly(
 }
 
 // ---------------------------------------------------------------------------
-// SteleGuard.wrap basics
+// NobulexGuard.wrap basics
 // ---------------------------------------------------------------------------
-describe('SteleGuard.wrap', () => {
+describe('NobulexGuard.wrap', () => {
   it('creates a WrappedMCPServer', async () => {
     const wrapped = await wrapEnforce();
     expect(wrapped).toBeDefined();
     expect(typeof wrapped.handleToolCall).toBe('function');
   });
 
-  it('wrapped server has all Stele accessors', async () => {
+  it('wrapped server has all Nobulex accessors', async () => {
     const wrapped = await wrapEnforce();
     expect(typeof wrapped.getMonitor).toBe('function');
     expect(typeof wrapped.getIdentity).toBe('function');
@@ -129,7 +129,7 @@ describe('handleToolCall - permitted actions', () => {
     const server: MCPServer = {
       tools: [{ name: 'read_file', description: 'Read' }],
     };
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       constraints: `permit tool.read_file on '**'`,
     });
     const result = await wrapped.handleToolCall!('read_file', {});
@@ -227,9 +227,9 @@ describe('PRESETS', () => {
     expect(PRESETS['standard:minimal']).toContain('deny network.send');
   });
 
-  it('resolves a preset name via SteleGuard.wrap without error', async () => {
+  it('resolves a preset name via NobulexGuard.wrap without error', async () => {
     const server = createMockServer();
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       constraints: 'standard:data-isolation',
     });
     expect(wrapped).toBeDefined();
@@ -239,7 +239,7 @@ describe('PRESETS', () => {
   it('passes raw CCL through when no preset matches', async () => {
     const rawCCL = `permit tool.read_file on '**'`;
     const server = createMockServer();
-    const wrapped = await SteleGuard.wrap(server, { constraints: rawCCL });
+    const wrapped = await NobulexGuard.wrap(server, { constraints: rawCCL });
     // read_file should be permitted with this raw CCL
     const result = await wrapped.handleToolCall!('read_file', {});
     expect(result).toEqual({ result: 'read_file executed', args: {} });
@@ -568,9 +568,9 @@ describe('onToolCall callback', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SteleGuard.fromCovenant
+// NobulexGuard.fromCovenant
 // ---------------------------------------------------------------------------
-describe('SteleGuard.fromCovenant', () => {
+describe('NobulexGuard.fromCovenant', () => {
   it('wraps a server using a pre-built covenant', async () => {
     const kp = await generateKeyPair();
 
@@ -595,7 +595,7 @@ describe('SteleGuard.fromCovenant', () => {
     });
 
     const server = createMockServer();
-    const wrapped = await SteleGuard.fromCovenant(server, covenant, kp);
+    const wrapped = await NobulexGuard.fromCovenant(server, covenant, kp);
 
     expect(wrapped).toBeDefined();
     expect(typeof wrapped.handleToolCall).toBe('function');
@@ -622,7 +622,7 @@ describe('SteleGuard.fromCovenant', () => {
       privateKey: kp.privateKey,
     });
 
-    const wrapped = await SteleGuard.fromCovenant(
+    const wrapped = await NobulexGuard.fromCovenant(
       createMockServer(),
       covenant,
       kp,
@@ -651,7 +651,7 @@ describe('SteleGuard.fromCovenant', () => {
       },
     });
 
-    const wrapped = await SteleGuard.fromCovenant(
+    const wrapped = await NobulexGuard.fromCovenant(
       createMockServer(),
       covenant,
       kp,
@@ -688,7 +688,7 @@ describe('SteleGuard.fromCovenant', () => {
       },
     });
 
-    const wrapped = await SteleGuard.fromCovenant(
+    const wrapped = await NobulexGuard.fromCovenant(
       createMockServer(),
       covenant,
       kp,
@@ -751,7 +751,7 @@ describe('edge cases', () => {
     const server: MCPServer = {
       handleToolCall: async (name: string) => ({ ok: true, name }),
     };
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       constraints: `permit tool.anything on '**'`,
     });
     expect(wrapped.tools).toBeUndefined();
@@ -764,7 +764,7 @@ describe('edge cases', () => {
       tools: [],
       handleToolCall: async () => 'ok',
     };
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       constraints: `permit tool.anything on '**'`,
     });
     expect(wrapped.tools).toEqual([]);
@@ -775,7 +775,7 @@ describe('edge cases', () => {
   it('throws on invalid CCL constraints', async () => {
     const server = createMockServer();
     await expect(
-      SteleGuard.wrap(server, { constraints: 'this is not valid CCL %%%' }),
+      NobulexGuard.wrap(server, { constraints: 'this is not valid CCL %%%' }),
     ).rejects.toThrow();
   });
 
@@ -881,14 +881,14 @@ describe('integration: sequential operations', () => {
   });
 });
 
-// ─── Extended SteleGuard tests ──────────────────────────────────────────────
+// ─── Extended NobulexGuard tests ──────────────────────────────────────────────
 
-describe('SteleGuard - extended preset tests', () => {
+describe('NobulexGuard - extended preset tests', () => {
   it('data-isolation preset permits file.read and denies network access', async () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'isolation-test',
       constraints: 'standard:data-isolation',
@@ -903,7 +903,7 @@ describe('SteleGuard - extended preset tests', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'rw-test',
       constraints: 'standard:read-write',
@@ -916,7 +916,7 @@ describe('SteleGuard - extended preset tests', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'net-test',
       constraints: 'standard:network',
@@ -929,7 +929,7 @@ describe('SteleGuard - extended preset tests', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'min-test',
       constraints: 'standard:minimal',
@@ -939,7 +939,7 @@ describe('SteleGuard - extended preset tests', () => {
   });
 });
 
-describe('SteleGuard - custom constraints', () => {
+describe('NobulexGuard - custom constraints', () => {
   it('wraps server with custom CCL constraints', async () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
@@ -950,7 +950,7 @@ describe('SteleGuard - custom constraints', () => {
       "deny tool.write_file on '/etc/**' severity critical",
     ].join('\n');
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'custom-test',
       constraints,
@@ -964,7 +964,7 @@ describe('SteleGuard - custom constraints', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'preserve-test',
       constraints: "permit tool.read_file on '**'",
@@ -978,12 +978,12 @@ describe('SteleGuard - custom constraints', () => {
   });
 });
 
-describe('SteleGuard - tool call interception', () => {
+describe('NobulexGuard - tool call interception', () => {
   it('permits tool call matching permit rule', async () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'permit-test',
       constraints: "permit tool.read_file on '**'",
@@ -999,7 +999,7 @@ describe('SteleGuard - tool call interception', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'deny-test',
       constraints: "deny tool.write_file on '**' severity critical",
@@ -1015,7 +1015,7 @@ describe('SteleGuard - tool call interception', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'audit-test',
       constraints: "permit tool.read_file on '**'",
@@ -1034,7 +1034,7 @@ describe('SteleGuard - tool call interception', () => {
     const kp = await generateKeyPair();
     const violations: ViolationDetails[] = [];
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'violation-test',
       constraints: "deny tool.write_file on '**' severity high",
@@ -1057,7 +1057,7 @@ describe('SteleGuard - tool call interception', () => {
     const kp = await generateKeyPair();
     const calls: ToolCallDetails[] = [];
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'callback-test',
       constraints: "permit tool.read_file on '**'\ndeny tool.write_file on '**' severity high",
@@ -1075,7 +1075,7 @@ describe('SteleGuard - tool call interception', () => {
   });
 });
 
-describe('SteleGuard - fromCovenant', () => {
+describe('NobulexGuard - fromCovenant', () => {
   it('creates guard from existing covenant document', async () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
@@ -1087,7 +1087,7 @@ describe('SteleGuard - fromCovenant', () => {
       privateKey: kp.privateKey,
     });
 
-    const wrapped = await SteleGuard.fromCovenant(server, covenant, kp);
+    const wrapped = await NobulexGuard.fromCovenant(server, covenant, kp);
 
     expect(wrapped.tools).toBeDefined();
     expect(wrapped.getCovenant().id).toBe(covenant.id);
@@ -1104,14 +1104,14 @@ describe('SteleGuard - fromCovenant', () => {
       privateKey: kp.privateKey,
     });
 
-    const wrapped = await SteleGuard.fromCovenant(server, covenant, kp);
+    const wrapped = await NobulexGuard.fromCovenant(server, covenant, kp);
 
     const result = await wrapped.handleToolCall!('read_file', { path: '/data/test' });
     expect(result).toBeDefined();
   });
 });
 
-describe('SteleGuard - edge cases', () => {
+describe('NobulexGuard - edge cases', () => {
   it('handles server with no tools', async () => {
     const emptyServer: MCPServer = {
       tools: [],
@@ -1119,7 +1119,7 @@ describe('SteleGuard - edge cases', () => {
     };
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(emptyServer, {
+    const wrapped = await NobulexGuard.wrap(emptyServer, {
       operatorKeyPair: kp,
       agentIdentifier: 'empty-test',
       constraints: "permit tool.read_file on '**'",
@@ -1138,7 +1138,7 @@ describe('SteleGuard - edge cases', () => {
     };
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(manyToolsServer, {
+    const wrapped = await NobulexGuard.wrap(manyToolsServer, {
       operatorKeyPair: kp,
       agentIdentifier: 'many-test',
       constraints: "permit tool.* on '**'",
@@ -1151,7 +1151,7 @@ describe('SteleGuard - edge cases', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'identity-test',
       constraints: "permit tool.read_file on '**'",
@@ -1166,7 +1166,7 @@ describe('SteleGuard - edge cases', () => {
     const server = createMockServer();
     const kp = await generateKeyPair();
 
-    const wrapped = await SteleGuard.wrap(server, {
+    const wrapped = await NobulexGuard.wrap(server, {
       operatorKeyPair: kp,
       agentIdentifier: 'covenant-test',
       constraints: "permit tool.read_file on '**'",

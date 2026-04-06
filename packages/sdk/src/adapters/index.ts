@@ -1,5 +1,5 @@
 /**
- * Framework adapters for the Stele SDK.
+ * Framework adapters for the Nobulex SDK.
  *
  * Re-exports all adapter factories and their associated types for
  * Express/HTTP, Vercel AI SDK, and LangChain integrations.
@@ -10,8 +10,8 @@
 // ─── Express / HTTP adapter ──────────────────────────────────────────────────
 
 export {
-  steleMiddleware,
-  steleGuardHandler,
+  nobulexMiddleware,
+  nobulexGuardHandler,
   createCovenantRouter,
   createWellKnownHandler,
   kovaGatewayMiddleware,
@@ -21,8 +21,8 @@ export type {
   IncomingRequest,
   OutgoingResponse,
   NextFunction,
-  SteleMiddlewareOptions,
-  SteleGuardHandlerOptions,
+  NobulexMiddlewareOptions,
+  NobulexGuardHandlerOptions,
   CovenantRouterOptions,
   CovenantRouter,
   AsyncHandler,
@@ -33,27 +33,27 @@ export type {
 // ─── Vercel AI SDK adapter ───────────────────────────────────────────────────
 
 export {
-  SteleAccessDeniedError,
-  withStele,
-  withSteleTools,
+  NobulexAccessDeniedError,
+  withNobulex,
+  withNobulexTools,
   createToolGuard,
 } from './vercel-ai.js';
 
 export type {
   ToolLike,
-  SteleToolOptions,
+  NobulexToolOptions,
 } from './vercel-ai.js';
 
 // ─── LangChain adapter ──────────────────────────────────────────────────────
 
 export {
-  SteleCallbackHandler,
-  withSteleTool,
+  NobulexCallbackHandler,
+  withNobulexTool,
   createChainGuard,
 } from './langchain.js';
 
 export type {
   LangChainToolLike,
-  SteleLangChainOptions,
+  NobulexLangChainOptions,
   CallbackEvent,
 } from './langchain.js';

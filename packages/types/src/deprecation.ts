@@ -1,5 +1,5 @@
 /**
- * Deprecation warning system for the Stele SDK.
+ * Deprecation warning system for the Nobulex SDK.
  *
  * Provides utilities to emit deprecation warnings to stderr (once per API
  * per process), wrap functions with deprecation notices, and inspect
@@ -12,13 +12,13 @@
 
 /** Describes a deprecated API and its replacement. */
 export interface DeprecationWarning {
-  /** The name of the deprecated API (e.g., `'SteleSDK.sign'`). */
+  /** The name of the deprecated API (e.g., `'NobulexSDK.sign'`). */
   api: string;
   /** The version in which the API was deprecated (e.g., `'0.2.0'`). */
   since: string;
   /** The version in which the API will be removed (e.g., `'1.0.0'`). */
   removeIn: string;
-  /** What to use instead (e.g., `'Use SteleSDK.signCovenant() instead'`). */
+  /** What to use instead (e.g., `'Use NobulexSDK.signCovenant() instead'`). */
   alternative: string;
 }
 
@@ -56,10 +56,10 @@ function formatWarning(warning: DeprecationWarning): string {
  * @example
  * ```typescript
  * deprecated({
- *   api: 'SteleSDK.sign',
+ *   api: 'NobulexSDK.sign',
  *   since: '0.2.0',
  *   removeIn: '1.0.0',
- *   alternative: 'Use SteleSDK.signCovenant() instead',
+ *   alternative: 'Use NobulexSDK.signCovenant() instead',
  * });
  * ```
  */

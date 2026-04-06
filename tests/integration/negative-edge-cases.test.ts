@@ -1,6 +1,6 @@
 /**
  * Comprehensive negative / edge-case / boundary-condition integration tests
- * for the Stele SDK.
+ * for the Nobulex SDK.
  *
  * Covers: crypto, CCL, core covenant operations, store, identity, enforcement.
  * Target: ~75 tests exercising malformed input, corruption, and boundary scenarios.

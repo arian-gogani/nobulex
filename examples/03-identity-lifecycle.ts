@@ -12,7 +12,7 @@
  */
 
 import {
-  SteleClient,
+  NobulexClient,
   generateKeyPair,
   verifyIdentity,
   getLineage,
@@ -65,7 +65,7 @@ async function main() {
 
   console.log('\n--- Step 3: Create Agent Identity ---\n');
 
-  const client = new SteleClient({ keyPair: operatorKeys });
+  const client = new NobulexClient({ keyPair: operatorKeys });
 
   const identity = await client.createIdentity({
     operatorIdentifier: 'operator:acme-research-lab',
@@ -176,7 +176,7 @@ async function main() {
 
   // Create an unrelated identity for comparison
   const otherKeys = await generateKeyPair();
-  const otherClient = new SteleClient({ keyPair: otherKeys });
+  const otherClient = new NobulexClient({ keyPair: otherKeys });
   const otherIdentity = await otherClient.createIdentity({
     operatorIdentifier: 'operator:other-org',
     model: { provider: 'openai', modelId: 'gpt-4', version: '1.0', hash: 'sha256:other' },

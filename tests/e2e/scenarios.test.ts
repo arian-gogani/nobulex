@@ -14,7 +14,7 @@ import {
 import type { CovenantDocument } from '@nobulex/core';
 import { evaluate, parse } from '@nobulex/ccl';
 import { Monitor, MonitorDeniedError } from '@nobulex/enforcement';
-import { SteleGuard } from '@nobulex/mcp';
+import { NobulexGuard } from '@nobulex/mcp';
 import type { MCPServer, WrappedMCPServer, ViolationDetails, ToolCallDetails } from '@nobulex/mcp';
 import { createReceipt, verifyReceipt, computeReputationScore, createEndorsement, verifyEndorsement } from '@nobulex/reputation';
 import type { ExecutionReceipt } from '@nobulex/reputation';
@@ -420,12 +420,12 @@ describe('Scenario 2: MCP Server Wrap, Execute, Receipt, and Reputation', () => 
     };
   }
 
-  // ── Step 1: Wrap the MCP server with SteleGuard ───────────────────────
+  // ── Step 1: Wrap the MCP server with NobulexGuard ───────────────────────
 
-  it('Step 1: wraps the MCP server with SteleGuard and constraints', async () => {
+  it('Step 1: wraps the MCP server with NobulexGuard and constraints', async () => {
     operatorKeyPair = await generateKeyPair();
 
-    wrappedServer = await SteleGuard.wrap(createMockMCPServer(), {
+    wrappedServer = await NobulexGuard.wrap(createMockMCPServer(), {
       constraints: SERVER_CONSTRAINTS,
       mode: 'enforce',
       operatorKeyPair,

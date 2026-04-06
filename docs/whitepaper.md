@@ -2,6 +2,9 @@
 
 **Version 1.0 -- February 2026**
 
+> **Implementation Status:** This paper describes the complete protocol design. The core primitives (identity, covenant, action log, middleware, verification) are fully implemented and tested (6,138 tests). TEE integration is currently in simulation mode. On-chain contracts are implemented but not yet deployed to any network. See the README for current implementation status.
+
+
 ## Abstract
 
 As autonomous AI agents acquire the capacity to execute financial transactions, negotiate contracts, and manage critical infrastructure on behalf of human principals, the absence of a standardized mechanism for behavioral accountability constitutes a systemic risk to the emerging agent economy. This paper presents Nobulex, an open cryptographic protocol that enables autonomous AI agents to make verifiable behavioral commitments through a novel construct termed a *covenant*. The protocol introduces six composable primitives -- identity, covenant, attestation, action log, verification, and enforcement -- that together form a complete accountability stack operating independently of any particular model architecture or deployment environment. Nobulex provides two tiers of behavioral guarantee: *impossible violations*, achieved through covenant middleware executing within Trusted Execution Environments (TEEs), and *costly violations*, achieved through stake-based economic enforcement with on-chain slashing. The verification function at the core of the protocol is deterministic, decidable, and efficient: given a covenant specification and an action log, it produces an identical compliance verdict on every execution. This paper presents the formal specification of each primitive, the security model governing both tiers of guarantee, the economic design of the staking and slashing mechanism, and the composability framework that enables trust topologies to emerge across multi-agent systems without central coordination.

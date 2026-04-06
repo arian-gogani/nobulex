@@ -1,21 +1,21 @@
 #!/usr/bin/env node
 /**
- * Stele MCP Server — stdio transport.
+ * Nobulex MCP Server — stdio transport.
  *
  * Reads newline-delimited JSON-RPC 2.0 messages from stdin,
- * dispatches them to the SteleServer, and writes responses to stdout.
+ * dispatches them to the NobulexServer, and writes responses to stdout.
  *
  * Usage:
- *   npx stele-mcp
- *   echo '{"jsonrpc":"2.0","method":"initialize","id":1}' | npx stele-mcp
+ *   npx nobulex-mcp
+ *   echo '{"jsonrpc":"2.0","method":"initialize","id":1}' | npx nobulex-mcp
  */
 
-import { SteleServer } from './index';
+import { NobulexServer } from './index';
 import { MemoryStore } from '@nobulex/store';
 import type { JsonRpcRequest } from './types';
 
 const store = new MemoryStore();
-const server = new SteleServer(store);
+const server = new NobulexServer(store);
 
 let buffer = '';
 

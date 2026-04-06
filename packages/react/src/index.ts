@@ -1,5 +1,5 @@
 /**
- * @nobulex/react -- Reactive primitives for building Stele-powered UIs.
+ * @nobulex/react -- Reactive primitives for building Nobulex-powered UIs.
  *
  * Provides framework-agnostic reactive state management that can be
  * adapted to React, Vue, Svelte, or vanilla JS. No external dependencies.
@@ -16,7 +16,7 @@ import type {
   CreateIdentityOptions,
   EvolveOptions,
 } from '@nobulex/sdk';
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 import type { EvaluationContext } from '@nobulex/ccl';
 
 // ---------------------------------------------------------------------------
@@ -120,7 +120,7 @@ export type CovenantStatus =
  * Observable state container for the full covenant lifecycle:
  * creation, verification, and action evaluation.
  *
- * Internally delegates to a {@link SteleClient} for all operations.
+ * Internally delegates to a {@link NobulexClient} for all operations.
  */
 export class CovenantState {
   readonly status: Observable<CovenantStatus>;
@@ -128,9 +128,9 @@ export class CovenantState {
   readonly error: Observable<Error | null>;
   readonly verificationResult: Observable<VerificationResult | null>;
 
-  private readonly _client: SteleClient;
+  private readonly _client: NobulexClient;
 
-  constructor(client: SteleClient) {
+  constructor(client: NobulexClient) {
     this._client = client;
     this.status = new Observable<CovenantStatus>('idle');
     this.document = new Observable<CovenantDocument | null>(null);
@@ -230,16 +230,16 @@ export type IdentityStatus =
  * Observable state container for the agent identity lifecycle:
  * creation and evolution.
  *
- * Internally delegates to a {@link SteleClient} for all operations.
+ * Internally delegates to a {@link NobulexClient} for all operations.
  */
 export class IdentityState {
   readonly identity: Observable<AgentIdentity | null>;
   readonly status: Observable<IdentityStatus>;
   readonly error: Observable<Error | null>;
 
-  private readonly _client: SteleClient;
+  private readonly _client: NobulexClient;
 
-  constructor(client: SteleClient) {
+  constructor(client: NobulexClient) {
     this._client = client;
     this.identity = new Observable<AgentIdentity | null>(null);
     this.status = new Observable<IdentityStatus>('idle');
@@ -376,14 +376,14 @@ export class StoreState {
 /**
  * Create a new {@link CovenantState} bound to the given client.
  */
-export function createCovenantState(client: SteleClient): CovenantState {
+export function createCovenantState(client: NobulexClient): CovenantState {
   return new CovenantState(client);
 }
 
 /**
  * Create a new {@link IdentityState} bound to the given client.
  */
-export function createIdentityState(client: SteleClient): IdentityState {
+export function createIdentityState(client: NobulexClient): IdentityState {
   return new IdentityState(client);
 }
 

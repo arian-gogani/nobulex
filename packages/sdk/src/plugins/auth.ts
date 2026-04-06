@@ -1,11 +1,11 @@
 /**
- * Authentication middleware plugin for the Stele SDK.
+ * Authentication middleware plugin for the Nobulex SDK.
  *
  * Enforces authentication requirements on operations by validating
  * API keys or key pair credentials before allowing operations to proceed.
  */
 
-import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
+import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -49,10 +49,10 @@ export interface AuthOptions {
  * - `ctx.metadata.publicKeyHex` — the public key hex (key pair auth only)
  *
  * @param options - Authentication configuration.
- * @returns A SteleMiddleware that enforces authentication.
+ * @returns A NobulexMiddleware that enforces authentication.
  * @throws Error if neither `apiKey` nor `keyPair` is provided.
  */
-export function authMiddleware(options: AuthOptions): SteleMiddleware {
+export function authMiddleware(options: AuthOptions): NobulexMiddleware {
   const { apiKey, keyPair, requiredFor } = options;
 
   if (!apiKey && !keyPair) {

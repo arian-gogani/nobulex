@@ -1,5 +1,5 @@
 /**
- * Structured logging utility for the Stele SDK.
+ * Structured logging utility for the Nobulex SDK.
  *
  * Provides a simple, zero-dependency structured logger that outputs
  * JSON log entries. Supports log levels, contextual fields, and

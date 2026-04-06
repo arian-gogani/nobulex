@@ -1,6 +1,6 @@
 /**
  * @nobulex/mcp-server -- Model Context Protocol server that exposes
- * Stele tools to any AI agent.
+ * Nobulex tools to any AI agent.
  *
  * Implements JSON-RPC 2.0 over stdio, with tool definitions that map
  * to @nobulex/sdk, @nobulex/store, and @nobulex/crypto operations.
@@ -8,7 +8,7 @@
  * @packageDocumentation
  */
 
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 import { MemoryStore } from '@nobulex/store';
 import { generateKeyPair, toHex } from '@nobulex/crypto';
 import type { KeyPair } from '@nobulex/crypto';
@@ -208,20 +208,20 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
   },
 ];
 
-// ─── SteleServer ────────────────────────────────────────────────────────────────
+// ─── NobulexServer ────────────────────────────────────────────────────────────────
 
 /**
- * MCP server that exposes Stele protocol operations as tools via JSON-RPC 2.0.
+ * MCP server that exposes Nobulex protocol operations as tools via JSON-RPC 2.0.
  *
  * Accepts a {@link MemoryStore} for persisting covenant documents and provides
  * methods for handling MCP protocol messages, listing tools, and calling tools.
  */
-export class SteleServer {
+export class NobulexServer {
   /** The backing store for covenant documents. */
   readonly store: MemoryStore;
 
   /** The SDK client used for operations. */
-  private readonly client: SteleClient;
+  private readonly client: NobulexClient;
 
   /** Server name. */
   readonly name: string;
@@ -231,8 +231,8 @@ export class SteleServer {
 
   constructor(store: MemoryStore, options?: MCPServerOptions) {
     this.store = store;
-    this.client = new SteleClient();
-    this.name = options?.name ?? 'stele-mcp-server';
+    this.client = new NobulexClient();
+    this.name = options?.name ?? 'nobulex-mcp-server';
     this.version = options?.version ?? '0.1.0';
   }
 

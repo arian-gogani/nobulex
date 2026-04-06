@@ -132,7 +132,7 @@ describe('Signature edge cases', () => {
 
   it('signString signs and verifies via raw bytes', async () => {
     const kp = await generateKeyPair();
-    const text = 'hello stele';
+    const text = 'hello nobulex';
     const sig = await signString(text, kp.privateKey);
     const msgBytes = new TextEncoder().encode(text);
     const ok = await verify(msgBytes, sig, kp.publicKey);

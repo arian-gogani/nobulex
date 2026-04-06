@@ -12,7 +12,7 @@
  */
 
 import {
-  SteleClient,
+  NobulexClient,
   generateKeyPair,
   countersignCovenant,
   type Issuer,
@@ -60,7 +60,7 @@ async function main() {
     name: 'Trading Bot v2',
   };
 
-  const client = new SteleClient({ keyPair: issuerKeys });
+  const client = new NobulexClient({ keyPair: issuerKeys });
 
   const covenant = await client.createCovenant({
     issuer,

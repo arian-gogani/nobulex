@@ -3,7 +3,7 @@ import type { Severity } from '@nobulex/ccl';
 
 // ─── Protocol constants ────────────────────────────────────────────────────────
 
-/** Current Stele Covenant protocol version. */
+/** Current Nobulex Covenant protocol version. */
 export const PROTOCOL_VERSION = '1.0';
 
 /** Maximum number of CCL constraint statements in a single covenant. */

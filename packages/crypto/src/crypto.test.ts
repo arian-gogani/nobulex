@@ -87,7 +87,7 @@ describe('sign and verify', () => {
 
   it('signString -> verify round-trip succeeds', async () => {
     const kp = await generateKeyPair();
-    const msg = 'stele protocol message';
+    const msg = 'nobulex protocol message';
     const signature = await signString(msg, kp.privateKey);
     const valid = await verify(new TextEncoder().encode(msg), signature, kp.publicKey);
     expect(valid).toBe(true);

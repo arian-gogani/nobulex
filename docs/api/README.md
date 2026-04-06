@@ -1,6 +1,6 @@
-# Stele API Reference
+# Nobulex API Reference
 
-Complete API reference for all packages in the Stele monorepo. Packages are grouped
+Complete API reference for all packages in the Nobulex monorepo. Packages are grouped
 by layer: **Foundation**, **Enforcement**, **Protocol**, and **Platform**.
 
 ---
@@ -8,41 +8,41 @@ by layer: **Foundation**, **Enforcement**, **Protocol**, and **Platform**.
 ## Table of Contents
 
 - [Foundation](#foundation)
-  - [@nobulex/types](#steletypes)
-  - [@nobulex/crypto](#stelecrypto)
-  - [@nobulex/ccl](#steleccl)
-  - [@nobulex/core](#stelecore)
-  - [@nobulex/store](#stelestore)
-  - [@nobulex/verifier](#steleverifier)
-  - [@nobulex/sdk](#stelesdk)
-  - [@nobulex/identity](#steleidentity)
+  - [@nobulex/types](#nobulextypes)
+  - [@nobulex/crypto](#nobulexcrypto)
+  - [@nobulex/ccl](#nobulexccl)
+  - [@nobulex/core](#nobulexcore)
+  - [@nobulex/store](#nobulexstore)
+  - [@nobulex/verifier](#nobulexverifier)
+  - [@nobulex/sdk](#nobulexsdk)
+  - [@nobulex/identity](#nobulexidentity)
 - [Enforcement](#enforcement)
-  - [@nobulex/enforcement](#steleenforcement)
-  - [@nobulex/proof](#steleproof)
-  - [@nobulex/breach](#stelebreach)
-  - [@nobulex/reputation](#stelereputation)
-  - [@nobulex/mcp](#stelemcp)
+  - [@nobulex/enforcement](#nobulexenforcement)
+  - [@nobulex/proof](#nobulexproof)
+  - [@nobulex/breach](#nobulexbreach)
+  - [@nobulex/reputation](#nobulexreputation)
+  - [@nobulex/mcp](#nobulexmcp)
 - [Protocol](#protocol)
-  - [@nobulex/attestation](#steleattestation)
-  - [@nobulex/canary](#stelecanary)
-  - [@nobulex/gametheory](#stelegametheory)
-  - [@nobulex/composition](#stelecomposition)
-  - [@nobulex/antifragile](#steleantifragile)
-  - [@nobulex/negotiation](#stelenegotiation)
-  - [@nobulex/consensus](#steleconsensus)
-  - [@nobulex/robustness](#stelerobustness)
-  - [@nobulex/temporal](#steletemporal)
-  - [@nobulex/recursive](#stelerecursive)
-  - [@nobulex/alignment](#stelealignment)
-  - [@nobulex/norms](#stelenorms)
-  - [@nobulex/substrate](#stelesubstrate)
-  - [@nobulex/derivatives](#stelederivatives)
-  - [@nobulex/legal](#stelelegal)
+  - [@nobulex/attestation](#nobulexattestation)
+  - [@nobulex/canary](#nobulexcanary)
+  - [@nobulex/gametheory](#nobulexgametheory)
+  - [@nobulex/composition](#nobulexcomposition)
+  - [@nobulex/antifragile](#nobulexantifragile)
+  - [@nobulex/negotiation](#nobulexnegotiation)
+  - [@nobulex/consensus](#nobulexconsensus)
+  - [@nobulex/robustness](#nobulexrobustness)
+  - [@nobulex/temporal](#nobulextemporal)
+  - [@nobulex/recursive](#nobulexrecursive)
+  - [@nobulex/alignment](#nobulexalignment)
+  - [@nobulex/norms](#nobulexnorms)
+  - [@nobulex/substrate](#nobulexsubstrate)
+  - [@nobulex/derivatives](#nobulexderivatives)
+  - [@nobulex/legal](#nobulexlegal)
 - [Platform](#platform)
-  - [@nobulex/react](#stelereact)
-  - [@nobulex/evm](#steleevm)
-  - [@nobulex/mcp-server](#stelemcp-server)
-  - [@nobulex/cli](#stelecli)
+  - [@nobulex/react](#nobulexreact)
+  - [@nobulex/evm](#nobulexevm)
+  - [@nobulex/mcp-server](#nobulexmcp-server)
+  - [@nobulex/cli](#nobulexcli)
 
 ---
 
@@ -56,13 +56,13 @@ Shared TypeScript type definitions, error classes, validation utilities, and pro
 
 | Export | Kind | Description |
 |--------|------|-------------|
-| `SteleError` | class | Base error class carrying a `SteleErrorCode` for programmatic error handling. |
+| `NobulexError` | class | Base error class carrying a `NobulexErrorCode` for programmatic error handling. |
 | `ValidationError` | class | Thrown when an input fails validation; includes a `field` property. |
 | `CryptoError` | class | Thrown when a cryptographic operation fails. |
 | `CCLError` | class | Thrown when CCL parsing or evaluation fails. |
 | `ChainError` | class | Thrown when a chain operation violates protocol rules. |
 | `StorageError` | class | Thrown when a storage operation fails. |
-| `SteleErrorCode` | enum | Enumeration of all error codes (`INVALID_INPUT`, `CRYPTO_FAILURE`, `CCL_PARSE_ERROR`, etc.). |
+| `NobulexErrorCode` | enum | Enumeration of all error codes (`INVALID_INPUT`, `CRYPTO_FAILURE`, `CCL_PARSE_ERROR`, etc.). |
 | `validateNonEmpty(value, name)` | function | Assert a string is non-empty; throws `ValidationError`. |
 | `validateRange(value, min, max, name)` | function | Assert a number is within `[min, max]`. |
 | `validateHex(value, name)` | function | Assert a string is valid hex (even length, `[0-9a-fA-F]`). |
@@ -275,26 +275,26 @@ const batchReport = await verifyBatch(docs);
 
 ### @nobulex/sdk
 
-High-level unified SDK that ties together all foundation packages into a single `SteleClient` entry point with an event system.
+High-level unified SDK that ties together all foundation packages into a single `NobulexClient` entry point with an event system.
 
 #### Key Exports
 
 | Export | Kind | Description |
 |--------|------|-------------|
-| `SteleClient` | class | Main entry point. Provides `generateKeyPair()`, `createCovenant(options)`, `verifyCovenant(doc)`, `countersign(doc, role?, keyPair?)`, `evaluateAction(doc, action, resource, context?)`, `createIdentity(options)`, `evolveIdentity(identity, options)`, `resolveChain(doc, knownDocs?)`, `validateChain(docs)`, `parseCCL(source)`, `mergeCCL(a, b)`, `serializeCCL(doc)`, `on(event, handler)`, `off(event, handler)`, `removeAllListeners(event?)`. |
+| `NobulexClient` | class | Main entry point. Provides `generateKeyPair()`, `createCovenant(options)`, `verifyCovenant(doc)`, `countersign(doc, role?, keyPair?)`, `evaluateAction(doc, action, resource, context?)`, `createIdentity(options)`, `evolveIdentity(identity, options)`, `resolveChain(doc, knownDocs?)`, `validateChain(docs)`, `parseCCL(source)`, `mergeCCL(a, b)`, `serializeCCL(doc)`, `on(event, handler)`, `off(event, handler)`, `removeAllListeners(event?)`. |
 | `QuickCovenant` | class | Convenience builders: `permit(action, resource, issuer, beneficiary, privateKey)`, `deny(...)`, `standard(issuer, beneficiary, privateKey)`. |
-| `SteleClientOptions` | type | `{ keyPair?, agentId?, strictMode? }` |
+| `NobulexClientOptions` | type | `{ keyPair?, agentId?, strictMode? }` |
 | `CreateCovenantOptions` | type | Options for `createCovenant`: issuer, beneficiary, constraints, privateKey, obligations, chain, enforcement, proof, revocation, metadata, expiresAt, activatesAt. |
-| `SteleEventType` | type | `'covenant:created' | 'covenant:verified' | 'covenant:countersigned' | 'identity:created' | 'identity:evolved' | 'chain:resolved' | 'chain:validated' | 'evaluation:completed'` |
+| `NobulexEventType` | type | `'covenant:created' | 'covenant:verified' | 'covenant:countersigned' | 'identity:created' | 'identity:evolved' | 'chain:resolved' | 'chain:validated' | 'evaluation:completed'` |
 
 Also re-exports all types and functions from `@nobulex/core`, `@nobulex/crypto`, `@nobulex/ccl`, and `@nobulex/identity`.
 
 #### Usage
 
 ```typescript
-import { SteleClient, QuickCovenant } from '@nobulex/sdk';
+import { NobulexClient, QuickCovenant } from '@nobulex/sdk';
 
-const client = new SteleClient();
+const client = new NobulexClient();
 const kp = await client.generateKeyPair();
 const doc = await client.createCovenant({
   issuer, beneficiary, constraints,
@@ -476,24 +476,24 @@ console.log(score.overall); // 0.0 - 1.0
 
 ### @nobulex/mcp
 
-MCP (Model Context Protocol) guard that wraps an MCP server with Stele covenant enforcement, audit logging, identity creation, and compliance proof generation.
+MCP (Model Context Protocol) guard that wraps an MCP server with Nobulex covenant enforcement, audit logging, identity creation, and compliance proof generation.
 
 #### Key Exports
 
 | Export | Kind | Description |
 |--------|------|-------------|
-| `steleGuard(server, options)` | function | Wrap an MCP server with Stele enforcement. Returns `WrappedMCPServer` with audit log, identity, and compliance proof. |
+| `nobulexGuard(server, options)` | function | Wrap an MCP server with Nobulex enforcement. Returns `WrappedMCPServer` with audit log, identity, and compliance proof. |
 | `PRESETS` | const | Named constraint presets (e.g., `"standard:data-isolation"`, `"standard:read-only"`). |
 | `MCPServer`, `WrappedMCPServer` | type | MCP server interfaces. |
-| `SteleGuardOptions` | type | Guard configuration: constraints, key pair, operator identifier, model, capabilities, deployment. |
+| `NobulexGuardOptions` | type | Guard configuration: constraints, key pair, operator identifier, model, capabilities, deployment. |
 | `ViolationDetails`, `ToolCallDetails` | type | Event detail types for monitoring. |
 
 #### Usage
 
 ```typescript
-import { steleGuard, PRESETS } from '@nobulex/mcp';
+import { nobulexGuard, PRESETS } from '@nobulex/mcp';
 
-const wrapped = await steleGuard(mcpServer, {
+const wrapped = await nobulexGuard(mcpServer, {
   constraints: 'standard:data-isolation',
   keyPair,
   model: { provider: 'anthropic', modelId: 'claude-3' },
@@ -571,7 +571,7 @@ console.log(result.passed);
 
 ### @nobulex/gametheory
 
-Game-theoretic analysis proving that honest behavior is the dominant strategy under Stele's incentive structure.
+Game-theoretic analysis proving that honest behavior is the dominant strategy under Nobulex's incentive structure.
 
 #### Key Exports
 
@@ -965,7 +965,7 @@ console.log(compliance.compliant, compliance.gaps);
 
 ### @nobulex/react
 
-Framework-agnostic reactive primitives (Observable, CovenantState, IdentityState) for building Stele-powered UIs.
+Framework-agnostic reactive primitives (Observable, CovenantState, IdentityState) for building Nobulex-powered UIs.
 
 #### Key Exports
 
@@ -1009,7 +1009,7 @@ EVM anchoring utilities for on-chain covenant verification: ABI encoding/decodin
 | `computeFunctionSelector(signature)` | function | Compute the 4-byte function selector from a signature string. |
 | `anchorCovenant(doc)` | function | Prepare a covenant for on-chain anchoring (returns encoded calldata). |
 | `verifyAnchor(anchorData, doc)` | function | Verify that anchor data matches a covenant document. |
-| `STELE_CONTRACT_ABI` | const | ABI definition for the Stele covenant anchor contract. |
+| `STELE_CONTRACT_ABI` | const | ABI definition for the Nobulex covenant anchor contract. |
 
 #### Usage
 
@@ -1025,22 +1025,22 @@ const encoded = encodeUint256(42n);
 
 ### @nobulex/mcp-server
 
-Model Context Protocol server exposing Stele tools to AI agents via JSON-RPC 2.0 over stdio.
+Model Context Protocol server exposing Nobulex tools to AI agents via JSON-RPC 2.0 over stdio.
 
 #### Key Exports
 
 | Export | Kind | Description |
 |--------|------|-------------|
-| `MCPSteleServer` | class | JSON-RPC 2.0 server with 6 built-in tools: `create_covenant`, `verify_covenant`, `evaluate_action`, `create_identity`, `parse_ccl`, `list_covenants`. Methods: `handleRequest(json)`, `getToolDefinitions()`, `start()`. |
+| `MCPNobulexServer` | class | JSON-RPC 2.0 server with 6 built-in tools: `create_covenant`, `verify_covenant`, `evaluate_action`, `create_identity`, `parse_ccl`, `list_covenants`. Methods: `handleRequest(json)`, `getToolDefinitions()`, `start()`. |
 | `JSON_RPC_ERRORS` | const | Standard JSON-RPC 2.0 error codes. |
 | `JsonRpcRequest`, `JsonRpcResponse`, `ToolDefinition`, `ToolResult`, `MCPServerOptions` | type | JSON-RPC and MCP types. |
 
 #### Usage
 
 ```typescript
-import { MCPSteleServer } from '@nobulex/mcp-server';
+import { MCPNobulexServer } from '@nobulex/mcp-server';
 
-const server = new MCPSteleServer({ storePath: './covenants' });
+const server = new MCPNobulexServer({ storePath: './covenants' });
 const response = await server.handleRequest({
   jsonrpc: '2.0', id: 1,
   method: 'tools/call',
@@ -1052,36 +1052,36 @@ const response = await server.handleRequest({
 
 ### @nobulex/cli
 
-Command-line interface for Stele operations: key generation, covenant management, identity management, CCL parsing, and verification.
+Command-line interface for Nobulex operations: key generation, covenant management, identity management, CCL parsing, and verification.
 
 #### Commands
 
 | Command | Description |
 |---------|-------------|
-| `stele keygen` | Generate a new Ed25519 key pair and write to files. |
-| `stele build --issuer <file> --beneficiary <file> --constraints <ccl> --key <file>` | Build and sign a new covenant document. |
-| `stele verify <file>` | Verify a covenant document from a JSON file. |
-| `stele inspect <file>` | Display details of a covenant document. |
-| `stele resign <file> --key <file>` | Re-sign a covenant with a new nonce. |
-| `stele parse <ccl>` | Parse CCL source text and display the AST. |
-| `stele identity create --key <file> --model <json> --capabilities <list> --deployment <json>` | Create a new agent identity. |
-| `stele identity evolve <file> --key <file> --change-type <type> --description <text>` | Evolve an existing agent identity. |
+| `nobulex keygen` | Generate a new Ed25519 key pair and write to files. |
+| `nobulex build --issuer <file> --beneficiary <file> --constraints <ccl> --key <file>` | Build and sign a new covenant document. |
+| `nobulex verify <file>` | Verify a covenant document from a JSON file. |
+| `nobulex inspect <file>` | Display details of a covenant document. |
+| `nobulex resign <file> --key <file>` | Re-sign a covenant with a new nonce. |
+| `nobulex parse <ccl>` | Parse CCL source text and display the AST. |
+| `nobulex identity create --key <file> --model <json> --capabilities <list> --deployment <json>` | Create a new agent identity. |
+| `nobulex identity evolve <file> --key <file> --change-type <type> --description <text>` | Evolve an existing agent identity. |
 
 #### Usage
 
 ```bash
 # Generate a key pair
-stele keygen --output ./keys
+nobulex keygen --output ./keys
 
 # Build a covenant
-stele build --issuer issuer.json --beneficiary beneficiary.json \
+nobulex build --issuer issuer.json --beneficiary beneficiary.json \
   --constraints "permit read on '**'" --key ./keys/private.hex
 
 # Verify a covenant
-stele verify covenant.json
+nobulex verify covenant.json
 
 # Parse CCL
-stele parse "deny write on '/system/**'"
+nobulex parse "deny write on '/system/**'"
 ```
 
 ---
@@ -1096,7 +1096,7 @@ stele parse "deny write on '/system/**'"
 | `AgentIdentity` | identity | Agent identity with model attestation, capabilities, lineage. |
 | `VerificationResult` | core | `{ valid: boolean, checks: VerificationCheck[], document }`. |
 | `EvaluationResult` | ccl | `{ permitted: boolean, matchedRule?, allMatches[], reason?, severity? }`. |
-| `SteleError` | types | Base error with `code: SteleErrorCode`. |
+| `NobulexError` | types | Base error with `code: NobulexErrorCode`. |
 | `Result<T, E>` | types | Discriminated union for fallible operations. |
 
 ---

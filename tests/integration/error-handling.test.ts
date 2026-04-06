@@ -1,8 +1,8 @@
 /**
- * Integration tests for error handling across the Stele SDK.
+ * Integration tests for error handling across the Nobulex SDK.
  *
  * Exercises error paths in crypto, CCL, core covenant operations,
- * verification, store, deserialization, and SteleClient.
+ * verification, store, deserialization, and NobulexClient.
  */
 
 import { describe, it, expect, beforeEach } from 'vitest';
@@ -21,7 +21,7 @@ import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 import { parse, evaluate } from '@nobulex/ccl';
 import { Verifier } from '@nobulex/verifier';
 import { MemoryStore } from '@nobulex/store';
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 import { createIdentity } from '@nobulex/identity';
 
 // ---------------------------------------------------------------------------
@@ -516,7 +516,7 @@ describe('Chain depth exceeded', () => {
 
 describe('Narrowing violations', () => {
   it('detects child permitting what parent denies', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const kp = await client.generateKeyPair();
     const beneficiaryKp = await generateKeyPair();
 
@@ -569,7 +569,7 @@ describe('Narrowing violations', () => {
       },
     });
 
-    const client = new SteleClient({ keyPair: kp });
+    const client = new NobulexClient({ keyPair: kp });
     const result = await client.validateChain([parentDoc, childDoc]);
     expect(result.narrowingViolations.length).toBe(0);
   });
@@ -801,12 +801,12 @@ describe('Deserialization errors', () => {
 });
 
 // ===========================================================================
-// 10. SteleClient errors
+// 10. NobulexClient errors
 // ===========================================================================
 
-describe('SteleClient errors', () => {
+describe('NobulexClient errors', () => {
   it('throws when creating covenant without key pair', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const beneficiaryKp = await generateKeyPair();
 
     await expect(
@@ -819,14 +819,14 @@ describe('SteleClient errors', () => {
   });
 
   it('throws when countersigning without key pair', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const { doc } = await buildValidCovenant();
 
     await expect(client.countersign(doc)).rejects.toThrow(/No key pair/);
   });
 
   it('throws when creating identity without key pair', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
 
     await expect(
       client.createIdentity({
@@ -846,7 +846,7 @@ describe('SteleClient errors', () => {
   });
 
   it('throws when evolving identity without key pair', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const kp = await generateKeyPair();
 
     const identity = await createIdentity({
@@ -874,7 +874,7 @@ describe('SteleClient errors', () => {
   });
 
   it('strict mode throws on invalid verification', async () => {
-    const client = new SteleClient({ strictMode: true });
+    const client = new NobulexClient({ strictMode: true });
     const { doc } = await buildValidCovenant();
 
     // Tamper to make it fail
@@ -884,7 +884,7 @@ describe('SteleClient errors', () => {
   });
 
   it('non-strict mode returns result on invalid verification', async () => {
-    const client = new SteleClient({ strictMode: false });
+    const client = new NobulexClient({ strictMode: false });
     const { doc } = await buildValidCovenant();
 
     const tampered = { ...doc, constraints: "deny all on '**'" };
@@ -896,7 +896,7 @@ describe('SteleClient errors', () => {
   it('client with key pair can create covenants', async () => {
     const kp = await generateKeyPair();
     const beneficiaryKp = await generateKeyPair();
-    const client = new SteleClient({ keyPair: kp });
+    const client = new NobulexClient({ keyPair: kp });
 
     const doc = await client.createCovenant({
       issuer: makeIssuer(kp.publicKeyHex),
@@ -1183,10 +1183,10 @@ describe('Event system edge cases', () => {
     expect(events.length).toBe(1); // no new events
   });
 
-  it('SteleClient emits covenant:created event', async () => {
+  it('NobulexClient emits covenant:created event', async () => {
     const kp = await generateKeyPair();
     const beneficiaryKp = await generateKeyPair();
-    const client = new SteleClient({ keyPair: kp });
+    const client = new NobulexClient({ keyPair: kp });
 
     let eventFired = false;
     client.on('covenant:created', () => {
@@ -1202,10 +1202,10 @@ describe('Event system edge cases', () => {
     expect(eventFired).toBe(true);
   });
 
-  it('SteleClient removeAllListeners clears handlers', async () => {
+  it('NobulexClient removeAllListeners clears handlers', async () => {
     const kp = await generateKeyPair();
     const beneficiaryKp = await generateKeyPair();
-    const client = new SteleClient({ keyPair: kp });
+    const client = new NobulexClient({ keyPair: kp });
 
     let count = 0;
     client.on('covenant:created', () => {

@@ -56,7 +56,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 | Monitoring | Enforcement monitor; audit trail; reputation scoring |
 | Validation | 11 specification checks; external attestation; ZK proofs |
 
-**Packages:** `@nobulex/enforcement`, `@nobulex/attestation`, `@nobulex/reputation`, `@nobulex/legal` (computeSteleScore → Kova Score)
+**Packages:** `@nobulex/enforcement`, `@nobulex/attestation`, `@nobulex/reputation`, `@nobulex/legal` (computeNobulexScore → Kova Score)
 
 ---
 
@@ -76,7 +76,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 
 ## Kova Score and NIST RMF
 
-The **Kova Score** (multidimensional trust profile, `computeSteleScore` in `@nobulex/legal`) aligns with NIST's measurement focus:
+The **Kova Score** (multidimensional trust profile, `computeNobulexScore` in `@nobulex/legal`) aligns with NIST's measurement focus:
 
 | Kova Score Dimension | NIST RMF Alignment |
 |-----------------------|--------------------|
@@ -88,9 +88,9 @@ The **Kova Score** (multidimensional trust profile, `computeSteleScore` in `@nob
 | lineageDepth | Map — governance lineage |
 
 ```typescript
-import { computeSteleScore } from '@nobulex/legal';
+import { computeNobulexScore } from '@nobulex/legal';
 
-const profile = computeSteleScore(agentId, complianceRecord, covenantHistory, {
+const profile = computeNobulexScore(agentId, complianceRecord, covenantHistory, {
   reputation: reputationSnapshot,
 });
 // Use profile.composite or individual dimensions for NIST-aligned metrics
@@ -102,18 +102,18 @@ const profile = computeSteleScore(agentId, complianceRecord, covenantHistory, {
 
 1. **Govern** — Create covenant; bind identity; document scope.
 2. **Map** — Define CCL constraints; run canary tests to map boundaries.
-3. **Measure** — Track compliance record; run computeSteleScore; export LegalIdentityPackage.
+3. **Measure** — Track compliance record; run computeNobulexScore; export LegalIdentityPackage.
 4. **Manage** — Enable breach detection; use antifragile improvements; evolve covenants via temporal package.
 
 ```typescript
-import { SteleClient } from '@nobulex/sdk';
-import { exportLegalPackage, computeSteleScore } from '@nobulex/legal';
+import { NobulexClient } from '@nobulex/sdk';
+import { exportLegalPackage, computeNobulexScore } from '@nobulex/legal';
 
-const client = new SteleClient();
+const client = new NobulexClient();
 // ... create covenant, operate, run canary ...
 
 const pkg = exportLegalPackage(agentId, operatorId, data, 'json');
-const steleScore = computeSteleScore(agentId, pkg.complianceRecord, pkg.covenantHistory, {
+const nobulexScore = computeNobulexScore(agentId, pkg.complianceRecord, pkg.covenantHistory, {
   reputation: pkg.reputationSnapshot,
 });
 ```

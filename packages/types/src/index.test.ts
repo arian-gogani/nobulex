@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import {
-  SteleErrorCode,
-  SteleError,
+  NobulexErrorCode,
+  NobulexError,
   ValidationError,
   CryptoError,
   CCLError,
@@ -22,83 +22,83 @@ import {
 import type { Result, Identifiable, Timestamped, Hashable, Serializable } from './index';
 
 // ---------------------------------------------------------------------------
-// SteleErrorCode enum
+// NobulexErrorCode enum
 // ---------------------------------------------------------------------------
-describe('SteleErrorCode', () => {
+describe('NobulexErrorCode', () => {
   it('contains INVALID_INPUT', () => {
-    expect(SteleErrorCode.INVALID_INPUT).toBe('INVALID_INPUT');
+    expect(NobulexErrorCode.INVALID_INPUT).toBe('INVALID_INPUT');
   });
 
   it('contains CRYPTO_FAILURE', () => {
-    expect(SteleErrorCode.CRYPTO_FAILURE).toBe('CRYPTO_FAILURE');
+    expect(NobulexErrorCode.CRYPTO_FAILURE).toBe('CRYPTO_FAILURE');
   });
 
   it('contains CCL_PARSE_ERROR', () => {
-    expect(SteleErrorCode.CCL_PARSE_ERROR).toBe('CCL_PARSE_ERROR');
+    expect(NobulexErrorCode.CCL_PARSE_ERROR).toBe('CCL_PARSE_ERROR');
   });
 
   it('contains CHAIN_DEPTH_EXCEEDED', () => {
-    expect(SteleErrorCode.CHAIN_DEPTH_EXCEEDED).toBe('CHAIN_DEPTH_EXCEEDED');
+    expect(NobulexErrorCode.CHAIN_DEPTH_EXCEEDED).toBe('CHAIN_DEPTH_EXCEEDED');
   });
 
   it('contains STORAGE_NOT_FOUND', () => {
-    expect(SteleErrorCode.STORAGE_NOT_FOUND).toBe('STORAGE_NOT_FOUND');
+    expect(NobulexErrorCode.STORAGE_NOT_FOUND).toBe('STORAGE_NOT_FOUND');
   });
 
   it('contains VERIFICATION_FAILED', () => {
-    expect(SteleErrorCode.VERIFICATION_FAILED).toBe('VERIFICATION_FAILED');
+    expect(NobulexErrorCode.VERIFICATION_FAILED).toBe('VERIFICATION_FAILED');
   });
 
   it('contains OUT_OF_RANGE', () => {
-    expect(SteleErrorCode.OUT_OF_RANGE).toBe('OUT_OF_RANGE');
+    expect(NobulexErrorCode.OUT_OF_RANGE).toBe('OUT_OF_RANGE');
   });
 
   it('contains INVALID_HEX', () => {
-    expect(SteleErrorCode.INVALID_HEX).toBe('INVALID_HEX');
+    expect(NobulexErrorCode.INVALID_HEX).toBe('INVALID_HEX');
   });
 
   it('contains INVALID_PROBABILITY', () => {
-    expect(SteleErrorCode.INVALID_PROBABILITY).toBe('INVALID_PROBABILITY');
+    expect(NobulexErrorCode.INVALID_PROBABILITY).toBe('INVALID_PROBABILITY');
   });
 
   it('contains STORAGE_OPERATION_FAILED', () => {
-    expect(SteleErrorCode.STORAGE_OPERATION_FAILED).toBe('STORAGE_OPERATION_FAILED');
+    expect(NobulexErrorCode.STORAGE_OPERATION_FAILED).toBe('STORAGE_OPERATION_FAILED');
   });
 
   it('contains SERIALIZATION_ERROR', () => {
-    expect(SteleErrorCode.SERIALIZATION_ERROR).toBe('SERIALIZATION_ERROR');
+    expect(NobulexErrorCode.SERIALIZATION_ERROR).toBe('SERIALIZATION_ERROR');
   });
 
   it('contains NARROWING_VIOLATION', () => {
-    expect(SteleErrorCode.NARROWING_VIOLATION).toBe('NARROWING_VIOLATION');
+    expect(NobulexErrorCode.NARROWING_VIOLATION).toBe('NARROWING_VIOLATION');
   });
 });
 
 // ---------------------------------------------------------------------------
-// SteleError base class
+// NobulexError base class
 // ---------------------------------------------------------------------------
-describe('SteleError', () => {
+describe('NobulexError', () => {
   it('extends Error', () => {
-    const err = new SteleError('test', SteleErrorCode.INVALID_INPUT);
+    const err = new NobulexError('test', NobulexErrorCode.INVALID_INPUT);
     expect(err).toBeInstanceOf(Error);
-    expect(err).toBeInstanceOf(SteleError);
+    expect(err).toBeInstanceOf(NobulexError);
   });
 
   it('carries the provided message and code', () => {
-    const err = new SteleError('something broke', SteleErrorCode.CRYPTO_FAILURE);
+    const err = new NobulexError('something broke', NobulexErrorCode.CRYPTO_FAILURE);
     expect(err.message).toBe('something broke');
-    expect(err.code).toBe(SteleErrorCode.CRYPTO_FAILURE);
+    expect(err.code).toBe(NobulexErrorCode.CRYPTO_FAILURE);
   });
 
-  it('has name "SteleError"', () => {
-    const err = new SteleError('msg', SteleErrorCode.INVALID_INPUT);
-    expect(err.name).toBe('SteleError');
+  it('has name "NobulexError"', () => {
+    const err = new NobulexError('msg', NobulexErrorCode.INVALID_INPUT);
+    expect(err.name).toBe('NobulexError');
   });
 
   it('code is readonly', () => {
-    const err = new SteleError('msg', SteleErrorCode.INVALID_INPUT);
+    const err = new NobulexError('msg', NobulexErrorCode.INVALID_INPUT);
     // TypeScript prevents assignment; verify the value is stable
-    expect(err.code).toBe(SteleErrorCode.INVALID_INPUT);
+    expect(err.code).toBe(NobulexErrorCode.INVALID_INPUT);
   });
 });
 
@@ -106,9 +106,9 @@ describe('SteleError', () => {
 // ValidationError
 // ---------------------------------------------------------------------------
 describe('ValidationError', () => {
-  it('extends SteleError', () => {
+  it('extends NobulexError', () => {
     const e = new ValidationError('bad input', 'field1');
-    expect(e).toBeInstanceOf(SteleError);
+    expect(e).toBeInstanceOf(NobulexError);
     expect(e).toBeInstanceOf(Error);
   });
 
@@ -119,12 +119,12 @@ describe('ValidationError', () => {
 
   it('defaults to INVALID_INPUT code', () => {
     const e = new ValidationError('bad', 'x');
-    expect(e.code).toBe(SteleErrorCode.INVALID_INPUT);
+    expect(e.code).toBe(NobulexErrorCode.INVALID_INPUT);
   });
 
   it('accepts a custom error code', () => {
-    const e = new ValidationError('bad hex', 'key', SteleErrorCode.INVALID_HEX);
-    expect(e.code).toBe(SteleErrorCode.INVALID_HEX);
+    const e = new ValidationError('bad hex', 'key', NobulexErrorCode.INVALID_HEX);
+    expect(e.code).toBe(NobulexErrorCode.INVALID_HEX);
   });
 
   it('carries the field name', () => {
@@ -137,10 +137,10 @@ describe('ValidationError', () => {
 // CryptoError
 // ---------------------------------------------------------------------------
 describe('CryptoError', () => {
-  it('extends SteleError with CRYPTO_FAILURE code', () => {
+  it('extends NobulexError with CRYPTO_FAILURE code', () => {
     const e = new CryptoError('sign failed');
-    expect(e).toBeInstanceOf(SteleError);
-    expect(e.code).toBe(SteleErrorCode.CRYPTO_FAILURE);
+    expect(e).toBeInstanceOf(NobulexError);
+    expect(e.code).toBe(NobulexErrorCode.CRYPTO_FAILURE);
     expect(e.name).toBe('CryptoError');
     expect(e.message).toBe('sign failed');
   });
@@ -150,10 +150,10 @@ describe('CryptoError', () => {
 // CCLError
 // ---------------------------------------------------------------------------
 describe('CCLError', () => {
-  it('extends SteleError with CCL_PARSE_ERROR code', () => {
+  it('extends NobulexError with CCL_PARSE_ERROR code', () => {
     const e = new CCLError('unexpected token');
-    expect(e).toBeInstanceOf(SteleError);
-    expect(e.code).toBe(SteleErrorCode.CCL_PARSE_ERROR);
+    expect(e).toBeInstanceOf(NobulexError);
+    expect(e.code).toBe(NobulexErrorCode.CCL_PARSE_ERROR);
     expect(e.name).toBe('CCLError');
     expect(e.message).toBe('unexpected token');
   });
@@ -163,16 +163,16 @@ describe('CCLError', () => {
 // ChainError
 // ---------------------------------------------------------------------------
 describe('ChainError', () => {
-  it('extends SteleError with default CHAIN_DEPTH_EXCEEDED code', () => {
+  it('extends NobulexError with default CHAIN_DEPTH_EXCEEDED code', () => {
     const e = new ChainError('too deep');
-    expect(e).toBeInstanceOf(SteleError);
-    expect(e.code).toBe(SteleErrorCode.CHAIN_DEPTH_EXCEEDED);
+    expect(e).toBeInstanceOf(NobulexError);
+    expect(e.code).toBe(NobulexErrorCode.CHAIN_DEPTH_EXCEEDED);
     expect(e.name).toBe('ChainError');
   });
 
   it('accepts a custom error code', () => {
-    const e = new ChainError('narrowing failed', SteleErrorCode.NARROWING_VIOLATION);
-    expect(e.code).toBe(SteleErrorCode.NARROWING_VIOLATION);
+    const e = new ChainError('narrowing failed', NobulexErrorCode.NARROWING_VIOLATION);
+    expect(e.code).toBe(NobulexErrorCode.NARROWING_VIOLATION);
   });
 });
 
@@ -180,16 +180,16 @@ describe('ChainError', () => {
 // StorageError
 // ---------------------------------------------------------------------------
 describe('StorageError', () => {
-  it('extends SteleError with default STORAGE_NOT_FOUND code', () => {
+  it('extends NobulexError with default STORAGE_NOT_FOUND code', () => {
     const e = new StorageError('not found');
-    expect(e).toBeInstanceOf(SteleError);
-    expect(e.code).toBe(SteleErrorCode.STORAGE_NOT_FOUND);
+    expect(e).toBeInstanceOf(NobulexError);
+    expect(e.code).toBe(NobulexErrorCode.STORAGE_NOT_FOUND);
     expect(e.name).toBe('StorageError');
   });
 
   it('accepts a custom error code', () => {
-    const e = new StorageError('write failed', SteleErrorCode.STORAGE_OPERATION_FAILED);
-    expect(e.code).toBe(SteleErrorCode.STORAGE_OPERATION_FAILED);
+    const e = new StorageError('write failed', NobulexErrorCode.STORAGE_OPERATION_FAILED);
+    expect(e.code).toBe(NobulexErrorCode.STORAGE_OPERATION_FAILED);
   });
 });
 
@@ -224,7 +224,7 @@ describe('validateNonEmpty', () => {
       validateNonEmpty('', 'x');
       expect.unreachable('should have thrown');
     } catch (e) {
-      expect((e as ValidationError).code).toBe(SteleErrorCode.INVALID_INPUT);
+      expect((e as ValidationError).code).toBe(NobulexErrorCode.INVALID_INPUT);
     }
   });
 
@@ -266,7 +266,7 @@ describe('validateRange', () => {
       validateRange(100, 0, 10, 'depth');
       expect.unreachable('should have thrown');
     } catch (e) {
-      expect((e as ValidationError).code).toBe(SteleErrorCode.OUT_OF_RANGE);
+      expect((e as ValidationError).code).toBe(NobulexErrorCode.OUT_OF_RANGE);
     }
   });
 
@@ -313,7 +313,7 @@ describe('validateHex', () => {
       validateHex('zz', 'key');
       expect.unreachable('should have thrown');
     } catch (e) {
-      expect((e as ValidationError).code).toBe(SteleErrorCode.INVALID_HEX);
+      expect((e as ValidationError).code).toBe(NobulexErrorCode.INVALID_HEX);
     }
   });
 
@@ -356,7 +356,7 @@ describe('validateProbability', () => {
       validateProbability(2, 'p');
       expect.unreachable('should have thrown');
     } catch (e) {
-      expect((e as ValidationError).code).toBe(SteleErrorCode.INVALID_PROBABILITY);
+      expect((e as ValidationError).code).toBe(NobulexErrorCode.INVALID_PROBABILITY);
     }
   });
 
@@ -491,13 +491,13 @@ describe('Result type', () => {
     }
   });
 
-  it('err() works with SteleError', () => {
-    const error = new SteleError('bad', SteleErrorCode.CRYPTO_FAILURE);
+  it('err() works with NobulexError', () => {
+    const error = new NobulexError('bad', NobulexErrorCode.CRYPTO_FAILURE);
     const result = err(error);
     expect(result.ok).toBe(false);
     if (!result.ok) {
-      expect(result.error).toBeInstanceOf(SteleError);
-      expect(result.error.code).toBe(SteleErrorCode.CRYPTO_FAILURE);
+      expect(result.error).toBeInstanceOf(NobulexError);
+      expect(result.error.code).toBe(NobulexErrorCode.CRYPTO_FAILURE);
     }
   });
 
@@ -538,7 +538,7 @@ describe('Result type', () => {
 // ---------------------------------------------------------------------------
 describe('error hierarchy', () => {
   it('all error classes extend Error', () => {
-    expect(new SteleError('a', SteleErrorCode.INVALID_INPUT)).toBeInstanceOf(Error);
+    expect(new NobulexError('a', NobulexErrorCode.INVALID_INPUT)).toBeInstanceOf(Error);
     expect(new ValidationError('a', 'f')).toBeInstanceOf(Error);
     expect(new CryptoError('a')).toBeInstanceOf(Error);
     expect(new CCLError('a')).toBeInstanceOf(Error);
@@ -546,17 +546,17 @@ describe('error hierarchy', () => {
     expect(new StorageError('a')).toBeInstanceOf(Error);
   });
 
-  it('all specialized errors extend SteleError', () => {
-    expect(new ValidationError('a', 'f')).toBeInstanceOf(SteleError);
-    expect(new CryptoError('a')).toBeInstanceOf(SteleError);
-    expect(new CCLError('a')).toBeInstanceOf(SteleError);
-    expect(new ChainError('a')).toBeInstanceOf(SteleError);
-    expect(new StorageError('a')).toBeInstanceOf(SteleError);
+  it('all specialized errors extend NobulexError', () => {
+    expect(new ValidationError('a', 'f')).toBeInstanceOf(NobulexError);
+    expect(new CryptoError('a')).toBeInstanceOf(NobulexError);
+    expect(new CCLError('a')).toBeInstanceOf(NobulexError);
+    expect(new ChainError('a')).toBeInstanceOf(NobulexError);
+    expect(new StorageError('a')).toBeInstanceOf(NobulexError);
   });
 
   it('each error has a distinct name', () => {
     const names = [
-      new SteleError('a', SteleErrorCode.INVALID_INPUT).name,
+      new NobulexError('a', NobulexErrorCode.INVALID_INPUT).name,
       new ValidationError('a', 'f').name,
       new CryptoError('a').name,
       new CCLError('a').name,
@@ -567,8 +567,8 @@ describe('error hierarchy', () => {
     expect(unique.size).toBe(names.length);
   });
 
-  it('errors can be caught by SteleError type', () => {
-    const errors: SteleError[] = [
+  it('errors can be caught by NobulexError type', () => {
+    const errors: NobulexError[] = [
       new ValidationError('a', 'f'),
       new CryptoError('a'),
       new CCLError('a'),
@@ -576,7 +576,7 @@ describe('error hierarchy', () => {
       new StorageError('a'),
     ];
     for (const e of errors) {
-      expect(e).toBeInstanceOf(SteleError);
+      expect(e).toBeInstanceOf(NobulexError);
       expect(typeof e.code).toBe('string');
     }
   });

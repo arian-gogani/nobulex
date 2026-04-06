@@ -1,5 +1,5 @@
 /**
- * Built-in plugins for the Stele SDK middleware system.
+ * Built-in plugins for the Nobulex SDK middleware system.
  *
  * Re-exports all plugin factories and their associated types.
  *

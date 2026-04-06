@@ -33,17 +33,17 @@ const SHELLS = ['bash', 'zsh', 'fish'] as const;
 // ─── Bash ─────────────────────────────────────────────────────────────────────
 
 /**
- * Generate bash completion script for the stele CLI.
+ * Generate bash completion script for the nobulex CLI.
  *
- * The script registers a `_stele_completions` function via `complete -F`.
+ * The script registers a `_nobulex_completions` function via `complete -F`.
  * It autocompletes commands, flags, evaluate actions, and shell names.
  *
  * @returns A bash completion script as a string.
  *
  * @example
  * ```bash
- * stele completions bash > /etc/bash_completion.d/stele
- * source /etc/bash_completion.d/stele
+ * nobulex completions bash > /etc/bash_completion.d/nobulex
+ * source /etc/bash_completion.d/nobulex
  * ```
  */
 export function bashCompletions(): string {
@@ -52,10 +52,10 @@ export function bashCompletions(): string {
   const evaluateActionList = EVALUATE_ACTIONS.join(' ');
   const shellList = SHELLS.join(' ');
 
-  return `# Bash completion for stele CLI
-# Source this file or copy to /etc/bash_completion.d/stele
+  return `# Bash completion for nobulex CLI
+# Source this file or copy to /etc/bash_completion.d/nobulex
 
-_stele_completions() {
+_nobulex_completions() {
     local cur prev commands global_flags
     COMPREPLY=()
     cur="\${COMP_WORDS[COMP_CWORD]}"
@@ -92,30 +92,30 @@ _stele_completions() {
     return 0
 }
 
-complete -F _stele_completions stele`;
+complete -F _nobulex_completions nobulex`;
 }
 
 // ─── Zsh ──────────────────────────────────────────────────────────────────────
 
 /**
- * Generate zsh completion script for the stele CLI.
+ * Generate zsh completion script for the nobulex CLI.
  *
- * The script registers a `_stele` completion function using zsh's
+ * The script registers a `_nobulex` completion function using zsh's
  * `_arguments` and `_describe` builtins for rich contextual completions.
  *
  * @returns A zsh completion script as a string.
  *
  * @example
  * ```bash
- * stele completions zsh > ~/.zsh/completions/_stele
+ * nobulex completions zsh > ~/.zsh/completions/_nobulex
  * ```
  */
 export function zshCompletions(): string {
-  return `#compdef stele
-# Zsh completion for stele CLI
-# Copy to a directory in your $fpath (e.g. ~/.zsh/completions/_stele)
+  return `#compdef nobulex
+# Zsh completion for nobulex CLI
+# Copy to a directory in your $fpath (e.g. ~/.zsh/completions/_nobulex)
 
-_stele() {
+_nobulex() {
     local -a commands
     commands=(
         'init:Generate an Ed25519 key pair and config file'
@@ -125,7 +125,7 @@ _stele() {
         'inspect:Pretty-print covenant details'
         'parse:Parse CCL and output AST'
         'completions:Generate shell completion script'
-        'doctor:Check Stele installation health'
+        'doctor:Check Nobulex installation health'
         'diff:Show differences between two covenant documents'
         'version:Print version information'
         'help:Show help message'
@@ -141,7 +141,7 @@ _stele() {
 
     case $state in
         command)
-            _describe 'stele command' commands
+            _describe 'nobulex command' commands
             ;;
         args)
             case $words[1] in
@@ -168,13 +168,13 @@ _stele() {
     esac
 }
 
-_stele "$@"`;
+_nobulex "$@"`;
 }
 
 // ─── Fish ─────────────────────────────────────────────────────────────────────
 
 /**
- * Generate fish completion script for the stele CLI.
+ * Generate fish completion script for the nobulex CLI.
  *
  * The script uses fish's `complete` builtin to register completions
  * for commands, flags, and context-specific arguments.
@@ -183,7 +183,7 @@ _stele "$@"`;
  *
  * @example
  * ```fish
- * stele completions fish > ~/.config/fish/completions/stele.fish
+ * nobulex completions fish > ~/.config/fish/completions/nobulex.fish
  * ```
  */
 export function fishCompletions(): string {
@@ -195,52 +195,52 @@ export function fishCompletions(): string {
     ['inspect', 'Pretty-print covenant details'],
     ['parse', 'Parse CCL and output AST'],
     ['completions', 'Generate shell completion script'],
-    ['doctor', 'Check Stele installation health'],
+    ['doctor', 'Check Nobulex installation health'],
     ['diff', 'Show differences between two covenant documents'],
     ['version', 'Print version information'],
     ['help', 'Show help message'],
   ];
 
   const lines: string[] = [
-    '# Fish completion for stele CLI',
-    '# Copy to ~/.config/fish/completions/stele.fish',
+    '# Fish completion for nobulex CLI',
+    '# Copy to ~/.config/fish/completions/nobulex.fish',
     '',
     '# Disable file completions by default',
-    'complete -c stele -f',
+    'complete -c nobulex -f',
     '',
     '# Commands',
   ];
 
   for (const [cmd, desc] of commandDescriptions) {
     lines.push(
-      `complete -c stele -n "not __fish_seen_subcommand_from ${COMMANDS.join(' ')}" -a "${cmd}" -d "${desc}"`,
+      `complete -c nobulex -n "not __fish_seen_subcommand_from ${COMMANDS.join(' ')}" -a "${cmd}" -d "${desc}"`,
     );
   }
 
   lines.push('');
   lines.push('# Global flags');
-  lines.push('complete -c stele -l json -d "Machine-readable JSON output"');
-  lines.push('complete -c stele -l no-color -d "Disable colored output"');
-  lines.push('complete -c stele -l help -d "Show help"');
-  lines.push('complete -c stele -l config -d "Path to config file"');
+  lines.push('complete -c nobulex -l json -d "Machine-readable JSON output"');
+  lines.push('complete -c nobulex -l no-color -d "Disable colored output"');
+  lines.push('complete -c nobulex -l help -d "Show help"');
+  lines.push('complete -c nobulex -l config -d "Path to config file"');
 
   lines.push('');
   lines.push('# create flags');
   lines.push(
-    'complete -c stele -n "__fish_seen_subcommand_from create" -l issuer -d "Issuer identifier"',
+    'complete -c nobulex -n "__fish_seen_subcommand_from create" -l issuer -d "Issuer identifier"',
   );
   lines.push(
-    'complete -c stele -n "__fish_seen_subcommand_from create" -l beneficiary -d "Beneficiary identifier"',
+    'complete -c nobulex -n "__fish_seen_subcommand_from create" -l beneficiary -d "Beneficiary identifier"',
   );
   lines.push(
-    'complete -c stele -n "__fish_seen_subcommand_from create" -l constraints -d "CCL constraint string"',
+    'complete -c nobulex -n "__fish_seen_subcommand_from create" -l constraints -d "CCL constraint string"',
   );
 
   lines.push('');
   lines.push('# evaluate action suggestions');
   for (const action of EVALUATE_ACTIONS) {
     lines.push(
-      `complete -c stele -n "__fish_seen_subcommand_from evaluate" -a "${action}" -d "Action: ${action}"`,
+      `complete -c nobulex -n "__fish_seen_subcommand_from evaluate" -a "${action}" -d "Action: ${action}"`,
     );
   }
 
@@ -248,7 +248,7 @@ export function fishCompletions(): string {
   lines.push('# completions shell suggestions');
   for (const shell of SHELLS) {
     lines.push(
-      `complete -c stele -n "__fish_seen_subcommand_from completions" -a "${shell}" -d "${shell} shell"`,
+      `complete -c nobulex -n "__fish_seen_subcommand_from completions" -a "${shell}" -d "${shell} shell"`,
     );
   }
 

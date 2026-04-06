@@ -57,7 +57,7 @@ describe('Performance SLAs', () => {
     const output = formatBenchmarkResults(suiteResult);
     expect(output).toContain('test.format');
     expect(output).toContain('PASS');
-    expect(output).toContain('Stele Performance Benchmark Suite');
+    expect(output).toContain('Nobulex Performance Benchmark Suite');
   });
 
   it('PERFORMANCE_SLAS has all 13 targets', () => {

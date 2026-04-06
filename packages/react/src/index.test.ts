@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { generateKeyPair } from '@nobulex/crypto';
 import type { KeyPair } from '@nobulex/crypto';
 import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 import { MemoryStore } from '@nobulex/store';
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 import type { CreateCovenantOptions, CreateIdentityOptions } from '@nobulex/sdk';
 
 import {
@@ -228,7 +229,7 @@ describe('@nobulex/react', () => {
   // ========================================================================
 
   describe('CovenantState', () => {
-    let client: SteleClient;
+    let client: NobulexClient;
     let issuerKeyPair: KeyPair;
     let beneficiaryKeyPair: KeyPair;
     let issuer: Issuer;
@@ -240,7 +241,7 @@ describe('@nobulex/react', () => {
       beneficiaryKeyPair = parties.beneficiaryKeyPair;
       issuer = parties.issuer;
       beneficiary = parties.beneficiary;
-      client = new SteleClient({ keyPair: issuerKeyPair });
+      client = new NobulexClient({ keyPair: issuerKeyPair });
     });
 
     it('starts in idle state with null values', () => {
@@ -384,12 +385,12 @@ describe('@nobulex/react', () => {
   // ========================================================================
 
   describe('IdentityState', () => {
-    let client: SteleClient;
+    let client: NobulexClient;
     let keyPair: KeyPair;
 
     beforeEach(async () => {
       keyPair = await generateKeyPair();
-      client = new SteleClient({ keyPair });
+      client = new NobulexClient({ keyPair });
     });
 
     it('starts in idle state with null identity', () => {
@@ -530,7 +531,7 @@ describe('@nobulex/react', () => {
 
   describe('StoreState', () => {
     let store: MemoryStore;
-    let client: SteleClient;
+    let client: NobulexClient;
     let issuerKeyPair: KeyPair;
     let issuer: Issuer;
     let beneficiary: Beneficiary;
@@ -541,7 +542,7 @@ describe('@nobulex/react', () => {
       issuerKeyPair = parties.issuerKeyPair;
       issuer = parties.issuer;
       beneficiary = parties.beneficiary;
-      client = new SteleClient({ keyPair: issuerKeyPair });
+      client = new NobulexClient({ keyPair: issuerKeyPair });
     });
 
     it('starts with empty documents and loading=false', () => {
@@ -726,12 +727,12 @@ describe('@nobulex/react', () => {
   // ========================================================================
 
   describe('factory functions', () => {
-    let client: SteleClient;
+    let client: NobulexClient;
     let store: MemoryStore;
 
     beforeEach(async () => {
       const kp = await generateKeyPair();
-      client = new SteleClient({ keyPair: kp });
+      client = new NobulexClient({ keyPair: kp });
       store = new MemoryStore();
     });
 
@@ -756,7 +757,7 @@ describe('@nobulex/react', () => {
 
     it('createCovenantState is usable for full lifecycle', async () => {
       const parties = await makeParties();
-      const covenantClient = new SteleClient({
+      const covenantClient = new NobulexClient({
         keyPair: parties.issuerKeyPair,
       });
       const state = createCovenantState(covenantClient);
@@ -777,7 +778,7 @@ describe('@nobulex/react', () => {
 
     it('createIdentityState is usable for full lifecycle', async () => {
       const kp = await generateKeyPair();
-      const identityClient = new SteleClient({ keyPair: kp });
+      const identityClient = new NobulexClient({ keyPair: kp });
       const state = createIdentityState(identityClient);
 
       const identity = await state.create(makeIdentityOptions(kp));
@@ -796,7 +797,7 @@ describe('@nobulex/react', () => {
 
     it('createStoreState is usable for refresh and filter', async () => {
       const parties = await makeParties();
-      const storeClient = new SteleClient({
+      const storeClient = new NobulexClient({
         keyPair: parties.issuerKeyPair,
       });
       const doc = await storeClient.createCovenant(
@@ -822,7 +823,7 @@ describe('@nobulex/react', () => {
   describe('integration', () => {
     it('Observable.map with CovenantState status', async () => {
       const parties = await makeParties();
-      const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+      const client = new NobulexClient({ keyPair: parties.issuerKeyPair });
       const state = new CovenantState(client);
 
       const isReady = state.status.map(
@@ -842,7 +843,7 @@ describe('@nobulex/react', () => {
 
     it('Observable.map with IdentityState', async () => {
       const kp = await generateKeyPair();
-      const client = new SteleClient({ keyPair: kp });
+      const client = new NobulexClient({ keyPair: kp });
       const state = new IdentityState(client);
 
       const hasIdentity = state.identity.map((id) => id !== null);
@@ -859,7 +860,7 @@ describe('@nobulex/react', () => {
       expect(count.get()).toBe(0);
 
       const parties = await makeParties();
-      const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+      const client = new NobulexClient({ keyPair: parties.issuerKeyPair });
       const doc = await client.createCovenant(
         makeCovenantOptions(
           parties.issuer,
@@ -875,7 +876,7 @@ describe('@nobulex/react', () => {
 
     it('error observable works with map', async () => {
       const parties = await makeParties();
-      const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+      const client = new NobulexClient({ keyPair: parties.issuerKeyPair });
       const state = new CovenantState(client);
 
       const errorMessage = state.error.map((e) => e?.message ?? '');
@@ -997,7 +998,7 @@ describe('@nobulex/react', () => {
       it('returns initial idle state', async () => {
         const { useCovenant } = await import('./hooks');
         const kp = await generateKeyPair();
-        const client = new SteleClient({ keyPair: kp });
+        const client = new NobulexClient({ keyPair: kp });
         const result = useCovenant(client);
         expect(result.status).toBe('idle');
         expect(result.document).toBeNull();
@@ -1008,7 +1009,7 @@ describe('@nobulex/react', () => {
       it('provides create, verify, and evaluateAction functions', async () => {
         const { useCovenant } = await import('./hooks');
         const kp = await generateKeyPair();
-        const client = new SteleClient({ keyPair: kp });
+        const client = new NobulexClient({ keyPair: kp });
         const result = useCovenant(client);
         expect(typeof result.create).toBe('function');
         expect(typeof result.verify).toBe('function');
@@ -1018,7 +1019,7 @@ describe('@nobulex/react', () => {
       it('create function creates a covenant document', async () => {
         const { useCovenant } = await import('./hooks');
         const parties = await makeParties();
-        const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+        const client = new NobulexClient({ keyPair: parties.issuerKeyPair });
         const hook = useCovenant(client);
 
         const doc = await hook.create(
@@ -1033,7 +1034,7 @@ describe('@nobulex/react', () => {
       it('returns initial idle state', async () => {
         const { useIdentity } = await import('./hooks');
         const kp = await generateKeyPair();
-        const client = new SteleClient({ keyPair: kp });
+        const client = new NobulexClient({ keyPair: kp });
         const result = useIdentity(client);
         expect(result.status).toBe('idle');
         expect(result.identity).toBeNull();
@@ -1043,7 +1044,7 @@ describe('@nobulex/react', () => {
       it('provides create and evolve functions', async () => {
         const { useIdentity } = await import('./hooks');
         const kp = await generateKeyPair();
-        const client = new SteleClient({ keyPair: kp });
+        const client = new NobulexClient({ keyPair: kp });
         const result = useIdentity(client);
         expect(typeof result.create).toBe('function');
         expect(typeof result.evolve).toBe('function');
@@ -1052,7 +1053,7 @@ describe('@nobulex/react', () => {
       it('create function creates an identity', async () => {
         const { useIdentity } = await import('./hooks');
         const kp = await generateKeyPair();
-        const client = new SteleClient({ keyPair: kp });
+        const client = new NobulexClient({ keyPair: kp });
         const hook = useIdentity(client);
 
         const identity = await hook.create(makeIdentityOptions(kp));
@@ -1088,7 +1089,7 @@ describe('@nobulex/react', () => {
         const { useCovenantStore } = await import('./hooks');
         const testStore = new MemoryStore();
         const parties = await makeParties();
-        const client = new SteleClient({ keyPair: parties.issuerKeyPair });
+        const client = new NobulexClient({ keyPair: parties.issuerKeyPair });
         const doc = await client.createCovenant(
           makeCovenantOptions(parties.issuer, parties.beneficiary, parties.issuerKeyPair.privateKey),
         );

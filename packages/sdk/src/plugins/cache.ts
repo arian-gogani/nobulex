@@ -1,11 +1,11 @@
 /**
- * Caching middleware plugin for the Stele SDK.
+ * Caching middleware plugin for the Nobulex SDK.
  *
  * Caches verification and evaluation results to avoid redundant crypto
  * operations. Uses LRU eviction and TTL-based expiration.
  */
 
-import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
+import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -190,17 +190,17 @@ function buildCacheKey(ctx: MiddlewareContext): string | undefined {
  * with configurable max size and TTL-based expiration.
  *
  * @param options - Optional cache configuration.
- * @returns A SteleMiddleware with additional `stats()` and `clear()` methods.
+ * @returns A NobulexMiddleware with additional `stats()` and `clear()` methods.
  */
 export function cachingMiddleware(
   options?: CacheOptions,
-): SteleMiddleware & { stats(): CacheStats; clear(): void } {
+): NobulexMiddleware & { stats(): CacheStats; clear(): void } {
   const maxSize = options?.maxSize ?? 1000;
   const ttlMs = options?.ttlMs ?? 300_000;
 
   const cache = new LRUCache(maxSize, ttlMs);
 
-  const middleware: SteleMiddleware & { stats(): CacheStats; clear(): void } = {
+  const middleware: NobulexMiddleware & { stats(): CacheStats; clear(): void } = {
     name: 'cache',
 
     async before(ctx: MiddlewareContext) {

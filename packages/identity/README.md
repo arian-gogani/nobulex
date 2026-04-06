@@ -1,6 +1,6 @@
 # @nobulex/identity
 
-Agent identity creation, evolution, lineage tracking, and DID management for the Stele covenant framework.
+Agent identity creation, evolution, lineage tracking, and DID management for the Nobulex covenant framework.
 
 ## Evolution Policy and `computeCarryForward`
 

@@ -1,7 +1,7 @@
 /**
- * @nobulex/sdk -- High-level TypeScript SDK that unifies the entire Stele protocol.
+ * @nobulex/sdk -- High-level TypeScript SDK that unifies the entire Nobulex protocol.
  *
- * Provides a single entry point (SteleClient) for key management, covenant
+ * Provides a single entry point (NobulexClient) for key management, covenant
  * lifecycle, identity management, chain operations, and CCL utilities.
  *
  * @packageDocumentation
@@ -65,16 +65,16 @@ import {
 import type { AgentIdentity } from '@nobulex/identity';
 
 import type {
-  SteleClientOptions,
+  NobulexClientOptions,
   CreateCovenantOptions,
   EvaluationResult,
   CreateIdentityOptions,
   EvolveOptions,
   ChainValidationResult,
   NarrowingViolationEntry,
-  SteleEventType,
-  SteleEventMap,
-  SteleEventHandler,
+  NobulexEventType,
+  NobulexEventMap,
+  NobulexEventHandler,
 } from './types.js';
 
 // ─── Re-exports ─────────────────────────────────────────────────────────────
@@ -97,7 +97,7 @@ export type {
 
 // Re-export middleware system
 export { MiddlewarePipeline, loggingMiddleware, validationMiddleware, timingMiddleware, rateLimitMiddleware } from './middleware.js';
-export type { MiddlewareContext, MiddlewareResult, MiddlewareFn, SteleMiddleware } from './middleware.js';
+export type { MiddlewareContext, MiddlewareResult, MiddlewareFn, NobulexMiddleware } from './middleware.js';
 
 // Re-export plugins
 export * from './plugins/index.js';
@@ -105,7 +105,7 @@ export * from './plugins/index.js';
 // Re-export telemetry
 export {
   telemetryMiddleware,
-  SteleMetrics,
+  NobulexMetrics,
   NoopTracer,
   NoopMeter,
   NoopSpan,
@@ -127,16 +127,16 @@ export type {
 
 // Re-export all SDK types
 export type {
-  SteleClientOptions,
+  NobulexClientOptions,
   CreateCovenantOptions,
   EvaluationResult,
   CreateIdentityOptions,
   EvolveOptions,
   ChainValidationResult,
   NarrowingViolationEntry,
-  SteleEventType,
-  SteleEventMap,
-  SteleEventHandler,
+  NobulexEventType,
+  NobulexEventMap,
+  NobulexEventHandler,
   CovenantCreatedEvent,
   CovenantVerifiedEvent,
   CovenantCountersignedEvent,
@@ -146,7 +146,7 @@ export type {
   ChainValidatedEvent,
   EvaluationCompletedEvent,
   KeyRotatedEvent,
-  SteleEvent,
+  NobulexEvent,
 } from './types.js';
 
 // Re-export core types
@@ -290,18 +290,18 @@ export {
   DEFAULT_EVOLUTION_POLICY,
 } from '@nobulex/identity';
 
-// ─── SteleClient ────────────────────────────────────────────────────────────
+// ─── NobulexClient ────────────────────────────────────────────────────────────
 
 /**
- * The main entry point for the Stele SDK.
+ * The main entry point for the Nobulex SDK.
  *
- * Provides a unified, high-level API for the entire Stele protocol:
+ * Provides a unified, high-level API for the entire Nobulex protocol:
  * key management, covenant lifecycle, identity management, chain
  * operations, and CCL utilities.
  *
  * @example
  * ```typescript
- * const client = new SteleClient();
+ * const client = new NobulexClient();
  * await client.generateKeyPair();
  *
  * const doc = await client.createCovenant({
@@ -314,14 +314,14 @@ export {
  * console.log(result.valid); // true
  * ```
  */
-export class SteleClient {
+export class NobulexClient {
   private _keyPair: KeyPair | undefined;
   private readonly _agentId: string | undefined;
   private readonly _strictMode: boolean;
-  private readonly _listeners: Map<SteleEventType, Set<SteleEventHandler<SteleEventType>>>;
+  private readonly _listeners: Map<NobulexEventType, Set<NobulexEventHandler<NobulexEventType>>>;
   private _keyManager: KeyManager | undefined;
 
-  constructor(options: SteleClientOptions = {}) {
+  constructor(options: NobulexClientOptions = {}) {
     this._keyPair = options.keyPair;
     this._agentId = options.agentId;
     this._strictMode = options.strictMode ?? false;
@@ -928,18 +928,18 @@ export class SteleClient {
    * // later: off() to unsubscribe
    * ```
    */
-  on<T extends SteleEventType>(
+  on<T extends NobulexEventType>(
     event: T,
-    handler: SteleEventHandler<T>,
+    handler: NobulexEventHandler<T>,
   ): () => void {
     if (!this._listeners.has(event)) {
       this._listeners.set(event, new Set());
     }
     const handlers = this._listeners.get(event)!;
-    handlers.add(handler as SteleEventHandler<SteleEventType>);
+    handlers.add(handler as NobulexEventHandler<NobulexEventType>);
 
     return () => {
-      handlers.delete(handler as SteleEventHandler<SteleEventType>);
+      handlers.delete(handler as NobulexEventHandler<NobulexEventType>);
     };
   }
 
@@ -949,13 +949,13 @@ export class SteleClient {
    * @param event - The event type.
    * @param handler - The handler function to remove.
    */
-  off<T extends SteleEventType>(
+  off<T extends NobulexEventType>(
     event: T,
-    handler: SteleEventHandler<T>,
+    handler: NobulexEventHandler<T>,
   ): void {
     const handlers = this._listeners.get(event);
     if (handlers) {
-      handlers.delete(handler as SteleEventHandler<SteleEventType>);
+      handlers.delete(handler as NobulexEventHandler<NobulexEventType>);
     }
   }
 
@@ -965,7 +965,7 @@ export class SteleClient {
    *
    * @param event - Optional event type. If omitted, removes all handlers.
    */
-  removeAllListeners(event?: SteleEventType): void {
+  removeAllListeners(event?: NobulexEventType): void {
     if (event) {
       this._listeners.delete(event);
     } else {
@@ -974,9 +974,9 @@ export class SteleClient {
   }
 
   /** Emit an event to all registered handlers. */
-  private _emit<T extends SteleEventType>(
+  private _emit<T extends NobulexEventType>(
     event: T,
-    payload: SteleEventMap[T],
+    payload: NobulexEventMap[T],
   ): void {
     const handlers = this._listeners.get(event);
     if (handlers) {

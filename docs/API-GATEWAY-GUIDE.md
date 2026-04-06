@@ -23,10 +23,10 @@ npm install @nobulex/sdk express
 
 ```typescript
 import express from 'express';
-import { SteleClient, kovaGatewayMiddleware } from '@nobulex/sdk';
+import { NobulexClient, kovaGatewayMiddleware } from '@nobulex/sdk';
 
 const app = express();
-const client = new SteleClient();
+const client = new NobulexClient();
 await client.generateKeyPair();
 
 // Protect all routes under /api (uses default extractor: X-Kova-Covenant or Bearer)

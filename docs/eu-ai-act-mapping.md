@@ -146,10 +146,10 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 5. **Map to jurisdiction** — Use `@nobulex/legal` EU-AI mapping.
 
 ```typescript
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 import { exportLegalPackage } from '@nobulex/legal';
 
-const client = new SteleClient();
+const client = new NobulexClient();
 // ... create covenant, run canary, operate ...
 
 const pkg = exportLegalPackage(agentId, operatorId, {

@@ -1,7 +1,7 @@
 /**
  * @nobulex/cli doctor command.
  *
- * Checks the health of the Stele installation by running a series of
+ * Checks the health of the Nobulex installation by running a series of
  * diagnostic tests: Node.js version, package importability, crypto
  * operations, covenant build/verify round-trip, CCL parsing, config
  * file readability, and stale dist file detection.
@@ -209,7 +209,7 @@ function checkConfig(configDir?: string): DoctorCheck {
       return {
         name: 'Config',
         status: 'warn',
-        message: 'No stele.config.json found (optional)',
+        message: 'No nobulex.config.json found (optional)',
       };
     }
 
@@ -284,7 +284,7 @@ function checkStaleDist(): DoctorCheck {
  * - Config file is readable (if exists)
  * - No stale dist files detected
  *
- * @param configDir - Optional directory to search for stele.config.json.
+ * @param configDir - Optional directory to search for nobulex.config.json.
  * @returns An array of DoctorCheck results.
  *
  * @example

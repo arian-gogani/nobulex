@@ -1,5 +1,5 @@
 /**
- * @nobulex/store — Pluggable storage backends for stele records.
+ * @nobulex/store — Pluggable storage backends for nobulex records.
  *
  * Provides a {@link CovenantStore} interface and a ready-to-use
  * {@link MemoryStore} implementation backed by a Map.

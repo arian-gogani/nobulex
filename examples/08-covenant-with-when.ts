@@ -13,7 +13,7 @@
  */
 
 import {
-  SteleClient,
+  NobulexClient,
   generateKeyPair,
   type Issuer,
   type Beneficiary,
@@ -41,7 +41,7 @@ async function main() {
     name: 'Data Analyst Agent',
   };
 
-  const client = new SteleClient({ keyPair: issuerKeys });
+  const client = new NobulexClient({ keyPair: issuerKeys });
 
   // Covenant with when conditions:
   // - Admins can read/write anywhere in /data

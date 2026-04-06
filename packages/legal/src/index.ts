@@ -15,7 +15,7 @@ export type {
   AuditTrailExport,
   RegulatoryGap,
   RegulatoryGapAnalysisResult,
-  SteleScoreProfile,
+  NobulexScoreProfile,
 } from './types';
 
 import type {
@@ -33,7 +33,7 @@ import type {
   AuditTrailExport,
   RegulatoryGap,
   RegulatoryGapAnalysisResult,
-  SteleScoreProfile,
+  NobulexScoreProfile,
 } from './types';
 
 // ---------------------------------------------------------------------------
@@ -832,12 +832,12 @@ export function regulatoryGapAnalysis(
 }
 
 // ---------------------------------------------------------------------------
-// computeSteleScore (multidimensional trust profile)
+// computeNobulexScore (multidimensional trust profile)
 // ---------------------------------------------------------------------------
 
 const STELE_SCORE_ALGORITHM_VERSION = '1.0.0';
 
-/** Default weights for composite Stele Score. Dimensions trade off. */
+/** Default weights for composite Nobulex Score. Dimensions trade off. */
 export const DEFAULT_STELE_SCORE_WEIGHTS = {
   complianceRate: 0.2,
   attestationCoverage: 0.2,
@@ -848,7 +848,7 @@ export const DEFAULT_STELE_SCORE_WEIGHTS = {
 };
 
 /**
- * Compute the Stele Score — multidimensional trust profile for agents.
+ * Compute the Nobulex Score — multidimensional trust profile for agents.
  *
  * Open algorithm. Anyone can run it on public data. Dimensions trade off.
  * Gaming one dimension costs another (e.g., high stake + low compliance is suspicious).
@@ -860,7 +860,7 @@ export const DEFAULT_STELE_SCORE_WEIGHTS = {
  * @param covenantHistory - Covenant lineage for lineageDepth.
  * @param stakeLevel - Optional explicit stake 0–1 (overrides reputation-derived).
  */
-export function computeSteleScore(
+export function computeNobulexScore(
   agentId: string,
   compliance: ComplianceRecord,
   covenantHistory: CovenantRecord[],
@@ -869,7 +869,7 @@ export function computeSteleScore(
     stakeLevel?: number;
     weights?: Partial<typeof DEFAULT_STELE_SCORE_WEIGHTS>;
   },
-): SteleScoreProfile {
+): NobulexScoreProfile {
   validateNonEmpty(agentId, 'agentId');
   validateComplianceRecord(compliance);
 

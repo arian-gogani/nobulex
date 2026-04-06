@@ -23,7 +23,7 @@ afterEach(() => {
 });
 
 function makeTmpDir(): string {
-  const dir = mkdtempSync(join(tmpdir(), 'stele-doctor-'));
+  const dir = mkdtempSync(join(tmpdir(), 'nobulex-doctor-'));
   tempDirs.push(dir);
   return dir;
 }
@@ -126,13 +126,13 @@ describe('Config check', () => {
     expect(configCheck).toBeDefined();
     // No config file in temp dir, should be warn
     expect(configCheck!.status).toBe('warn');
-    expect(configCheck!.message).toContain('No stele.config.json');
+    expect(configCheck!.message).toContain('No nobulex.config.json');
   });
 
   it('reports ok when config file exists and is valid', async () => {
     const tmp = makeTmpDir();
     writeFileSync(
-      join(tmp, 'stele.config.json'),
+      join(tmp, 'nobulex.config.json'),
       JSON.stringify({
         defaultIssuer: { id: 'test', publicKey: 'a'.repeat(64) },
         outputFormat: 'text',

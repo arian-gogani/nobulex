@@ -55,7 +55,7 @@ layers below it:
 │       react  ·  evm  ·  mcp-server  ·  cli           │
 ├─────────────────────────────────────────────────────┤
 │                       SDK                            │
-│        kova (withKova)  ·  sdk (SteleClient)          │
+│        kova (withKova)  ·  sdk (NobulexClient)          │
 ├─────────────────────────────────────────────────────┤
 │                    Protocol                          │
 │   attestation · canary · gametheory · composition     │
@@ -97,7 +97,7 @@ and legal compliance.
 
 **kova** — Single package, `withKova(server, preset)` API. One import, 30-minute integration.
 
-**sdk** — `SteleClient` (from `@nobulex/sdk`) for advanced use: custom covenants, identity, verification, event system.
+**sdk** — `NobulexClient` (from `@nobulex/sdk`) for advanced use: custom covenants, identity, verification, event system.
 
 ### Platform
 
@@ -344,9 +344,9 @@ interface ChainResolver {
 }
 ```
 
-### SteleClient Events
+### NobulexClient Events
 
-The `SteleClient` emits typed events throughout the covenant lifecycle:
+The `NobulexClient` emits typed events throughout the covenant lifecycle:
 
 | Event | Emitted When |
 |-------|-------------|
@@ -360,7 +360,7 @@ The `SteleClient` emits typed events throughout the covenant lifecycle:
 | `evaluation:completed` | An action is evaluated against constraints |
 
 ```typescript
-const client = new SteleClient();
+const client = new NobulexClient();
 client.on('covenant:created', (event) => {
   console.log('New covenant:', event.document.id);
 });

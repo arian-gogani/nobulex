@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 /**
- * @nobulex/cli -- Command-line interface for the Stele covenant protocol.
+ * @nobulex/cli -- Command-line interface for the Nobulex covenant protocol.
  *
  * Provides commands for key generation, covenant creation, verification,
  * evaluation, inspection, CCL parsing, shell completions, diagnostics, and diff.
@@ -50,7 +50,7 @@ async function loadCovenantLang(): Promise<{
   } catch { return null; }
 }
 import { loadConfig, saveConfig } from './config';
-import type { SteleConfig } from './config';
+import type { NobulexConfig } from './config';
 import {
   bashCompletions,
   zshCompletions,
@@ -123,9 +123,9 @@ function hasFlag(flags: Record<string, string | boolean>, key: string): boolean 
 function buildMainHelp(): string {
   const lines: string[] = [];
   lines.push('');
-  lines.push(header('Stele CLI') + dim(' - Covenant Protocol Tool'));
+  lines.push(header('Nobulex CLI') + dim(' - Covenant Protocol Tool'));
   lines.push('');
-  lines.push(`${bold('Usage:')} stele <command> [options]`);
+  lines.push(`${bold('Usage:')} nobulex <command> [options]`);
   lines.push('');
   lines.push(bold('Commands:'));
   lines.push('');
@@ -140,7 +140,7 @@ function buildMainHelp(): string {
         ['inspect <json>', 'Pretty-print covenant details'],
         ['parse <ccl>', 'Parse CCL and output AST as JSON'],
         ['completions <shell>', 'Generate shell completion script (bash|zsh|fish)'],
-        ['doctor', 'Check Stele installation health'],
+        ['doctor', 'Check Nobulex installation health'],
         ['deploy <dsl>', 'Deploy a covenant (parse, validate, hash for on-chain registration)'],
         ['audit [path]', 'Compliance audit report for an agent/project directory'],
         ['diff <doc1> <doc2>', 'Show differences between two covenant documents'],
@@ -167,17 +167,17 @@ function buildMainHelp(): string {
   return lines.join('\n');
 }
 
-const INIT_HELP = `stele init - Generate an Ed25519 key pair and write stele.config.json.
+const INIT_HELP = `nobulex init - Generate an Ed25519 key pair and write nobulex.config.json.
 
-Usage: stele init [--json]
+Usage: nobulex init [--json]
 
 Generates a new key pair, outputs the public key, and writes a
-stele.config.json configuration file in the current directory.
+nobulex.config.json configuration file in the current directory.
 With --json, outputs { publicKey, privateKey } as JSON.`;
 
-const CREATE_HELP = `stele create - Create and sign a covenant document.
+const CREATE_HELP = `nobulex create - Create and sign a covenant document.
 
-Usage: stele create --issuer <id> --beneficiary <id> --constraints <ccl> [--json]
+Usage: nobulex create --issuer <id> --beneficiary <id> --constraints <ccl> [--json]
 
 Options:
   --issuer <id>          Issuer identifier (required)
@@ -185,35 +185,35 @@ Options:
   --constraints <ccl>    CCL constraint string (required)
   --json                 Output raw JSON`;
 
-const VERIFY_HELP = `stele verify - Verify a covenant document.
+const VERIFY_HELP = `nobulex verify - Verify a covenant document.
 
-Usage: stele verify <json-string> [--json]
+Usage: nobulex verify <json-string> [--json]
 
 Runs all verification checks on the covenant and reports results.`;
 
-const EVALUATE_HELP = `stele evaluate - Evaluate an action against a covenant.
+const EVALUATE_HELP = `nobulex evaluate - Evaluate an action against a covenant.
 
-Usage: stele evaluate <json-string> <action> <resource> [--json]
+Usage: nobulex evaluate <json-string> <action> <resource> [--json]
 
 Parses the covenant's CCL constraints and evaluates the given action
 and resource against them.`;
 
-const INSPECT_HELP = `stele inspect - Pretty-print covenant details.
+const INSPECT_HELP = `nobulex inspect - Pretty-print covenant details.
 
-Usage: stele inspect <json-string> [--json]
+Usage: nobulex inspect <json-string> [--json]
 
 Displays covenant fields including parties, constraints, and metadata.`;
 
-const PARSE_HELP = `stele parse - Parse CCL source text and output AST.
+const PARSE_HELP = `nobulex parse - Parse CCL source text and output AST.
 
-Usage: stele parse <ccl-string> [--json]
+Usage: nobulex parse <ccl-string> [--json]
 
 Parses CCL and outputs the AST. With --json, outputs the full
 CCLDocument as JSON. Without --json, outputs a human-readable summary.`;
 
-const COMPLETIONS_HELP = `stele completions - Generate shell completion script.
+const COMPLETIONS_HELP = `nobulex completions - Generate shell completion script.
 
-Usage: stele completions <shell>
+Usage: nobulex completions <shell>
 
 Supported shells:
   bash    Generate Bash completion script
@@ -221,15 +221,15 @@ Supported shells:
   fish    Generate Fish completion script
 
 Pipe the output to the appropriate file:
-  stele completions bash > /etc/bash_completion.d/stele
-  stele completions zsh > ~/.zsh/completions/_stele
-  stele completions fish > ~/.config/fish/completions/stele.fish`;
+  nobulex completions bash > /etc/bash_completion.d/nobulex
+  nobulex completions zsh > ~/.zsh/completions/_nobulex
+  nobulex completions fish > ~/.config/fish/completions/nobulex.fish`;
 
-const DOCTOR_HELP = `stele doctor - Check Stele installation health.
+const DOCTOR_HELP = `nobulex doctor - Check Nobulex installation health.
 
-Usage: stele doctor [--json]
+Usage: nobulex doctor [--json]
 
-Runs diagnostic checks on the Stele installation:
+Runs diagnostic checks on the Nobulex installation:
   - Node.js version >= 18
   - All @nobulex/* packages importable
   - Crypto key pair generation works
@@ -238,9 +238,9 @@ Runs diagnostic checks on the Stele installation:
   - Config file readable (if exists)
   - No stale dist files detected`;
 
-const DIFF_HELP = `stele diff - Show differences between two covenant documents.
+const DIFF_HELP = `nobulex diff - Show differences between two covenant documents.
 
-Usage: stele diff <doc1-json> <doc2-json> [--json]
+Usage: nobulex diff <doc1-json> <doc2-json> [--json]
 
 Compares two covenant documents and highlights:
   - Changed fields (version, constraints, timestamps, etc.)
@@ -259,9 +259,9 @@ Options:
   --dry-run     Validate and show deployment plan without executing
   --json        Output deployment details as JSON`;
 
-const AUDIT_HELP = `stele audit - Kova compliance audit report for an agent/project directory.
+const AUDIT_HELP = `nobulex audit - Kova compliance audit report for an agent/project directory.
 
-Usage: stele audit [path] [--json] [--format <format>] [--verbose]
+Usage: nobulex audit [path] [--json] [--format <format>] [--verbose]
 
 Scans the given path (default: .) for covenant configs, runtime restrictions,
 and attestation coverage. Outputs a compliance report including:
@@ -276,7 +276,7 @@ Options:
   --json       Output report as JSON
   --format     Output format: text (default), markdown
 
-Recommended: Run "stele init" to generate covenants from your agent config.`;
+Recommended: Run "nobulex init" to generate covenants from your agent config.`;
 
 // ─── Command: init ────────────────────────────────────────────────────────────
 
@@ -295,7 +295,7 @@ async function cmdInit(flags: Record<string, string | boolean>, configDir?: stri
   }
 
   // Write config file
-  const config: SteleConfig = {
+  const config: NobulexConfig = {
     defaultIssuer: { id: 'default', publicKey: publicKeyHex },
     outputFormat: 'text',
   };
@@ -314,9 +314,9 @@ async function cmdInit(flags: Record<string, string | boolean>, configDir?: stri
       ['Public key', publicKeyHex],
     ]),
     '',
-    success('Wrote stele.config.json'),
+    success('Wrote nobulex.config.json'),
     '',
-    dim('Run "stele create" to build your first covenant.'),
+    dim('Run "nobulex create" to build your first covenant.'),
     '',
   ];
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
@@ -324,7 +324,7 @@ async function cmdInit(flags: Record<string, string | boolean>, configDir?: stri
 
 // ─── Command: create ──────────────────────────────────────────────────────────
 
-async function cmdCreate(flags: Record<string, string | boolean>, config?: SteleConfig): Promise<RunResult> {
+async function cmdCreate(flags: Record<string, string | boolean>, config?: NobulexConfig): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
     return { stdout: CREATE_HELP, stderr: '', exitCode: 0 };
   }
@@ -745,7 +745,7 @@ async function cmdDoctor(
   }
 
   const lines: string[] = [''];
-  lines.push(header('Stele Doctor'));
+  lines.push(header('Nobulex Doctor'));
   lines.push('');
 
   for (const check of checks) {
@@ -1050,11 +1050,11 @@ function findCovenantFiles(dir: string, depth = 0, maxDepth = 3): string[] {
       const full = join(dir, e.name);
       if (e.isDirectory() && !e.name.startsWith('.') && e.name !== 'node_modules') {
         found.push(...findCovenantFiles(full, depth + 1, maxDepth));
-      } else if (e.isFile() && (e.name.endsWith('.json') || e.name === 'stele.config.json')) {
+      } else if (e.isFile() && (e.name.endsWith('.json') || e.name === 'nobulex.config.json')) {
         try {
           const raw = readFileSync(full, 'utf-8');
           const parsed = JSON.parse(raw);
-          if (parsed?.stele === '0.1.0' || (parsed?.issuer && parsed?.beneficiary && parsed?.constraints)) {
+          if (parsed?.nobulex === '0.1.0' || (parsed?.issuer && parsed?.beneficiary && parsed?.constraints)) {
             found.push(full);
           }
         } catch {
@@ -1107,7 +1107,7 @@ async function cmdAudit(
   }
 
   const covenantFiles = findCovenantFiles(root);
-  const hasConfig = existsSync(join(root, 'stele.config.json'));
+  const hasConfig = existsSync(join(root, 'nobulex.config.json'));
   const signals = scanAgentSignals(root);
   const covenantCount = covenantFiles.length;
   const covenantCoverage = covenantCount > 0 ? Math.min(100, covenantCount * 50) : 0;
@@ -1141,10 +1141,10 @@ async function cmdAudit(
   }
   if (covenantCount === 0) {
     report.missing.push('no covenants declared');
-    report.recommended.push('Run "kova init" to generate covenants and stele.config.json');
+    report.recommended.push('Run "kova init" to generate covenants and nobulex.config.json');
   }
   if (!hasConfig) {
-    report.recommended.push('Run "kova init" to create stele.config.json');
+    report.recommended.push('Run "kova init" to create nobulex.config.json');
   }
   if (signals.hasMcpConfig && !signals.hasKovaDep) {
     report.recommended.push('Add kova: npm install kova — wrap your MCP server with withKova(server, "data-isolation")');
@@ -1204,7 +1204,7 @@ async function cmdAudit(
       `| Trust Score | ${report.trustScore ?? 'N/A (not enrolled)'} |`,
       `| AGENTS.md | ${report.hasAgentsMd ? '✓' : '—'} |`,
       `| MCP config | ${report.hasMcpConfig ? '✓' : '—'} |`,
-      `| Kova/Stele dep | ${report.hasKovaDep ? '✓' : '—'} |`,
+      `| Kova/Nobulex dep | ${report.hasKovaDep ? '✓' : '—'} |`,
       '',
       '## Recommended',
       '',
@@ -1233,7 +1233,7 @@ async function cmdAudit(
       ['Trust Score', report.trustScore ?? 'N/A (not enrolled)'],
       ['AGENTS.md', report.hasAgentsMd ? '✓' : '—'],
       ['MCP config', report.hasMcpConfig ? '✓' : '—'],
-      ['Kova/Stele dep', report.hasKovaDep ? '✓' : '—'],
+      ['Kova/Nobulex dep', report.hasKovaDep ? '✓' : '—'],
     ]),
     '',
     dim('Recommended:'),
@@ -1256,12 +1256,12 @@ async function cmdAudit(
     lines.push(dim('  EU AI Act scoring breakdown:'));
     lines.push(
       keyValue([
-        ['  stele.config.json', hasConfig ? '+25' : '+0'],
+        ['  nobulex.config.json', hasConfig ? '+25' : '+0'],
         ['  Covenant coverage', `+${Math.round(covenantCoverage * 0.5)}`],
         ['  Covenant bonus', covenantCount > 0 ? '+12' : '+0'],
         ['  AGENTS.md', signals.hasAgentsMd ? '+5' : '+0'],
         ['  MCP config', signals.hasMcpConfig ? '+5' : '+0'],
-        ['  Kova/Stele dep', signals.hasKovaDep ? '+8' : '+0'],
+        ['  Kova/Nobulex dep', signals.hasKovaDep ? '+8' : '+0'],
       ]),
     );
     lines.push('');
@@ -1292,10 +1292,10 @@ function cmdHelp(): RunResult {
 // ─── Main run function ────────────────────────────────────────────────────────
 
 /**
- * Run the Stele CLI with the given argument list.
+ * Run the Nobulex CLI with the given argument list.
  *
  * @param args - The command-line arguments (without node/script prefix).
- * @param configDir - Optional directory to search for stele.config.json (defaults to cwd).
+ * @param configDir - Optional directory to search for nobulex.config.json (defaults to cwd).
  * @returns An object with stdout, stderr, and exitCode.
  */
 export async function run(args: string[], configDir?: string): Promise<RunResult> {
@@ -1312,7 +1312,7 @@ export async function run(args: string[], configDir?: string): Promise<RunResult
   setColorsEnabled(!noColor && !jsonMode);
 
   // Load config file (non-fatal if missing)
-  let config: SteleConfig | undefined;
+  let config: NobulexConfig | undefined;
   try {
     config = loadConfig(configDir);
   } catch {
@@ -1361,7 +1361,7 @@ export async function run(args: string[], configDir?: string): Promise<RunResult
       default:
         return {
           stdout: '',
-          stderr: `Error: Unknown command '${parsed.command}'. Run 'stele help' for usage.`,
+          stderr: `Error: Unknown command '${parsed.command}'. Run 'nobulex help' for usage.`,
           exitCode: 1,
         };
     }

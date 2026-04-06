@@ -7,7 +7,7 @@ import {
   crossJurisdictionCompliance,
   auditTrailExport,
   regulatoryGapAnalysis,
-  computeSteleScore,
+  computeNobulexScore,
   JURISDICTIONS,
   COMPLIANCE_STANDARDS,
 } from './index';
@@ -899,11 +899,11 @@ describe('regulatoryGapAnalysis', () => {
 });
 
 // ---------------------------------------------------------------------------
-// computeSteleScore
+// computeNobulexScore
 // ---------------------------------------------------------------------------
-describe('computeSteleScore', () => {
+describe('computeNobulexScore', () => {
   it('returns multidimensional profile with all dimensions', () => {
-    const profile = computeSteleScore('agent-1', sampleCompliance, sampleCovenants);
+    const profile = computeNobulexScore('agent-1', sampleCompliance, sampleCovenants);
     expect(profile.agentId).toBe('agent-1');
     expect(profile.complianceRate).toBe(0.95);
     expect(profile.attestationCoverage).toBe(0.92);
@@ -918,24 +918,24 @@ describe('computeSteleScore', () => {
   });
 
   it('derives stakeLevel from reputation tier', () => {
-    const withHigh = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+    const withHigh = computeNobulexScore('a', sampleCompliance, sampleCovenants, {
       reputation: { ...sampleReputation, tier: 'high' },
     });
     expect(withHigh.stakeLevel).toBe(0.9);
 
-    const withMedium = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+    const withMedium = computeNobulexScore('a', sampleCompliance, sampleCovenants, {
       reputation: { ...sampleReputation, tier: 'medium' },
     });
     expect(withMedium.stakeLevel).toBe(0.5);
 
-    const withLow = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+    const withLow = computeNobulexScore('a', sampleCompliance, sampleCovenants, {
       reputation: { ...sampleReputation, tier: 'low' },
     });
     expect(withLow.stakeLevel).toBe(0.2);
   });
 
   it('allows explicit stakeLevel override', () => {
-    const profile = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+    const profile = computeNobulexScore('a', sampleCompliance, sampleCovenants, {
       stakeLevel: 0.75,
       reputation: sampleReputation,
     });
@@ -951,19 +951,19 @@ describe('computeSteleScore', () => {
       canaryPasses: 0,
       attestationCoverage: 0,
     };
-    const profile = computeSteleScore('a', terrible, []);
+    const profile = computeNobulexScore('a', terrible, []);
     expect(profile.composite).toBeGreaterThanOrEqual(0);
     expect(profile.composite).toBeLessThanOrEqual(1);
   });
 
   it('throws for empty agentId', () => {
-    expect(() => computeSteleScore('', sampleCompliance, sampleCovenants)).toThrow(
+    expect(() => computeNobulexScore('', sampleCompliance, sampleCovenants)).toThrow(
       'agentId must be a non-empty string',
     );
   });
 
   it('accepts custom weights', () => {
-    const profile = computeSteleScore('a', sampleCompliance, sampleCovenants, {
+    const profile = computeNobulexScore('a', sampleCompliance, sampleCovenants, {
       weights: { complianceRate: 0.5, breachFreedom: 0.5 },
     });
     expect(profile.composite).toBeGreaterThanOrEqual(0);

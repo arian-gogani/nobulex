@@ -12,10 +12,10 @@ import type { DeprecationWarning } from './deprecation';
 // ---------------------------------------------------------------------------
 
 const sampleWarning: DeprecationWarning = {
-  api: 'SteleSDK.sign',
+  api: 'NobulexSDK.sign',
   since: '0.2.0',
   removeIn: '1.0.0',
-  alternative: 'Use SteleSDK.signCovenant() instead',
+  alternative: 'Use NobulexSDK.signCovenant() instead',
 };
 
 let warnSpy: ReturnType<typeof vi.spyOn>;
@@ -41,7 +41,7 @@ describe('deprecated', () => {
   it('warning message includes the API name', () => {
     deprecated(sampleWarning);
     const msg = warnSpy.mock.calls[0][0] as string;
-    expect(msg).toContain('SteleSDK.sign');
+    expect(msg).toContain('NobulexSDK.sign');
   });
 
   it('warning message includes the since version', () => {
@@ -59,7 +59,7 @@ describe('deprecated', () => {
   it('warning message includes the alternative', () => {
     deprecated(sampleWarning);
     const msg = warnSpy.mock.calls[0][0] as string;
-    expect(msg).toContain('Use SteleSDK.signCovenant() instead');
+    expect(msg).toContain('Use NobulexSDK.signCovenant() instead');
   });
 
   it('warning message starts with [DEPRECATED]', () => {
@@ -78,10 +78,10 @@ describe('deprecated', () => {
   it('emits separately for different APIs', () => {
     deprecated(sampleWarning);
     deprecated({
-      api: 'SteleSDK.verify',
+      api: 'NobulexSDK.verify',
       since: '0.3.0',
       removeIn: '1.0.0',
-      alternative: 'Use SteleSDK.verifyCovenant() instead',
+      alternative: 'Use NobulexSDK.verifyCovenant() instead',
     });
     expect(warnSpy).toHaveBeenCalledTimes(2);
   });
@@ -190,21 +190,21 @@ describe('getEmittedWarnings', () => {
     deprecated(sampleWarning);
     const warnings = getEmittedWarnings();
     expect(warnings).toHaveLength(1);
-    expect(warnings[0]).toContain('SteleSDK.sign');
+    expect(warnings[0]).toContain('NobulexSDK.sign');
   });
 
   it('returns multiple warnings in order', () => {
     deprecated(sampleWarning);
     deprecated({
-      api: 'SteleSDK.verify',
+      api: 'NobulexSDK.verify',
       since: '0.3.0',
       removeIn: '1.0.0',
       alternative: 'Use verifyCovenant() instead',
     });
     const warnings = getEmittedWarnings();
     expect(warnings).toHaveLength(2);
-    expect(warnings[0]).toContain('SteleSDK.sign');
-    expect(warnings[1]).toContain('SteleSDK.verify');
+    expect(warnings[0]).toContain('NobulexSDK.sign');
+    expect(warnings[1]).toContain('NobulexSDK.verify');
   });
 
   it('returns a copy (modifying the array does not affect internal state)', () => {

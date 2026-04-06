@@ -12,7 +12,7 @@ export interface MCPTool {
   inputSchema?: Record<string, unknown>;
 }
 
-export interface SteleGuardOptions {
+export interface NobulexGuardOptions {
   constraints: string;
   mode?: 'enforce' | 'log_only';
   proofType?: 'audit_log' | 'capability_manifest';

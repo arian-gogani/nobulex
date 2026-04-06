@@ -63,7 +63,7 @@ A covenant is a JSON document conforming to the following canonical schema:
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "covenant",
   "id": "<content-address>",
   "agent": "<agent-identity>",
@@ -88,7 +88,7 @@ A covenant is a JSON document conforming to the following canonical schema:
 
 | Field | Type | Description |
 |---|---|---|
-| `stele` | string | Protocol version. Follows semver. |
+| `nobulex` | string | Protocol version. Follows semver. |
 | `kind` | string | Document type. Always `"covenant"` for covenants. |
 | `id` | string | Content address (SHA-256 of canonical form, hex-encoded). Computed, not supplied. |
 | `agent` | string | Agent identity (see §4). |
@@ -183,7 +183,7 @@ An agent's identity in Nobulex is not a single key but a **composite identity** 
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "identity",
   "id": "<content-address>",
   "signingKey": "<Ed25519 public key>",
@@ -290,7 +290,7 @@ Each leaf in the tree is an **action record**:
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "action",
   "covenant": "<covenant-id>",
   "sequence": <monotonic counter>,
@@ -428,7 +428,7 @@ An **execution receipt** is a signed attestation that a covenant's execution has
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "receipt",
   "covenant": "<covenant-id>",
   "agent": "<agent-identity>",
@@ -487,7 +487,7 @@ An agent may **delegate** a portion of its reputation to another agent, vouching
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "delegation",
   "delegator": "<agent-identity>",
   "delegate": "<agent-identity>",
@@ -540,7 +540,7 @@ When a verifier detects a covenant breach, it may publish a **breach attestation
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "breach-attestation",
   "agent": "<breaching agent identity>",
   "covenant": "<covenant-id>",
@@ -694,7 +694,7 @@ Beyond delegation (which implies a principal-agent relationship), Nobulex suppor
 
 ```json
 {
-  "stele": "0.1.0",
+  "nobulex": "0.1.0",
   "kind": "endorsement",
   "endorser": "<agent-identity>",
   "subject": "<agent-identity>",

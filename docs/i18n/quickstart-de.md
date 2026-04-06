@@ -37,9 +37,9 @@ npm install @nobulex/sdk
 ### Schritt 2: Covenant erstellen (5 Min)
 
 ```typescript
-import { SteleClient } from '@nobulex/sdk';
+import { NobulexClient } from '@nobulex/sdk';
 
-const client = new SteleClient();
+const client = new NobulexClient();
 await client.generateKeyPair();
 
 const covenant = await client.createCovenant({

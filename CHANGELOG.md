@@ -26,7 +26,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 #### Foundation Layer
-- **@nobulex/types**: Shared error classes (`SteleError`, `ValidationError`, `CryptoError`,
+- **@nobulex/types**: Shared error classes (`NobulexError`, `ValidationError`, `CryptoError`,
   `CCLError`, `ChainError`, `StorageError`), validation utilities (`validateNonEmpty`,
   `validateRange`, `validateHex`, `validateProbability`), `Result<T, E>` type,
   runtime type guards, input sanitization, and structured logging with levels and
@@ -46,7 +46,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   put/delete notifications; batch operations; filtered listing.
 - **@nobulex/verifier**: Standalone `Verifier` class with single, chain, action, and
   batch verification; history tracking; strict mode with warning escalation.
-- **@nobulex/sdk**: Unified `SteleClient` entry point combining key management,
+- **@nobulex/sdk**: Unified `NobulexClient` entry point combining key management,
   covenant lifecycle, identity management, chain operations, and CCL utilities;
   `QuickCovenant` convenience builders; typed event system with 8 event types.
 - **@nobulex/identity**: Agent identity with model attestation, capabilities, deployment
@@ -62,7 +62,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   trust graph management, and cryptographic verification.
 - **@nobulex/reputation**: Reputation scoring with recency decay, breach penalties,
   staking, delegation, and endorsements.
-- **@nobulex/mcp**: MCP guard wrapping MCP servers with Stele enforcement, audit
+- **@nobulex/mcp**: MCP guard wrapping MCP servers with Nobulex enforcement, audit
   logging, identity creation, and compliance proof generation; named presets.
 
 #### Protocol Layer

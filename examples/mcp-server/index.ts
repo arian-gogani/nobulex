@@ -1,11 +1,11 @@
 /**
- * Stele SDK - MCP Server Wrapping
+ * Nobulex SDK - MCP Server Wrapping
  *
- * Demonstrates wrapping a Model Context Protocol server with SteleGuard
+ * Demonstrates wrapping a Model Context Protocol server with NobulexGuard
  * to enforce constraints on every tool call, generate compliance proofs,
  * and produce execution receipts.
  */
-import { SteleGuard } from '@nobulex/mcp';
+import { NobulexGuard } from '@nobulex/mcp';
 import type { MCPServer } from '@nobulex/mcp';
 import { MonitorDeniedError } from '@nobulex/enforcement';
 import { verifyComplianceProof } from '@nobulex/proof';
@@ -32,10 +32,10 @@ async function main() {
     },
   };
 
-  // 2. Wrap with SteleGuard using data-isolation preset
+  // 2. Wrap with NobulexGuard using data-isolation preset
   //    This preset permits file.read on /data/**, denies file.write and
   //    network.send on all resources, and requires audit logging.
-  const server = await SteleGuard.wrap(mockServer, {
+  const server = await NobulexGuard.wrap(mockServer, {
     constraints: 'standard:data-isolation',
     mode: 'enforce',
   });

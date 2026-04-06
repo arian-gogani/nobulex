@@ -1,14 +1,14 @@
 /**
- * Express/HTTP middleware adapter for the Stele SDK.
+ * Express/HTTP middleware adapter for the Nobulex SDK.
  *
  * Provides zero-config HTTP middleware that wraps any Express/Connect-compatible
- * handler with Stele covenant enforcement. Uses generic request/response types
+ * handler with Nobulex covenant enforcement. Uses generic request/response types
  * so it works with Express, Koa, Hono, Fastify, and any Connect-compatible server.
  *
  * @packageDocumentation
  */
 
-import type { SteleClient } from '../index.js';
+import type { NobulexClient } from '../index.js';
 import type { CovenantDocument } from '@nobulex/core';
 import { deserializeCovenant, verifyCovenant } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
@@ -53,11 +53,11 @@ export type NextFunction = (err?: unknown) => void;
 // ─── Middleware options ──────────────────────────────────────────────────────
 
 /**
- * Options for the steleMiddleware factory.
+ * Options for the nobulexMiddleware factory.
  */
-export interface SteleMiddlewareOptions {
-  /** The SteleClient instance to use for covenant evaluation. */
-  client: SteleClient;
+export interface NobulexMiddlewareOptions {
+  /** The NobulexClient instance to use for covenant evaluation. */
+  client: NobulexClient;
   /** The covenant document to enforce. */
   covenant: CovenantDocument;
   /**
@@ -85,11 +85,11 @@ export interface SteleMiddlewareOptions {
 // ─── Guard handler options ───────────────────────────────────────────────────
 
 /**
- * Options for the steleGuardHandler factory.
+ * Options for the nobulexGuardHandler factory.
  */
-export interface SteleGuardHandlerOptions {
-  /** The SteleClient instance to use for covenant evaluation. */
-  client: SteleClient;
+export interface NobulexGuardHandlerOptions {
+  /** The NobulexClient instance to use for covenant evaluation. */
+  client: NobulexClient;
   /** The covenant document to enforce. */
   covenant: CovenantDocument;
   /**
@@ -120,8 +120,8 @@ export interface SteleGuardHandlerOptions {
  * Options for the createCovenantRouter factory.
  */
 export interface CovenantRouterOptions {
-  /** The SteleClient instance to use for covenant evaluation. */
-  client: SteleClient;
+  /** The NobulexClient instance to use for covenant evaluation. */
+  client: NobulexClient;
   /** The covenant document to enforce. */
   covenant: CovenantDocument;
 }
@@ -155,7 +155,7 @@ function defaultOnDenied(
   }
   if (res.setHeader) {
     res.setHeader('content-type', 'application/json');
-    res.setHeader('x-stele-permitted', 'false');
+    res.setHeader('x-nobulex-permitted', 'false');
   }
   if (res.end) {
     res.end(JSON.stringify({
@@ -188,16 +188,16 @@ function defaultOnError(
   }
 }
 
-// ─── steleMiddleware ─────────────────────────────────────────────────────────
+// ─── nobulexMiddleware ─────────────────────────────────────────────────────────
 
 /**
- * Connect-compatible middleware factory that enforces a Stele covenant
+ * Connect-compatible middleware factory that enforces a Nobulex covenant
  * on every incoming HTTP request.
  *
  * For each request:
  * - Extracts the action and resource using configurable extractors
  * - Evaluates them against the covenant's CCL constraints
- * - If permitted: sets `x-stele-permitted: true` header and calls `next()`
+ * - If permitted: sets `x-nobulex-permitted: true` header and calls `next()`
  * - If denied: calls `onDenied` handler (default: 403 JSON response)
  * - On error: calls `onError` handler (default: 500 JSON response)
  *
@@ -207,12 +207,12 @@ function defaultOnError(
  * @example
  * ```typescript
  * import express from 'express';
- * import { SteleClient, steleMiddleware } from '@nobulex/sdk';
+ * import { NobulexClient, nobulexMiddleware } from '@nobulex/sdk';
  *
- * const client = new SteleClient();
+ * const client = new NobulexClient();
  * const app = express();
  *
- * app.use(steleMiddleware({
+ * app.use(nobulexMiddleware({
  *   client,
  *   covenant: myCovenantDoc,
  * }));
@@ -222,8 +222,8 @@ function defaultOnError(
  * });
  * ```
  */
-export function steleMiddleware(
-  options: SteleMiddlewareOptions,
+export function nobulexMiddleware(
+  options: NobulexMiddlewareOptions,
 ): (req: IncomingRequest, res: OutgoingResponse, next: NextFunction) => void {
   const {
     client,
@@ -243,7 +243,7 @@ export function steleMiddleware(
       .then((result: EvaluationResult) => {
         if (result.permitted) {
           if (res.setHeader) {
-            res.setHeader('x-stele-permitted', 'true');
+            res.setHeader('x-nobulex-permitted', 'true');
           }
           next();
         } else {
@@ -256,7 +256,7 @@ export function steleMiddleware(
   };
 }
 
-// ─── steleGuardHandler ───────────────────────────────────────────────────────
+// ─── nobulexGuardHandler ───────────────────────────────────────────────────────
 
 /**
  * Async handler type compatible with any HTTP framework.
@@ -264,7 +264,7 @@ export function steleMiddleware(
 export type AsyncHandler = (req: IncomingRequest, res: OutgoingResponse) => Promise<void>;
 
 /**
- * Wraps an async handler with Stele covenant enforcement for standalone use
+ * Wraps an async handler with Nobulex covenant enforcement for standalone use
  * (no next function required).
  *
  * Evaluates the request against the covenant before invoking the handler.
@@ -276,7 +276,7 @@ export type AsyncHandler = (req: IncomingRequest, res: OutgoingResponse) => Prom
  *
  * @example
  * ```typescript
- * const guardedHandler = steleGuardHandler(
+ * const guardedHandler = nobulexGuardHandler(
  *   { client, covenant: myDoc },
  *   async (req, res) => {
  *     res.end(JSON.stringify({ data: 'success' }));
@@ -287,8 +287,8 @@ export type AsyncHandler = (req: IncomingRequest, res: OutgoingResponse) => Prom
  * http.createServer(guardedHandler);
  * ```
  */
-export function steleGuardHandler(
-  options: SteleGuardHandlerOptions,
+export function nobulexGuardHandler(
+  options: NobulexGuardHandlerOptions,
   handler: AsyncHandler,
 ): (req: IncomingRequest, res: OutgoingResponse) => Promise<void> {
   const {
@@ -309,7 +309,7 @@ export function steleGuardHandler(
 
       if (result.permitted) {
         if (res.setHeader) {
-          res.setHeader('x-stele-permitted', 'true');
+          res.setHeader('x-nobulex-permitted', 'true');
         }
         await handler(req, res);
       } else {
@@ -324,7 +324,7 @@ export function steleGuardHandler(
 // ─── createWellKnownHandler ───────────────────────────────────────────────────
 
 /**
- * Options for the well-known Stele discovery endpoint.
+ * Options for the well-known Nobulex discovery endpoint.
  * See docs/DISCOVERY.md for the convention.
  */
 export interface WellKnownOptions {
@@ -332,14 +332,14 @@ export interface WellKnownOptions {
   agentId: string;
   /** Covenant entries for discovery. */
   covenants: Array<{ id: string; url: string; status: 'active' | 'expired' | 'revoked' }>;
-  /** Optional base URL for resolver (e.g. https://example.com/stele/resolve). */
+  /** Optional base URL for resolver (e.g. https://example.com/nobulex/resolve). */
   resolver?: string;
   /** Protocol version. Defaults to "0.1.0". */
-  stele?: string;
+  nobulex?: string;
 }
 
 /**
- * Creates a handler for GET /.well-known/stele (federated covenant discovery).
+ * Creates a handler for GET /.well-known/nobulex (federated covenant discovery).
  * Trust the Ed25519 signature on the covenant, not the resolver.
  *
  * @param options - Discovery metadata.
@@ -351,15 +351,15 @@ export interface WellKnownOptions {
  *   agentId: 'agent-1',
  *   covenants: [{ id: doc.id, url: 'https://example.com/covenants/abc.json', status: 'active' }],
  * });
- * app.get('/.well-known/stele', handler);
+ * app.get('/.well-known/nobulex', handler);
  * ```
  */
 export function createWellKnownHandler(options: WellKnownOptions): AsyncHandler {
-  const { agentId, covenants, resolver, stele = '0.1.0' } = options;
+  const { agentId, covenants, resolver, nobulex = '0.1.0' } = options;
 
   return async (_req: IncomingRequest, res: OutgoingResponse): Promise<void> => {
     const body = JSON.stringify({
-      stele,
+      nobulex,
       agentId,
       covenants,
       ...(resolver && { resolver }),
@@ -387,7 +387,7 @@ export interface CovenantRouter {
   /**
    * Returns middleware that enforces a specific action/resource pair.
    *
-   * Unlike `steleMiddleware` which extracts action/resource from the request,
+   * Unlike `nobulexMiddleware` which extracts action/resource from the request,
    * this allows you to specify exact values for route-level enforcement.
    *
    * @param action - The action to enforce (e.g., `"read"`, `"write"`).
@@ -462,7 +462,7 @@ export function createCovenantRouter(options: CovenantRouterOptions): CovenantRo
           .then((result: EvaluationResult) => {
             if (result.permitted) {
               if (res.setHeader) {
-                res.setHeader('x-stele-permitted', 'true');
+                res.setHeader('x-nobulex-permitted', 'true');
               }
               next();
             } else {
@@ -495,8 +495,8 @@ export function createCovenantRouter(options: CovenantRouterOptions): CovenantRo
  * @see docs/ADOPTION-STRATEGY.md — "Trust-Gated Access: The Liability Play"
  */
 export interface KovaGatewayOptions {
-  /** The SteleClient instance for covenant verification and evaluation. */
-  client: SteleClient;
+  /** The NobulexClient instance for covenant verification and evaluation. */
+  client: NobulexClient;
   /**
    * Extract the covenant from the incoming request.
    * Default: reads `x-kova-covenant` header as JSON string, or `authorization: Bearer <base64>`.
@@ -541,9 +541,9 @@ function defaultCovenantExtractor(req: IncomingRequest): CovenantDocument | stri
  * @example
  * ```typescript
  * import express from 'express';
- * import { SteleClient, kovaGatewayMiddleware } from '@nobulex/sdk';
+ * import { NobulexClient, kovaGatewayMiddleware } from '@nobulex/sdk';
  *
- * const client = new SteleClient();
+ * const client = new NobulexClient();
  * const app = express();
  *
  * app.use(kovaGatewayMiddleware({ client }));

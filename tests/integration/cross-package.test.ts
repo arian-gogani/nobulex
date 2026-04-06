@@ -1,5 +1,5 @@
 /**
- * Cross-package integration tests for the Stele monorepo.
+ * Cross-package integration tests for the Nobulex monorepo.
  *
  * Validates that packages interact correctly when composed together:
  *   SDK + Store, SDK + Verifier, Core + Identity, CCL + Verifier,
@@ -28,9 +28,9 @@ import {
 } from '@nobulex/core';
 import type { CovenantDocument } from '@nobulex/core';
 
-import { SteleClient, QuickCovenant } from '@nobulex/sdk';
+import { NobulexClient, QuickCovenant } from '@nobulex/sdk';
 import type {
-  SteleEventType,
+  NobulexEventType,
   CovenantCreatedEvent,
   CovenantVerifiedEvent,
   IdentityCreatedEvent,
@@ -58,21 +58,21 @@ import type { AgentIdentity } from '@nobulex/identity';
 
 
 // ---------------------------------------------------------------------------
-// SDK + Store: Create covenants via SteleClient, store, retrieve, verify
+// SDK + Store: Create covenants via NobulexClient, store, retrieve, verify
 // ---------------------------------------------------------------------------
 
 describe('SDK + Store integration', () => {
-  let client: SteleClient;
+  let client: NobulexClient;
   let store: MemoryStore;
   let kp: KeyPair;
 
   beforeEach(async () => {
     kp = await generateKeyPair();
-    client = new SteleClient({ keyPair: kp });
+    client = new NobulexClient({ keyPair: kp });
     store = new MemoryStore();
   });
 
-  it('should create a covenant via SteleClient and store it in MemoryStore', async () => {
+  it('should create a covenant via NobulexClient and store it in MemoryStore', async () => {
     const doc = await client.createCovenant({
       issuer: { id: 'issuer-1', publicKey: kp.publicKeyHex, role: 'issuer' },
       beneficiary: { id: 'ben-1', publicKey: kp.publicKeyHex, role: 'beneficiary' },
@@ -203,21 +203,21 @@ describe('SDK + Store integration', () => {
 
 
 // ---------------------------------------------------------------------------
-// SDK + Verifier: Create via SteleClient, verify via standalone Verifier
+// SDK + Verifier: Create via NobulexClient, verify via standalone Verifier
 // ---------------------------------------------------------------------------
 
 describe('SDK + Verifier integration', () => {
-  let client: SteleClient;
+  let client: NobulexClient;
   let verifier: Verifier;
   let kp: KeyPair;
 
   beforeEach(async () => {
     kp = await generateKeyPair();
-    client = new SteleClient({ keyPair: kp });
+    client = new NobulexClient({ keyPair: kp });
     verifier = new Verifier({ verifierId: 'test-verifier' });
   });
 
-  it('should verify a covenant created by SteleClient via Verifier.verify', async () => {
+  it('should verify a covenant created by NobulexClient via Verifier.verify', async () => {
     const doc = await client.createCovenant({
       issuer: { id: 'sdk-issuer', publicKey: kp.publicKeyHex, role: 'issuer' },
       beneficiary: { id: 'sdk-ben', publicKey: kp.publicKeyHex, role: 'beneficiary' },
@@ -887,12 +887,12 @@ describe('Crypto + Core integration', () => {
 // ---------------------------------------------------------------------------
 
 describe('SDK event system integration', () => {
-  let client: SteleClient;
+  let client: NobulexClient;
   let kp: KeyPair;
 
   beforeEach(async () => {
     kp = await generateKeyPair();
-    client = new SteleClient({ keyPair: kp });
+    client = new NobulexClient({ keyPair: kp });
   });
 
   it('should emit covenant:created event when creating a covenant', async () => {
@@ -1207,8 +1207,8 @@ describe('Chain operations spanning multiple packages', () => {
     expect(narrowing.violations.length).toBeGreaterThan(0);
   });
 
-  it('should validate a valid narrowing chain via SteleClient.validateChain', async () => {
-    const client = new SteleClient({ keyPair: kpRoot });
+  it('should validate a valid narrowing chain via NobulexClient.validateChain', async () => {
+    const client = new NobulexClient({ keyPair: kpRoot });
 
     const root = await client.createCovenant({
       issuer: { id: 'vc-root', publicKey: kpRoot.publicKeyHex, role: 'issuer' },
@@ -1216,7 +1216,7 @@ describe('Chain operations spanning multiple packages', () => {
       constraints: "permit file.read on '**'\ndeny file.delete on '**' severity critical",
     });
 
-    const childClient = new SteleClient({ keyPair: kpMid });
+    const childClient = new NobulexClient({ keyPair: kpMid });
     const child = await childClient.createCovenant({
       issuer: { id: 'vc-child', publicKey: kpMid.publicKeyHex, role: 'issuer' },
       beneficiary: { id: 'vc-leaf', publicKey: kpLeaf.publicKeyHex, role: 'beneficiary' },
@@ -1230,7 +1230,7 @@ describe('Chain operations spanning multiple packages', () => {
   });
 
   it('should use SDK parseCCL and mergeCCL together', () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const doc1 = client.parseCCL("permit file.read on '/data/**'");
     const doc2 = client.parseCCL("deny file.write on '**' severity critical");
     const merged = client.mergeCCL(doc1, doc2);
@@ -1245,7 +1245,7 @@ describe('Chain operations spanning multiple packages', () => {
   });
 
   it('should SDK serializeCCL preserve semantics after round-trip', () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const original = client.parseCCL("permit file.read on '/data/**'\ndeny file.write on '/system/**' severity critical");
     const serialized = client.serializeCCL(original);
     const reparsed = client.parseCCL(serialized);
@@ -1290,7 +1290,7 @@ describe('Chain operations spanning multiple packages', () => {
   });
 
   it('should strictly mode throw CovenantVerificationError on invalid covenant', async () => {
-    const client = new SteleClient({ keyPair: kpRoot, strictMode: true });
+    const client = new NobulexClient({ keyPair: kpRoot, strictMode: true });
 
     const doc = await client.createCovenant({
       issuer: { id: 'strict-issuer', publicKey: kpRoot.publicKeyHex, role: 'issuer' },

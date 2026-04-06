@@ -13,7 +13,7 @@ the most recent version.
 
 If you discover a security vulnerability in Kova, please report it responsibly.
 
-**Email**: security@stele.dev
+**Email**: security@nobulex.dev
 
 Please include:
 
@@ -72,7 +72,7 @@ Web3 ecosystem and have undergone independent security reviews.
 
 ### What Is NOT Covered
 
-- **Network transport**: Stele does not include TLS or transport-layer security.
+- **Network transport**: Nobulex does not include TLS or transport-layer security.
   Documents should be transmitted over secure channels.
 - **Key storage**: Private keys are handled as raw `Uint8Array` values. Secure key
   storage (HSM, KMS, encrypted keyring) is the responsibility of the integrator.
@@ -110,5 +110,5 @@ the attack surface. We pin exact versions and review updates before merging.
 
 ## Security Contacts
 
-- **Primary**: security@stele.dev
-- **GitHub**: https://github.com/arian-gogani/stele/security
+- **Primary**: security@nobulex.dev
+- **GitHub**: https://github.com/arian-gogani/nobulex/security

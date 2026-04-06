@@ -33,12 +33,12 @@ describe('bashCompletions', () => {
 
   it('includes the complete command registration', () => {
     const result = bashCompletions();
-    expect(result).toContain('complete -F _stele_completions stele');
+    expect(result).toContain('complete -F _nobulex_completions nobulex');
   });
 
   it('includes the completion function name', () => {
     const result = bashCompletions();
-    expect(result).toContain('_stele_completions');
+    expect(result).toContain('_nobulex_completions');
   });
 
   it('includes compgen for word generation', () => {
@@ -100,12 +100,12 @@ describe('zshCompletions', () => {
 
   it('starts with #compdef directive', () => {
     const result = zshCompletions();
-    expect(result).toContain('#compdef stele');
+    expect(result).toContain('#compdef nobulex');
   });
 
-  it('includes the _stele function', () => {
+  it('includes the _nobulex function', () => {
     const result = zshCompletions();
-    expect(result).toContain('_stele');
+    expect(result).toContain('_nobulex');
   });
 
   it('includes _arguments for option parsing', () => {
@@ -137,7 +137,7 @@ describe('zshCompletions', () => {
     const result = zshCompletions();
     expect(result).toContain('Generate an Ed25519 key pair');
     expect(result).toContain('Verify a covenant document');
-    expect(result).toContain('Check Stele installation health');
+    expect(result).toContain('Check Nobulex installation health');
   });
 
   it('includes evaluate action suggestions', () => {
@@ -175,7 +175,7 @@ describe('fishCompletions', () => {
 
   it('uses fish complete command', () => {
     const result = fishCompletions();
-    expect(result).toContain('complete -c stele');
+    expect(result).toContain('complete -c nobulex');
   });
 
   it('includes all commands', () => {
@@ -197,7 +197,7 @@ describe('fishCompletions', () => {
     const result = fishCompletions();
     expect(result).toContain('Generate an Ed25519 key pair');
     expect(result).toContain('Verify a covenant document');
-    expect(result).toContain('Check Stele installation health');
+    expect(result).toContain('Check Nobulex installation health');
   });
 
   it('includes evaluate action suggestions', () => {
@@ -225,7 +225,7 @@ describe('fishCompletions', () => {
 
   it('disables default file completions', () => {
     const result = fishCompletions();
-    expect(result).toContain('complete -c stele -f');
+    expect(result).toContain('complete -c nobulex -f');
   });
 
   it('uses __fish_seen_subcommand_from for context', () => {

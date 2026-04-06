@@ -1,6 +1,6 @@
-# Stele SDK Examples
+# Nobulex SDK Examples
 
-Runnable TypeScript examples demonstrating the Stele protocol SDK.
+Runnable TypeScript examples demonstrating the Nobulex protocol SDK.
 
 ## Running
 

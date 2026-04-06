@@ -591,4 +591,4 @@ Each package has its own detailed API documentation:
 | [`@nobulex/composability`](../packages/composability/) | `checkCompatibility()`, `findCompatibleAgents()`, `mergeCovenants()`, `analyzeTopology()` |
 | [`@nobulex/tee`](../packages/tee/) | TEE attestation: `generateQuote()`, `verifyAttestation()`, `bindEnclaveToDID()`, `TEERegistry` |
 | [`@nobulex/contracts`](../packages/contracts/) | `ContractSimulator`, `encodeRegisterCovenant()`, `encodeStake()`, `encodeSubmitViolation()`, Solidity sources |
-| [`@nobulex/sdk`](../packages/sdk/) | High-level SDK re-exporting all packages plus `CovenantAgent` and `SteleClient` |
+| [`@nobulex/sdk`](../packages/sdk/) | High-level SDK re-exporting all packages plus `CovenantAgent` and `NobulexClient` |

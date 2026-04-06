@@ -62,7 +62,7 @@ The trust layer for the agent economy. Kova is an open cryptographic protocol (M
 | [PRICING.md](./PRICING.md) | Nobulex Cloud: per-verification toll model — per-action toll ($0.005+/verification), certification badges, compliance intelligence, insurance-linked coverage, embedded middleware |
 | [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) | Model update triggers (Hole 7/39) — re-verification workflow |
 | [METRICS-DASHBOARD.md](./METRICS-DASHBOARD.md) | What to track — npm installs, stars, DMs |
-| [DISCOVERY.md](./DISCOVERY.md) | Federated covenant discovery (`.well-known/stele`) |
+| [DISCOVERY.md](./DISCOVERY.md) | Federated covenant discovery (`.well-known/nobulex`) |
 | [ZK-IDENTITY-HIERARCHY.md](./ZK-IDENTITY-HIERARCHY.md) | ZK identity design — prove trust without revealing identity |
 
 ---

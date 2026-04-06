@@ -96,7 +96,7 @@
   });
 
   /* ——— Live stats (GitHub stars, npm downloads) ——— */
-  const GITHUB_REPO = 'nobulexdev/nobulex';
+  const GITHUB_REPO = 'arian-gogani/nobulex';
   const NPM_PACKAGE = '@nobulex/sdk';
 
   function formatNum(n) {

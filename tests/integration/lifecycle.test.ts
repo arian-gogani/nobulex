@@ -1,11 +1,11 @@
 /**
- * Cross-package lifecycle integration tests for the Stele SDK.
+ * Cross-package lifecycle integration tests for the Nobulex SDK.
  *
  * Tests FULL LIFECYCLE flows that span multiple packages working together:
  *
  *   1. Covenant -> Enforcement -> Reputation -> Breach pipeline
  *   2. Identity evolution + covenant binding
- *   3. SDK SteleClient full workflow
+ *   3. SDK NobulexClient full workflow
  *   4. Store + Verifier batch operations
  *   5. Attestation + Reputation cross-validation
  *
@@ -44,7 +44,7 @@ import type { StoreEvent } from '@nobulex/store';
 
 import { Verifier, verifyBatch } from '@nobulex/verifier';
 
-import { SteleClient, QuickCovenant } from '@nobulex/sdk';
+import { NobulexClient, QuickCovenant } from '@nobulex/sdk';
 import type {
   CovenantCreatedEvent,
   CovenantVerifiedEvent,
@@ -615,15 +615,15 @@ describe('Identity evolution + covenant binding', () => {
 
 
 // ===========================================================================
-// 3. SDK SteleClient full workflow
+// 3. SDK NobulexClient full workflow
 // ===========================================================================
 
-describe('SDK SteleClient full workflow', () => {
-  let client: SteleClient;
+describe('SDK NobulexClient full workflow', () => {
+  let client: NobulexClient;
   let auditorKp: KeyPair;
 
   beforeEach(async () => {
-    client = new SteleClient();
+    client = new NobulexClient();
     auditorKp = await generateKeyPair();
   });
 

@@ -14,7 +14,7 @@
  */
 
 import {
-  SteleClient,
+  NobulexClient,
   generateKeyPair,
   serializeCCL,
   type Issuer,
@@ -51,7 +51,7 @@ async function main() {
     name: 'Data Engineering Team',
   };
 
-  const client = new SteleClient();
+  const client = new NobulexClient();
 
   const rootCovenant = await client.createCovenant({
     issuer: orgIssuer,

@@ -1,11 +1,11 @@
 /**
- * Retry middleware plugin for the Stele SDK.
+ * Retry middleware plugin for the Nobulex SDK.
  *
  * Automatically retries failed operations with exponential backoff
  * and configurable jitter. Records retry count in context metadata.
  */
 
-import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
+import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -59,9 +59,9 @@ function sleep(ms: number): Promise<void> {
  * context metadata and signals retry intent through the pipeline.
  *
  * @param options - Optional retry configuration.
- * @returns A SteleMiddleware that implements retry logic.
+ * @returns A NobulexMiddleware that implements retry logic.
  */
-export function retryMiddleware(options?: RetryPluginOptions): SteleMiddleware {
+export function retryMiddleware(options?: RetryPluginOptions): NobulexMiddleware {
   const maxRetries = options?.maxRetries ?? 3;
   const baseDelayMs = options?.baseDelayMs ?? 100;
   const shouldRetry = options?.shouldRetry ?? (() => true);

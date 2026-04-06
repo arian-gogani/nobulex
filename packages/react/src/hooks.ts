@@ -1,7 +1,7 @@
 /**
- * React hooks for Stele.
+ * React hooks for Nobulex.
  *
- * Provides idiomatic React hooks for subscribing to Stele observables,
+ * Provides idiomatic React hooks for subscribing to Nobulex observables,
  * managing covenant state, identity state, and store queries.
  *
  * Requires React >= 18 as a peer dependency.
@@ -12,7 +12,7 @@
 import type { CovenantDocument, VerificationResult } from '@nobulex/core';
 import type { AgentIdentity } from '@nobulex/identity';
 import type { CovenantStore, StoreFilter } from '@nobulex/store';
-import type { SteleClient, CreateCovenantOptions, EvaluationResult, CreateIdentityOptions, EvolveOptions } from '@nobulex/sdk';
+import type { NobulexClient, CreateCovenantOptions, EvaluationResult, CreateIdentityOptions, EvolveOptions } from '@nobulex/sdk';
 import type { EvaluationContext } from '@nobulex/ccl';
 import { Observable, CovenantState, IdentityState, StoreState } from './index';
 
@@ -35,7 +35,7 @@ let _react: ReactModule | undefined;
 function getReact(): ReactModule {
   if (!_react) {
     try {
-      // eslint-disable-next-line @typescript-eslint/no-require-imports -- Optional peer; require() for lazy load
+      // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports -- Optional peer; require() for lazy load
       _react = require('react') as ReactModule;
     } catch {
       throw new Error(
@@ -69,7 +69,7 @@ export function _resetReact(): void {
 // ─── useObservable ─────────────────────────────────────────────────────────────
 
 /**
- * Subscribe to a Stele {@link Observable} and re-render when it changes.
+ * Subscribe to a Nobulex {@link Observable} and re-render when it changes.
  *
  * Uses `useSyncExternalStore` for tear-free reads that are compatible
  * with React concurrent features.
@@ -117,18 +117,18 @@ export interface UseCovenantReturn {
  * Manage the full covenant lifecycle (create, verify, evaluate) with
  * reactive state updates.
  *
- * @param client - A configured {@link SteleClient} instance.
+ * @param client - A configured {@link NobulexClient} instance.
  * @returns Reactive covenant state and action methods.
  *
  * @example
  * ```tsx
- * function CovenantPanel({ client }: { client: SteleClient }) {
+ * function CovenantPanel({ client }: { client: NobulexClient }) {
  *   const { status, document, create, verify } = useCovenant(client);
  *   // ...
  * }
  * ```
  */
-export function useCovenant(client: SteleClient): UseCovenantReturn {
+export function useCovenant(client: NobulexClient): UseCovenantReturn {
   const react = getReact();
   const stateRef = react.useRef<CovenantState | null>(null);
 
@@ -177,10 +177,10 @@ export interface UseIdentityReturn {
  * Manage the agent identity lifecycle (create, evolve) with reactive
  * state updates.
  *
- * @param client - A configured {@link SteleClient} instance.
+ * @param client - A configured {@link NobulexClient} instance.
  * @returns Reactive identity state and action methods.
  */
-export function useIdentity(client: SteleClient): UseIdentityReturn {
+export function useIdentity(client: NobulexClient): UseIdentityReturn {
   const react = getReact();
   const stateRef = react.useRef<IdentityState | null>(null);
 

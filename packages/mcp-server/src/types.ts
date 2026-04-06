@@ -117,7 +117,7 @@ export interface ToolResult {
 
 // ─── MCP Server Options ─────────────────────────────────────────────────────────
 
-/** Options for constructing a SteleServer instance. */
+/** Options for constructing a NobulexServer instance. */
 export interface MCPServerOptions {
   /** A human-readable name for this server instance. */
   name?: string;

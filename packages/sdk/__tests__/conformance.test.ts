@@ -1,7 +1,7 @@
 /**
- * Stele Protocol Conformance Test Suite
+ * Nobulex Protocol Conformance Test Suite
  *
- * Runs the conformance suite against the real Stele implementation
+ * Runs the conformance suite against the real Nobulex implementation
  * to prove that the reference implementation is spec-compliant.
  */
 import { describe, it, expect } from 'vitest';
@@ -20,7 +20,7 @@ import { parse, evaluate } from '@nobulex/ccl';
 
 // ─── Wire up the ConformanceTarget ──────────────────────────────────────────
 
-const steleTarget: ConformanceTarget = {
+const nobulexTarget: ConformanceTarget = {
   buildCovenant,
   verifyCovenant,
   evaluateAction: async (doc, action, resource, context) => {
@@ -45,9 +45,9 @@ function formatFailures(failures: Array<{ test: string; message: string }>): str
 // Full suite
 // ═══════════════════════════════════════════════════════════════════════════
 
-describe('Stele Protocol Conformance Suite', () => {
+describe('Nobulex Protocol Conformance Suite', () => {
   it('passes the full conformance suite', async () => {
-    const result = await runConformanceSuite(steleTarget);
+    const result = await runConformanceSuite(nobulexTarget);
 
     if (!result.passed) {
       const details = formatFailures(result.failures);
@@ -69,7 +69,7 @@ describe('Stele Protocol Conformance Suite', () => {
 
 describe('Conformance: Crypto', () => {
   it('passes all cryptographic primitive checks', async () => {
-    const result = await cryptoConformance(steleTarget);
+    const result = await cryptoConformance(nobulexTarget);
 
     if (result.failures.length > 0) {
       const details = formatFailures(result.failures);
@@ -126,7 +126,7 @@ describe('Conformance: Crypto', () => {
 
 describe('Conformance: CCL', () => {
   it('passes all CCL parsing and evaluation checks', async () => {
-    const result = await cclConformance(steleTarget);
+    const result = await cclConformance(nobulexTarget);
 
     if (result.failures.length > 0) {
       const details = formatFailures(result.failures);
@@ -193,7 +193,7 @@ describe('Conformance: CCL', () => {
 
 describe('Conformance: Covenant', () => {
   it('passes all covenant lifecycle checks', async () => {
-    const result = await covenantConformance(steleTarget);
+    const result = await covenantConformance(nobulexTarget);
 
     if (result.failures.length > 0) {
       const details = formatFailures(result.failures);
@@ -249,7 +249,7 @@ describe('Conformance: Covenant', () => {
 
 describe('Conformance: Interop', () => {
   it('passes all interoperability checks', async () => {
-    const result = await interopConformance(steleTarget);
+    const result = await interopConformance(nobulexTarget);
 
     if (result.failures.length > 0) {
       const details = formatFailures(result.failures);

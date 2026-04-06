@@ -10,7 +10,7 @@
  * Express setup, see docs/API-GATEWAY-GUIDE.md.
  */
 
-import { SteleClient, kovaGatewayMiddleware, serializeCovenant } from '@nobulex/sdk';
+import { NobulexClient, kovaGatewayMiddleware, serializeCovenant } from '@nobulex/sdk';
 import { generateKeyPair } from '@nobulex/crypto';
 import type { CovenantDocument } from '@nobulex/core';
 import type { IncomingRequest, OutgoingResponse } from '@nobulex/sdk';
@@ -22,7 +22,7 @@ async function main() {
 
   const issuerKp = await generateKeyPair();
   const benKp = await generateKeyPair();
-  const client = new SteleClient({ keyPair: issuerKp });
+  const client = new NobulexClient({ keyPair: issuerKp });
 
   // Covenant WITH required constraint
   const covenantWithAudit = await client.createCovenant({

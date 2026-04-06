@@ -1,5 +1,5 @@
 /**
- * Metrics middleware plugin for the Stele SDK.
+ * Metrics middleware plugin for the Nobulex SDK.
  *
  * Automatically records operational metrics using the @nobulex/types
  * MetricsRegistry. Tracks total operations, errors, duration, and
@@ -7,7 +7,7 @@
  */
 
 import { MetricsRegistry, createMetricsRegistry } from '@nobulex/types';
-import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
+import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -15,7 +15,7 @@ import type { SteleMiddleware, MiddlewareContext } from '../middleware.js';
 export interface MetricsPluginOptions {
   /** Optional pre-existing MetricsRegistry to use. Creates a new one if omitted. */
   registry?: MetricsRegistry;
-  /** Prefix for all metric names. Default: "stele". */
+  /** Prefix for all metric names. Default: "nobulex". */
   prefix?: string;
 }
 
@@ -31,13 +31,13 @@ export interface MetricsPluginOptions {
  * - `{prefix}.operations.active` — Gauge: currently active operations
  *
  * @param options - Optional metrics configuration.
- * @returns A SteleMiddleware with an exposed `registry` property.
+ * @returns A NobulexMiddleware with an exposed `registry` property.
  */
 export function metricsMiddleware(
   options?: MetricsPluginOptions,
-): SteleMiddleware & { registry: MetricsRegistry } {
+): NobulexMiddleware & { registry: MetricsRegistry } {
   const registry = options?.registry ?? createMetricsRegistry();
-  const prefix = options?.prefix ?? 'stele';
+  const prefix = options?.prefix ?? 'nobulex';
 
   const totalCounter = registry.counter(
     `${prefix}.operations.total`,
@@ -57,7 +57,7 @@ export function metricsMiddleware(
     'Number of currently active operations',
   );
 
-  const middleware: SteleMiddleware & { registry: MetricsRegistry } = {
+  const middleware: NobulexMiddleware & { registry: MetricsRegistry } = {
     name: 'metrics',
 
     async before(ctx: MiddlewareContext) {

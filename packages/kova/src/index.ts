@@ -6,8 +6,8 @@
  * @packageDocumentation
  */
 
-import { SteleGuard, PRESETS } from '@nobulex/mcp';
-import type { MCPServer, SteleGuardOptions, WrappedMCPServer } from '@nobulex/mcp';
+import { NobulexGuard, PRESETS } from '@nobulex/mcp';
+import type { MCPServer, NobulexGuardOptions, WrappedMCPServer } from '@nobulex/mcp';
 
 // Re-export 3 primitives for advanced users
 export { createIdentity, evolveIdentity } from '@nobulex/identity';
@@ -15,7 +15,7 @@ export { buildCovenant, verifyCovenant } from '@nobulex/core';
 export { generateComplianceProof } from '@nobulex/proof';
 export { Monitor } from '@nobulex/enforcement';
 
-export type { MCPServer, WrappedMCPServer, SteleGuardOptions } from '@nobulex/mcp';
+export type { MCPServer, WrappedMCPServer, NobulexGuardOptions } from '@nobulex/mcp';
 
 /** Preset constraint profiles for common use cases. */
 export type KovaPreset = 'data-isolation' | 'read-write' | 'network' | 'minimal';
@@ -47,14 +47,14 @@ export function getPresetConstraints(preset: KovaPreset): string {
  *
  * @param server - The MCP server to wrap (must have tools and handleToolCall).
  * @param preset - Constraint preset: 'data-isolation', 'read-write', 'network', 'minimal', or raw CCL.
- * @param options - Optional SteleGuardOptions (mode, operatorKeyPair, onViolation, etc.).
+ * @param options - Optional NobulexGuardOptions (mode, operatorKeyPair, onViolation, etc.).
  * @returns Wrapped server with covenant enforcement, audit log, and proof generation.
  * @throws Error if server is null/undefined or preset is empty.
  */
 export async function withKova(
   server: MCPServer,
   preset: KovaPreset | string,
-  options?: Partial<SteleGuardOptions>,
+  options?: Partial<NobulexGuardOptions>,
 ): Promise<WrappedMCPServer> {
   if (server == null) {
     throw new Error('withKova: server is required');
@@ -76,7 +76,7 @@ export async function withKova(
   const constraints = isPreset ? (trimmed.startsWith('standard:') ? trimmed : `standard:${trimmed}`) : trimmed;
 
   try {
-    return await SteleGuard.wrap(server, { constraints, ...options });
+    return await NobulexGuard.wrap(server, { constraints, ...options });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);
     if (msg.includes('CCL') || msg.includes('parse')) {

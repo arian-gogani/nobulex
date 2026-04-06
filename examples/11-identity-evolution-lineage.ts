@@ -9,7 +9,7 @@
  */
 
 import {
-  SteleClient,
+  NobulexClient,
   generateKeyPair,
   getLineage,
   shareAncestor,
@@ -23,7 +23,7 @@ async function main() {
   console.log('========================================\n');
 
   const operatorKeys = await generateKeyPair();
-  const client = new SteleClient({ keyPair: operatorKeys });
+  const client = new NobulexClient({ keyPair: operatorKeys });
 
   const model: ModelAttestation = {
     provider: 'anthropic',
@@ -84,7 +84,7 @@ async function main() {
 
   // Create unrelated identity
   const otherKeys = await generateKeyPair();
-  const otherClient = new SteleClient({ keyPair: otherKeys });
+  const otherClient = new NobulexClient({ keyPair: otherKeys });
   const other = await otherClient.createIdentity({
     operatorIdentifier: 'operator:other',
     model: { provider: 'openai', modelId: 'gpt-4', version: '1.0', hash: 'sha256:other' },

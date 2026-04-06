@@ -4,9 +4,9 @@ import type { KeyPair } from '@nobulex/crypto';
 import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 
 import {
-  SteleClient,
-  steleMiddleware,
-  steleGuardHandler,
+  NobulexClient,
+  nobulexMiddleware,
+  nobulexGuardHandler,
   createCovenantRouter,
   createWellKnownHandler,
   kovaGatewayMiddleware,
@@ -87,11 +87,11 @@ function mockResponse(): OutgoingResponse & {
 
 /** Helper: create a client and covenant for tests. */
 async function createTestFixture(constraints: string): Promise<{
-  client: SteleClient;
+  client: NobulexClient;
   covenant: CovenantDocument;
 }> {
   const { issuerKeyPair, issuer, beneficiary } = await makeParties();
-  const client = new SteleClient({ keyPair: issuerKeyPair });
+  const client = new NobulexClient({ keyPair: issuerKeyPair });
 
   const covenant = await client.createCovenant({
     issuer,
@@ -107,15 +107,15 @@ async function createTestFixture(constraints: string): Promise<{
 // ---------------------------------------------------------------------------
 
 describe('Express/HTTP middleware adapter', () => {
-  // ── steleMiddleware ─────────────────────────────────────────────────
+  // ── nobulexMiddleware ─────────────────────────────────────────────────
 
-  describe('steleMiddleware', () => {
+  describe('nobulexMiddleware', () => {
     it('calls next() and sets header for permitted requests', async () => {
       const { client, covenant } = await createTestFixture(
         "permit get on '/data'",
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       const req = mockRequest({ method: 'GET', path: '/data' });
       const res = mockResponse();
@@ -129,7 +129,7 @@ describe('Express/HTTP middleware adapter', () => {
       });
 
       expect(next).toHaveBeenCalledWith();
-      expect(res.setHeader).toHaveBeenCalledWith('x-stele-permitted', 'true');
+      expect(res.setHeader).toHaveBeenCalledWith('x-nobulex-permitted', 'true');
     });
 
     it('sends 403 for denied requests', async () => {
@@ -137,7 +137,7 @@ describe('Express/HTTP middleware adapter', () => {
         "deny get on '/secret'",
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       const req = mockRequest({ method: 'GET', path: '/secret' });
       const res = mockResponse();
@@ -152,7 +152,7 @@ describe('Express/HTTP middleware adapter', () => {
       expect(next).not.toHaveBeenCalled();
       expect(res._statusCode).toBe(403);
       expect(res._headers['content-type']).toBe('application/json');
-      expect(res._headers['x-stele-permitted']).toBe('false');
+      expect(res._headers['x-nobulex-permitted']).toBe('false');
 
       const body = JSON.parse(res._body!);
       expect(body.error).toBe('Forbidden');
@@ -164,7 +164,7 @@ describe('Express/HTTP middleware adapter', () => {
         "permit read on '/allowed'",
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       // POST to /allowed won't match the 'read' permit
       const req = mockRequest({ method: 'POST', path: '/allowed' });
@@ -186,7 +186,7 @@ describe('Express/HTTP middleware adapter', () => {
         "permit file.upload on '/data'",
       );
 
-      const middleware = steleMiddleware({
+      const middleware = nobulexMiddleware({
         client,
         covenant,
         actionExtractor: () => 'file.upload',
@@ -202,7 +202,7 @@ describe('Express/HTTP middleware adapter', () => {
         expect(next).toHaveBeenCalledTimes(1);
       });
 
-      expect(res.setHeader).toHaveBeenCalledWith('x-stele-permitted', 'true');
+      expect(res.setHeader).toHaveBeenCalledWith('x-nobulex-permitted', 'true');
     });
 
     it('uses custom resourceExtractor', async () => {
@@ -210,7 +210,7 @@ describe('Express/HTTP middleware adapter', () => {
         "permit get on '/custom/resource'",
       );
 
-      const middleware = steleMiddleware({
+      const middleware = nobulexMiddleware({
         client,
         covenant,
         resourceExtractor: () => '/custom/resource',
@@ -226,7 +226,7 @@ describe('Express/HTTP middleware adapter', () => {
         expect(next).toHaveBeenCalledTimes(1);
       });
 
-      expect(res.setHeader).toHaveBeenCalledWith('x-stele-permitted', 'true');
+      expect(res.setHeader).toHaveBeenCalledWith('x-nobulex-permitted', 'true');
     });
 
     it('uses custom onDenied handler', async () => {
@@ -236,7 +236,7 @@ describe('Express/HTTP middleware adapter', () => {
 
       const onDenied = vi.fn();
 
-      const middleware = steleMiddleware({
+      const middleware = nobulexMiddleware({
         client,
         covenant,
         onDenied,
@@ -270,7 +270,7 @@ describe('Express/HTTP middleware adapter', () => {
         new Error('evaluation failed'),
       );
 
-      const middleware = steleMiddleware({
+      const middleware = nobulexMiddleware({
         client,
         covenant,
         onError,
@@ -299,7 +299,7 @@ describe('Express/HTTP middleware adapter', () => {
         new Error('boom'),
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       const req = mockRequest({ method: 'GET', path: '/data' });
       const res = mockResponse();
@@ -324,7 +324,7 @@ describe('Express/HTTP middleware adapter', () => {
         "permit post on '/items'",
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       const req = mockRequest({ method: 'POST', path: '/items' });
       const res = mockResponse();
@@ -342,7 +342,7 @@ describe('Express/HTTP middleware adapter', () => {
         "permit get on '/from-url'",
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       const req = mockRequest({ method: 'GET', url: '/from-url', path: undefined });
       const res = mockResponse();
@@ -356,9 +356,9 @@ describe('Express/HTTP middleware adapter', () => {
     });
   });
 
-  // ── steleGuardHandler ──────────────────────────────────────────────
+  // ── nobulexGuardHandler ──────────────────────────────────────────────
 
-  describe('steleGuardHandler', () => {
+  describe('nobulexGuardHandler', () => {
     it('calls the handler for permitted requests', async () => {
       const { client, covenant } = await createTestFixture(
         "permit get on '/data'",
@@ -368,7 +368,7 @@ describe('Express/HTTP middleware adapter', () => {
         // handler body
       });
 
-      const guarded = steleGuardHandler({ client, covenant }, handler);
+      const guarded = nobulexGuardHandler({ client, covenant }, handler);
 
       const req = mockRequest({ method: 'GET', path: '/data' });
       const res = mockResponse();
@@ -377,7 +377,7 @@ describe('Express/HTTP middleware adapter', () => {
 
       expect(handler).toHaveBeenCalledTimes(1);
       expect(handler).toHaveBeenCalledWith(req, res);
-      expect(res.setHeader).toHaveBeenCalledWith('x-stele-permitted', 'true');
+      expect(res.setHeader).toHaveBeenCalledWith('x-nobulex-permitted', 'true');
     });
 
     it('does not call the handler for denied requests', async () => {
@@ -387,7 +387,7 @@ describe('Express/HTTP middleware adapter', () => {
 
       const handler = vi.fn(async () => {});
 
-      const guarded = steleGuardHandler({ client, covenant }, handler);
+      const guarded = nobulexGuardHandler({ client, covenant }, handler);
 
       const req = mockRequest({ method: 'GET', path: '/secret' });
       const res = mockResponse();
@@ -406,7 +406,7 @@ describe('Express/HTTP middleware adapter', () => {
       const onDenied = vi.fn();
       const handler = vi.fn(async () => {});
 
-      const guarded = steleGuardHandler(
+      const guarded = nobulexGuardHandler(
         { client, covenant, onDenied },
         handler,
       );
@@ -433,7 +433,7 @@ describe('Express/HTTP middleware adapter', () => {
 
       const handler = vi.fn(async () => {});
 
-      const guarded = steleGuardHandler({ client, covenant }, handler);
+      const guarded = nobulexGuardHandler({ client, covenant }, handler);
 
       const req = mockRequest({ method: 'GET', path: '/data' });
       const res = mockResponse();
@@ -460,7 +460,7 @@ describe('Express/HTTP middleware adapter', () => {
 
       const handler = vi.fn(async () => {});
 
-      const guarded = steleGuardHandler(
+      const guarded = nobulexGuardHandler(
         { client, covenant, onError },
         handler,
       );
@@ -481,7 +481,7 @@ describe('Express/HTTP middleware adapter', () => {
 
       const handler = vi.fn(async () => {});
 
-      const guarded = steleGuardHandler(
+      const guarded = nobulexGuardHandler(
         {
           client,
           covenant,
@@ -522,7 +522,7 @@ describe('Express/HTTP middleware adapter', () => {
           expect(next).toHaveBeenCalledTimes(1);
         });
 
-        expect(res.setHeader).toHaveBeenCalledWith('x-stele-permitted', 'true');
+        expect(res.setHeader).toHaveBeenCalledWith('x-nobulex-permitted', 'true');
       });
 
       it('denies when action/resource are not allowed', async () => {
@@ -685,7 +685,7 @@ describe('Express/HTTP middleware adapter', () => {
         "permit get on '/data/**'\ndeny delete on '/data/**'",
       );
 
-      const middleware = steleMiddleware({ client, covenant });
+      const middleware = nobulexMiddleware({ client, covenant });
 
       // GET should be permitted
       const reqGet = mockRequest({ method: 'GET', path: '/data/users' });
@@ -724,7 +724,7 @@ describe('Express/HTTP middleware adapter', () => {
         }
       });
 
-      const guarded = steleGuardHandler({ client, covenant }, handler);
+      const guarded = nobulexGuardHandler({ client, covenant }, handler);
 
       const req = mockRequest({ method: 'GET', path: '/api/v1/items' });
       const res = mockResponse();
@@ -932,7 +932,7 @@ describe('Express/HTTP middleware adapter', () => {
         ],
       });
 
-      const req = mockRequest({ method: 'GET', path: '/.well-known/stele' });
+      const req = mockRequest({ method: 'GET', path: '/.well-known/nobulex' });
       const res = mockResponse();
 
       await handler(req, res);
@@ -940,7 +940,7 @@ describe('Express/HTTP middleware adapter', () => {
       expect(res._statusCode).toBe(200);
       expect(res._headers['content-type']).toBe('application/json');
       const body = JSON.parse(res._body ?? '{}');
-      expect(body.stele).toBe('0.1.0');
+      expect(body.nobulex).toBe('0.1.0');
       expect(body.agentId).toBe('agent-1');
       expect(body.covenants).toHaveLength(1);
       expect(body.covenants[0]).toEqual({ id: 'c1', url: 'https://example.com/c1.json', status: 'active' });
@@ -950,7 +950,7 @@ describe('Express/HTTP middleware adapter', () => {
       const handler = createWellKnownHandler({
         agentId: 'agent-2',
         covenants: [],
-        resolver: 'https://example.com/stele/resolve',
+        resolver: 'https://example.com/nobulex/resolve',
       });
 
       const req = mockRequest();
@@ -958,7 +958,7 @@ describe('Express/HTTP middleware adapter', () => {
       await handler(req, res);
 
       const body = JSON.parse(res._body ?? '{}');
-      expect(body.resolver).toBe('https://example.com/stele/resolve');
+      expect(body.resolver).toBe('https://example.com/nobulex/resolve');
     });
   });
 });

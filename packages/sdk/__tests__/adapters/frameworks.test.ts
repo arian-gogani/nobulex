@@ -4,23 +4,23 @@ import type { KeyPair } from '@nobulex/crypto';
 import type { CovenantDocument } from '@nobulex/core';
 
 import {
-  SteleClient,
+  NobulexClient,
   // Vercel AI adapter
-  withStele,
-  withSteleTools,
+  withNobulex,
+  withNobulexTools,
   createToolGuard,
-  SteleAccessDeniedError,
+  NobulexAccessDeniedError,
   // LangChain adapter
-  SteleCallbackHandler,
-  withSteleTool,
+  NobulexCallbackHandler,
+  withNobulexTool,
   createChainGuard,
 } from '../../src/index.js';
 
 import type {
   ToolLike,
-  SteleToolOptions,
+  NobulexToolOptions,
   LangChainToolLike,
-  SteleLangChainOptions,
+  NobulexLangChainOptions,
 } from '../../src/index.js';
 
 // ---------------------------------------------------------------------------
@@ -28,12 +28,12 @@ import type {
 // ---------------------------------------------------------------------------
 
 let kp: KeyPair;
-let client: SteleClient;
+let client: NobulexClient;
 let covenant: CovenantDocument;
 
 beforeAll(async () => {
   kp = await generateKeyPair();
-  client = new SteleClient({ keyPair: kp });
+  client = new NobulexClient({ keyPair: kp });
   covenant = await client.createCovenant({
     issuer: { id: 'test-issuer', publicKey: kp.publicKeyHex, role: 'issuer' },
     beneficiary: { id: 'test-agent', publicKey: kp.publicKeyHex, role: 'beneficiary' },
@@ -46,9 +46,9 @@ beforeAll(async () => {
 // ---------------------------------------------------------------------------
 
 describe('Vercel AI adapter', () => {
-  // ── withStele ──────────────────────────────────────────────────────────
+  // ── withNobulex ──────────────────────────────────────────────────────────
 
-  describe('withStele', () => {
+  describe('withNobulex', () => {
     it('allows a permitted tool call through', async () => {
       const mockTool: ToolLike = {
         name: 'read',
@@ -56,14 +56,14 @@ describe('Vercel AI adapter', () => {
         execute: async (query: unknown) => ({ data: query }),
       };
 
-      const options: SteleToolOptions = { client, covenant };
-      const protected_ = withStele(mockTool, options);
+      const options: NobulexToolOptions = { client, covenant };
+      const protected_ = withNobulex(mockTool, options);
 
       // "read" on "/read" -- but wait, the covenant permits "read on /data/**".
       // Default resource will be /read which doesn't match /data/**.
       // We need to use a custom resource extractor or name the tool accordingly.
       // Let's use a custom extractor for clarity:
-      const protectedWithExtractor = withStele(mockTool, {
+      const protectedWithExtractor = withNobulex(mockTool, {
         client,
         covenant,
         resourceFromTool: () => '/data/users',
@@ -73,20 +73,20 @@ describe('Vercel AI adapter', () => {
       expect(result).toEqual({ data: 'hello' });
     });
 
-    it('throws SteleAccessDeniedError for a denied tool call', async () => {
+    it('throws NobulexAccessDeniedError for a denied tool call', async () => {
       const mockTool: ToolLike = {
         name: 'write',
         description: 'Write to system',
         execute: async () => 'should not reach',
       };
 
-      const protected_ = withStele(mockTool, {
+      const protected_ = withNobulex(mockTool, {
         client,
         covenant,
         resourceFromTool: () => '/system/config',
       });
 
-      await expect(protected_.execute!()).rejects.toThrow(SteleAccessDeniedError);
+      await expect(protected_.execute!()).rejects.toThrow(NobulexAccessDeniedError);
       await expect(protected_.execute!()).rejects.toThrow('denied by covenant');
     });
 
@@ -97,7 +97,7 @@ describe('Vercel AI adapter', () => {
       };
 
       const deniedResult = { denied: true };
-      const protected_ = withStele(mockTool, {
+      const protected_ = withNobulex(mockTool, {
         client,
         covenant,
         resourceFromTool: () => '/system/critical',
@@ -113,7 +113,7 @@ describe('Vercel AI adapter', () => {
 
     it('returns a copy without wrapping when tool has no execute', () => {
       const tool: ToolLike = { name: 'no-exec', description: 'A passive tool' };
-      const protected_ = withStele(tool, { client, covenant });
+      const protected_ = withNobulex(tool, { client, covenant });
 
       expect(protected_.name).toBe('no-exec');
       expect(protected_.execute).toBeUndefined();
@@ -130,7 +130,7 @@ describe('Vercel AI adapter', () => {
       };
 
       // Use a custom action extractor that captures the derived action
-      const protected_ = withStele(mockTool, {
+      const protected_ = withNobulex(mockTool, {
         client,
         covenant,
         actionFromTool: (tool, _args) => {
@@ -152,21 +152,21 @@ describe('Vercel AI adapter', () => {
       // This will use action="execute" and resource="/unknown", which won't match
       // any permit rule and should be denied by default-deny
       await expect(
-        withStele(mockTool, { client, covenant }).execute!(),
-      ).rejects.toThrow(SteleAccessDeniedError);
+        withNobulex(mockTool, { client, covenant }).execute!(),
+      ).rejects.toThrow(NobulexAccessDeniedError);
     });
   });
 
-  // ── withSteleTools ─────────────────────────────────────────────────────
+  // ── withNobulexTools ─────────────────────────────────────────────────────
 
-  describe('withSteleTools', () => {
+  describe('withNobulexTools', () => {
     it('wraps an array of tools', async () => {
       const tools: ToolLike[] = [
         { name: 'read', execute: async () => 'read-result' },
         { name: 'search', execute: async () => 'search-result' },
       ];
 
-      const wrapped = withSteleTools(tools, {
+      const wrapped = withNobulexTools(tools, {
         client,
         covenant,
         resourceFromTool: () => '/data/items',
@@ -176,7 +176,7 @@ describe('Vercel AI adapter', () => {
       // Both should be callable since "read" on "/data/items" is permitted
       // and "search" on "/data/items" -- wait, the action "search" won't match
       // the permit rule for "read". Let's use actionFromTool too.
-      const wrappedWithAction = withSteleTools(tools, {
+      const wrappedWithAction = withNobulexTools(tools, {
         client,
         covenant,
         actionFromTool: () => 'read',
@@ -196,7 +196,7 @@ describe('Vercel AI adapter', () => {
         lister: { name: 'lister', execute: async () => 'list-result' },
       };
 
-      const wrapped = withSteleTools(tools, {
+      const wrapped = withNobulexTools(tools, {
         client,
         covenant,
         actionFromTool: () => 'read',
@@ -217,7 +217,7 @@ describe('Vercel AI adapter', () => {
       };
 
       // "safe" tool reads from /data, "dangerous" writes to /system
-      const wrapped = withSteleTools(tools, {
+      const wrapped = withNobulexTools(tools, {
         client,
         covenant,
         actionFromTool: (tool) => tool.name === 'safe' ? 'read' : 'write',
@@ -228,7 +228,7 @@ describe('Vercel AI adapter', () => {
       expect(safeResult).toBe('safe-result');
 
       await expect(wrapped['dangerous']!.execute!()).rejects.toThrow(
-        SteleAccessDeniedError,
+        NobulexAccessDeniedError,
       );
     });
   });
@@ -266,7 +266,7 @@ describe('Vercel AI adapter', () => {
         execute: async () => 'should not reach',
       };
 
-      await expect(guard(tool)).rejects.toThrow(SteleAccessDeniedError);
+      await expect(guard(tool)).rejects.toThrow(NobulexAccessDeniedError);
     });
 
     it('throws when tool has no execute method', async () => {
@@ -289,11 +289,11 @@ describe('Vercel AI adapter', () => {
 // ---------------------------------------------------------------------------
 
 describe('LangChain adapter', () => {
-  // ── SteleCallbackHandler ───────────────────────────────────────────────
+  // ── NobulexCallbackHandler ───────────────────────────────────────────────
 
-  describe('SteleCallbackHandler', () => {
+  describe('NobulexCallbackHandler', () => {
     it('records tool start events', async () => {
-      const handler = new SteleCallbackHandler({ client, covenant });
+      const handler = new NobulexCallbackHandler({ client, covenant });
 
       await handler.handleToolStart({ name: 'search' }, 'query text');
 
@@ -305,7 +305,7 @@ describe('LangChain adapter', () => {
     });
 
     it('records tool end events', async () => {
-      const handler = new SteleCallbackHandler({ client, covenant });
+      const handler = new NobulexCallbackHandler({ client, covenant });
 
       await handler.handleToolEnd({ results: [1, 2, 3] });
 
@@ -315,7 +315,7 @@ describe('LangChain adapter', () => {
     });
 
     it('records tool error events', async () => {
-      const handler = new SteleCallbackHandler({ client, covenant });
+      const handler = new NobulexCallbackHandler({ client, covenant });
 
       await handler.handleToolError(new Error('network failure'));
 
@@ -325,7 +325,7 @@ describe('LangChain adapter', () => {
     });
 
     it('records chain start and end events', async () => {
-      const handler = new SteleCallbackHandler({ client, covenant });
+      const handler = new NobulexCallbackHandler({ client, covenant });
 
       await handler.handleChainStart({ name: 'qa-chain' }, { question: 'what?' });
       await handler.handleChainEnd({ answer: 'something' });
@@ -338,7 +338,7 @@ describe('LangChain adapter', () => {
     });
 
     it('records chain error events', async () => {
-      const handler = new SteleCallbackHandler({ client, covenant });
+      const handler = new NobulexCallbackHandler({ client, covenant });
 
       await handler.handleChainError(new Error('chain broke'));
 
@@ -348,7 +348,7 @@ describe('LangChain adapter', () => {
     });
 
     it('accumulates multiple events in order', async () => {
-      const handler = new SteleCallbackHandler({ client, covenant });
+      const handler = new NobulexCallbackHandler({ client, covenant });
 
       await handler.handleChainStart({ name: 'pipeline' }, {});
       await handler.handleToolStart({ name: 'search' }, 'q');
@@ -365,16 +365,16 @@ describe('LangChain adapter', () => {
     });
   });
 
-  // ── withSteleTool ──────────────────────────────────────────────────────
+  // ── withNobulexTool ──────────────────────────────────────────────────────
 
-  describe('withSteleTool', () => {
+  describe('withNobulexTool', () => {
     it('permits a call() through when covenant allows', async () => {
       const tool: LangChainToolLike = {
         name: 'read',
         call: async (input: unknown) => `called with ${input}`,
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: () => '/data/items',
@@ -390,7 +390,7 @@ describe('LangChain adapter', () => {
         invoke: async (input: unknown) => `invoked with ${input}`,
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: () => '/data/records',
@@ -406,7 +406,7 @@ describe('LangChain adapter', () => {
         _call: async (input: unknown) => `_called with ${input}`,
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: () => '/data/internal',
@@ -416,34 +416,34 @@ describe('LangChain adapter', () => {
       expect(result).toBe('_called with internal-input');
     });
 
-    it('throws SteleAccessDeniedError for denied call()', async () => {
+    it('throws NobulexAccessDeniedError for denied call()', async () => {
       const tool: LangChainToolLike = {
         name: 'write',
         call: async () => 'should not reach',
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: () => '/system/config',
       });
 
-      await expect(protected_.call!('input')).rejects.toThrow(SteleAccessDeniedError);
+      await expect(protected_.call!('input')).rejects.toThrow(NobulexAccessDeniedError);
     });
 
-    it('throws SteleAccessDeniedError for denied invoke()', async () => {
+    it('throws NobulexAccessDeniedError for denied invoke()', async () => {
       const tool: LangChainToolLike = {
         name: 'write',
         invoke: async () => 'should not reach',
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: () => '/system/files',
       });
 
-      await expect(protected_.invoke!('input')).rejects.toThrow(SteleAccessDeniedError);
+      await expect(protected_.invoke!('input')).rejects.toThrow(NobulexAccessDeniedError);
     });
 
     it('calls onDenied handler instead of throwing', async () => {
@@ -452,7 +452,7 @@ describe('LangChain adapter', () => {
         call: async () => 'should not reach',
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: () => '/system/data',
@@ -479,7 +479,7 @@ describe('LangChain adapter', () => {
         // For "read" -> action = "read", resource = "/read"
         // But /read doesn't match /data/**. We need the covenant to permit it.
         // Let's create a specific covenant for this test:
-      } as SteleLangChainOptions);
+      } as NobulexLangChainOptions);
 
       // The default guard uses chainName as action and "/"+chainName as resource.
       // For the shared covenant: permit read on '/data/**'
@@ -487,7 +487,7 @@ describe('LangChain adapter', () => {
       // Not possible with defaults alone. Let's test with a new covenant.
 
       const chainKp = await generateKeyPair();
-      const chainClient = new SteleClient({ keyPair: chainKp });
+      const chainClient = new NobulexClient({ keyPair: chainKp });
       const chainCovenant = await chainClient.createCovenant({
         issuer: { id: 'ci', publicKey: chainKp.publicKeyHex, role: 'issuer' },
         beneficiary: { id: 'ca', publicKey: chainKp.publicKeyHex, role: 'beneficiary' },
@@ -513,7 +513,7 @@ describe('LangChain adapter', () => {
         guard('write', {}, async () => {
           return 'should not reach';
         }),
-      ).rejects.toThrow(SteleAccessDeniedError);
+      ).rejects.toThrow(NobulexAccessDeniedError);
     });
   });
 });
@@ -531,7 +531,7 @@ describe('custom action/resource extractors', () => {
         metadata: { operation: 'read' },
       };
 
-      const protected_ = withStele(tool, {
+      const protected_ = withNobulex(tool, {
         client,
         covenant,
         actionFromTool: (t, _args) => (t as any).metadata?.operation ?? 'execute',
@@ -548,7 +548,7 @@ describe('custom action/resource extractors', () => {
         execute: async (...args: unknown[]) => args[0],
       };
 
-      const protected_ = withStele(tool, {
+      const protected_ = withNobulex(tool, {
         client,
         covenant,
         resourceFromTool: (_tool, args) => `/data/${String(args[0] ?? 'default')}`,
@@ -568,7 +568,7 @@ describe('custom action/resource extractors', () => {
       let receivedTool: ToolLike | undefined;
       let receivedArgs: unknown[] | undefined;
 
-      const protected_ = withStele(tool, {
+      const protected_ = withNobulex(tool, {
         client,
         covenant,
         actionFromTool: (t, args) => {
@@ -595,7 +595,7 @@ describe('custom action/resource extractors', () => {
         call: async (input: unknown) => `queried ${input}`,
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         actionFromTool: () => 'read',
@@ -612,7 +612,7 @@ describe('custom action/resource extractors', () => {
         invoke: async (input: unknown) => `read ${input}`,
       };
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         resourceFromTool: (_tool, input) => `/data/${String(input)}`,
@@ -632,7 +632,7 @@ describe('custom action/resource extractors', () => {
       let receivedTool: LangChainToolLike | undefined;
       let receivedInput: unknown;
 
-      const protected_ = withSteleTool(tool, {
+      const protected_ = withNobulexTool(tool, {
         client,
         covenant,
         actionFromTool: (t, input) => {

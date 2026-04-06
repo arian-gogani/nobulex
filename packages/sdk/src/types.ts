@@ -35,8 +35,8 @@ import type {
 
 // ─── Client options ─────────────────────────────────────────────────────────
 
-/** Options for constructing a SteleClient instance. */
-export interface SteleClientOptions {
+/** Options for constructing a NobulexClient instance. */
+export interface NobulexClientOptions {
   /** Optional pre-generated key pair for signing operations. */
   keyPair?: KeyPair;
   /** Optional agent identifier for identity operations. */
@@ -167,8 +167,8 @@ export interface NarrowingViolationEntry {
 
 // ─── Events ─────────────────────────────────────────────────────────────────
 
-/** Event types emitted by SteleClient. */
-export type SteleEventType =
+/** Event types emitted by NobulexClient. */
+export type NobulexEventType =
   | 'covenant:created'
   | 'covenant:verified'
   | 'covenant:countersigned'
@@ -180,59 +180,59 @@ export type SteleEventType =
   | 'key:rotated';
 
 /** Base event payload. */
-export interface SteleEvent {
+export interface NobulexEvent {
   /** The event type. */
-  type: SteleEventType;
+  type: NobulexEventType;
   /** ISO 8601 timestamp of when the event occurred. */
   timestamp: string;
 }
 
 /** Event emitted when a covenant is created. */
-export interface CovenantCreatedEvent extends SteleEvent {
+export interface CovenantCreatedEvent extends NobulexEvent {
   type: 'covenant:created';
   document: CovenantDocument;
 }
 
 /** Event emitted when a covenant is verified. */
-export interface CovenantVerifiedEvent extends SteleEvent {
+export interface CovenantVerifiedEvent extends NobulexEvent {
   type: 'covenant:verified';
   result: VerificationResult;
 }
 
 /** Event emitted when a covenant is countersigned. */
-export interface CovenantCountersignedEvent extends SteleEvent {
+export interface CovenantCountersignedEvent extends NobulexEvent {
   type: 'covenant:countersigned';
   document: CovenantDocument;
   signerRole: PartyRole;
 }
 
 /** Event emitted when an identity is created. */
-export interface IdentityCreatedEvent extends SteleEvent {
+export interface IdentityCreatedEvent extends NobulexEvent {
   type: 'identity:created';
   identity: AgentIdentity;
 }
 
 /** Event emitted when an identity is evolved. */
-export interface IdentityEvolvedEvent extends SteleEvent {
+export interface IdentityEvolvedEvent extends NobulexEvent {
   type: 'identity:evolved';
   identity: AgentIdentity;
   changeType: LineageEntry['changeType'];
 }
 
 /** Event emitted when a chain is resolved. */
-export interface ChainResolvedEvent extends SteleEvent {
+export interface ChainResolvedEvent extends NobulexEvent {
   type: 'chain:resolved';
   documents: CovenantDocument[];
 }
 
 /** Event emitted when a chain is validated. */
-export interface ChainValidatedEvent extends SteleEvent {
+export interface ChainValidatedEvent extends NobulexEvent {
   type: 'chain:validated';
   result: ChainValidationResult;
 }
 
 /** Event emitted when an action is evaluated. */
-export interface EvaluationCompletedEvent extends SteleEvent {
+export interface EvaluationCompletedEvent extends NobulexEvent {
   type: 'evaluation:completed';
   result: EvaluationResult;
   action: string;
@@ -240,14 +240,14 @@ export interface EvaluationCompletedEvent extends SteleEvent {
 }
 
 /** Event emitted when a key rotation occurs. */
-export interface KeyRotatedEvent extends SteleEvent {
+export interface KeyRotatedEvent extends NobulexEvent {
   type: 'key:rotated';
   previousPublicKey: string;
   currentPublicKey: string;
 }
 
 /** Map of event types to their payloads. */
-export interface SteleEventMap {
+export interface NobulexEventMap {
   'covenant:created': CovenantCreatedEvent;
   'covenant:verified': CovenantVerifiedEvent;
   'covenant:countersigned': CovenantCountersignedEvent;
@@ -260,7 +260,7 @@ export interface SteleEventMap {
 }
 
 /** Event handler function type. */
-export type SteleEventHandler<T extends SteleEventType> = (event: SteleEventMap[T]) => void;
+export type NobulexEventHandler<T extends NobulexEventType> = (event: NobulexEventMap[T]) => void;
 
 // ─── Re-exports for convenience ─────────────────────────────────────────────
 

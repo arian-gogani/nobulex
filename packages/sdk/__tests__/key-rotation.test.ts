@@ -1,5 +1,5 @@
 /**
- * Tests for key rotation integration in SteleClient.
+ * Tests for key rotation integration in NobulexClient.
  */
 
 import { describe, it, expect, vi } from 'vitest';
@@ -8,7 +8,7 @@ import { verifyCovenant as coreVerifyCovenant } from '@nobulex/core';
 import type { KeyPair } from '@nobulex/crypto';
 import type { Issuer, Beneficiary } from '@nobulex/core';
 
-import { SteleClient, KeyManager } from '../src/index.js';
+import { NobulexClient, KeyManager } from '../src/index.js';
 import type { KeyRotatedEvent } from '../src/index.js';
 
 // ---------------------------------------------------------------------------
@@ -43,10 +43,10 @@ async function makeParties(): Promise<{
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('SteleClient key rotation', () => {
+describe('NobulexClient key rotation', () => {
   // 1. Client with keyRotation option initializes KeyManager
   it('creates a KeyManager when keyRotation option is provided', () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 60000,
         overlapPeriodMs: 5000,
@@ -57,13 +57,13 @@ describe('SteleClient key rotation', () => {
   });
 
   it('does not create a KeyManager when keyRotation is not provided', () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     expect(client.keyManager).toBeUndefined();
   });
 
   // 2. initializeKeyRotation() generates first key
   it('initializeKeyRotation() generates the first key and sets it on the client', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 60000,
         overlapPeriodMs: 5000,
@@ -80,7 +80,7 @@ describe('SteleClient key rotation', () => {
   });
 
   it('initializeKeyRotation() throws when key rotation is not configured', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     await expect(client.initializeKeyRotation()).rejects.toThrow(
       'Key rotation is not configured',
     );
@@ -88,7 +88,7 @@ describe('SteleClient key rotation', () => {
 
   // 3. rotateKeyIfNeeded() rotates when key is expired
   it('rotateKeyIfNeeded() rotates when key has exceeded maxAgeMs', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 50, // Very short for testing
         overlapPeriodMs: 10,
@@ -107,7 +107,7 @@ describe('SteleClient key rotation', () => {
   });
 
   it('rotateKeyIfNeeded() does not rotate when key is still fresh', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 100000,
         overlapPeriodMs: 5000,
@@ -123,7 +123,7 @@ describe('SteleClient key rotation', () => {
   });
 
   it('rotateKeyIfNeeded() throws when key rotation is not configured', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     await expect(client.rotateKeyIfNeeded()).rejects.toThrow(
       'Key rotation is not configured',
     );
@@ -131,7 +131,7 @@ describe('SteleClient key rotation', () => {
 
   // 4. createCovenant uses rotated key
   it('createCovenant uses the rotated key after rotation', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 50,
         overlapPeriodMs: 10,
@@ -187,7 +187,7 @@ describe('SteleClient key rotation', () => {
 
   // 5. key:rotated event is emitted on rotation
   it('emits key:rotated event when rotation occurs', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 50,
         overlapPeriodMs: 10,
@@ -213,7 +213,7 @@ describe('SteleClient key rotation', () => {
   });
 
   it('does not emit key:rotated event when no rotation is needed', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 100000,
         overlapPeriodMs: 5000,
@@ -232,7 +232,7 @@ describe('SteleClient key rotation', () => {
 
   // 6. Covenants signed with previous key still verify (during overlap)
   it('covenants signed with previous key still verify during overlap period', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 100,
         overlapPeriodMs: 90, // long overlap so old key stays valid after rotation
@@ -278,7 +278,7 @@ describe('SteleClient key rotation', () => {
 
   // 7. Client without keyRotation works normally (no regression)
   it('client without keyRotation works normally for generateKeyPair', async () => {
-    const client = new SteleClient();
+    const client = new NobulexClient();
     const kp = await client.generateKeyPair();
 
     expect(kp.privateKey).toBeInstanceOf(Uint8Array);
@@ -289,7 +289,7 @@ describe('SteleClient key rotation', () => {
 
   it('client without keyRotation works normally for createCovenant', async () => {
     const { issuerKeyPair, issuer, beneficiary } = await makeParties();
-    const client = new SteleClient({ keyPair: issuerKeyPair });
+    const client = new NobulexClient({ keyPair: issuerKeyPair });
 
     const doc = await client.createCovenant({
       issuer,
@@ -304,8 +304,8 @@ describe('SteleClient key rotation', () => {
   it('client without keyRotation works normally for countersign', async () => {
     const { issuerKeyPair, issuer, beneficiary } = await makeParties();
     const auditorKp = await generateKeyPair();
-    const createClient = new SteleClient({ keyPair: issuerKeyPair });
-    const auditClient = new SteleClient({ keyPair: auditorKp });
+    const createClient = new NobulexClient({ keyPair: issuerKeyPair });
+    const auditClient = new NobulexClient({ keyPair: auditorKp });
 
     const doc = await createClient.createCovenant({
       issuer,
@@ -322,7 +322,7 @@ describe('SteleClient key rotation', () => {
 
   // Additional: generateKeyPair returns managed key when key manager is initialized
   it('generateKeyPair returns managed key when key manager is initialized', async () => {
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 60000,
         overlapPeriodMs: 5000,
@@ -339,7 +339,7 @@ describe('SteleClient key rotation', () => {
   // Additional: onRotation callback is invoked
   it('invokes the onRotation callback from client options', async () => {
     const onRotation = vi.fn();
-    const client = new SteleClient({
+    const client = new NobulexClient({
       keyRotation: {
         maxAgeMs: 50,
         overlapPeriodMs: 10,

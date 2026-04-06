@@ -1,6 +1,6 @@
 # @nobulex/trust-futures
 
-Trust futures market for the Stele protocol. Financial instruments betting on agent trust score trajectories. Insurers hedge policies, enterprises signal confidence, speculators trade. Kova takes 1% of every trade (CME Group model).
+Trust futures market for the Nobulex protocol. Financial instruments betting on agent trust score trajectories. Insurers hedge policies, enterprises signal confidence, speculators trade. Kova takes 1% of every trade (CME Group model).
 
 ## Usage
 

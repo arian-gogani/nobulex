@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { SteleServer, JSON_RPC_ERRORS } from './index';
+import { NobulexServer, JSON_RPC_ERRORS } from './index';
 import type {
   JsonRpcRequest,
   JsonRpcSuccessResponse,
@@ -84,26 +84,26 @@ async function createAndStoreCovenant(
 
 // ─── Tests ──────────────────────────────────────────────────────────────────────
 
-describe('SteleServer', () => {
+describe('NobulexServer', () => {
   let store: MemoryStore;
-  let server: SteleServer;
+  let server: NobulexServer;
 
   beforeEach(() => {
     store = new MemoryStore();
-    server = new SteleServer(store);
+    server = new NobulexServer(store);
   });
 
   // ── Server initialization ───────────────────────────────────────────────
 
   describe('initialization', () => {
     it('should create a server with default options', () => {
-      expect(server).toBeInstanceOf(SteleServer);
-      expect(server.name).toBe('stele-mcp-server');
+      expect(server).toBeInstanceOf(NobulexServer);
+      expect(server.name).toBe('nobulex-mcp-server');
       expect(server.version).toBe('0.1.0');
     });
 
     it('should create a server with custom name and version', () => {
-      const custom = new SteleServer(store, { name: 'my-server', version: '2.0.0' });
+      const custom = new NobulexServer(store, { name: 'my-server', version: '2.0.0' });
       expect(custom.name).toBe('my-server');
       expect(custom.version).toBe('2.0.0');
     });
@@ -119,7 +119,7 @@ describe('SteleServer', () => {
       expect(result.protocolVersion).toBe('2024-11-05');
       expect(result.capabilities).toBeDefined();
       expect(result.serverInfo).toEqual({
-        name: 'stele-mcp-server',
+        name: 'nobulex-mcp-server',
         version: '0.1.0',
       });
     });

@@ -1,5 +1,5 @@
 /**
- * Stele SDK Quickstart
+ * Nobulex SDK Quickstart
  *
  * Demonstrates the basic flow: generate keys, build a covenant,
  * verify it, enforce constraints through a Monitor, and inspect

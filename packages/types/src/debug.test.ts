@@ -27,62 +27,62 @@ describe('isDebugEnabled', () => {
   it('returns false when DEBUG is not set', () => {
     delete process.env.DEBUG;
     expect(isDebugEnabled()).toBe(false);
-    expect(isDebugEnabled('stele:crypto')).toBe(false);
+    expect(isDebugEnabled('nobulex:crypto')).toBe(false);
   });
 
   it('returns false when DEBUG is an empty string', () => {
     process.env.DEBUG = '';
     expect(isDebugEnabled()).toBe(false);
-    expect(isDebugEnabled('stele:crypto')).toBe(false);
+    expect(isDebugEnabled('nobulex:crypto')).toBe(false);
   });
 
-  it('returns true for all stele namespaces when DEBUG=stele', () => {
-    process.env.DEBUG = 'stele';
+  it('returns true for all nobulex namespaces when DEBUG=nobulex', () => {
+    process.env.DEBUG = 'nobulex';
     expect(isDebugEnabled()).toBe(true);
-    expect(isDebugEnabled('stele')).toBe(true);
-    expect(isDebugEnabled('stele:crypto')).toBe(true);
-    expect(isDebugEnabled('stele:ccl')).toBe(true);
+    expect(isDebugEnabled('nobulex')).toBe(true);
+    expect(isDebugEnabled('nobulex:crypto')).toBe(true);
+    expect(isDebugEnabled('nobulex:ccl')).toBe(true);
   });
 
-  it('returns true for all stele namespaces when DEBUG=stele:*', () => {
-    process.env.DEBUG = 'stele:*';
+  it('returns true for all nobulex namespaces when DEBUG=nobulex:*', () => {
+    process.env.DEBUG = 'nobulex:*';
     expect(isDebugEnabled()).toBe(true);
-    expect(isDebugEnabled('stele')).toBe(true);
-    expect(isDebugEnabled('stele:crypto')).toBe(true);
-    expect(isDebugEnabled('stele:store')).toBe(true);
+    expect(isDebugEnabled('nobulex')).toBe(true);
+    expect(isDebugEnabled('nobulex:crypto')).toBe(true);
+    expect(isDebugEnabled('nobulex:store')).toBe(true);
   });
 
   it('returns true for everything when DEBUG=*', () => {
     process.env.DEBUG = '*';
     expect(isDebugEnabled()).toBe(true);
-    expect(isDebugEnabled('stele:crypto')).toBe(true);
+    expect(isDebugEnabled('nobulex:crypto')).toBe(true);
     expect(isDebugEnabled('anything')).toBe(true);
   });
 
-  it('returns true only for the exact namespace when DEBUG=stele:crypto', () => {
-    process.env.DEBUG = 'stele:crypto';
-    expect(isDebugEnabled('stele:crypto')).toBe(true);
-    expect(isDebugEnabled('stele:ccl')).toBe(false);
-    expect(isDebugEnabled('stele:store')).toBe(false);
+  it('returns true only for the exact namespace when DEBUG=nobulex:crypto', () => {
+    process.env.DEBUG = 'nobulex:crypto';
+    expect(isDebugEnabled('nobulex:crypto')).toBe(true);
+    expect(isDebugEnabled('nobulex:ccl')).toBe(false);
+    expect(isDebugEnabled('nobulex:store')).toBe(false);
   });
 
   it('supports comma-separated patterns', () => {
-    process.env.DEBUG = 'stele:crypto, stele:ccl';
-    expect(isDebugEnabled('stele:crypto')).toBe(true);
-    expect(isDebugEnabled('stele:ccl')).toBe(true);
-    expect(isDebugEnabled('stele:store')).toBe(false);
+    process.env.DEBUG = 'nobulex:crypto, nobulex:ccl';
+    expect(isDebugEnabled('nobulex:crypto')).toBe(true);
+    expect(isDebugEnabled('nobulex:ccl')).toBe(true);
+    expect(isDebugEnabled('nobulex:store')).toBe(false);
   });
 
-  it('returns false for non-stele namespace when DEBUG=stele', () => {
-    process.env.DEBUG = 'stele';
+  it('returns false for non-nobulex namespace when DEBUG=nobulex', () => {
+    process.env.DEBUG = 'nobulex';
     expect(isDebugEnabled('express:router')).toBe(false);
   });
 
   it('handles patterns with wildcard suffixes', () => {
-    process.env.DEBUG = 'stele:crypto:*';
-    expect(isDebugEnabled('stele:crypto')).toBe(true);
-    expect(isDebugEnabled('stele:crypto:sign')).toBe(true);
-    expect(isDebugEnabled('stele:ccl')).toBe(false);
+    process.env.DEBUG = 'nobulex:crypto:*';
+    expect(isDebugEnabled('nobulex:crypto')).toBe(true);
+    expect(isDebugEnabled('nobulex:crypto:sign')).toBe(true);
+    expect(isDebugEnabled('nobulex:ccl')).toBe(false);
   });
 });
 
@@ -95,7 +95,7 @@ describe('createDebugLogger — disabled', () => {
   });
 
   it('returns a logger with no-op methods when debug is disabled', () => {
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     expect(typeof logger.log).toBe('function');
     expect(typeof logger.warn).toBe('function');
     expect(typeof logger.error).toBe('function');
@@ -104,7 +104,7 @@ describe('createDebugLogger — disabled', () => {
 
   it('log does not call console.log when disabled', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     logger.log('should not appear');
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
@@ -112,7 +112,7 @@ describe('createDebugLogger — disabled', () => {
 
   it('warn does not call console.warn when disabled', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     logger.warn('should not appear');
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
@@ -120,7 +120,7 @@ describe('createDebugLogger — disabled', () => {
 
   it('error does not call console.error when disabled', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     logger.error('should not appear');
     expect(spy).not.toHaveBeenCalled();
     spy.mockRestore();
@@ -128,7 +128,7 @@ describe('createDebugLogger — disabled', () => {
 
   it('time returns a no-op stop function when disabled', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     const stop = logger.time('operation');
     expect(typeof stop).toBe('function');
     stop();
@@ -142,29 +142,29 @@ describe('createDebugLogger — disabled', () => {
 // ---------------------------------------------------------------------------
 describe('createDebugLogger — enabled', () => {
   beforeEach(() => {
-    process.env.DEBUG = 'stele';
+    process.env.DEBUG = 'nobulex';
   });
 
   it('log outputs to console.log with namespace prefix', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     logger.log('generating key');
     expect(spy).toHaveBeenCalledOnce();
     const args = spy.mock.calls[0];
     // First arg is timestamp (ISO string), second is namespace prefix
     expect(typeof args[0]).toBe('string');
-    expect(args[1]).toBe('[stele:crypto]');
+    expect(args[1]).toBe('[nobulex:crypto]');
     expect(args[2]).toBe('generating key');
     spy.mockRestore();
   });
 
   it('warn outputs to console.warn with WARN marker', () => {
     const spy = vi.spyOn(console, 'warn').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:ccl');
+    const logger = createDebugLogger('nobulex:ccl');
     logger.warn('deprecated syntax');
     expect(spy).toHaveBeenCalledOnce();
     const args = spy.mock.calls[0];
-    expect(args[1]).toBe('[stele:ccl]');
+    expect(args[1]).toBe('[nobulex:ccl]');
     expect(args[2]).toBe('WARN');
     expect(args[3]).toBe('deprecated syntax');
     spy.mockRestore();
@@ -172,11 +172,11 @@ describe('createDebugLogger — enabled', () => {
 
   it('error outputs to console.error with ERROR marker', () => {
     const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:store');
+    const logger = createDebugLogger('nobulex:store');
     logger.error('write failed');
     expect(spy).toHaveBeenCalledOnce();
     const args = spy.mock.calls[0];
-    expect(args[1]).toBe('[stele:store]');
+    expect(args[1]).toBe('[nobulex:store]');
     expect(args[2]).toBe('ERROR');
     expect(args[3]).toBe('write failed');
     spy.mockRestore();
@@ -184,7 +184,7 @@ describe('createDebugLogger — enabled', () => {
 
   it('log includes a valid ISO 8601 timestamp', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:sdk');
+    const logger = createDebugLogger('nobulex:sdk');
     logger.log('test');
     const ts = spy.mock.calls[0][0] as string;
     const parsed = new Date(ts);
@@ -194,7 +194,7 @@ describe('createDebugLogger — enabled', () => {
 
   it('log passes multiple arguments through', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     logger.log('key', 'value', 42);
     const args = spy.mock.calls[0];
     expect(args[2]).toBe('key');
@@ -209,18 +209,18 @@ describe('createDebugLogger — enabled', () => {
 // ---------------------------------------------------------------------------
 describe('createDebugLogger — time()', () => {
   beforeEach(() => {
-    process.env.DEBUG = 'stele';
+    process.env.DEBUG = 'nobulex';
   });
 
   it('returns a stop function that logs elapsed time', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:crypto');
+    const logger = createDebugLogger('nobulex:crypto');
     const stop = logger.time('sign');
     // Simulate some passage of time (even minimal)
     stop();
     expect(spy).toHaveBeenCalledOnce();
     const args = spy.mock.calls[0];
-    expect(args[1]).toBe('[stele:crypto]');
+    expect(args[1]).toBe('[nobulex:crypto]');
     // The third arg should be the label with elapsed ms
     const timerOutput = args[2] as string;
     expect(timerOutput).toMatch(/^sign: \d+\.\d+ms$/);
@@ -229,7 +229,7 @@ describe('createDebugLogger — time()', () => {
 
   it('measures elapsed time (at least 0ms)', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:core');
+    const logger = createDebugLogger('nobulex:core');
     const stop = logger.time('compute');
     stop();
     const timerOutput = spy.mock.calls[0][2] as string;
@@ -242,7 +242,7 @@ describe('createDebugLogger — time()', () => {
 
   it('can time multiple operations independently', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
-    const logger = createDebugLogger('stele:sdk');
+    const logger = createDebugLogger('nobulex:sdk');
     const stop1 = logger.time('op1');
     const stop2 = logger.time('op2');
     stop2();
@@ -259,12 +259,12 @@ describe('createDebugLogger — time()', () => {
 // ---------------------------------------------------------------------------
 describe('namespace filtering', () => {
   it('only creates active loggers for matched namespaces', () => {
-    process.env.DEBUG = 'stele:crypto';
+    process.env.DEBUG = 'nobulex:crypto';
     const logSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
-    const cryptoLogger = createDebugLogger('stele:crypto');
-    const cclLogger = createDebugLogger('stele:ccl');
+    const cryptoLogger = createDebugLogger('nobulex:crypto');
+    const cclLogger = createDebugLogger('nobulex:ccl');
 
     cryptoLogger.log('should appear');
     cclLogger.log('should not appear');
@@ -281,12 +281,12 @@ describe('namespace filtering', () => {
   });
 
   it('comma-separated DEBUG enables multiple specific namespaces', () => {
-    process.env.DEBUG = 'stele:crypto,stele:store';
+    process.env.DEBUG = 'nobulex:crypto,nobulex:store';
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
 
-    const crypto = createDebugLogger('stele:crypto');
-    const store = createDebugLogger('stele:store');
-    const ccl = createDebugLogger('stele:ccl');
+    const crypto = createDebugLogger('nobulex:crypto');
+    const store = createDebugLogger('nobulex:store');
+    const ccl = createDebugLogger('nobulex:ccl');
 
     crypto.log('a');
     store.log('b');

@@ -16,7 +16,7 @@ import type { ComplianceProof, AuditEntryData } from '@nobulex/proof';
 import { PRESETS } from './presets.js';
 import type {
   MCPServer,
-  SteleGuardOptions,
+  NobulexGuardOptions,
   WrappedMCPServer,
   ViolationDetails,
   ToolCallDetails,
@@ -26,7 +26,7 @@ import type {
 export type {
   MCPServer,
   MCPTool,
-  SteleGuardOptions,
+  NobulexGuardOptions,
   WrappedMCPServer,
   ViolationDetails,
   ToolCallDetails,
@@ -111,24 +111,24 @@ function extractConstraint(matchedRule: unknown): string {
 }
 
 // ---------------------------------------------------------------------------
-// SteleGuard
+// NobulexGuard
 // ---------------------------------------------------------------------------
 
 /**
- * SteleGuard wraps any MCP server with Stele accountability.
+ * NobulexGuard wraps any MCP server with Nobulex accountability.
  *
  * Usage (2 lines):
  * ```ts
- * import { SteleGuard } from '@nobulex/mcp';
- * const server = await SteleGuard.wrap(myMcpServer, { constraints: 'standard:data-isolation' });
+ * import { NobulexGuard } from '@nobulex/mcp';
+ * const server = await NobulexGuard.wrap(myMcpServer, { constraints: 'standard:data-isolation' });
  * ```
  */
-export class SteleGuard {
+export class NobulexGuard {
   // Private constructor - use static factory methods
   private constructor() {}
 
   /**
-   * Wrap an MCP server with Stele accountability using constraint text
+   * Wrap an MCP server with Nobulex accountability using constraint text
    * (either a preset name or raw CCL).
    *
    * Generates a keypair if one is not provided, creates an agent identity,
@@ -137,7 +137,7 @@ export class SteleGuard {
    */
   static async wrap(
     server: MCPServer,
-    options: SteleGuardOptions,
+    options: NobulexGuardOptions,
   ): Promise<WrappedMCPServer> {
     // 1. Resolve constraints
     const constraintSource = resolveConstraints(options.constraints);
@@ -195,7 +195,7 @@ export class SteleGuard {
     });
 
     // 6. Build the wrapped server
-    return SteleGuard.buildWrappedServer(
+    return NobulexGuard.buildWrappedServer(
       server,
       monitor,
       identity,
@@ -240,7 +240,7 @@ export class SteleGuard {
       mode,
     });
 
-    return SteleGuard.buildWrappedServer(
+    return NobulexGuard.buildWrappedServer(
       server,
       monitor,
       identity,
@@ -260,7 +260,7 @@ export class SteleGuard {
     identity: AgentIdentity,
     covenant: CovenantDocument,
     operatorKeyPair: KeyPair,
-    options: Partial<SteleGuardOptions>,
+    options: Partial<NobulexGuardOptions>,
   ): WrappedMCPServer {
     // Track state for receipt generation
     let totalToolCalls = 0;
@@ -391,7 +391,7 @@ export class SteleGuard {
     };
 
     // Build the wrapped server object by copying all original properties
-    // and adding the Stele methods
+    // and adding the Nobulex methods
     const wrapped: WrappedMCPServer = Object.create(null);
 
     // Copy all properties from the original server
@@ -410,7 +410,7 @@ export class SteleGuard {
     // Set the intercepted handler
     wrapped.handleToolCall = interceptedHandleToolCall;
 
-    // Expose Stele accessors
+    // Expose Nobulex accessors
     wrapped.getMonitor = (): Monitor => monitor;
     wrapped.getIdentity = (): AgentIdentity => identity;
     wrapped.getAuditLog = (): AuditLog => monitor.getAuditLog();

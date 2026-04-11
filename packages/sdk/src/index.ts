@@ -1102,3 +1102,7 @@ export * from './adapters/index.js';
 // Attestation (VC), Action Log, Verification, and Enforcement.
 export { CovenantAgent } from './primitives.js';
 export type { DIDKeyPair as PrimitivesDIDKeyPair } from './primitives.js';
+
+// Cross-agent verification handshake
+export { generateProof, verifyCounterparty } from './handshake.js';
+export type { ProofOfBehavior, HandshakeResult, HandshakeOptions } from './handshake.js';

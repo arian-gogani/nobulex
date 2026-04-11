@@ -7,7 +7,7 @@
 
 ## Abstract
 
-As autonomous AI agents acquire the capacity to execute financial transactions, negotiate contracts, and manage critical infrastructure on behalf of human principals, the absence of a standardized mechanism for behavioral accountability constitutes a systemic risk to the emerging agent economy. This paper presents Nobulex, an open cryptographic protocol that enables autonomous AI agents to make verifiable behavioral commitments through a novel construct termed a *covenant*. The protocol introduces six composable primitives -- identity, covenant, attestation, action log, verification, and enforcement -- that together form a complete accountability stack operating independently of any particular model architecture or deployment environment. Nobulex provides two tiers of behavioral guarantee: *impossible violations*, achieved through covenant middleware executing within Trusted Execution Environments (TEEs), and *costly violations*, achieved through stake-based economic enforcement with on-chain slashing. The verification function at the core of the protocol is deterministic, decidable, and efficient: given a covenant specification and an action log, it produces an identical compliance verdict on every execution. This paper presents the formal specification of each primitive, the security model governing both tiers of guarantee, the economic design of the staking and slashing mechanism, and the composability framework that enables trust topologies to emerge across multi-agent systems without central coordination.
+As autonomous AI agents acquire the capacity to execute financial transactions, negotiate contracts, and manage critical infrastructure on behalf of human principals, the absence of a standardized mechanism for behavioral accountability constitutes a systemic risk to the emerging agent economy. This paper presents Nobulex, an open cryptographic protocol that enables autonomous AI agents to make verifiable behavioral commitments through a novel construct termed a *covenant*. The protocol introduces six composable primitives -- identity, covenant, attestation, action log, verification, and enforcement -- that together form a complete proof-of-behavior stack operating independently of any particular model architecture or deployment environment. Nobulex provides two tiers of behavioral guarantee: *impossible violations*, achieved through covenant middleware executing within Trusted Execution Environments (TEEs), and *costly violations*, achieved through stake-based economic enforcement with on-chain slashing. The verification function at the core of the protocol is deterministic, decidable, and efficient: given a covenant specification and an action log, it produces an identical compliance verdict on every execution. This paper presents the formal specification of each primitive, the security model governing both tiers of guarantee, the economic design of the staking and slashing mechanism, and the composability framework that enables trust topologies to emerge across multi-agent systems without central coordination.
 
 ## 1. Introduction and Problem Statement
 
@@ -251,14 +251,14 @@ The Nobulex protocol occupies a novel position in the landscape of trust infrast
 | Property | Bitcoin | Ethereum | Nobulex |
 |---|---|---|---|
 | Object of trust | Monetary transfers | Contract execution | Agent behavior |
-| Trust mechanism | Proof of Work | Proof of Stake | Proof of Compliance |
+| Trust mechanism | Proof of Work | Proof of Stake | Proof of Behavior |
 | What is verified | Transaction validity | State transitions | Behavioral commitments |
 | Verification target | UTXO graph | EVM state | Action logs vs. covenants |
 | Guarantee type | Trustless money | Trustless agreements | Trustless agents |
 | Primary primitive | Transaction | Smart contract | Covenant |
 | Enforcement model | Consensus rejection | Gas + revert | TEE + slashing |
 
-Bitcoin established that monetary value could be transferred without a trusted intermediary. Ethereum established that arbitrary agreements could be executed without a trusted intermediary. Nobulex establishes that agent behavior can be verified without a trusted intermediary. Each protocol addresses a distinct layer of the trust stack, and all three are complementary: Nobulex uses Ethereum's smart contract infrastructure for its on-chain enforcement layer while providing a behavioral accountability primitive that neither Bitcoin nor Ethereum addresses.
+Bitcoin established that monetary value could be transferred without a trusted intermediary. Ethereum established that arbitrary agreements could be executed without a trusted intermediary. Nobulex establishes that agent behavior can be verified without a trusted intermediary. Each protocol addresses a distinct layer of the trust stack, and all three are complementary: Nobulex uses Ethereum's smart contract infrastructure for its on-chain enforcement layer while providing a proof-of-behavior protocol that neither Bitcoin nor Ethereum addresses.
 
 ## 10. Implementation Status
 
@@ -296,7 +296,7 @@ Research on multi-agent trust and reputation systems [14] informs the composabil
 
 ## 12. Conclusion
 
-The Nobulex protocol provides the missing accountability primitive for the emerging agent economy. By separating behavioral specification from model internals, it makes trust between autonomous agents computable, composable, and enforceable. The six primitives -- identity, covenant, attestation, action log, verification, and enforcement -- constitute a complete accountability stack that operates independently of model architecture, deployment platform, or organizational boundary.
+The Nobulex protocol provides the missing proof-of-behavior protocol for the emerging agent economy. By separating behavioral specification from model internals, it makes trust between autonomous agents computable, composable, and enforceable. The six primitives -- identity, covenant, attestation, action log, verification, and enforcement -- constitute a complete proof-of-behavior stack that operates independently of model architecture, deployment platform, or organizational boundary.
 
 The two-tier guarantee model provides both physical impossibility (covenant middleware within TEEs prevents forbidden actions from executing) and economic disincentive (stake-based slashing makes violations costly relative to their potential benefit). The composability framework enables trust topologies to emerge across multi-agent systems without central coordination, creating a self-organizing infrastructure for behavioral accountability.
 

@@ -304,7 +304,7 @@
 <span class="token-key">import</span> { parseSource } <span class="token-key">from</span> <span class="token-str">'@nobulex/covenant-lang'</span>;
 <span class="token-key">import</span> { EnforcementMiddleware } <span class="token-key">from</span> <span class="token-str">'@nobulex/middleware'</span>;
 
-<span class="token-cmt">// 3 lines to add compliance-ready audit trails</span>
+<span class="token-cmt">// 3 lines to add proof-of-behavior enforcement</span>
 <span class="token-key">const</span> agent = <span class="token-key">await</span> createDID();
 <span class="token-key">const</span> spec = parseSource(<span class="token-str">`covenant MyAgent { permit read; forbid write; }`</span>);
 <span class="token-key">const</span> mw = <span class="token-key">new</span> EnforcementMiddleware({ agentDid: agent.did, spec });</code></pre>

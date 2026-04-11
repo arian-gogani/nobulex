@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/quickstart",
   "version": "0.2.1",
-  "description": "Zero-config entry point wrapping identity, covenant-lang, and middleware into a single protect() function.",
+  "description": "Quick start for Nobulex proof-of-behavior protocol",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

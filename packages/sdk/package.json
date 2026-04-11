@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/sdk",
   "version": "0.2.2",
-  "description": "TypeScript SDK for embedding Nobulex into agent frameworks and applications",
+  "description": "Nobulex SDK \u2014 the proof-of-behavior protocol for autonomous AI agents",
   "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

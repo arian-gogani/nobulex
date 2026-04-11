@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/verification",
   "version": "0.2.1",
-  "description": "Post-hoc verification: verify(covenant, actionLog) → violations. Deterministic with Merkle proofs.",
+  "description": "Deterministic proof-of-behavior verification for AI agent action logs",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,19 +12,34 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
-  "engines": { "node": ">=18" },
-  "publishConfig": { "access": "public" },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/arian-gogani/nobulex.git",
     "directory": "packages/verification"
   },
   "homepage": "https://nobulex.com",
-  "bugs": { "url": "https://github.com/arian-gogani/nobulex/issues" },
+  "bugs": {
+    "url": "https://github.com/arian-gogani/nobulex/issues"
+  },
   "author": "Nobulex Labs, Inc.",
-  "keywords": ["nobulex", "covenant", "verification", "merkle-proof"],
+  "keywords": [
+    "nobulex",
+    "covenant",
+    "verification",
+    "merkle-proof"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
     "typecheck": "tsc --noEmit",

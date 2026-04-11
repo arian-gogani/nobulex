@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/identity",
   "version": "0.2.1",
-  "description": "Identity and DID management for the Nobulex covenant framework",
+  "description": "W3C DID agent identity with Ed25519 keys for the Nobulex proof-of-behavior protocol",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

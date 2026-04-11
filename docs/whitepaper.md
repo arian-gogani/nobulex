@@ -1,4 +1,4 @@
-# Nobulex: A Cryptographic Accountability Protocol for Autonomous AI Agents
+# Nobulex: The Proof-of-Behavior Protocol for Autonomous AI Agents
 
 **Version 1.0 -- February 2026**
 

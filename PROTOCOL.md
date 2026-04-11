@@ -1,4 +1,4 @@
-# Nobulex Protocol Specification
+# Nobulex Proof-of-Behavior Protocol Specification
 
 **Version 0.1.0 — Draft**
 

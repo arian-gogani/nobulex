@@ -46,5 +46,6 @@
     "nobulex",
     "covenant",
     "ai-accountability"
-  ]
+  ],
+  "description": "Nobulex CLI \u2014 proof-of-behavior verification and management"
 }

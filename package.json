@@ -2,7 +2,7 @@
   "name": "nobulex",
   "private": true,
   "version": "0.1.0",
-  "description": "Open cryptographic protocol (MIT) \u2014 the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation.",
+  "description": "The proof-of-behavior protocol for autonomous AI agents. Define rules. Enforce at runtime. Prove compliance with cryptography.",
   "workspaces": [
     "packages/types",
     "packages/crypto",

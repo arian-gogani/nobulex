@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/action-log",
   "version": "0.2.1",
-  "description": "Hash-chained tamper-evident action log with SHA-256 integrity verification",
+  "description": "SHA-256 hash-chained tamper-evident action log for proof-of-behavior",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -12,19 +12,35 @@
       "default": "./dist/index.js"
     }
   },
-  "files": ["dist", "README.md", "LICENSE"],
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
   "sideEffects": false,
-  "engines": { "node": ">=18" },
-  "publishConfig": { "access": "public" },
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
   "repository": {
     "type": "git",
     "url": "https://github.com/arian-gogani/nobulex.git",
     "directory": "packages/action-log"
   },
   "homepage": "https://nobulex.com",
-  "bugs": { "url": "https://github.com/arian-gogani/nobulex/issues" },
+  "bugs": {
+    "url": "https://github.com/arian-gogani/nobulex/issues"
+  },
   "author": "Nobulex Labs, Inc.",
-  "keywords": ["nobulex", "covenant", "action-log", "hash-chain", "tamper-evident"],
+  "keywords": [
+    "nobulex",
+    "covenant",
+    "action-log",
+    "hash-chain",
+    "tamper-evident"
+  ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
     "typecheck": "tsc --noEmit",

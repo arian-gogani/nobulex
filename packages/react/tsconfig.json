@@ -4,13 +4,10 @@
     "rootDir": "src",
     "outDir": "dist",
     "composite": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
   },
   "include": ["src"],
-  "references": [
-    { "path": "../types" },
-    { "path": "../sdk" },
-    { "path": "../store" },
-    { "path": "../core" }
-  ]
+  "exclude": ["src/**/*.test.ts"]
 }

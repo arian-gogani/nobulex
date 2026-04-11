@@ -11,7 +11,7 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsc --project tsconfig.json",
+    "build": "tsup",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "prepublishOnly": "npm run build"

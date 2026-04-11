@@ -25,33 +25,6 @@ describe('API Surface Tests', () => {
     expect(exports).toContain('fromHex');
   });
 
-  it.skip('crypto exact snapshot', async () => {
-    const mod = await import('@nobulex/crypto');
-    const exports = Object.keys(mod).sort();
-    expect(exports).toEqual([
-      'KeyManager',
-      'base64urlDecode',
-      'base64urlEncode',
-      'canonicalizeJson',
-      'constantTimeEqual',
-      'fromHex',
-      'generateId',
-      'generateKeyPair',
-      'generateProof',
-      'generateNonce',
-      'keyPairFromPrivateKey',
-      'keyPairFromPrivateKeyHex',
-      'sha256',
-      'sha256Object',
-      'sha256String',
-      'sign',
-      'signString',
-      'timestamp',
-      'toHex',
-      'verify',
-    ].sort());
-  });
-
   // ─── @nobulex/ccl ─────────────────────────────────────────────────────────────
 
   it('@nobulex/ccl exports', async () => {
@@ -83,38 +56,6 @@ describe('API Surface Tests', () => {
     const exports = Object.keys(mod).sort();
     expect(exports).toContain('buildCovenant');
     expect(exports).toContain('verifyCovenant');
-  });
-
-  it.skip('core exact snapshot', async () => {
-    const mod = await import('@nobulex/core');
-    const exports = Object.keys(mod).sort();
-    expect(exports).toEqual([
-      'CovenantBuildError',
-      'CovenantVerificationError',
-      'DocumentMigrator',
-      'MAX_CHAIN_DEPTH',
-      'MAX_CONSTRAINTS',
-      'MAX_DOCUMENT_SIZE',
-      'MemoryChainResolver',
-      'PROTOCOL_VERSION',
-      'buildCovenant',
-      'canonicalForm',
-      'computeEffectiveConstraints',
-      'computeId',
-      'countersignCovenant',
-      'defaultMigrator',
-      'deserializeCovenant',
-      'resignCovenant',
-      'resolveChain',
-      'serializeCovenant',
-      'validateChainNarrowing',
-      'validateChainSchema',
-      'validateConstraintsSchema',
-      'validateDocumentSchema',
-      'validatePartySchema',
-      'verifyCovenant',
-      'verifyCounterparty',
-    ].sort());
   });
 
   // ─── @nobulex/store ───────────────────────────────────────────────────────────
@@ -264,117 +205,6 @@ describe('API Surface Tests', () => {
     expect(exports).toContain('generateProof');
     expect(exports).toContain('verifyCounterparty');
     expect(exports).toContain('buildCovenant');
-  });
-
-  it.skip('sdk exact snapshot', async () => {
-    const mod = await import('@nobulex/sdk');
-    const exports = Object.keys(mod).sort();
-    expect(exports).toEqual([
-      'CCLSyntaxError',
-      'CCLValidationError',
-      'CovenantAgent',
-      'CovenantBuildError',
-      'CovenantVerificationError',
-      'DEFAULT_EVOLUTION_POLICY',
-      'KeyManager',
-      'MAX_CHAIN_DEPTH',
-      'MAX_CONSTRAINTS',
-      'MAX_DOCUMENT_SIZE',
-      'MemoryChainResolver',
-      'MiddlewarePipeline',
-      'NoopCounter',
-      'NoopHistogram',
-      'NoopMeter',
-      'NoopSpan',
-      'NoopTracer',
-      'PROTOCOL_VERSION',
-      'QuickCovenant',
-      'SpanStatusCode',
-      'NobulexAccessDeniedError',
-      'NobulexCallbackHandler',
-      'NobulexClient',
-      'NobulexMetrics',
-      'authMiddleware',
-      'base64urlDecode',
-      'base64urlEncode',
-      'buildCovenant',
-      'cachingMiddleware',
-      'canonicalForm',
-      'canonicalizeJson',
-      'cclConformance',
-      'checkRateLimit',
-      'computeCapabilityManifestHash',
-      'computeCarryForward',
-      'computeEffectiveConstraints',
-      'computeId',
-      'computeIdentityHash',
-      'constantTimeEqual',
-      'countersignCovenant',
-      'covenantConformance',
-      'createChainGuard',
-      'createCovenantRouter',
-      'createIdentity_core',
-      'createTelemetry',
-      'createToolGuard',
-      'createWellKnownHandler',
-      'cryptoConformance',
-      'deserializeCovenant',
-      'deserializeIdentity',
-      'evaluateCCL',
-      'evaluateCondition',
-      'evolveIdentity_core',
-      'executeWithRetry',
-      'fromHex',
-      'generateId',
-      'generateKeyPair',
-      'generateProof',
-      'generateNonce',
-      'getLineage',
-      'interopConformance',
-      'keyPairFromPrivateKey',
-      'keyPairFromPrivateKeyHex',
-      'kovaGatewayMiddleware',
-      'loggingMiddleware',
-      'matchAction',
-      'matchResource',
-      'mergeCCL',
-      'metricsMiddleware',
-      'parseCCL',
-      'parseTokens',
-      'protect',
-      'rateLimitMiddleware',
-      'resignCovenant',
-      'resolveChain_core',
-      'retryMiddleware',
-      'runConformanceSuite',
-      'serializeCCL',
-      'serializeCovenant',
-      'serializeIdentity',
-      'sha256',
-      'sha256Object',
-      'sha256String',
-      'shareAncestor',
-      'sign',
-      'signString',
-      'specificity',
-      'nobulexGuardHandler',
-      'nobulexMiddleware',
-      'telemetryMiddleware',
-      'timestamp',
-      'timingMiddleware',
-      'toHex',
-      'tokenize',
-      'validateCCL',
-      'validateChainNarrowing',
-      'validateNarrowing',
-      'validationMiddleware',
-      'verify',
-      'verifyCovenant_core',
-      'verifyIdentity',
-      'withNobulex',
-      'withNobulexTool',
-      'withNobulexTools',
-    ].sort());
   });
 
   // ─── Cross-package consistency checks ───────────────────────────────────────

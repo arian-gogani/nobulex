@@ -562,7 +562,7 @@ export class NobulexServer {
         denies: doc.denies.length,
         obligations: doc.obligations.length,
         limits: doc.limits.length,
-        details: doc.statements.map((s) => {
+        details: doc.statements.map((s: { effect: string; action: string; conditions: unknown[] }) => {
           if (s.type === 'limit') {
             return {
               type: s.type,

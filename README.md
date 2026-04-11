@@ -72,6 +72,34 @@ console.log(result.compliant);    // true
 console.log(result.violations);   // []
 ```
 
+## Cross-Agent Verification Handshake
+
+Before two agents transact, they verify each other's proof-of-behavior. **No proof, no transaction.**
+
+```typescript
+import { generateProof, verifyCounterparty } from '@nobulex/sdk';
+
+// Agent A generates its proof-of-behavior
+const proof = await generateProof({
+  identity: agentA,
+  covenant: spec,
+  actionLog: middleware.getLog(),
+});
+
+// Agent B verifies Agent A before transacting
+const result = await verifyCounterparty(proof);
+
+if (!result.trusted) {
+  console.log('Refusing transaction:', result.reason);
+  return; // No proof, no transaction
+}
+
+// Safe to transact — Agent A is verified
+await executeTransaction(proof.agentDid, amount);
+```
+
+The handshake checks six things in order: covenant signature, proof signature, log integrity, compliance, minimum history, and required covenant. If any check fails, the transaction is refused.
+
 ## Why Proof-of-Behavior Matters
 
 | What exists today | What's missing |
@@ -173,6 +201,7 @@ npx vitest run    # 4,237 tests, 80 files, 0 failures
 
 ## Documentation
 
+- **[Proof-of-Behavior Spec](docs/proof-of-behavior-spec.md)** — Formal standard specification (CC-BY-4.0)
 - **[White Paper](docs/whitepaper.md)** — Formal protocol specification
 - **[Getting Started](docs/getting-started.md)** — Developer guide
 - **[NIST RFI Response](docs/nist-rfi.md)** — Formal comments to NIST AI Agent Standards Initiative

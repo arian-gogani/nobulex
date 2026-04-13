@@ -168,6 +168,16 @@ export interface CovenantAttestation {
 
 // ─── 4. Action Log ──────────────────────────────────────────────────────────
 
+/** A reference to an upstream agent's log entry for derivation lineage tracking. */
+export interface SourceRef {
+  /** @description The DID of the upstream agent whose output was used as input. */
+  readonly agentDid: string;
+  /** @description The hash of the specific action log entry that produced the input. */
+  readonly entryHash: string;
+  /** @description Optional governance tags inherited from the source (e.g., "HIPAA", "SOX"). */
+  readonly governanceTags?: readonly string[];
+}
+
 /** A single entry in the hash-chained action log. */
 export interface ActionLogEntry {
   /** @description The zero-based position of this entry in the action log. */
@@ -184,6 +194,8 @@ export interface ActionLogEntry {
   readonly params: Record<string, unknown>;
   /** @description The result of the action: succeeded, failed, or was blocked by enforcement. */
   readonly outcome: 'success' | 'failure' | 'blocked';
+  /** @description References to upstream agent log entries whose outputs informed this action. */
+  readonly sourceRefs?: readonly SourceRef[];
   /** @description The hash of the previous log entry, or null for the first entry in the chain. */
   readonly previousHash: string | null;
   /** @description The SHA-256 hash of this entry, forming the chain link. */

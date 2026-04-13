@@ -29,6 +29,10 @@ export interface ProofOfBehavior {
   readonly actionLog: ActionLog;
   readonly generatedAt: string;
   readonly proofSignature: string;
+  /** @description The intended recipient DID — prevents replay attacks (RFC #1740). */
+  readonly audience?: string;
+  /** @description The task class this proof covers — scoped behavioral trust. */
+  readonly taskClass?: string;
 }
 
 /** Result of verifying another agent's proof-of-behavior. */
@@ -51,6 +55,10 @@ export interface HandshakeOptions {
   readonly minActions?: number;
   readonly maxViolations?: number;
   readonly requiredCovenant?: string;
+  /** @description If set, the proof's audience must match this DID — prevents replay attacks. */
+  readonly expectedAudience?: string;
+  /** @description If set, the proof's taskClass must match — ensures task-scoped trust. */
+  readonly requiredTaskClass?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -64,20 +72,24 @@ export async function generateProof(params: {
   identity: DIDKeyPair;
   covenant: CovenantSpec;
   actionLog: ActionLog;
+  audience?: string;
+  taskClass?: string;
 }): Promise<ProofOfBehavior> {
-  const { identity, covenant, actionLog } = params;
+  const { identity, covenant, actionLog, audience, taskClass } = params;
 
   const covenantHash = sha256Object(covenant) as HashHex;
   const covenantSignature = await signWithDID(covenantHash, identity);
 
   const generatedAt = new Date().toISOString();
 
-  // Sign the full payload
+  // Sign the full payload (includes audience + taskClass to prevent tampering)
   const payloadString = JSON.stringify({
     agentDid: identity.did,
     covenantHash,
     covenantSignature,
     generatedAt,
+    ...(audience ? { audience } : {}),
+    ...(taskClass ? { taskClass } : {}),
   });
   const proofSignature = await signWithDID(payloadString, identity);
 
@@ -90,6 +102,8 @@ export async function generateProof(params: {
     actionLog,
     generatedAt,
     proofSignature,
+    ...(audience ? { audience } : {}),
+    ...(taskClass ? { taskClass } : {}),
   };
 }
 
@@ -107,7 +121,7 @@ export async function verifyCounterparty(
   proof: ProofOfBehavior,
   options: HandshakeOptions = {},
 ): Promise<HandshakeResult> {
-  const { minActions = 0, maxViolations = 0, requiredCovenant } = options;
+  const { minActions = 0, maxViolations = 0, requiredCovenant, expectedAudience, requiredTaskClass } = options;
   const verifiedAt = new Date().toISOString();
   const base = { agentDid: proof.agentDid, covenantName: proof.covenant.name, verifiedAt };
 
@@ -131,6 +145,8 @@ export async function verifyCounterparty(
     covenantHash: proof.covenantHash,
     covenantSignature: proof.covenantSignature,
     generatedAt: proof.generatedAt,
+    ...(proof.audience ? { audience: proof.audience } : {}),
+    ...(proof.taskClass ? { taskClass: proof.taskClass } : {}),
   });
   const proofValid = await verifyWithDID(payloadString, proof.proofSignature, proof.didDocument);
 
@@ -187,6 +203,32 @@ export async function verifyCounterparty(
       compliant: verification.compliant, violationCount: verification.violations.length,
       totalActions: verification.totalActions,
       reason: `Covenant '${proof.covenant.name}' does not match required '${requiredCovenant}'`,
+      verification,
+    };
+  }
+
+  // Step 7: Audience binding (prevents replay attacks — RFC #1740)
+  if (expectedAudience && proof.audience !== expectedAudience) {
+    return {
+      ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
+      compliant: verification.compliant, violationCount: verification.violations.length,
+      totalActions: verification.totalActions,
+      reason: proof.audience
+        ? `Proof audience '${proof.audience}' does not match expected '${expectedAudience}'`
+        : `Proof has no audience claim — expected '${expectedAudience}'`,
+      verification,
+    };
+  }
+
+  // Step 8: Task class scoping (ensures task-specific trust)
+  if (requiredTaskClass && proof.taskClass !== requiredTaskClass) {
+    return {
+      ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
+      compliant: verification.compliant, violationCount: verification.violations.length,
+      totalActions: verification.totalActions,
+      reason: proof.taskClass
+        ? `Proof task class '${proof.taskClass}' does not match required '${requiredTaskClass}'`
+        : `Proof has no task class — expected '${requiredTaskClass}'`,
       verification,
     };
   }

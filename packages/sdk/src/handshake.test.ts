@@ -116,4 +116,61 @@ describe('Cross-Agent Verification Handshake', () => {
     expect(resultBA.trusted).toBe(true);
     expect(resultBA.agentDid).toBe(buyer.identity.did);
   });
+
+  it('rejects proof with wrong audience (replay attack prevention)', async () => {
+    const { identity, spec, log } = await agentWithHistory(
+      'covenant Safe { permit read; forbid delete; }',
+      [{ action: 'read', params: {} }],
+    );
+    const proof = await generateProof({
+      identity, covenant: spec, actionLog: log,
+      audience: 'did:nobulex:agentB',
+    });
+    expect(proof.audience).toBe('did:nobulex:agentB');
+
+    // Correct audience — trusted
+    const ok = await verifyCounterparty(proof, { expectedAudience: 'did:nobulex:agentB' });
+    expect(ok.trusted).toBe(true);
+
+    // Wrong audience — rejected
+    const bad = await verifyCounterparty(proof, { expectedAudience: 'did:nobulex:agentC' });
+    expect(bad.trusted).toBe(false);
+    expect(bad.reason).toContain('audience');
+  });
+
+  it('rejects proof with wrong task class', async () => {
+    const { identity, spec, log } = await agentWithHistory(
+      'covenant Safe { permit read; forbid delete; }',
+      [{ action: 'read', params: {} }],
+    );
+    const proof = await generateProof({
+      identity, covenant: spec, actionLog: log,
+      taskClass: 'data_read',
+    });
+    expect(proof.taskClass).toBe('data_read');
+
+    // Correct task class — trusted
+    const ok = await verifyCounterparty(proof, { requiredTaskClass: 'data_read' });
+    expect(ok.trusted).toBe(true);
+
+    // Wrong task class — rejected
+    const bad = await verifyCounterparty(proof, { requiredTaskClass: 'payment_execution' });
+    expect(bad.trusted).toBe(false);
+    expect(bad.reason).toContain('task class');
+  });
+
+  it('rejects proof with no audience when audience is required', async () => {
+    const { identity, spec, log } = await agentWithHistory(
+      'covenant Safe { permit read; forbid delete; }',
+      [{ action: 'read', params: {} }],
+    );
+    // Generate proof WITHOUT audience
+    const proof = await generateProof({ identity, covenant: spec, actionLog: log });
+    expect(proof.audience).toBeUndefined();
+
+    // Require audience — rejected
+    const result = await verifyCounterparty(proof, { expectedAudience: 'did:nobulex:agentB' });
+    expect(result.trusted).toBe(false);
+    expect(result.reason).toContain('no audience claim');
+  });
 });

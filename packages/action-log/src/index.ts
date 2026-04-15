@@ -253,6 +253,70 @@ export function verifyIntegrity(log: ActionLog): {
 
 
 /**
+ * Verify only the last `lastN` entries of an action log.
+ *
+ * Trades coverage for speed: the prefix of the chain is trusted, but the join
+ * at the window boundary (entry `len-N`'s previousHash against `len-N-1`'s hash)
+ * is still validated so a tamper that crosses the boundary is caught.
+ *
+ * @param actionLog - The action log to verify.
+ * @param lastN - How many trailing entries to re-hash. `<= 0` is a no-op; values
+ *   `>= entries.length` delegate to {@link verifyIntegrity}.
+ * @returns `valid` (true when no errors), `checked` (number of entries actually
+ *   re-hashed), and `errors` describing any integrity violations.
+ */
+export function verifyPartial(
+  actionLog: ActionLog,
+  lastN: number,
+): { valid: boolean; checked: number; errors: string[] } {
+  if (lastN <= 0) {
+    return { valid: true, checked: 0, errors: [] };
+  }
+
+  const entries = actionLog.entries;
+  const len = entries.length;
+
+  if (lastN >= len) {
+    // Trusted prefix is empty — fall back to the full integrity check.
+    const full = verifyIntegrity(actionLog);
+    return { valid: full.valid, checked: len, errors: full.errors };
+  }
+
+  const errors: string[] = [];
+  const start = len - lastN;
+
+  for (let i = start; i < len; i++) {
+    const entry = entries[i]!;
+
+    // Recompute the entry's hash
+    const expectedHash = computeEntryHash({
+      index: entry.index,
+      timestamp: entry.timestamp,
+      agentDid: entry.agentDid,
+      action: entry.action,
+      resource: entry.resource,
+      params: entry.params,
+      outcome: entry.outcome,
+      previousHash: entry.previousHash,
+    });
+    if (entry.hash !== expectedHash) {
+      errors.push(`Entry ${i}: hash mismatch (expected ${expectedHash}, got ${entry.hash})`);
+    }
+
+    // Chain linkage — including the boundary join into the trusted prefix.
+    if (i > 0) {
+      const prev = entries[i - 1]!;
+      if (entry.previousHash !== prev.hash) {
+        errors.push(`Entry ${i}: previousHash doesn't match entry ${i - 1} hash`);
+      }
+    }
+  }
+
+  return { valid: errors.length === 0, checked: lastN, errors };
+}
+
+
+/**
  * Build a Merkle tree from action log entry hashes.
  * Returns the root hash and the internal tree structure.
  *

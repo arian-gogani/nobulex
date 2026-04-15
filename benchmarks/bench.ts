@@ -21,7 +21,7 @@ import { parseSource, compile } from '@nobulex/covenant-lang';
 import type { EnforcementFn } from '@nobulex/covenant-lang';
 import { createDID } from '@nobulex/identity';
 import { EnforcementMiddleware } from '@nobulex/middleware';
-import { ActionLogBuilder, verifyIntegrity } from '@nobulex/action-log';
+import { ActionLogBuilder, verifyIntegrity, verifyPartial } from '@nobulex/action-log';
 import type { ActionLog } from '@nobulex/core-types';
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 import type { ProofOfBehavior } from '@nobulex/sdk';
@@ -251,10 +251,10 @@ async function main(): Promise<void> {
     );
   }
 
-  // --- chain build / verify 1000 ---
+  // --- chain build / verify ---
   // Pre-build a pool of entry templates once to avoid timing middleware overhead
   // on the BUILD bench. For build, we time ActionLogBuilder.append only (the chain work).
-  const builderTemplates = Array.from({ length: 1000 }, (_, i) => ({
+  const buildTemplates = Array.from({ length: 1000 }, (_, i) => ({
     action: i % 2 === 0 ? 'read' : 'transfer',
     resource: `/res/${i}`,
     params: { idx: i, amount: (i * 7) % 400 },
@@ -264,22 +264,35 @@ async function main(): Promise<void> {
   rows.push(
     await runBench('chain-build-1000', 50, false, () => {
       const b = new ActionLogBuilder('did:nobulex:bench');
-      for (const tpl of builderTemplates) b.append(tpl);
+      for (const tpl of buildTemplates) b.append(tpl);
       // force log materialization
       b.toLog();
     }),
   );
 
-  // Build one valid 1000-entry log to verify repeatedly
+  // 10K-entry log used for both full and partial verification, so the two
+  // numbers are directly comparable.
+  const verifyTemplates = Array.from({ length: 10_000 }, (_, i) => ({
+    action: i % 2 === 0 ? 'read' : 'transfer',
+    resource: `/res/${i}`,
+    params: { idx: i, amount: (i * 7) % 400 },
+    outcome: 'success' as const,
+  }));
   const verifyLog = (() => {
     const b = new ActionLogBuilder('did:nobulex:bench');
-    for (const tpl of builderTemplates) b.append(tpl);
+    for (const tpl of verifyTemplates) b.append(tpl);
     return b.toLog();
   })();
   rows.push(
-    await runBench('chain-verify-1000', 100, false, () => {
+    await runBench('chain-verify-1000', 50, false, () => {
       const r = verifyIntegrity(verifyLog);
       if (!r.valid) throw new Error('chain-verify-1000: integrity failed unexpectedly');
+    }),
+  );
+  rows.push(
+    await runBench('chain-verify-partial-100', 50, false, () => {
+      const r = verifyPartial(verifyLog, 100);
+      if (!r.valid) throw new Error('chain-verify-partial-100: integrity failed unexpectedly');
     }),
   );
 

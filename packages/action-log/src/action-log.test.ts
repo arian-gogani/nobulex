@@ -3,6 +3,7 @@ import {
   ActionLogBuilder,
   computeEntryHash,
   verifyIntegrity,
+  verifyPartial,
   buildMerkleTree,
   generateMerkleProof,
   verifyMerkleProof,
@@ -221,6 +222,101 @@ describe('@nobulex/action-log', () => {
       const tampered = { ...log, rootHash: 'wrong' };
       const result = verifyIntegrity(tampered);
       expect(result.valid).toBe(false);
+    });
+  });
+
+  // ── Partial verification ──────────────────────────────────────────────────
+
+  describe('verifyPartial', () => {
+    function makeChain(n: number) {
+      const builder = new ActionLogBuilder('did:nobulex:agent-1');
+      for (let i = 0; i < n; i++) {
+        builder.append({
+          action: i % 2 === 0 ? 'read' : 'write',
+          resource: `/res/${i}`,
+          params: { i },
+          outcome: 'success',
+          timestamp: new Date(2025, 0, 1, 0, 0, i).toISOString(),
+        });
+      }
+      return builder.toLog();
+    }
+
+    it('lastN = 0 is a no-op', () => {
+      const log = makeChain(10);
+      const result = verifyPartial(log, 0);
+      expect(result.valid).toBe(true);
+      expect(result.checked).toBe(0);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('lastN > entries.length delegates to verifyIntegrity', () => {
+      const log = makeChain(10);
+      const result = verifyPartial(log, 999);
+      expect(result.valid).toBe(true);
+      expect(result.checked).toBe(log.entries.length);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('valid 100-entry chain, lastN = 5', () => {
+      const log = makeChain(100);
+      const result = verifyPartial(log, 5);
+      expect(result.valid).toBe(true);
+      expect(result.checked).toBe(5);
+      expect(result.errors).toHaveLength(0);
+    });
+
+    it('catches tamper just before the window via boundary previousHash join', () => {
+      const log = makeChain(100);
+      const N = 5;
+      const boundaryIdx = log.entries.length - N - 1; // entry just before window
+      const tampered = {
+        ...log,
+        entries: log.entries.map((e, i) =>
+          i === boundaryIdx ? { ...e, hash: 'tampered-boundary-hash' } : e,
+        ),
+      };
+      const result = verifyPartial(tampered, N);
+      expect(result.valid).toBe(false);
+      const firstWindowIdx = log.entries.length - N;
+      expect(
+        result.errors.some(
+          (e) => e.includes(`Entry ${firstWindowIdx}`) && e.includes('previousHash'),
+        ),
+      ).toBe(true);
+    });
+
+    it('catches tamper inside the verified window', () => {
+      const log = makeChain(100);
+      const N = 5;
+      const targetIdx = log.entries.length - 3; // inside [len-N, len-1]
+      const tampered = {
+        ...log,
+        entries: log.entries.map((e, i) =>
+          i === targetIdx ? { ...e, action: 'rewritten' } : e,
+        ),
+      };
+      const result = verifyPartial(tampered, N);
+      expect(result.valid).toBe(false);
+      expect(result.errors.some((e) => e.includes(`Entry ${targetIdx}`))).toBe(true);
+    });
+
+    it('does NOT catch tamper deeper than one entry before the window', () => {
+      // Intentional: partial verification trusts the prefix beyond the
+      // boundary join. This test documents that limitation — a tamper more
+      // than one entry before the window is invisible to verifyPartial.
+      const log = makeChain(100);
+      const N = 5;
+      const deepIdx = log.entries.length - N - 5; // well before the boundary
+      const tampered = {
+        ...log,
+        entries: log.entries.map((e, i) =>
+          i === deepIdx ? { ...e, action: 'silently-rewritten' } : e,
+        ),
+      };
+      const result = verifyPartial(tampered, N);
+      expect(result.valid).toBe(true);
+      expect(result.errors).toHaveLength(0);
     });
   });
 

@@ -33,7 +33,8 @@ npx tsx benchmarks/bench.ts
 | covenant-eval-50  | compiled enforcement fn against a 50-rule generated covenant |
 | handshake-N       | full `verifyCounterparty()` over a proof of N action-log entries |
 | chain-build-1000  | `ActionLogBuilder.append` x 1000 + `toLog()`                |
-| chain-verify-1000 | `verifyIntegrity()` over a 1000-entry action log            |
+| chain-verify-1000 | `verifyIntegrity()` over a 10 000-entry action log          |
+| chain-verify-partial-100 | `verifyPartial(log, 100)` over the same 10 000-entry log |
 
 ### Methodology
 
@@ -72,33 +73,40 @@ npx tsx benchmarks/bench.ts
 | handshake-1000    | 50    |
 | handshake-10000   | 50    |
 | chain-build-1000  | 50    |
-| chain-verify-1000 | 100   |
+| chain-verify-1000 | 50    |
+| chain-verify-partial-100 | 50 |
 
 ## Latest run
 
-Date: 2026-04-15T06:23:20.519Z
+Date: 2026-04-14T07:56:46.964Z
 Host: Apple M4 Max · arm64 · Node v25.1.0
 
 ```
 Node v25.1.0 · arm64 · Apple M4 Max
 
-name              | iters | mean(ms) | p50(ms) | p95(ms) | p99(ms) | ops/sec
-------------------+-------+----------+---------+---------+---------+--------
-keygen            |  1000 |   0.1544 |  0.1509 |  0.1749 |  0.2086 |    6.5k
-sha256-1kb        |  5000 |  0.00687 | 0.00671 | 0.00725 | 0.00917 |  145.6k
-sha256-10kb       |  3000 |   0.0531 |  0.0525 |  0.0565 |  0.0586 |   18.8k
-sha256-100kb      |  1000 |   0.5170 |  0.5117 |  0.5534 |  0.5561 |    1.9k
-sign              |  1000 |   0.3626 |  0.3189 |  0.4397 |  0.5925 |    2.8k
-verify            |  1000 |    1.230 |   1.203 |   1.310 |   1.783 |     813
-covenant-eval-3   | 10000 |  0.00094 | 0.00088 | 0.00108 | 0.00175 |   1.06M
-covenant-eval-50  | 10000 |  0.00134 | 0.00137 | 0.00146 | 0.00162 |  747.2k
-handshake-10      |   200 |    2.651 |   2.629 |   2.811 |   2.967 |       —
-handshake-100     |   100 |    3.671 |   3.668 |   3.790 |   3.855 |       —
-handshake-1000    |    50 |    14.43 |   14.43 |   14.63 |   14.67 |       —
-handshake-10000   |    50 |   123.66 |  123.20 |  125.80 |  141.53 |       —
-chain-build-1000  |    50 |    5.377 |   5.356 |   5.557 |   5.689 |       —
-chain-verify-1000 |   100 |    4.249 |   4.226 |   4.401 |   4.599 |       —
+name                     | iters | mean(ms) | p50(ms) | p95(ms) | p99(ms) | ops/sec
+-------------------------+-------+----------+---------+---------+---------+--------
+keygen                   |  1000 |   0.1174 |  0.1148 |  0.1363 |  0.1687 |    8.5k
+sha256-1kb               |  5000 |  0.00487 | 0.00479 | 0.00521 | 0.00687 |  205.3k
+sha256-10kb              |  3000 |   0.0372 |  0.0375 |  0.0410 |  0.0469 |   26.9k
+sha256-100kb             |  1000 |   0.3586 |  0.3562 |  0.3874 |  0.4030 |    2.8k
+sign                     |  1000 |   0.2129 |  0.2117 |  0.2420 |  0.2553 |    4.7k
+verify                   |  1000 |   0.8128 |  0.8085 |  0.8565 |  0.9064 |    1.2k
+covenant-eval-3          | 10000 |  0.00067 | 0.00062 | 0.00079 | 0.00133 |   1.50M
+covenant-eval-50         | 10000 |  0.00095 | 0.00100 | 0.00108 | 0.00129 |   1.06M
+handshake-10             |   200 |    1.841 |   1.829 |   1.949 |   2.028 |       —
+handshake-100            |   100 |    2.590 |   2.584 |   2.695 |   2.984 |       —
+handshake-1000           |    50 |    10.23 |   10.14 |   11.26 |   11.69 |       —
+handshake-10000          |    50 |    86.39 |   86.56 |   88.23 |   93.56 |       —
+chain-build-1000         |    50 |    3.738 |   3.732 |   3.925 |   3.988 |       —
+chain-verify-1000        |    50 |    31.38 |   30.94 |   32.26 |   53.92 |       —
+chain-verify-partial-100 |    50 |   0.2897 |  0.2870 |  0.3138 |  0.3287 |       —
 ```
+
+Note: `chain-verify-1000` now runs over a 10 000-entry log (same chain as
+`chain-verify-partial-100`), so the two rows are directly comparable —
+partial verification of the last 100 entries is roughly 100× faster than
+re-hashing the full 10 000 entry chain.
 
 ### Reading the numbers
 

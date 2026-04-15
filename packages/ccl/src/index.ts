@@ -1,9 +1,6 @@
-/**
- * @nobulex/ccl -- Constraint Commitment Language parser and evaluator.
- *
- * Provides a complete pipeline for working with CCL: lexing, parsing,
- * evaluation, merging, narrowing validation, and serialization.
- *
+/*
+ * CCL — Constraint Commitment Language.
+ * Lexer → parser → evaluator → merge → narrowing validation.
  */
 
 export type {

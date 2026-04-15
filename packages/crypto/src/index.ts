@@ -60,18 +60,7 @@ export async function sign(message: Uint8Array, privateKey: PrivateKey): Promise
   return ed.signAsync(message, privateKey);
 }
 
-/**
- * Sign a UTF-8 string. Convenience wrapper around {@link sign}.
- *
- * @param message - The UTF-8 string to sign.
- * @param privateKey - The 32-byte Ed25519 private key.
- * @returns A 64-byte Ed25519 signature.
- *
- * @example
- * ```typescript
- * const sig = await signString('covenant payload', kp.privateKey);
- * ```
- */
+// sign a string (encodes to UTF-8 first)
 export async function signString(message: string, privateKey: PrivateKey): Promise<Signature> {
   return sign(new TextEncoder().encode(message), privateKey);
 }

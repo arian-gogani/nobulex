@@ -24,27 +24,8 @@ export interface VerifyOptions {
 }
 
 /**
- * Verify a covenant against an action log.
- *
- * This is a deterministic function: given the same covenant and log,
- * it always produces the same result. It checks each action log entry
- * against the covenant's forbid rules and requirements.
- *
- * @param spec - The covenant specification to verify against.
- * @param log - The action log to verify.
- * @param options - Optional configuration.
- * @returns A VerificationResult with all violations found.
- *
- * @example
- * ```typescript
- * const result = verify(spec, log);
- * if (!result.compliant) {
- *   console.log(`${result.violations.length} violations found`);
- *   for (const v of result.violations) {
- *     console.log(`Entry ${v.entryIndex}: ${v.reason}`);
- *   }
- * }
- * ```
+ * The main verification function. Deterministic —
+ * same covenant + same log = same result, always.
  */
 export function verify(
   spec: CovenantSpec,
@@ -53,7 +34,8 @@ export function verify(
 ): VerificationResult {
   const { includeMerkleProofs = true, verifyLogIntegrity: checkIntegrity = true } = options;
 
-  // Step 1: Optionally verify log integrity
+  // check the hash chain first — no point verifying compliance
+  // if the log itself has been tampered with
   if (checkIntegrity) {
     const integrity = verifyIntegrity(log);
     if (!integrity.valid) {

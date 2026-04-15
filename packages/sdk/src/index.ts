@@ -1,9 +1,6 @@
-/**
- * @nobulex/sdk -- High-level TypeScript SDK that unifies the entire Nobulex protocol.
- *
- * Provides a single entry point (NobulexClient) for key management, covenant
- * lifecycle, identity management, chain operations, and CCL utilities.
- *
+/*
+ * High-level SDK — single entry point for the whole protocol.
+ * NobulexClient wraps key management, covenants, identity, and chain ops.
  */
 
 // imports from underlying packages

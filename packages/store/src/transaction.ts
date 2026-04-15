@@ -9,6 +9,7 @@
  */
 
 import type { CovenantDocument } from '@nobulex/core';
+import { StorageError, NobulexErrorCode } from '@nobulex/types';
 
 import type { CovenantStore } from './types.js';
 
@@ -145,10 +146,10 @@ class TransactionImpl implements Transaction {
 
   private ensureActive(): void {
     if (this.committed) {
-      throw new Error('Transaction has already been committed');
+      throw new StorageError('Transaction has already been committed', NobulexErrorCode.STORAGE_OPERATION_FAILED);
     }
     if (this.rolledBack) {
-      throw new Error('Transaction has already been rolled back');
+      throw new StorageError('Transaction has already been rolled back', NobulexErrorCode.STORAGE_OPERATION_FAILED);
     }
   }
 }

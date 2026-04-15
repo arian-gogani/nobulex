@@ -63,7 +63,7 @@ import {
 } from '@nobulex/identity';
 import type { AgentIdentity } from '@nobulex/identity';
 
-import { ValidationError } from '@nobulex/types';
+import { ValidationError, CryptoError } from '@nobulex/types';
 
 import type {
   NobulexClientOptions,
@@ -403,7 +403,7 @@ export class NobulexClient {
    */
   async initializeKeyRotation(): Promise<void> {
     if (!this._keyManager) {
-      throw new Error(
+      throw new CryptoError(
         'Key rotation is not configured. Pass { keyRotation } in the client options.',
       );
     }
@@ -423,7 +423,7 @@ export class NobulexClient {
    */
   async rotateKeyIfNeeded(): Promise<boolean> {
     if (!this._keyManager) {
-      throw new Error(
+      throw new CryptoError(
         'Key rotation is not configured. Pass { keyRotation } in the client options.',
       );
     }
@@ -499,7 +499,7 @@ export class NobulexClient {
 
     const privateKey = options.privateKey ?? this._keyPair?.privateKey;
     if (!privateKey) {
-      throw new Error(
+      throw new CryptoError(
         'No private key available. Call client.generateKeyPair() first, or pass { privateKey } in the options.',
       );
     }
@@ -608,7 +608,7 @@ export class NobulexClient {
 
     const kp = signerKeyPair ?? this._keyPair;
     if (!kp) {
-      throw new Error(
+      throw new CryptoError(
         'No key pair available. Call client.generateKeyPair() first, or pass a KeyPair in the method options.',
       );
     }
@@ -713,7 +713,7 @@ export class NobulexClient {
     }
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
     if (!operatorKeyPair) {
-      throw new Error(
+      throw new CryptoError(
         'No key pair available. Call client.generateKeyPair() first, or pass a KeyPair in the method options.',
       );
     }
@@ -768,7 +768,7 @@ export class NobulexClient {
     }
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
     if (!operatorKeyPair) {
-      throw new Error(
+      throw new CryptoError(
         'No key pair available. Call client.generateKeyPair() first, or pass a KeyPair in the method options.',
       );
     }

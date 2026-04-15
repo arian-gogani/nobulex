@@ -12,6 +12,7 @@ import {
   sha256String,
   timestamp,
 } from '@nobulex/crypto';
+import { ValidationError } from '@nobulex/types';
 
 /**
  * Options for configuring the authentication middleware.
@@ -90,7 +91,7 @@ export function createAuthMiddleware(options: MCPAuthOptions): {
     const apiKey = headers['x-api-key'];
     if (apiKey) {
       if (!apiKeys.has(apiKey)) {
-        throw new Error('Invalid API key');
+        throw new ValidationError('Invalid API key', 'x-api-key');
       }
 
       const clientId = `apikey:${sha256String(apiKey).slice(0, 16)}`;
@@ -110,7 +111,7 @@ export function createAuthMiddleware(options: MCPAuthOptions): {
 
     if (publicKeyHex && signatureHex && payload) {
       if (!trustedKeys.has(publicKeyHex)) {
-        throw new Error('Untrusted public key');
+        throw new ValidationError('Untrusted public key', 'x-public-key');
       }
 
       // Signature verification is async, but we do a synchronous check
@@ -143,7 +144,7 @@ export function createAuthMiddleware(options: MCPAuthOptions): {
     }
 
     // Authentication is required but no valid credentials provided
-    throw new Error('Authentication required');
+    throw new ValidationError('Authentication required', 'headers');
   }
 
   /**

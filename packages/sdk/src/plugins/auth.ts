@@ -6,6 +6,7 @@
  */
 
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
+import { ValidationError } from '@nobulex/types';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -56,8 +57,9 @@ export function authMiddleware(options: AuthOptions): NobulexMiddleware {
   const { apiKey, keyPair, requiredFor } = options;
 
   if (!apiKey && !keyPair) {
-    throw new Error(
+    throw new ValidationError(
       'authMiddleware requires at least one of apiKey or keyPair',
+      'options',
     );
   }
 
@@ -108,8 +110,9 @@ export function authMiddleware(options: AuthOptions): NobulexMiddleware {
       }
 
       // No valid authentication found
-      throw new Error(
+      throw new ValidationError(
         `Authentication required for operation "${ctx.operation}"`,
+        'auth',
       );
     },
   };

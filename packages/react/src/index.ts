@@ -18,6 +18,7 @@ import type {
 } from '@nobulex/sdk';
 import { NobulexClient } from '@nobulex/sdk';
 import type { EvaluationContext } from '@nobulex/ccl';
+import { ValidationError } from '@nobulex/types';
 
 // ---------------------------------------------------------------------------
 // Observable<T>
@@ -207,7 +208,7 @@ export class CovenantState {
   ): Promise<EvaluationResult> {
     const doc = this.document.get();
     if (!doc) {
-      throw new Error('No document to evaluate. Call create() first.');
+      throw new ValidationError('No document to evaluate. Call create() first.', 'document');
     }
 
     return this._client.evaluateAction(doc, action, resource, context);

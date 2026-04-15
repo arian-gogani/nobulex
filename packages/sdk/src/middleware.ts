@@ -6,7 +6,7 @@
  * logging, metrics, validation, caching, and rate limiting.
  */
 
-import { Logger, defaultLogger } from '@nobulex/types';
+import { Logger, defaultLogger, ValidationError } from '@nobulex/types';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -221,7 +221,7 @@ export function validationMiddleware(): NobulexMiddleware {
       if ('constraints' in args) {
         const constraints = args.constraints;
         if (typeof constraints !== 'string' || constraints.trim().length === 0) {
-          throw new Error('Validation failed: constraints must be a non-empty string');
+          throw new ValidationError('Validation failed: constraints must be a non-empty string', 'constraints');
         }
       }
 
@@ -230,8 +230,9 @@ export function validationMiddleware(): NobulexMiddleware {
         const key = args.privateKey;
         if (key instanceof Uint8Array) {
           if (key.length !== 32 && key.length !== 64) {
-            throw new Error(
+            throw new ValidationError(
               `Validation failed: privateKey must be 32 or 64 bytes, got ${key.length}`,
+              'privateKey',
             );
           }
         }

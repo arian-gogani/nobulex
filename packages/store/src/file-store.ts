@@ -18,6 +18,7 @@ import * as fs from 'fs/promises';
 import * as path from 'path';
 
 import type { CovenantDocument } from '@nobulex/core';
+import { ValidationError } from '@nobulex/types';
 
 import type {
   CovenantStore,
@@ -215,10 +216,10 @@ export class FileStore implements CovenantStore {
 
   async put(doc: CovenantDocument): Promise<void> {
     if (doc == null) {
-      throw new Error('put(): document is required');
+      throw new ValidationError('put(): document is required', 'document');
     }
     if (!doc.id || (typeof doc.id === 'string' && doc.id.trim().length === 0)) {
-      throw new Error('put(): document.id is required and must be a non-empty string');
+      throw new ValidationError('put(): document.id is required and must be a non-empty string', 'document.id');
     }
     await this.ensureDir();
     await this.atomicWrite(this.docPath(doc.id), JSON.stringify(doc, null, 2));

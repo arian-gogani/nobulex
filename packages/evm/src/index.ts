@@ -8,6 +8,7 @@
 
 import { keccak_256 } from '@noble/hashes/sha3';
 import { sha256String } from '@nobulex/crypto';
+import { ValidationError } from '@nobulex/types';
 
 
 /** Maximum value for a uint256. */
@@ -73,10 +74,10 @@ function keccak256Hex(hexData: string): string {
  */
 export function encodeUint256(value: bigint): string {
   if (value < 0n) {
-    throw new Error('uint256 cannot be negative');
+    throw new ValidationError('uint256 cannot be negative', 'value');
   }
   if (value > MAX_UINT256) {
-    throw new Error('uint256 overflow');
+    throw new ValidationError('uint256 overflow', 'value');
   }
   return value.toString(16).padStart(64, '0');
 }
@@ -89,10 +90,10 @@ export function encodeUint256(value: bigint): string {
 export function encodeBytes32(hex: string): string {
   const clean = strip0x(hex);
   if (clean.length > 64) {
-    throw new Error('bytes32 value exceeds 32 bytes');
+    throw new ValidationError('bytes32 value exceeds 32 bytes', 'hex');
   }
   if (clean.length > 0 && !/^[0-9a-fA-F]+$/.test(clean)) {
-    throw new Error('Invalid hex string');
+    throw new ValidationError('Invalid hex string', 'hex');
   }
   return clean.toLowerCase().padEnd(64, '0');
 }
@@ -105,10 +106,10 @@ export function encodeBytes32(hex: string): string {
 export function encodeAddress(address: string): string {
   const clean = strip0x(address).toLowerCase();
   if (clean.length !== 40) {
-    throw new Error('Invalid address: must be 20 bytes (40 hex chars)');
+    throw new ValidationError('Invalid address: must be 20 bytes (40 hex chars)', 'address');
   }
   if (!/^[0-9a-f]{40}$/.test(clean)) {
-    throw new Error('Invalid address: not valid hex');
+    throw new ValidationError('Invalid address: not valid hex', 'address');
   }
   return clean.padStart(64, '0');
 }
@@ -147,7 +148,7 @@ export function encodeString(value: string): string {
 export function decodeUint256(hex: string): bigint {
   const clean = strip0x(hex);
   if (clean.length !== 64) {
-    throw new Error('Expected 64-character hex string for uint256');
+    throw new ValidationError('Expected 64-character hex string for uint256', 'hex');
   }
   return BigInt('0x' + clean);
 }
@@ -160,7 +161,7 @@ export function decodeUint256(hex: string): bigint {
 export function decodeBytes32(hex: string): string {
   const clean = strip0x(hex);
   if (clean.length !== 64) {
-    throw new Error('Expected 64-character hex string for bytes32');
+    throw new ValidationError('Expected 64-character hex string for bytes32', 'hex');
   }
   return clean.toLowerCase();
 }
@@ -174,7 +175,7 @@ export function decodeBytes32(hex: string): string {
 export function decodeAddress(hex: string): string {
   const clean = strip0x(hex);
   if (clean.length !== 64) {
-    throw new Error('Expected 64-character hex string for address');
+    throw new ValidationError('Expected 64-character hex string for address', 'hex');
   }
   const addrHex = clean.slice(24);
   return checksumAddress('0x' + addrHex);
@@ -191,7 +192,7 @@ export function decodeAddress(hex: string): string {
 export function encodeFunctionCall(selector: string, ...params: string[]): string {
   const cleanSelector = strip0x(selector);
   if (cleanSelector.length !== 8) {
-    throw new Error('Function selector must be 4 bytes (8 hex chars)');
+    throw new ValidationError('Function selector must be 4 bytes (8 hex chars)', 'selector');
   }
   return '0x' + cleanSelector + params.join('');
 }
@@ -261,12 +262,13 @@ export function parseAnchorFromCalldata(calldata: string): CovenantAnchor {
   const data = strip0x(calldata);
   // 8 chars selector + 5 × 64 chars params = 328 chars minimum
   if (data.length < 328) {
-    throw new Error('Calldata too short for anchor function');
+    throw new ValidationError('Calldata too short for anchor function', 'calldata');
   }
   const selector = data.slice(0, 8);
   if (selector !== ANCHOR_SELECTOR) {
-    throw new Error(
+    throw new ValidationError(
       `Invalid function selector: expected ${ANCHOR_SELECTOR}, got ${selector}`,
+      'calldata',
     );
   }
 
@@ -393,7 +395,7 @@ export function isValidAddress(address: string): boolean {
  */
 export function checksumAddress(address: string): string {
   if (!isValidAddress(address)) {
-    throw new Error('Invalid EVM address');
+    throw new ValidationError('Invalid EVM address', 'address');
   }
   const lower = address.slice(2).toLowerCase();
   const hash = keccak256String(lower);
@@ -419,10 +421,10 @@ export function checksumAddress(address: string): string {
 export function covenantIdToBytes32(id: string): string {
   const clean = strip0x(id);
   if (clean.length !== 64) {
-    throw new Error('Covenant ID must be 32 bytes (64 hex chars)');
+    throw new ValidationError('Covenant ID must be 32 bytes (64 hex chars)', 'id');
   }
   if (!/^[0-9a-fA-F]{64}$/.test(clean)) {
-    throw new Error('Invalid hex string');
+    throw new ValidationError('Invalid hex string', 'id');
   }
   return '0x' + clean.toLowerCase();
 }
@@ -490,7 +492,7 @@ export class EVMClient {
 
   constructor(provider: EVMProvider, registryAddress: string) {
     if (!isValidAddress(registryAddress)) {
-      throw new Error('Invalid registry address');
+      throw new ValidationError('Invalid registry address', 'registryAddress');
     }
     this.provider = provider;
     this.registryAddress = registryAddress;

@@ -20,7 +20,6 @@ import type { KeyPair, PrivateKey, Signature, HashHex, Base64Url, Nonce } from '
  * Private key is 32 bytes from the platform CSPRNG,
  * public key derived deterministically.
  */
- */
 export async function generateKeyPair(): Promise<KeyPair> {
   const privateKey = randomBytes(32);
   // watch out: mutation happens here

@@ -1,3 +1,8 @@
+// Separate package so teams that already run OpenTelemetry can drop this
+// in without dragging the rest of the SDK along, and teams that don't use
+// otel don't pay for it. The otel API surface is also large enough that
+// version-pinning it independently of the core saves us some pain.
+
 /**
  * @nobulex/otel -- Production-grade OpenTelemetry SpanProcessor for evidence generation.
  *

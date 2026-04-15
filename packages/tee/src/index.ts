@@ -1,3 +1,8 @@
+// Kept as its own package on purpose. TEE attestation pulls in vendor
+// quote formats and verification logic that only matter if you're
+// actually running in an enclave — most consumers never need this, so
+// we don't want it sitting in the core SDK dependency tree.
+
 /**
  * @nobulex/tee — Trusted Execution Environment attestation for Nobulex agents.
  *

@@ -1,3 +1,7 @@
+// Lives in its own package so frontend consumers can pull in only the
+// react bindings without the node-flavored SDK entry points (crypto
+// polyfills, express adapter, etc.) ending up in their browser bundle.
+
 /**
  * @nobulex/react -- Reactive primitives for building Nobulex-powered UIs.
  *

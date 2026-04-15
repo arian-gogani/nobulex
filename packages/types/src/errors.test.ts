@@ -32,7 +32,7 @@ describe('NobulexError', () => {
     const e = new NobulexError(
       NobulexErrorCode.NO_PRIVATE_KEY,
       'key missing',
-      'generate one with generateKeyPair()'
+      { hint: 'generate one with generateKeyPair()' }
     );
     expect(e.code).toBe(NobulexErrorCode.NO_PRIVATE_KEY);
     expect(e.message).toBe('key missing');
@@ -71,7 +71,7 @@ describe('formatError', () => {
     const e = new NobulexError(
       NobulexErrorCode.NO_PRIVATE_KEY,
       'missing key',
-      'run generateKeyPair()'
+      { hint: 'run generateKeyPair()' }
     );
     const formatted = formatError(e);
     expect(formatted).toContain('run generateKeyPair()');

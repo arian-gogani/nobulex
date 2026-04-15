@@ -48,8 +48,8 @@ export enum NobulexErrorCode {
 export class NobulexError extends Error {
   readonly code: NobulexErrorCode;
 
-  constructor(message: string, code: NobulexErrorCode) {
-    super(message);
+  constructor(message: string, code: NobulexErrorCode, options?: { cause?: unknown }) {
+    super(message, options?.cause !== undefined ? { cause: options.cause } : undefined);
     this.name = 'NobulexError';
     this.code = code;
   }

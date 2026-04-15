@@ -1,0 +1,22 @@
+{
+  "name": "@nobulex/attestation",
+  "version": "0.1.0",
+  "description": "Behavioral attestation records — aggregate proof chains into portable agent reputation",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@nobulex/core-types": "workspace:*",
+    "@nobulex/crypto": "workspace:*",
+    "@nobulex/verification": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.0",
+    "vitest": "^2.0.0"
+  },
+  "license": "MIT"
+}

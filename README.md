@@ -1,5 +1,7 @@
 # Nobulex
 
+[![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions)
+
 **AI agents can't prove they followed their own rules. Nobulex fixes that.**
 
 ```bash
@@ -39,7 +41,6 @@ Three primitives. That's the whole protocol:
 2. **Enforce** — check every action *before* it runs
 3. **Prove** — tamper-evident hash chain anyone can verify
 
-![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)
 ![Tests](https://img.shields.io/badge/tests-3%2C665%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)

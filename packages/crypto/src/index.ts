@@ -55,6 +55,11 @@ export async function generateKeyPair(): Promise<KeyPair> {
  * ```
  */
 export async function keyPairFromPrivateKey(privateKey: Uint8Array): Promise<KeyPair> {
+  if (privateKey.length !== 32) {
+    throw new Error(
+      `Ed25519 private key must be exactly 32 bytes, got ${privateKey.length}`
+    );
+  }
   const publicKey = await ed.getPublicKeyAsync(privateKey);
   return {
     privateKey: new Uint8Array(privateKey),
@@ -96,6 +101,9 @@ export async function keyPairFromPrivateKeyHex(hex: string): Promise<KeyPair> {
  * ```
  */
 export async function sign(message: Uint8Array, privateKey: PrivateKey): Promise<Signature> {
+  if (privateKey.length !== 32) {
+    throw new Error(`sign: private key must be 32 bytes, got ${privateKey.length}`);
+  }
   return ed.signAsync(message, privateKey);
 }
 

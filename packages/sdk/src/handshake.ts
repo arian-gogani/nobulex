@@ -1,10 +1,8 @@
-/**
- * @nobulex/sdk — Cross-Agent Verification Handshake
+/*
+ * Cross-agent verification handshake.
  *
- * The proof-of-behavior handshake: before two agents transact,
- * they verify each other's behavioral proof. No proof, no transaction.
- *
- * @packageDocumentation
+ * Before two agents transact, they verify each other's proof-of-behavior.
+ * No proof, no transaction. This is the core trust mechanism.
  */
 
 import { sha256Object } from '@nobulex/crypto';
@@ -16,10 +14,9 @@ import { verifyIntegrity } from '@nobulex/action-log';
 import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/core-types';
 
 // ---------------------------------------------------------------------------
-// Types
-// ---------------------------------------------------------------------------
+// --- types ---
 
-/** A portable proof-of-behavior that an agent presents to counterparties. */
+// what an agent presents to prove its behavior
 export interface ProofOfBehavior {
   readonly agentDid: string;
   readonly didDocument: DIDDocument;
@@ -29,13 +26,13 @@ export interface ProofOfBehavior {
   readonly actionLog: ActionLog;
   readonly generatedAt: string;
   readonly proofSignature: string;
-  /** @description The intended recipient DID — prevents replay attacks (RFC #1740). */
+  // prevents replay attacks — added after Rohit's feedback on RFC #1740
   readonly audience?: string;
-  /** @description The task class this proof covers — scoped behavioral trust. */
+  // scoped trust: "i trust you for payments but not for admin"
   readonly taskClass?: string;
 }
 
-/** Result of verifying another agent's proof-of-behavior. */
+// what you get back after verifying someone's proof
 export interface HandshakeResult {
   readonly trusted: boolean;
   readonly agentDid: string;
@@ -50,24 +47,17 @@ export interface HandshakeResult {
   readonly verifiedAt: string;
 }
 
-/** Options for the handshake verification. */
 export interface HandshakeOptions {
   readonly minActions?: number;
   readonly maxViolations?: number;
   readonly requiredCovenant?: string;
-  /** @description If set, the proof's audience must match this DID — prevents replay attacks. */
-  readonly expectedAudience?: string;
-  /** @description If set, the proof's taskClass must match — ensures task-scoped trust. */
+  readonly expectedAudience?: string; // must match proof's audience DID
   readonly requiredTaskClass?: string;
 }
 
-// ---------------------------------------------------------------------------
-// Generate proof-of-behavior
-// ---------------------------------------------------------------------------
+// --- generate proof ---
 
-/**
- * Generate a portable proof-of-behavior for this agent.
- */
+/** Build a portable proof that this agent can present to others. */
 export async function generateProof(params: {
   identity: DIDKeyPair;
   covenant: CovenantSpec;
@@ -107,15 +97,15 @@ export async function generateProof(params: {
   };
 }
 
-// ---------------------------------------------------------------------------
-// Verify counterparty's proof-of-behavior
-// ---------------------------------------------------------------------------
+// --- verify counterparty ---
 
-/**
- * Verify a counterparty agent's proof-of-behavior.
+/*
+ * The core trust check. Before you transact with another agent,
+ * call this with their proof. If result.trusted is false, walk away.
  *
- * Before transacting with another agent, call this with their proof.
- * If result.trusted is false, refuse the transaction.
+ * 8 steps: covenant sig, proof sig, log integrity, compliance,
+ * min history, required covenant, audience binding, task class.
+ * Any step fails = untrusted.
  */
 export async function verifyCounterparty(
   proof: ProofOfBehavior,
@@ -125,7 +115,7 @@ export async function verifyCounterparty(
   const verifiedAt = new Date().toISOString();
   const base = { agentDid: proof.agentDid, covenantName: proof.covenant.name, verifiedAt };
 
-  // Step 1: Verify covenant signature
+  // 1. did they actually sign this covenant?
   const covenantHash = sha256Object(proof.covenant) as HashHex;
   const signatureValid = await verifyWithDID(covenantHash, proof.covenantSignature, proof.didDocument);
 
@@ -139,7 +129,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 2: Verify proof signature
+  // 2. proof signature — make sure the whole payload wasn't tampered with
   const payloadString = JSON.stringify({
     agentDid: proof.agentDid,
     covenantHash: proof.covenantHash,
@@ -160,7 +150,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 3: Verify action log integrity
+  // 3. hash chain integrity — if any log entry was modified, this catches it
   const integrity = verifyIntegrity(proof.actionLog);
   if (!integrity.valid) {
     const verification = verifyCovenant(proof.covenant, proof.actionLog);
@@ -172,7 +162,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 4: Verify covenant compliance
+  // 4. compliance — did they actually follow their own rules?
   const verification = verifyCovenant(proof.covenant, proof.actionLog);
 
   if (!verification.compliant && verification.violations.length > maxViolations) {
@@ -185,7 +175,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 5: Minimum action history
+  // 5. do they have enough track record?
   if (verification.totalActions < minActions) {
     return {
       ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
@@ -196,7 +186,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 6: Required covenant
+  // 6. are they running the covenant we require?
   if (requiredCovenant && proof.covenant.name !== requiredCovenant) {
     return {
       ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
@@ -207,7 +197,8 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 7: Audience binding (prevents replay attacks — RFC #1740)
+  // 7. audience binding — is this proof actually meant for me?
+  // without this, someone could replay a proof meant for a different verifier
   if (expectedAudience && proof.audience !== expectedAudience) {
     return {
       ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
@@ -220,7 +211,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // Step 8: Task class scoping (ensures task-specific trust)
+  // 8. task scoping — "i trust you for payments" doesn't mean "i trust you for admin"
   if (requiredTaskClass && proof.taskClass !== requiredTaskClass) {
     return {
       ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
@@ -233,7 +224,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // All checks passed
+  // all 8 checks passed — this agent is legit
   return {
     ...base, trusted: true, signatureValid: true, logIntegrityValid: true,
     compliant: verification.compliant, violationCount: verification.violations.length,

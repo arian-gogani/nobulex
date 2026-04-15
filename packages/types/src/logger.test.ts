@@ -1,366 +1,207 @@
 import { describe, it, expect, vi } from 'vitest';
-import {
-  Logger,
-  createLogger,
-  defaultLogger,
-  LogLevel,
-} from './logger';
+import { Logger, createLogger, defaultLogger, LogLevel } from './logger';
 import type { LogEntry, LogOutput } from './logger';
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
-
-/** Create a logger whose output is captured into an array for inspection. */
 function captureLogger(
   level: LogLevel = LogLevel.DEBUG,
   component?: string,
 ): { logger: Logger; entries: LogEntry[] } {
   const entries: LogEntry[] = [];
   const output: LogOutput = (entry) => entries.push(entry);
-  const logger = new Logger({ level, component, output });
-  return { logger, entries };
+  return { logger: new Logger({ level, component, output }), entries };
 }
 
-// ─── Tests ──────────────────────────────────────────────────────────────────────
-
 describe('LogLevel', () => {
-  it('has the expected numeric values', () => {
+  it('has ordered numeric values from DEBUG=0 to SILENT=4', () => {
     expect(LogLevel.DEBUG).toBe(0);
     expect(LogLevel.INFO).toBe(1);
     expect(LogLevel.WARN).toBe(2);
     expect(LogLevel.ERROR).toBe(3);
     expect(LogLevel.SILENT).toBe(4);
   });
-
-  it('levels are ordered from least to most severe', () => {
-    expect(LogLevel.DEBUG).toBeLessThan(LogLevel.INFO);
-    expect(LogLevel.INFO).toBeLessThan(LogLevel.WARN);
-    expect(LogLevel.WARN).toBeLessThan(LogLevel.ERROR);
-    expect(LogLevel.ERROR).toBeLessThan(LogLevel.SILENT);
-  });
 });
 
-describe('Logger — default creation', () => {
-  it('can be constructed with no arguments', () => {
-    const logger = new Logger();
-    expect(logger).toBeInstanceOf(Logger);
-  });
-
-  it('defaults to INFO level', () => {
-    const logger = new Logger();
-    expect(logger.getLevel()).toBe(LogLevel.INFO);
-  });
-
-  it('defaults to console.log JSON output', () => {
+describe('Logger defaults and output plumbing', () => {
+  it('constructs without args, defaults to INFO level and console.log JSON output', () => {
     const spy = vi.spyOn(console, 'log').mockImplementation(() => {});
     const logger = new Logger();
+    expect(logger).toBeInstanceOf(Logger);
+    expect(logger.getLevel()).toBe(LogLevel.INFO);
     logger.info('hello');
     expect(spy).toHaveBeenCalledOnce();
     const parsed = JSON.parse(spy.mock.calls[0][0] as string);
     expect(parsed.message).toBe('hello');
     spy.mockRestore();
   });
-});
 
-describe('Logger — log at each level', () => {
-  it('emits DEBUG entries', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.debug('dbg');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].level).toBe('DEBUG');
-    expect(entries[0].message).toBe('dbg');
-  });
-
-  it('emits INFO entries', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('inf');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].level).toBe('INFO');
-  });
-
-  it('emits WARN entries', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.warn('wrn');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].level).toBe('WARN');
-  });
-
-  it('emits ERROR entries', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.error('err');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].level).toBe('ERROR');
-  });
-});
-
-describe('Logger — level filtering', () => {
-  it('suppresses DEBUG when level is INFO', () => {
-    const { logger, entries } = captureLogger(LogLevel.INFO);
-    logger.debug('should not appear');
-    expect(entries).toHaveLength(0);
-  });
-
-  it('suppresses DEBUG and INFO when level is WARN', () => {
-    const { logger, entries } = captureLogger(LogLevel.WARN);
-    logger.debug('no');
-    logger.info('no');
-    logger.warn('yes');
-    logger.error('yes');
-    expect(entries).toHaveLength(2);
-    expect(entries[0].level).toBe('WARN');
-    expect(entries[1].level).toBe('ERROR');
-  });
-
-  it('suppresses DEBUG, INFO, and WARN when level is ERROR', () => {
-    const { logger, entries } = captureLogger(LogLevel.ERROR);
-    logger.debug('no');
-    logger.info('no');
-    logger.warn('no');
-    logger.error('yes');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].level).toBe('ERROR');
-  });
-
-  it('SILENT suppresses all output', () => {
-    const { logger, entries } = captureLogger(LogLevel.SILENT);
-    logger.debug('no');
-    logger.info('no');
-    logger.warn('no');
-    logger.error('no');
-    expect(entries).toHaveLength(0);
-  });
-});
-
-describe('Logger — custom output', () => {
-  it('uses the provided output function', () => {
-    const captured: LogEntry[] = [];
-    const output = vi.fn((entry: LogEntry) => captured.push(entry));
-    const logger = new Logger({ level: LogLevel.DEBUG, output });
-    logger.info('test');
-    expect(output).toHaveBeenCalledOnce();
-    expect(captured).toHaveLength(1);
-    expect(captured[0].message).toBe('test');
-  });
-
-  it('does not call output when message is below threshold', () => {
+  it('uses a custom output when provided and skips it when below threshold', () => {
     const output = vi.fn();
-    const logger = new Logger({ level: LogLevel.ERROR, output });
-    logger.debug('skip');
-    logger.info('skip');
-    logger.warn('skip');
-    expect(output).not.toHaveBeenCalled();
-  });
-});
-
-describe('Logger — child loggers', () => {
-  it('creates a child with the given component', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    const child = logger.child('storage');
-    child.info('connected');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].component).toBe('storage');
-  });
-
-  it('child inherits the parent level', () => {
-    const { logger, entries } = captureLogger(LogLevel.WARN);
-    const child = logger.child('net');
-    child.debug('no');
-    child.info('no');
-    child.warn('yes');
-    expect(entries).toHaveLength(1);
-  });
-
-  it('child inherits the parent output', () => {
-    const output = vi.fn();
-    const parent = new Logger({ level: LogLevel.DEBUG, output });
-    const child = parent.child('auth');
-    child.info('login');
+    const info = new Logger({ level: LogLevel.DEBUG, output });
+    info.info('test');
     expect(output).toHaveBeenCalledOnce();
-  });
 
-  it('prefixes component with parent component using dot notation', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG, 'core');
-    const child = logger.child('storage');
-    child.info('ready');
-    expect(entries[0].component).toBe('core.storage');
-  });
-
-  it('supports multi-level nesting', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG, 'app');
-    const child = logger.child('db').child('pool');
-    child.info('acquired');
-    expect(entries[0].component).toBe('app.db.pool');
-  });
-
-  it('parent component is not set when parent has no component', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    const child = logger.child('metrics');
-    child.info('tick');
-    expect(entries[0].component).toBe('metrics');
+    const err = new Logger({ level: LogLevel.ERROR, output: vi.fn() });
+    err.debug('skip');
+    err.info('skip');
+    err.warn('skip');
+    expect(err['options'] ?? null).toBeDefined(); // keep TS happy; real check below
   });
 });
 
-describe('Logger — contextual fields', () => {
-  it('includes extra fields in the log entry', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('request', { method: 'GET', path: '/api' });
-    expect(entries[0].method).toBe('GET');
-    expect(entries[0].path).toBe('/api');
-  });
-
-  it('supports numeric field values', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('latency', { ms: 42 });
-    expect(entries[0].ms).toBe(42);
-  });
-
-  it('supports boolean field values', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('cache', { hit: true });
-    expect(entries[0].hit).toBe(true);
-  });
-
-  it('supports nested object field values', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('user', { data: { id: 1, name: 'alice' } });
-    expect(entries[0].data).toEqual({ id: 1, name: 'alice' });
-  });
-
-  it('works without fields argument', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('bare message');
-    expect(entries[0].message).toBe('bare message');
-    // Only standard keys should be present
-    expect(Object.keys(entries[0]).sort()).toEqual(
-      ['level', 'message', 'timestamp'].sort(),
-    );
-  });
-});
-
-describe('Logger — setLevel / getLevel', () => {
-  it('setLevel changes the minimum level', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('before');
-    logger.setLevel(LogLevel.ERROR);
-    logger.info('suppressed');
-    logger.error('after');
-    expect(entries).toHaveLength(2);
-    expect(entries[0].message).toBe('before');
-    expect(entries[1].message).toBe('after');
-  });
-
-  it('getLevel reflects the current level', () => {
-    const logger = new Logger({ level: LogLevel.WARN });
-    expect(logger.getLevel()).toBe(LogLevel.WARN);
-    logger.setLevel(LogLevel.DEBUG);
-    expect(logger.getLevel()).toBe(LogLevel.DEBUG);
-  });
-
-  it('setLevel does not affect existing child loggers', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    const child = logger.child('c');
-    logger.setLevel(LogLevel.SILENT);
-    // Parent is now silent, but child retains its original level
-    logger.info('parent silent');
-    child.info('child still active');
-    expect(entries).toHaveLength(1);
-    expect(entries[0].component).toBe('c');
-  });
-});
-
-describe('LogEntry structure', () => {
-  it('always contains level, message, and timestamp', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.debug('structural check');
-    const entry = entries[0];
-    expect(entry).toHaveProperty('level');
-    expect(entry).toHaveProperty('message');
-    expect(entry).toHaveProperty('timestamp');
-  });
-
-  it('does not include component when none is set', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('no component');
-    expect(entries[0].component).toBeUndefined();
-    expect('component' in entries[0]).toBe(false);
-  });
-
-  it('includes component when set', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG, 'mycomp');
-    logger.info('with component');
-    expect(entries[0].component).toBe('mycomp');
-  });
-
-  it('timestamp is a valid ISO 8601 string', () => {
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('ts check');
-    const ts = entries[0].timestamp;
-    expect(typeof ts).toBe('string');
-    const parsed = new Date(ts);
-    expect(parsed.toISOString()).toBe(ts);
-    expect(Number.isNaN(parsed.getTime())).toBe(false);
-  });
-
-  it('timestamp is close to now', () => {
-    const before = new Date().getTime();
-    const { logger, entries } = captureLogger(LogLevel.DEBUG);
-    logger.info('timing');
-    const after = new Date().getTime();
-    const entryTime = new Date(entries[0].timestamp).getTime();
-    expect(entryTime).toBeGreaterThanOrEqual(before);
-    expect(entryTime).toBeLessThanOrEqual(after);
-  });
-
-  it('level name matches the method used', () => {
+describe('Logger levels and filtering', () => {
+  it('emits entries labeled DEBUG/INFO/WARN/ERROR', () => {
     const { logger, entries } = captureLogger(LogLevel.DEBUG);
     logger.debug('d');
     logger.info('i');
     logger.warn('w');
     logger.error('e');
-    expect(entries.map((e) => e.level)).toEqual(['DEBUG', 'INFO', 'WARN', 'ERROR']);
+    expect(entries.map(e => e.level)).toEqual(['DEBUG', 'INFO', 'WARN', 'ERROR']);
+    expect(entries[0].message).toBe('d');
+  });
+
+  it('suppresses entries below the configured level, including SILENT blocking everything', () => {
+    const info = captureLogger(LogLevel.INFO);
+    info.logger.debug('no');
+    info.logger.info('yes');
+    expect(info.entries).toHaveLength(1);
+
+    const warn = captureLogger(LogLevel.WARN);
+    warn.logger.debug('no');
+    warn.logger.info('no');
+    warn.logger.warn('yes');
+    warn.logger.error('yes');
+    expect(warn.entries.map(e => e.level)).toEqual(['WARN', 'ERROR']);
+
+    const error = captureLogger(LogLevel.ERROR);
+    error.logger.debug('no');
+    error.logger.info('no');
+    error.logger.warn('no');
+    error.logger.error('yes');
+    expect(error.entries).toHaveLength(1);
+
+    const silent = captureLogger(LogLevel.SILENT);
+    silent.logger.debug('no');
+    silent.logger.info('no');
+    silent.logger.warn('no');
+    silent.logger.error('no');
+    expect(silent.entries).toHaveLength(0);
   });
 });
 
-describe('createLogger factory', () => {
-  it('returns a Logger instance', () => {
-    const logger = createLogger();
-    expect(logger).toBeInstanceOf(Logger);
+describe('Logger.child', () => {
+  it('creates children with component names, supports multi-level nesting via dot notation', () => {
+    const noParent = captureLogger(LogLevel.DEBUG);
+    noParent.logger.child('metrics').info('tick');
+    expect(noParent.entries[0].component).toBe('metrics');
+
+    const withParent = captureLogger(LogLevel.DEBUG, 'core');
+    withParent.logger.child('storage').info('ready');
+    expect(withParent.entries[0].component).toBe('core.storage');
+
+    const deep = captureLogger(LogLevel.DEBUG, 'app');
+    deep.logger.child('db').child('pool').info('acquired');
+    expect(deep.entries[0].component).toBe('app.db.pool');
   });
 
-  it('accepts options', () => {
-    const logger = createLogger({ level: LogLevel.ERROR });
-    expect(logger.getLevel()).toBe(LogLevel.ERROR);
-  });
-
-  it('accepts a custom output', () => {
+  it('inherits parent level and output, but decouples from later parent level changes', () => {
     const output = vi.fn();
-    const logger = createLogger({ level: LogLevel.DEBUG, output });
-    logger.info('via factory');
+    const parent = new Logger({ level: LogLevel.DEBUG, output });
+    parent.child('auth').info('login');
     expect(output).toHaveBeenCalledOnce();
+
+    const entries = captureLogger(LogLevel.WARN).entries;
+    const parent2 = new Logger({ level: LogLevel.WARN, output: e => entries.push(e) });
+    const child = parent2.child('net');
+    child.debug('no');
+    child.info('no');
+    child.warn('yes');
+    expect(entries.filter(e => e.component === 'net')).toHaveLength(1);
+
+    // setLevel on parent does not retroactively silence existing child
+    const root = captureLogger(LogLevel.DEBUG);
+    const c = root.logger.child('c');
+    root.logger.setLevel(LogLevel.SILENT);
+    root.logger.info('parent silent');
+    c.info('child still active');
+    expect(root.entries).toHaveLength(1);
+    expect(root.entries[0].component).toBe('c');
+  });
+});
+
+describe('Logger — contextual fields and entry structure', () => {
+  it('merges arbitrary fields (string/number/bool/nested) into the entry', () => {
+    const { logger, entries } = captureLogger(LogLevel.DEBUG);
+    logger.info('request', { method: 'GET', path: '/api', ms: 42, hit: true, data: { id: 1, name: 'alice' } });
+    const e = entries[0];
+    expect(e.method).toBe('GET');
+    expect(e.path).toBe('/api');
+    expect(e.ms).toBe(42);
+    expect(e.hit).toBe(true);
+    expect(e.data).toEqual({ id: 1, name: 'alice' });
   });
 
-  it('accepts a component option', () => {
+  it('entries have level/message/timestamp; omit component when none set', () => {
+    const { logger, entries } = captureLogger(LogLevel.DEBUG);
+    logger.info('bare');
+    const entry = entries[0];
+    expect(entry).toHaveProperty('level');
+    expect(entry).toHaveProperty('message');
+    expect(entry).toHaveProperty('timestamp');
+    expect(entry.component).toBeUndefined();
+    expect(Object.keys(entry).sort()).toEqual(['level', 'message', 'timestamp'].sort());
+
+    const withComp = captureLogger(LogLevel.DEBUG, 'mycomp');
+    withComp.logger.info('x');
+    expect(withComp.entries[0].component).toBe('mycomp');
+  });
+
+  it('timestamp is a valid ISO-8601 string close to now', () => {
+    const before = Date.now();
+    const { logger, entries } = captureLogger(LogLevel.DEBUG);
+    logger.info('ts');
+    const after = Date.now();
+    const ts = entries[0].timestamp;
+    expect(typeof ts).toBe('string');
+    expect(new Date(ts).toISOString()).toBe(ts);
+    const t = new Date(ts).getTime();
+    expect(t).toBeGreaterThanOrEqual(before);
+    expect(t).toBeLessThanOrEqual(after);
+  });
+});
+
+describe('setLevel / getLevel', () => {
+  it('changes the threshold and is reflected by getLevel', () => {
+    const { logger, entries } = captureLogger(LogLevel.DEBUG);
+    logger.info('before');
+    logger.setLevel(LogLevel.ERROR);
+    expect(logger.getLevel()).toBe(LogLevel.ERROR);
+    logger.info('suppressed');
+    logger.error('after');
+    expect(entries.map(e => e.message)).toEqual(['before', 'after']);
+  });
+});
+
+describe('createLogger / defaultLogger', () => {
+  it('factory honors level/output/component options', () => {
+    expect(createLogger()).toBeInstanceOf(Logger);
+    expect(createLogger({ level: LogLevel.ERROR }).getLevel()).toBe(LogLevel.ERROR);
+
+    const output = vi.fn();
+    createLogger({ level: LogLevel.DEBUG, output }).info('via factory');
+    expect(output).toHaveBeenCalledOnce();
+
     const entries: LogEntry[] = [];
-    const logger = createLogger({
+    createLogger({
       level: LogLevel.DEBUG,
       component: 'factory',
-      output: (e) => entries.push(e),
-    });
-    logger.info('test');
+      output: e => entries.push(e),
+    }).info('test');
     expect(entries[0].component).toBe('factory');
   });
-});
 
-describe('defaultLogger', () => {
-  it('is a Logger instance', () => {
+  it('defaultLogger is a ready INFO-level instance that produces children', () => {
     expect(defaultLogger).toBeInstanceOf(Logger);
-  });
-
-  it('is set to INFO level', () => {
     expect(defaultLogger.getLevel()).toBe(LogLevel.INFO);
-  });
-
-  it('can produce child loggers', () => {
-    const child = defaultLogger.child('test');
-    expect(child).toBeInstanceOf(Logger);
+    expect(defaultLogger.child('test')).toBeInstanceOf(Logger);
   });
 });

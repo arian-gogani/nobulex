@@ -22,202 +22,97 @@ import {
   verifyEpochChain,
   SparseMerkleTree,
 } from './index';
-import type {
-  MultiProof,
-  AuditPath,
-} from './index';
-
-// ─── Helpers ────────────────────────────────────────────────────────────────
+import type { MultiProof, AuditPath } from './index';
 
 function makeData(n: number): string[] {
   return Array.from({ length: n }, (_, i) => `item-${i}`);
 }
 
-// ─── Domain-separated hashing ───────────────────────────────────────────────
-
 describe('domain-separated hashing', () => {
-  it('should produce different hashes for leaf vs inner with same data', () => {
-    const data = 'test-data';
-    const leafHash = hashLeaf(data);
-    const innerHash = hashInner(data, data);
-    expect(leafHash).not.toBe(innerHash);
-  });
-
-  it('should be deterministic', () => {
+  it('leaf and inner are domain-separated, deterministic, order-sensitive', () => {
+    expect(hashLeaf('x')).not.toBe(hashInner('x', 'x'));
     expect(hashLeaf('hello')).toBe(hashLeaf('hello'));
     expect(hashInner('a', 'b')).toBe(hashInner('a', 'b'));
-  });
-
-  it('should produce different hashes for different inputs', () => {
     expect(hashLeaf('a')).not.toBe(hashLeaf('b'));
     expect(hashInner('a', 'b')).not.toBe(hashInner('b', 'a'));
   });
 
-  it('should produce 64-character hex hashes', () => {
-    const h = hashLeaf('test');
-    expect(h).toHaveLength(64);
-    expect(/^[0-9a-f]{64}$/.test(h)).toBe(true);
-  });
-
-  it('should handle empty string input', () => {
-    const h = hashLeaf('');
-    expect(h).toHaveLength(64);
-  });
-
-  it('should handle unicode input', () => {
-    const h1 = hashLeaf('hello world');
-    const h2 = hashLeaf('hello world');
-    expect(h1).toBe(h2);
-    expect(hashLeaf('\u{1F600}')).toHaveLength(64);
+  it('produces 64-char hex output for any input, including empty and unicode', () => {
+    for (const s of ['', 'test', '\u{1F600}', 'x'.repeat(1000)]) {
+      const h = hashLeaf(s);
+      expect(h).toHaveLength(64);
+      expect(/^[0-9a-f]{64}$/.test(h)).toBe(true);
+    }
   });
 });
-
-// ─── buildMerkleTree ────────────────────────────────────────────────────────
 
 describe('buildMerkleTree', () => {
-  it('should handle empty input', () => {
-    const tree = buildMerkleTree([]);
-    expect(tree.root).toBeTruthy();
-    expect(tree.leafCount).toBe(0);
-    expect(tree.layers).toHaveLength(1);
+  it('handles empty, single, and basic shapes correctly', () => {
+    const empty = buildMerkleTree([]);
+    expect(empty.root).toBeTruthy();
+    expect(empty.leafCount).toBe(0);
+    expect(empty.layers).toHaveLength(1);
+
+    const single = buildMerkleTree(['data1']);
+    expect(single.root).toBe(hashLeaf('data1'));
+    expect(single.leafCount).toBe(1);
+
+    const two = buildMerkleTree(['a', 'b']);
+    expect(two.root).toBe(hashInner(hashLeaf('a'), hashLeaf('b')));
+    expect(two.layers).toHaveLength(2);
   });
 
-  it('should handle single leaf', () => {
-    const tree = buildMerkleTree(['data1']);
-    expect(tree.root).toBe(hashLeaf('data1'));
-    expect(tree.leafCount).toBe(1);
-    expect(tree.leaves).toHaveLength(1);
+  it('duplicates last leaf on odd counts; handles arbitrary sizes', () => {
+    const odd = buildMerkleTree(['a', 'b', 'c']);
+    expect(odd.leafCount).toBe(3);
+    expect(odd.layers).toHaveLength(3);
+    expect(odd.layers[1]).toHaveLength(2);
+
+    const eight = buildMerkleTree(makeData(8));
+    expect(eight.layers.map(l => l.length)).toEqual([8, 4, 2, 1]);
+
+    const thousand = buildMerkleTree(makeData(1000));
+    expect(thousand.leafCount).toBe(1000);
+    expect(thousand.layers[thousand.layers.length - 1]).toHaveLength(1);
+    expect(thousand.layers[thousand.layers.length - 1][0]).toBe(thousand.root);
   });
 
-  it('should handle two leaves', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    expect(tree.root).toBe(hashInner(hashLeaf('a'), hashLeaf('b')));
-    expect(tree.leafCount).toBe(2);
-    expect(tree.layers).toHaveLength(2);
-  });
-
-  it('should handle odd number of leaves by duplicating last', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c']);
-    expect(tree.leafCount).toBe(3);
-    expect(tree.layers).toHaveLength(3);
-    expect(tree.layers[1]).toHaveLength(2);
-  });
-
-  it('should handle power-of-two leaves', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    expect(tree.leafCount).toBe(4);
-    expect(tree.layers).toHaveLength(3);
-  });
-
-  it('should handle 8 leaves perfectly', () => {
-    const tree = buildMerkleTree(makeData(8));
-    expect(tree.leafCount).toBe(8);
-    expect(tree.layers).toHaveLength(4); // 8 -> 4 -> 2 -> 1
-    expect(tree.layers[0]).toHaveLength(8);
-    expect(tree.layers[1]).toHaveLength(4);
-    expect(tree.layers[2]).toHaveLength(2);
-    expect(tree.layers[3]).toHaveLength(1);
-  });
-
-  it('should handle 100 leaves', () => {
-    const tree = buildMerkleTree(makeData(100));
-    expect(tree.leafCount).toBe(100);
-    expect(tree.root).toBeTruthy();
-  });
-
-  it('should handle 1000 leaves', () => {
-    const tree = buildMerkleTree(makeData(1000));
-    expect(tree.leafCount).toBe(1000);
-    expect(tree.root).toBeTruthy();
-    expect(tree.layers[tree.layers.length - 1]).toHaveLength(1);
-  });
-
-  it('should produce different roots for different data', () => {
-    const t1 = buildMerkleTree(['a', 'b']);
-    const t2 = buildMerkleTree(['a', 'c']);
-    expect(t1.root).not.toBe(t2.root);
-  });
-
-  it('root should equal top layer', () => {
-    const tree = buildMerkleTree(makeData(15));
-    const topLayer = tree.layers[tree.layers.length - 1]!;
-    expect(topLayer).toHaveLength(1);
-    expect(topLayer[0]).toBe(tree.root);
+  it('different data produces different roots', () => {
+    expect(buildMerkleTree(['a', 'b']).root).not.toBe(buildMerkleTree(['a', 'c']).root);
   });
 });
-
-// ─── buildMerkleTreeFromHashes ──────────────────────────────────────────────
 
 describe('buildMerkleTreeFromHashes', () => {
-  it('should build from pre-hashed data', () => {
-    const hashes = makeData(4).map(hashLeaf);
-    const tree = buildMerkleTreeFromHashes(hashes);
-    expect(tree.leafCount).toBe(4);
-    expect(tree.leaves).toEqual(hashes);
-  });
-
-  it('should produce same result as buildMerkleTree leaves', () => {
+  it('accepts pre-hashed leaves and round-trips with buildMerkleTree', () => {
     const data = ['a', 'b', 'c', 'd'];
-    const tree1 = buildMerkleTree(data);
-    const tree2 = buildMerkleTreeFromHashes(tree1.leaves as string[]);
-    expect(tree2.root).toBe(tree1.root);
-  });
+    const t1 = buildMerkleTree(data);
+    const t2 = buildMerkleTreeFromHashes(t1.leaves as string[]);
+    expect(t2.root).toBe(t1.root);
+    expect(t2.leaves).toEqual(t1.leaves);
 
-  it('should handle empty input', () => {
-    const tree = buildMerkleTreeFromHashes([]);
-    expect(tree.leafCount).toBe(0);
-    expect(tree.root).toBeTruthy();
-  });
-
-  it('should handle single hash', () => {
+    expect(buildMerkleTreeFromHashes([]).leafCount).toBe(0);
     const h = hashLeaf('single');
-    const tree = buildMerkleTreeFromHashes([h]);
-    expect(tree.root).toBe(h);
-    expect(tree.leafCount).toBe(1);
+    expect(buildMerkleTreeFromHashes([h]).root).toBe(h);
   });
 });
 
-// ─── appendLeaves ───────────────────────────────────────────────────────────
-
 describe('appendLeaves', () => {
-  it('should append new leaves to an existing tree', () => {
+  it('extends existing tree and produces valid proofs for appended leaves', () => {
     const tree = buildMerkleTree(['a', 'b']);
     const extended = appendLeaves(tree, ['c', 'd']);
     expect(extended.leafCount).toBe(4);
-    // First two leaves should match
     expect(extended.leaves[0]).toBe(tree.leaves[0]);
-    expect(extended.leaves[1]).toBe(tree.leaves[1]);
-  });
+    expect(verifyInclusionProof(generateInclusionProof(extended, 2))).toBe(true);
 
-  it('should return same tree when appending empty array', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    const same = appendLeaves(tree, []);
-    expect(same.root).toBe(tree.root);
-  });
-
-  it('should produce valid proofs for appended leaves', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    const extended = appendLeaves(tree, ['c']);
-    const proof = generateInclusionProof(extended, 2);
-    expect(verifyInclusionProof(proof)).toBe(true);
-  });
-
-  it('should handle appending to empty tree', () => {
-    const empty = buildMerkleTree([]);
-    // appendLeaves builds from existing leaves + new hashes
-    // empty tree has no leaves, so this effectively builds from new leaves
-    const extended = appendLeaves(empty, ['a', 'b']);
-    expect(extended.leafCount).toBe(2);
+    expect(appendLeaves(tree, []).root).toBe(tree.root);
+    expect(appendLeaves(buildMerkleTree([]), ['a', 'b']).leafCount).toBe(2);
   });
 });
 
-// ─── Inclusion proofs ───────────────────────────────────────────────────────
-
 describe('inclusion proofs', () => {
-  it('should generate and verify a proof for each leaf', () => {
+  it('generates and verifies a valid proof for every leaf', () => {
     const data = ['a', 'b', 'c', 'd', 'e'];
     const tree = buildMerkleTree(data);
-
     for (let i = 0; i < data.length; i++) {
       const proof = generateInclusionProof(tree, i);
       expect(proof.leafIndex).toBe(i);
@@ -226,894 +121,399 @@ describe('inclusion proofs', () => {
     }
   });
 
-  it('should have O(log N) proof size', () => {
+  it('has O(log N) proof size and works for large trees', () => {
     const tree = buildMerkleTree(makeData(1024));
-    const proof = generateInclusionProof(tree, 500);
-    expect(proof.proof.length).toBeLessThanOrEqual(10);
+    expect(generateInclusionProof(tree, 500).proof.length).toBeLessThanOrEqual(10);
+    for (const idx of [0, 499, 999]) {
+      expect(verifyInclusionProof(generateInclusionProof(buildMerkleTree(makeData(1000)), idx))).toBe(true);
+    }
   });
 
-  it('should reject proof with wrong root', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const proof = generateInclusionProof(tree, 0);
-    const tampered = { ...proof, root: 'wrong-root' };
-    expect(verifyInclusionProof(tampered)).toBe(false);
-  });
-
-  it('should reject proof with wrong leaf hash', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const proof = generateInclusionProof(tree, 0);
-    const tampered = { ...proof, leafHash: 'wrong-leaf' };
-    expect(verifyInclusionProof(tampered)).toBe(false);
-  });
-
-  it('should throw for out-of-range index', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    expect(() => generateInclusionProof(tree, -1)).toThrow('out of range');
-    expect(() => generateInclusionProof(tree, 2)).toThrow('out of range');
-  });
-
-  it('should work for single-leaf tree', () => {
-    const tree = buildMerkleTree(['only']);
-    const proof = generateInclusionProof(tree, 0);
+  it('single-leaf tree has zero-length proof that still verifies', () => {
+    const proof = generateInclusionProof(buildMerkleTree(['only']), 0);
     expect(proof.proof).toHaveLength(0);
     expect(verifyInclusionProof(proof)).toBe(true);
   });
 
-  it('should verify proofs for a large tree (1000 items)', () => {
-    const tree = buildMerkleTree(makeData(1000));
-    // Check first, middle, last
-    for (const idx of [0, 499, 999]) {
-      const proof = generateInclusionProof(tree, idx);
-      expect(verifyInclusionProof(proof)).toBe(true);
-    }
-  });
-
-  it('should reject proof with tampered sibling hash', () => {
+  it('rejects tampered root / leafHash / sibling and out-of-range indices', () => {
     const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
     const proof = generateInclusionProof(tree, 0);
-    const tamperedNodes = [...proof.proof];
-    tamperedNodes[0] = { ...tamperedNodes[0]!, hash: 'tampered' };
-    const tampered = { ...proof, proof: tamperedNodes };
-    expect(verifyInclusionProof(tampered)).toBe(false);
+    expect(verifyInclusionProof({ ...proof, root: 'wrong-root' })).toBe(false);
+    expect(verifyInclusionProof({ ...proof, leafHash: 'wrong-leaf' })).toBe(false);
+    const tamperedSibling = {
+      ...proof,
+      proof: proof.proof.map((n, i) => (i === 0 ? { ...n, hash: 'tampered' } : n)),
+    };
+    expect(verifyInclusionProof(tamperedSibling)).toBe(false);
+
+    expect(() => generateInclusionProof(buildMerkleTree(['a', 'b']), -1)).toThrow('out of range');
+    expect(() => generateInclusionProof(buildMerkleTree(['a', 'b']), 2)).toThrow('out of range');
   });
 });
 
-// ─── Multi-proof support ────────────────────────────────────────────────────
+describe('multi-proof', () => {
+  it('verifies subsets, full set, and single-leaf multi-proofs', () => {
+    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
+    expect(verifyMultiProof(generateMultiProof(tree, [0, 2]))).toBe(true);
+    const all = generateMultiProof(tree, [0, 1, 2, 3]);
+    expect(verifyMultiProof(all)).toBe(true);
+    expect(all.proofHashes).toHaveLength(0);
+    expect(verifyMultiProof(generateMultiProof(tree, [1]))).toBe(true);
+  });
 
-describe('multi-proof support', () => {
-  it('should generate and verify a multi-proof for two leaves', () => {
+  it('is more compact than individual proofs combined', () => {
+    const tree = buildMerkleTree(makeData(16));
+    const indices = [0, 3, 7, 12];
+    const mp = generateMultiProof(tree, indices);
+    const individualTotal = indices
+      .map(i => generateInclusionProof(tree, i).proof.length)
+      .reduce((a, b) => a + b, 0);
+    expect(mp.proofHashes.length).toBeLessThan(individualTotal);
+  });
+
+  it('deduplicates indices, handles odd counts, adjacent leaves, large trees', () => {
+    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
+    const dup = generateMultiProof(tree, [0, 0, 1, 1]);
+    expect(dup.leafIndices).toEqual([0, 1]);
+    expect(verifyMultiProof(dup)).toBe(true);
+
+    expect(verifyMultiProof(generateMultiProof(buildMerkleTree(['a', 'b', 'c', 'd', 'e']), [0, 4]))).toBe(true);
+    expect(
+      verifyMultiProof(generateMultiProof(buildMerkleTree(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']), [2, 3])),
+    ).toBe(true);
+    expect(verifyMultiProof(generateMultiProof(buildMerkleTree(makeData(1000)), [0, 100, 500, 999]))).toBe(true);
+  });
+
+  it('rejects tampered multi-proofs and invalid inputs', () => {
     const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
     const mp = generateMultiProof(tree, [0, 2]);
-    expect(mp.leafIndices).toEqual([0, 2]);
-    expect(verifyMultiProof(mp)).toBe(true);
-  });
-
-  it('should generate and verify a multi-proof for all leaves', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const mp = generateMultiProof(tree, [0, 1, 2, 3]);
-    expect(verifyMultiProof(mp)).toBe(true);
-    // All leaves known, so proof hashes should be minimal
-    expect(mp.proofHashes.length).toBe(0);
-  });
-
-  it('should generate and verify multi-proof for single leaf', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const mp = generateMultiProof(tree, [1]);
-    expect(verifyMultiProof(mp)).toBe(true);
-  });
-
-  it('should be smaller than individual proofs combined', () => {
-    const data = makeData(16);
-    const tree = buildMerkleTree(data);
-    const indices = [0, 3, 7, 12];
-
-    const mp = generateMultiProof(tree, indices);
-
-    // Individual proofs total
-    let totalIndividual = 0;
-    for (const idx of indices) {
-      const ip = generateInclusionProof(tree, idx);
-      totalIndividual += ip.proof.length;
-    }
-
-    // Multi-proof should use fewer proof hashes
-    expect(mp.proofHashes.length).toBeLessThan(totalIndividual);
-  });
-
-  it('should handle duplicate indices by deduplicating', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const mp = generateMultiProof(tree, [0, 0, 1, 1]);
-    expect(mp.leafIndices).toEqual([0, 1]);
-    expect(verifyMultiProof(mp)).toBe(true);
-  });
-
-  it('should throw for empty indices', () => {
-    const tree = buildMerkleTree(['a', 'b']);
+    expect(verifyMultiProof({ ...mp, root: 'bad-root' } as MultiProof)).toBe(false);
+    expect(
+      verifyMultiProof({ ...mp, leafHashes: ['tampered', mp.leafHashes[1]!] } as MultiProof),
+    ).toBe(false);
     expect(() => generateMultiProof(tree, [])).toThrow('At least one');
-  });
-
-  it('should throw for out-of-range index', () => {
-    const tree = buildMerkleTree(['a', 'b']);
     expect(() => generateMultiProof(tree, [5])).toThrow('out of range');
   });
-
-  it('should reject multi-proof with tampered root', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const mp = generateMultiProof(tree, [0, 2]);
-    const tampered: MultiProof = { ...mp, root: 'bad-root' };
-    expect(verifyMultiProof(tampered)).toBe(false);
-  });
-
-  it('should reject multi-proof with tampered leaf hash', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const mp = generateMultiProof(tree, [0, 2]);
-    const tampered: MultiProof = {
-      ...mp,
-      leafHashes: ['tampered', mp.leafHashes[1]!],
-    };
-    expect(verifyMultiProof(tampered)).toBe(false);
-  });
-
-  it('should work with odd number of leaves', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd', 'e']);
-    const mp = generateMultiProof(tree, [0, 4]);
-    expect(verifyMultiProof(mp)).toBe(true);
-  });
-
-  it('should work with adjacent leaves', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    const mp = generateMultiProof(tree, [2, 3]);
-    expect(verifyMultiProof(mp)).toBe(true);
-  });
-
-  it('should work for large tree multi-proofs', () => {
-    const tree = buildMerkleTree(makeData(1000));
-    const indices = [0, 100, 500, 999];
-    const mp = generateMultiProof(tree, indices);
-    expect(verifyMultiProof(mp)).toBe(true);
-  });
 });
 
-// ─── Audit paths ────────────────────────────────────────────────────────────
-
 describe('audit paths', () => {
-  it('should generate an audit path for a leaf', () => {
+  it('produces paths whose depths/siblings match inclusion proofs and verify', () => {
     const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
     const path = getAuditPath(tree, 0);
     expect(path.leafIndex).toBe(0);
     expect(path.leafHash).toBe(tree.leaves[0]);
     expect(path.root).toBe(tree.root);
-    expect(path.path.length).toBeGreaterThan(0);
-  });
-
-  it('should verify a valid audit path', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const path = getAuditPath(tree, 2);
-    expect(verifyAuditPath(path)).toBe(true);
-  });
-
-  it('should include depth information', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const path = getAuditPath(tree, 0);
-    // Tree has 3 layers (leaves -> inner -> root), so path has 2 nodes.
     expect(path.path).toHaveLength(2);
-    // Depths should be descending from tree height.
     expect(path.path[0]!.depth).toBe(2);
     expect(path.path[1]!.depth).toBe(1);
-  });
+    expect(verifyAuditPath(path)).toBe(true);
 
-  it('should verify all leaves in a tree', () => {
-    const data = makeData(16);
-    const tree = buildMerkleTree(data);
-    for (let i = 0; i < data.length; i++) {
-      const path = getAuditPath(tree, i);
-      expect(verifyAuditPath(path)).toBe(true);
+    // Verifies every leaf; path siblings mirror inclusion proof
+    const big = buildMerkleTree(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
+    for (let i = 0; i < 8; i++) {
+      const ap = getAuditPath(big, i);
+      const ip = generateInclusionProof(big, i);
+      expect(verifyAuditPath(ap)).toBe(true);
+      expect(ap.path.length).toBe(ip.proof.length);
+      for (let j = 0; j < ap.path.length; j++) {
+        expect(ap.path[j]!.hash).toBe(ip.proof[j]!.hash);
+        expect(ap.path[j]!.direction).toBe(ip.proof[j]!.direction);
+      }
     }
   });
 
-  it('should reject tampered audit path', () => {
+  it('rejects tampered audit paths and out-of-range indices', () => {
     const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
     const path = getAuditPath(tree, 0);
     const tampered: AuditPath = {
       ...path,
-      path: path.path.map((n, i) =>
-        i === 0 ? { ...n, hash: 'tampered' } : n,
-      ),
+      path: path.path.map((n, i) => (i === 0 ? { ...n, hash: 'tampered' } : n)),
     };
     expect(verifyAuditPath(tampered)).toBe(false);
-  });
-
-  it('should throw for out-of-range index', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    expect(() => getAuditPath(tree, -1)).toThrow('out of range');
-    expect(() => getAuditPath(tree, 2)).toThrow('out of range');
-  });
-
-  it('should produce same path as inclusion proof', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']);
-    for (let i = 0; i < 8; i++) {
-      const auditPath = getAuditPath(tree, i);
-      const inclusionProof = generateInclusionProof(tree, i);
-      expect(auditPath.path.length).toBe(inclusionProof.proof.length);
-      for (let j = 0; j < auditPath.path.length; j++) {
-        expect(auditPath.path[j]!.hash).toBe(inclusionProof.proof[j]!.hash);
-        expect(auditPath.path[j]!.direction).toBe(
-          inclusionProof.proof[j]!.direction,
-        );
-      }
-    }
+    expect(() => getAuditPath(buildMerkleTree(['a', 'b']), -1)).toThrow('out of range');
+    expect(() => getAuditPath(buildMerkleTree(['a', 'b']), 2)).toThrow('out of range');
   });
 });
 
-// ─── Proof serialization ────────────────────────────────────────────────────
-
 describe('proof serialization', () => {
-  it('should round-trip an inclusion proof', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const proof = generateInclusionProof(tree, 1);
-    const json = serializeProof(proof);
-    const deserialized = deserializeProof(json);
+  it('round-trips and the deserialized proof still verifies', () => {
+    const tree = buildMerkleTree(makeData(500));
+    const proof = generateInclusionProof(tree, 250);
+    const deserialized = deserializeProof(serializeProof(proof));
     expect(deserialized.leafIndex).toBe(proof.leafIndex);
     expect(deserialized.leafHash).toBe(proof.leafHash);
     expect(deserialized.root).toBe(proof.root);
     expect(deserialized.proof).toHaveLength(proof.proof.length);
-    for (let i = 0; i < proof.proof.length; i++) {
-      expect(deserialized.proof[i]!.hash).toBe(proof.proof[i]!.hash);
-      expect(deserialized.proof[i]!.direction).toBe(proof.proof[i]!.direction);
-    }
-  });
-
-  it('should produce valid proof after deserialization', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const proof = generateInclusionProof(tree, 2);
-    const json = serializeProof(proof);
-    const deserialized = deserializeProof(json);
     expect(verifyInclusionProof(deserialized)).toBe(true);
   });
 
-  it('should throw on invalid JSON', () => {
+  it('rejects invalid JSON / version / type / leafIndex / proof node', () => {
     expect(() => deserializeProof('not json')).toThrow('Invalid JSON');
-  });
-
-  it('should throw on non-object JSON', () => {
     expect(() => deserializeProof('"string"')).toThrow('must be a JSON object');
-  });
-
-  it('should throw on wrong version', () => {
     expect(() => deserializeProof('{"v":99}')).toThrow('Unsupported proof version');
-  });
-
-  it('should throw on wrong type', () => {
-    expect(() => deserializeProof('{"v":1,"type":"wrong"}')).toThrow(
-      'Unsupported proof type',
-    );
-  });
-
-  it('should throw on invalid leafIndex', () => {
+    expect(() => deserializeProof('{"v":1,"type":"wrong"}')).toThrow('Unsupported proof type');
     expect(() =>
-      deserializeProof(
-        '{"v":1,"type":"inclusion","leafIndex":-1,"leafHash":"h","root":"r","proof":[]}',
-      ),
+      deserializeProof('{"v":1,"type":"inclusion","leafIndex":-1,"leafHash":"h","root":"r","proof":[]}'),
     ).toThrow('Invalid leafIndex');
-  });
-
-  it('should throw on invalid proof node', () => {
     expect(() =>
       deserializeProof(
         '{"v":1,"type":"inclusion","leafIndex":0,"leafHash":"h","root":"r","proof":[{"h":"","d":"l"}]}',
       ),
     ).toThrow('Invalid hash in proof node');
   });
-
-  it('should round-trip proof for large tree', () => {
-    const tree = buildMerkleTree(makeData(500));
-    const proof = generateInclusionProof(tree, 250);
-    const json = serializeProof(proof);
-    const deserialized = deserializeProof(json);
-    expect(verifyInclusionProof(deserialized)).toBe(true);
-  });
 });
 
-// ─── Tree serialization ─────────────────────────────────────────────────────
-
 describe('tree serialization', () => {
-  it('should round-trip a tree', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const json = serializeTree(tree);
-    const deserialized = deserializeTree(json);
-    expect(deserialized.root).toBe(tree.root);
-    expect(deserialized.leafCount).toBe(tree.leafCount);
-    expect(deserialized.leaves).toEqual(tree.leaves);
-    expect(deserialized.layers.length).toBe(tree.layers.length);
-  });
-
-  it('should round-trip an empty tree', () => {
-    const tree = buildMerkleTree([]);
-    const json = serializeTree(tree);
-    const deserialized = deserializeTree(json);
-    expect(deserialized.root).toBe(tree.root);
-    expect(deserialized.leafCount).toBe(0);
-  });
-
-  it('should generate valid proofs from deserialized tree', () => {
-    const tree = buildMerkleTree(makeData(10));
-    const json = serializeTree(tree);
-    const deserialized = deserializeTree(json);
-    for (let i = 0; i < 10; i++) {
-      const proof = generateInclusionProof(deserialized, i);
-      expect(verifyInclusionProof(proof)).toBe(true);
+  it('round-trips (incl. empty) and produces a tree that generates valid proofs', () => {
+    for (const data of [[], makeData(10)]) {
+      const tree = buildMerkleTree(data as string[]);
+      const restored = deserializeTree(serializeTree(tree));
+      expect(restored.root).toBe(tree.root);
+      expect(restored.leafCount).toBe(tree.leafCount);
+      expect(restored.leaves).toEqual(tree.leaves);
+      for (let i = 0; i < restored.leafCount; i++) {
+        expect(verifyInclusionProof(generateInclusionProof(restored, i))).toBe(true);
+      }
     }
   });
 
-  it('should throw on invalid JSON', () => {
+  it('rejects invalid JSON, wrong version, leafCount mismatch and root mismatch', () => {
     expect(() => deserializeTree('bad')).toThrow('Invalid JSON');
-  });
-
-  it('should throw on wrong version', () => {
     expect(() => deserializeTree('{"v":99}')).toThrow('Unsupported tree version');
-  });
-
-  it('should throw on mismatched leafCount', () => {
     const tree = buildMerkleTree(['a', 'b']);
-    const json = JSON.parse(serializeTree(tree));
-    json.leafCount = 999;
-    expect(() => deserializeTree(JSON.stringify(json))).toThrow(
-      'leafCount does not match',
-    );
-  });
-
-  it('should throw on invalid root mismatch', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    const json = JSON.parse(serializeTree(tree));
-    json.root = 'wrong-root';
-    expect(() => deserializeTree(JSON.stringify(json))).toThrow(
-      'Root does not match',
-    );
+    const tamperedCount = JSON.parse(serializeTree(tree));
+    tamperedCount.leafCount = 999;
+    expect(() => deserializeTree(JSON.stringify(tamperedCount))).toThrow('leafCount does not match');
+    const tamperedRoot = JSON.parse(serializeTree(tree));
+    tamperedRoot.root = 'wrong-root';
+    expect(() => deserializeTree(JSON.stringify(tamperedRoot))).toThrow('Root does not match');
   });
 });
-
-// ─── Tree diff ──────────────────────────────────────────────────────────────
 
 describe('tree diff', () => {
-  it('should detect no changes for identical trees', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c']);
-    const diff = diffTrees(tree, tree);
-    expect(diff.added).toHaveLength(0);
-    expect(diff.removed).toHaveLength(0);
-    expect(diff.changed).toHaveLength(0);
-  });
-
-  it('should detect added leaves', () => {
-    const a = buildMerkleTree(['a', 'b']);
-    const b = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const diff = diffTrees(a, b);
-    expect(diff.added).toEqual([2, 3]);
-    expect(diff.removed).toHaveLength(0);
-    expect(diff.changed).toHaveLength(0);
-  });
-
-  it('should detect removed leaves', () => {
-    const a = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const b = buildMerkleTree(['a', 'b']);
-    const diff = diffTrees(a, b);
-    expect(diff.removed).toEqual([2, 3]);
-    expect(diff.added).toHaveLength(0);
-    expect(diff.changed).toHaveLength(0);
-  });
-
-  it('should detect changed leaves', () => {
-    const a = buildMerkleTree(['a', 'b', 'c']);
-    const b = buildMerkleTree(['a', 'x', 'c']);
-    const diff = diffTrees(a, b);
-    expect(diff.changed).toEqual([1]);
-    expect(diff.added).toHaveLength(0);
-    expect(diff.removed).toHaveLength(0);
-  });
-
-  it('should detect mixed changes', () => {
-    const a = buildMerkleTree(['a', 'b', 'c']);
-    const b = buildMerkleTree(['a', 'x', 'c', 'd']);
-    const diff = diffTrees(a, b);
-    expect(diff.changed).toEqual([1]);
-    expect(diff.added).toEqual([3]);
-    expect(diff.removed).toHaveLength(0);
-  });
-
-  it('should handle empty trees', () => {
-    const a = buildMerkleTree([]);
-    const b = buildMerkleTree(['a']);
-    const diff = diffTrees(a, b);
-    expect(diff.added).toEqual([0]);
-  });
-
-  it('should handle large tree diffs', () => {
-    const dataA = makeData(500);
-    const dataB = [...dataA.slice(0, 250), ...makeData(300).map((s) => s + '-new')];
-    const a = buildMerkleTree(dataA);
-    const b = buildMerkleTree(dataB);
-    const diff = diffTrees(a, b);
-    // Positions 250-499 in a are changed (different data in b at those positions)
-    // Position 500-549 in b are added
-    expect(diff.changed.length).toBeGreaterThan(0);
+  it('detects added, removed, changed and mixed changes', () => {
+    const base = buildMerkleTree(['a', 'b', 'c']);
+    expect(diffTrees(base, base)).toEqual({ added: [], removed: [], changed: [] });
+    expect(diffTrees(buildMerkleTree(['a', 'b']), buildMerkleTree(['a', 'b', 'c', 'd'])).added).toEqual([2, 3]);
+    expect(diffTrees(buildMerkleTree(['a', 'b', 'c', 'd']), buildMerkleTree(['a', 'b'])).removed).toEqual([2, 3]);
+    expect(diffTrees(buildMerkleTree(['a', 'b', 'c']), buildMerkleTree(['a', 'x', 'c'])).changed).toEqual([1]);
+    const mixed = diffTrees(buildMerkleTree(['a', 'b', 'c']), buildMerkleTree(['a', 'x', 'c', 'd']));
+    expect(mixed).toEqual({ changed: [1], added: [3], removed: [] });
+    expect(diffTrees(buildMerkleTree([]), buildMerkleTree(['a'])).added).toEqual([0]);
   });
 });
 
-// ─── Tree visualization ─────────────────────────────────────────────────────
-
 describe('tree visualization', () => {
-  it('should produce ASCII output for a small tree', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const viz = visualizeTree(tree);
+  it('produces ASCII with ROOT/LEAVES sections and custom hash length', () => {
+    const viz = visualizeTree(buildMerkleTree(['a', 'b', 'c', 'd']));
     expect(viz).toContain('ROOT');
     expect(viz).toContain('LEAVES');
     expect(viz.split('\n').length).toBeGreaterThanOrEqual(3);
-  });
-
-  it('should show abbreviated hashes', () => {
-    const tree = buildMerkleTree(['a', 'b']);
-    const viz = visualizeTree(tree, 6);
-    // Each hash should be surrounded by brackets and be 6 chars
-    expect(viz).toMatch(/\[[0-9a-f]{6}\]/);
-  });
-
-  it('should handle single-leaf tree', () => {
-    const tree = buildMerkleTree(['only']);
-    const viz = visualizeTree(tree);
-    expect(viz).toContain('ROOT');
-  });
-
-  it('should handle empty tree', () => {
-    const tree = buildMerkleTree([]);
-    const viz = visualizeTree(tree);
-    // Empty tree still has one layer (the empty root)
-    expect(viz).toContain('ROOT');
-  });
-
-  it('should use custom hash length', () => {
-    const tree = buildMerkleTree(['a', 'b', 'c', 'd']);
-    const viz = visualizeTree(tree, 4);
-    expect(viz).toMatch(/\[[0-9a-f]{4}\]/);
+    expect(visualizeTree(buildMerkleTree(['a', 'b']), 6)).toMatch(/\[[0-9a-f]{6}\]/);
+    expect(visualizeTree(buildMerkleTree(['a', 'b', 'c', 'd']), 4)).toMatch(/\[[0-9a-f]{4}\]/);
+    expect(visualizeTree(buildMerkleTree([]))).toContain('ROOT');
   });
 });
 
-// ─── EpochAggregator ────────────────────────────────────────────────────────
-
 describe('EpochAggregator', () => {
-  it('should accumulate items and seal epochs', () => {
-    const agg = new EpochAggregator({ maxItems: 3 });
-
-    agg.add('hash1');
-    agg.add('hash2');
-    expect(agg.pendingCount).toBe(2);
-    expect(agg.epochCount).toBe(0);
-
-    agg.add('hash3'); // triggers auto-seal
-    expect(agg.epochCount).toBe(1);
-    expect(agg.pendingCount).toBe(0);
-
-    const epoch = agg.getLatestEpoch();
-    expect(epoch).toBeDefined();
-    expect(epoch!.index).toBe(0);
-    expect(epoch!.leafCount).toBe(3);
-    expect(epoch!.previousEpochRoot).toBeNull();
-  });
-
-  it('should chain epochs together', () => {
+  it('auto-seals at maxItems, chains epochs, supports manual seal and empty seal', () => {
     const agg = new EpochAggregator({ maxItems: 2 });
-
     agg.add('a');
     agg.add('b'); // auto-seal epoch 0
-
     agg.add('c');
     agg.add('d'); // auto-seal epoch 1
-
     const epochs = agg.getEpochs();
     expect(epochs).toHaveLength(2);
+    expect(epochs[0]!.index).toBe(0);
+    expect(epochs[0]!.leafCount).toBe(2);
     expect(epochs[0]!.previousEpochRoot).toBeNull();
     expect(epochs[0]!.chainedRoot).toBe(epochs[0]!.merkleRoot);
     expect(epochs[1]!.previousEpochRoot).toBe(epochs[0]!.chainedRoot);
     expect(epochs[1]!.chainedRoot).not.toBe(epochs[1]!.merkleRoot);
-  });
 
-  it('should manually seal', () => {
-    const agg = new EpochAggregator({ maxItems: 100 });
-
-    agg.add('x');
-    agg.add('y');
-    const epoch = agg.seal();
-
-    expect(epoch).not.toBeNull();
+    const manual = new EpochAggregator({ maxItems: 100 });
+    manual.add('x');
+    manual.add('y');
+    const epoch = manual.seal();
     expect(epoch!.leafCount).toBe(2);
-    expect(agg.pendingCount).toBe(0);
-  });
+    expect(manual.pendingCount).toBe(0);
 
-  it('should return null when sealing empty epoch', () => {
-    const agg = new EpochAggregator();
-    expect(agg.seal()).toBeNull();
-  });
+    expect(new EpochAggregator().seal()).toBeNull();
 
-  it('should support custom end time', () => {
-    const agg = new EpochAggregator();
-    agg.add('x');
-    const endTime = '2025-01-01T00:00:00.000Z';
-    const epoch = agg.seal(endTime);
-    expect(epoch!.endTime).toBe(endTime);
+    const withTime = new EpochAggregator();
+    withTime.add('x');
+    expect(withTime.seal('2025-01-01T00:00:00.000Z')!.endTime).toBe('2025-01-01T00:00:00.000Z');
   });
 });
-
-// ─── verifyEpochChain ───────────────────────────────────────────────────────
 
 describe('verifyEpochChain', () => {
-  it('should verify a valid epoch chain', () => {
-    const agg = new EpochAggregator({ maxItems: 2 });
+  it('validates good chains (including empty and single) and rejects tampering', () => {
+    expect(verifyEpochChain([]).valid).toBe(true);
 
-    agg.add('a');
-    agg.add('b');
-    agg.add('c');
-    agg.add('d');
-    agg.add('e');
-    agg.seal();
+    const single = new EpochAggregator({ maxItems: 100 });
+    single.add('a');
+    single.seal();
+    expect(verifyEpochChain(single.getEpochs()).valid).toBe(true);
 
-    const result = verifyEpochChain(agg.getEpochs());
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
-  });
+    const good = new EpochAggregator({ maxItems: 2 });
+    ['a', 'b', 'c', 'd', 'e'].forEach(v => good.add(v));
+    good.seal();
+    expect(verifyEpochChain(good.getEpochs()).valid).toBe(true);
 
-  it('should detect tampered epoch chain', () => {
-    const agg = new EpochAggregator({ maxItems: 2 });
+    // Tampered previousEpochRoot
+    const badLink = new EpochAggregator({ maxItems: 2 });
+    ['a', 'b', 'c', 'd'].forEach(v => badLink.add(v));
+    const e1 = [...badLink.getEpochs()];
+    e1[1] = { ...e1[1]!, previousEpochRoot: 'tampered' };
+    expect(verifyEpochChain(e1).valid).toBe(false);
 
-    agg.add('a');
-    agg.add('b');
-    agg.add('c');
-    agg.add('d');
-
-    const epochs = [...agg.getEpochs()];
-    epochs[1] = { ...epochs[1]!, previousEpochRoot: 'tampered' };
-
-    const result = verifyEpochChain(epochs);
-    expect(result.valid).toBe(false);
-  });
-
-  it('should verify empty chain', () => {
-    const result = verifyEpochChain([]);
-    expect(result.valid).toBe(true);
-    expect(result.errors).toHaveLength(0);
-  });
-
-  it('should verify single epoch chain', () => {
-    const agg = new EpochAggregator({ maxItems: 100 });
-    agg.add('a');
-    agg.seal();
-    const result = verifyEpochChain(agg.getEpochs());
-    expect(result.valid).toBe(true);
-  });
-
-  it('should detect tampered chainedRoot', () => {
-    const agg = new EpochAggregator({ maxItems: 2 });
-    agg.add('a');
-    agg.add('b');
-    agg.add('c');
-    agg.add('d');
-
-    const epochs = [...agg.getEpochs()];
-    epochs[1] = { ...epochs[1]!, chainedRoot: 'tampered' };
-    const result = verifyEpochChain(epochs);
-    expect(result.valid).toBe(false);
-    expect(result.errors.length).toBeGreaterThan(0);
+    // Tampered chainedRoot
+    const badChain = new EpochAggregator({ maxItems: 2 });
+    ['a', 'b', 'c', 'd'].forEach(v => badChain.add(v));
+    const e2 = [...badChain.getEpochs()];
+    e2[1] = { ...e2[1]!, chainedRoot: 'tampered' };
+    const r = verifyEpochChain(e2);
+    expect(r.valid).toBe(false);
+    expect(r.errors.length).toBeGreaterThan(0);
   });
 });
-
-// ─── EpochManager ───────────────────────────────────────────────────────────
 
 describe('EpochManager', () => {
   let manager: EpochManager;
+  afterEach(() => manager?.destroy());
 
-  afterEach(() => {
-    if (manager) manager.destroy();
-  });
-
-  it('should add items and seal', () => {
-    manager = new EpochManager({ maxItems: 3 });
-    manager.add('a');
-    manager.add('b');
-    manager.add('c'); // auto-seal
-    expect(manager.epochCount).toBe(1);
-    expect(manager.pendingCount).toBe(0);
-  });
-
-  it('should retrieve epochs', () => {
+  it('adds/seals, retrieves epochs, and verifies the chain', () => {
     manager = new EpochManager({ maxItems: 2 });
-    manager.add('a');
-    manager.add('b');
-    manager.add('c');
-    manager.add('d');
-
-    const epochs = manager.getEpochs();
-    expect(epochs).toHaveLength(2);
+    ['a', 'b', 'c', 'd'].forEach(v => manager.add(v));
+    expect(manager.epochCount).toBe(2);
+    expect(manager.getEpochs()).toHaveLength(2);
     expect(manager.getLatestEpoch()).toBeDefined();
+    expect(manager.verifyChain().valid).toBe(true);
   });
 
-  it('should get epoch by time', () => {
+  it('getEpochByTime, getEpochRange and manual seal with end time', () => {
     manager = new EpochManager({ maxItems: 100 });
     manager.add('a');
-    const epoch = manager.seal()!;
+    const futureEnd = '2099-06-15T12:00:00.000Z';
+    const epoch = manager.seal(futureEnd)!;
+    expect(epoch.endTime).toBe(futureEnd);
+    expect(manager.getEpochByTime(epoch.startTime)?.index).toBe(0);
+    expect(manager.getEpochByTime('1970-01-01T00:00:00.000Z')).toBeUndefined();
 
-    // The epoch's time window should contain the seal time.
-    const found = manager.getEpochByTime(epoch.startTime);
-    expect(found).toBeDefined();
-    expect(found!.index).toBe(0);
-  });
+    const range = manager.getEpochRange(epoch.startTime, epoch.endTime);
+    expect(range).toHaveLength(1);
 
-  it('should return undefined for time outside any epoch', () => {
-    manager = new EpochManager({ maxItems: 100 });
-    manager.add('a');
-    manager.seal();
-
-    const found = manager.getEpochByTime('1970-01-01T00:00:00.000Z');
-    expect(found).toBeUndefined();
-  });
-
-  it('should get epoch range', () => {
-    manager = new EpochManager({ maxItems: 2 });
-    manager.add('a');
-    manager.add('b');
-    manager.add('c');
-    manager.add('d');
-    manager.add('e');
-    manager.seal();
-
-    const allEpochs = manager.getEpochs();
-    const start = allEpochs[0]!.startTime;
-    const end = allEpochs[allEpochs.length - 1]!.endTime;
-
-    const range = manager.getEpochRange(start, end);
-    expect(range.length).toBe(allEpochs.length);
-  });
-
-  it('should throw for invalid epoch range', () => {
-    manager = new EpochManager();
     expect(() =>
-      manager.getEpochRange(
-        '2025-12-31T00:00:00Z',
-        '2025-01-01T00:00:00Z',
-      ),
+      manager.getEpochRange('2025-12-31T00:00:00Z', '2025-01-01T00:00:00Z'),
     ).toThrow('Start time must be before');
   });
 
-  it('should verify chain', () => {
-    manager = new EpochManager({ maxItems: 2 });
-    manager.add('a');
-    manager.add('b');
-    manager.add('c');
-    manager.add('d');
-
-    const result = manager.verifyChain();
-    expect(result.valid).toBe(true);
-  });
-
-  it('should destroy cleanly', () => {
+  it('destroys cleanly, even when called twice', () => {
     manager = new EpochManager({ autoSeal: true, maxDurationMs: 100 });
     manager.add('a');
-    // Should not throw.
     manager.destroy();
-    manager.destroy(); // Double destroy should be safe.
-  });
-
-  it('should manually seal with end time', () => {
-    manager = new EpochManager({ maxItems: 100 });
-    manager.add('data');
-    const endTime = '2025-06-15T12:00:00.000Z';
-    const epoch = manager.seal(endTime);
-    expect(epoch).not.toBeNull();
-    expect(epoch!.endTime).toBe(endTime);
+    manager.destroy();
   });
 });
 
-// ─── Sparse Merkle tree ─────────────────────────────────────────────────────
-
 describe('SparseMerkleTree', () => {
-  it('should start empty with a default root', () => {
+  it('insert/get/update/delete semantics with root transitions', () => {
     const smt = new SparseMerkleTree(8);
+    const emptyRoot = smt.root;
     expect(smt.root).toBeTruthy();
     expect(smt.size).toBe(0);
-  });
 
-  it('should insert and retrieve a value', () => {
-    const smt = new SparseMerkleTree(8);
     smt.insert('key1', 'value1');
     expect(smt.get('key1')).toBe('value1');
     expect(smt.size).toBe(1);
-  });
+    expect(smt.root).not.toBe(emptyRoot);
 
-  it('should update an existing key', () => {
-    const smt = new SparseMerkleTree(8);
-    smt.insert('key1', 'value1');
-    const root1 = smt.root;
+    const rootAfterInsert = smt.root;
     smt.insert('key1', 'value2');
     expect(smt.get('key1')).toBe('value2');
-    expect(smt.root).not.toBe(root1);
-  });
+    expect(smt.root).not.toBe(rootAfterInsert);
 
-  it('should return null for missing keys', () => {
-    const smt = new SparseMerkleTree(8);
     expect(smt.get('nonexistent')).toBeNull();
-  });
-
-  it('should delete a key', () => {
-    const smt = new SparseMerkleTree(8);
-    const emptyRoot = smt.root;
-    smt.insert('key1', 'value1');
-    expect(smt.size).toBe(1);
+    expect(smt.delete('nope')).toBe(false);
     expect(smt.delete('key1')).toBe(true);
     expect(smt.size).toBe(0);
-    expect(smt.get('key1')).toBeNull();
     expect(smt.root).toBe(emptyRoot);
   });
 
-  it('should return false when deleting nonexistent key', () => {
-    const smt = new SparseMerkleTree(8);
-    expect(smt.delete('nope')).toBe(false);
-  });
-
-  it('should change root when inserting', () => {
-    const smt = new SparseMerkleTree(8);
-    const emptyRoot = smt.root;
-    smt.insert('key1', 'value1');
-    expect(smt.root).not.toBe(emptyRoot);
-  });
-
-  it('should generate and verify a membership proof', () => {
+  it('generates and verifies membership / non-membership proofs', () => {
     const smt = new SparseMerkleTree(16);
     smt.insert('hello', 'world');
+
     const proof = smt.generateProof('hello');
     expect(proof.exists).toBe(true);
     expect(proof.value).toBe('world');
     expect(proof.siblings).toHaveLength(16);
     expect(SparseMerkleTree.verifyProof(proof, 16)).toBe(true);
+
+    const missing = smt.generateProof('missing');
+    expect(missing.exists).toBe(false);
+    expect(missing.value).toBeNull();
+    expect(SparseMerkleTree.verifyProof(missing, 16)).toBe(true);
+
+    // Wrong depth / root / value all reject
+    expect(SparseMerkleTree.verifyProof(proof, 8)).toBe(false);
+    expect(SparseMerkleTree.verifyProof({ ...proof, root: 'bad' }, 16)).toBe(false);
+    expect(SparseMerkleTree.verifyProof({ ...proof, value: 'wrong' }, 16)).toBe(false);
   });
 
-  it('should generate and verify a non-membership proof', () => {
-    const smt = new SparseMerkleTree(16);
-    smt.insert('hello', 'world');
-    const proof = smt.generateProof('missing');
-    expect(proof.exists).toBe(false);
-    expect(proof.value).toBeNull();
-    expect(SparseMerkleTree.verifyProof(proof, 16)).toBe(true);
-  });
-
-  it('should reject proof with wrong root', () => {
-    const smt = new SparseMerkleTree(8);
-    smt.insert('key', 'val');
-    const proof = smt.generateProof('key');
-    const tampered = { ...proof, root: 'bad-root' };
-    expect(SparseMerkleTree.verifyProof(tampered, 8)).toBe(false);
-  });
-
-  it('should reject proof with wrong value', () => {
-    const smt = new SparseMerkleTree(8);
-    smt.insert('key', 'val');
-    const proof = smt.generateProof('key');
-    const tampered = { ...proof, value: 'wrong' };
-    expect(SparseMerkleTree.verifyProof(tampered, 8)).toBe(false);
-  });
-
-  it('should handle multiple keys', () => {
-    const smt = new SparseMerkleTree(16);
+  it('handles many keys, produces deterministic roots, rejects invalid depths', () => {
+    const a = new SparseMerkleTree(16);
+    const b = new SparseMerkleTree(16);
     for (let i = 0; i < 50; i++) {
-      smt.insert(`key-${i}`, `value-${i}`);
+      a.insert(`key-${i}`, `value-${i}`);
+      b.insert(`key-${i}`, `value-${i}`);
     }
-    expect(smt.size).toBe(50);
+    expect(a.size).toBe(50);
+    expect(a.root).toBe(b.root);
     for (let i = 0; i < 50; i++) {
-      expect(smt.get(`key-${i}`)).toBe(`value-${i}`);
-      const proof = smt.generateProof(`key-${i}`);
+      expect(a.get(`key-${i}`)).toBe(`value-${i}`);
+      const proof = a.generateProof(`key-${i}`);
       expect(proof.exists).toBe(true);
       expect(SparseMerkleTree.verifyProof(proof, 16)).toBe(true);
     }
-  });
 
-  it('should reject proof with wrong depth', () => {
-    const smt = new SparseMerkleTree(8);
-    smt.insert('key', 'val');
-    const proof = smt.generateProof('key');
-    // Wrong depth
-    expect(SparseMerkleTree.verifyProof(proof, 16)).toBe(false);
-  });
+    const diff1 = new SparseMerkleTree(8);
+    const diff2 = new SparseMerkleTree(8);
+    diff1.insert('a', '1');
+    diff2.insert('a', '2');
+    expect(diff1.root).not.toBe(diff2.root);
 
-  it('should throw for invalid depth', () => {
     expect(() => new SparseMerkleTree(0)).toThrow('Depth must be between');
     expect(() => new SparseMerkleTree(257)).toThrow('Depth must be between');
   });
-
-  it('should produce deterministic roots', () => {
-    const smt1 = new SparseMerkleTree(8);
-    const smt2 = new SparseMerkleTree(8);
-    smt1.insert('a', '1');
-    smt1.insert('b', '2');
-    smt2.insert('a', '1');
-    smt2.insert('b', '2');
-    expect(smt1.root).toBe(smt2.root);
-  });
-
-  it('should produce different roots for different insertion orders if values differ', () => {
-    const smt1 = new SparseMerkleTree(8);
-    const smt2 = new SparseMerkleTree(8);
-    smt1.insert('a', '1');
-    smt2.insert('a', '2');
-    expect(smt1.root).not.toBe(smt2.root);
-  });
 });
 
-// ─── Integration / cross-feature tests ──────────────────────────────────────
-
 describe('integration', () => {
-  it('should serialize and deserialize a tree, then generate valid proofs', () => {
-    const tree = buildMerkleTree(makeData(20));
-    const json = serializeTree(tree);
-    const restored = deserializeTree(json);
-
-    for (let i = 0; i < 20; i++) {
-      const proof = generateInclusionProof(restored, i);
-      const proofJson = serializeProof(proof);
-      const restoredProof = deserializeProof(proofJson);
-      expect(verifyInclusionProof(restoredProof)).toBe(true);
-    }
-  });
-
-  it('should diff original vs appended tree', () => {
-    const original = buildMerkleTree(['a', 'b', 'c']);
-    const extended = appendLeaves(original, ['d', 'e']);
-    const diff = diffTrees(original, extended);
-    expect(diff.added).toEqual([3, 4]);
-    expect(diff.changed).toHaveLength(0);
-    expect(diff.removed).toHaveLength(0);
-  });
-
-  it('should handle a full workflow: build, prove, serialize, verify', () => {
-    // Build tree
+  it('full workflow: build, prove, serialize, verify, diff, audit, visualize', () => {
     const data = makeData(100);
     const tree = buildMerkleTree(data);
+    const proof = generateInclusionProof(tree, 42);
+    expect(verifyInclusionProof(proof)).toBe(true);
 
-    // Generate proofs
-    const proof42 = generateInclusionProof(tree, 42);
-    expect(verifyInclusionProof(proof42)).toBe(true);
-
-    // Serialize/deserialize tree
-    const treeJson = serializeTree(tree);
-    const restoredTree = deserializeTree(treeJson);
+    const restoredTree = deserializeTree(serializeTree(tree));
     expect(restoredTree.root).toBe(tree.root);
 
-    // Serialize/deserialize proof
-    const proofJson = serializeProof(proof42);
-    const restoredProof = deserializeProof(proofJson);
+    const restoredProof = deserializeProof(serializeProof(proof));
     expect(verifyInclusionProof(restoredProof)).toBe(true);
 
-    // Audit path
-    const path = getAuditPath(restoredTree, 42);
-    expect(verifyAuditPath(path)).toBe(true);
+    expect(verifyAuditPath(getAuditPath(restoredTree, 42))).toBe(true);
+    expect(visualizeTree(restoredTree)).toContain('ROOT');
 
-    // Visualize
-    const viz = visualizeTree(restoredTree);
-    expect(viz).toContain('ROOT');
+    // Diff after appending
+    const extended = appendLeaves(buildMerkleTree(['a', 'b', 'c']), ['d', 'e']);
+    expect(diffTrees(buildMerkleTree(['a', 'b', 'c']), extended).added).toEqual([3, 4]);
   });
 
-  it('should handle large scale: 2000 items build + proof', () => {
-    const data = makeData(2000);
-    const tree = buildMerkleTree(data);
+  it('large scale: builds 2000-leaf tree and verifies spot-checked proofs', () => {
+    const tree = buildMerkleTree(makeData(2000));
     expect(tree.leafCount).toBe(2000);
-
-    // Spot-check proofs
     for (const idx of [0, 500, 1000, 1500, 1999]) {
-      const proof = generateInclusionProof(tree, idx);
-      expect(verifyInclusionProof(proof)).toBe(true);
+      expect(verifyInclusionProof(generateInclusionProof(tree, idx))).toBe(true);
     }
-  });
-
-  it('buildMerkleTreeFromHashes + appendLeaves round-trip', () => {
-    const hashes = makeData(5).map(hashLeaf);
-    const tree = buildMerkleTreeFromHashes(hashes);
-    const extended = appendLeaves(tree, ['new1', 'new2']);
-    expect(extended.leafCount).toBe(7);
-    const proof = generateInclusionProof(extended, 6);
-    expect(verifyInclusionProof(proof)).toBe(true);
   });
 });

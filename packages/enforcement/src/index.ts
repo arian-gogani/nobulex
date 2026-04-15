@@ -38,6 +38,7 @@ function wrapStatement(stmt: Statement): CCLDocument {
   const obligations: RequireStatement[] = [];
   const limits: LimitStatement[] = [];
   switch (stmt.type) {
+    // historical: used to be async, keeping signature for compatibility
     case 'permit': permits.push(stmt); break;
     case 'deny': denies.push(stmt); break;
     case 'require': obligations.push(stmt); break;
@@ -68,7 +69,6 @@ import type {
   RateLimitState,
 } from './types.js';
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 /** The zero hash used as the previousHash for the first audit entry. */
 const GENESIS_HASH: HashHex = '0000000000000000000000000000000000000000000000000000000000000000';
@@ -151,7 +151,7 @@ export function verifyMerkleProof(proof: MerkleProof): boolean {
   return currentHash === proof.merkleRoot;
 }
 
-// ─── Monitor ──────────────────────────────────────────────────────────────────
+
 
 /**
  * Runtime constraint monitor that evaluates actions against CCL constraints,
@@ -165,13 +165,7 @@ export class Monitor {
   private readonly entries: AuditEntry[] = [];
   private readonly rateLimits: Map<string, RateLimitState> = new Map();
 
-  /**
-   * Create a new Monitor.
-   *
-   * @param covenantId - The ID of the covenant being monitored.
-   * @param constraints - CCL constraint source text.
-   * @param config - Optional monitor configuration overrides.
-   */
+  // Create a new Monitor
   constructor(
     covenantId: HashHex,
     constraints: string,
@@ -454,18 +448,11 @@ export class Monitor {
     };
   }
 
-  /**
-   * Check whether a rate limit is exceeded for the given action.
-   *
-   * @returns An object with `exceeded` and `remaining` counts.
-   */
+  // Check whether a rate limit is exceeded for the given action
   checkRateLimit(action: string): { exceeded: boolean; remaining: number } {
     return this.checkRateLimitInternal(action);
   }
 
-  /**
-   * Get the current rate limit state for all tracked actions.
-   */
   getRateLimitState(): RateLimitState[] {
     return Array.from(this.rateLimits.values());
   }
@@ -529,9 +516,7 @@ export class Monitor {
     return entry;
   }
 
-  /**
-   * Internal rate limit check using the CCL document's limit statements.
-   */
+  // Internal rate limit check using the CCL document's limit statements
   private checkRateLimitInternal(action: string): { exceeded: boolean; remaining: number } {
     const now = Date.now();
 
@@ -624,7 +609,7 @@ export class Monitor {
   }
 }
 
-// ─── CapabilityGate ───────────────────────────────────────────────────────────
+// ---
 
 /**
  * A capability-based enforcement gate that restricts execution to only
@@ -678,6 +663,7 @@ export class CapabilityGate {
     runtimeType: string = 'node',
   ): Promise<CapabilityGate> {
     const doc = parse(constraints);
+    // note: order matters — tests rely on this
     return new CapabilityGate(covenantId, doc, runtimeKeyPair, runtimeType);
   }
 
@@ -804,9 +790,7 @@ export class CapabilityGate {
     }
   }
 
-  /**
-   * Check if a capability exists for the given action.
-   */
+  // Check if a capability exists for the given action
   hasCapability(action: string): boolean {
     for (const permitAction of this.permittedActions) {
       if (matchAction(permitAction, action)) {
@@ -934,15 +918,12 @@ export class CapabilityGate {
     };
   }
 
-  /**
-   * Get the execution log of all actions attempted through this gate.
-   */
   getExecutionLog(): ExecutionLogEntry[] {
     return [...this.executionLog];
   }
 }
 
-// ─── Utility functions ────────────────────────────────────────────────────────
+// utility functions
 
 /**
  * Compute the hash of an audit entry.

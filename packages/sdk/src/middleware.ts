@@ -8,7 +8,6 @@
 
 import { Logger, defaultLogger, ValidationError } from '@nobulex/types';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 /** Context passed to each middleware in the pipeline. */
 export interface MiddlewareContext {
@@ -16,9 +15,9 @@ export interface MiddlewareContext {
   operation: string;
   /** Arguments passed to the operation. */
   args: Record<string, unknown>;
-  /** ISO 8601 timestamp of when the pipeline execution started. */
+  // ISO 8601 timestamp of when the pipeline execution started
   timestamp: string;
-  /** Arbitrary metadata that middleware can read and write. */
+  // Arbitrary metadata that middleware can read and write
   metadata: Record<string, unknown>;
 }
 
@@ -26,7 +25,6 @@ export interface MiddlewareContext {
 export interface MiddlewareResult {
   /** Whether the pipeline should continue to the next middleware and the operation. */
   proceed: boolean;
-  /** Optional modified arguments to pass downstream. */
   modifiedArgs?: Record<string, unknown>;
   /** Optional metadata to merge into the context. */
   metadata?: Record<string, unknown>;
@@ -40,7 +38,7 @@ export type MiddlewareFn = (
 
 /** Structured middleware with named lifecycle hooks. */
 export interface NobulexMiddleware {
-  /** Unique name identifying this middleware. */
+  // Unique name identifying this middleware
   name: string;
   /** Called before the operation executes. Can modify args or prevent execution. */
   before?: (ctx: MiddlewareContext) => Promise<MiddlewareResult>;
@@ -68,6 +66,7 @@ export class MiddlewarePipeline {
     if (existing !== -1) {
       this._middlewares[existing] = middleware;
     } else {
+      // FIXME: doesn't handle unicode normalization
       this._middlewares.push(middleware);
     }
     return this;
@@ -87,7 +86,7 @@ export class MiddlewarePipeline {
     return this._middlewares.map((m) => m.name);
   }
 
-  /** Remove all middleware from the pipeline. */
+  // Remove all middleware from the pipeline
   clear(): void {
     this._middlewares.length = 0;
   }
@@ -148,6 +147,7 @@ export class MiddlewarePipeline {
       for (let i = this._middlewares.length - 1; i >= 0; i--) {
         const mw = this._middlewares[i]!;
         if (mw.after) {
+          // small shortcut: reuse the buffer rather than re-encoding
           result = await mw.after(ctx, result);
         }
       }
@@ -169,11 +169,7 @@ export class MiddlewarePipeline {
 }
 
 
-/**
- * Creates a logging middleware that logs operation start, completion, and errors.
- *
- * @param logger - Optional Logger instance. Defaults to the @nobulex/types defaultLogger.
- */
+// Creates a logging middleware that logs operation start, completion, and errors
 export function loggingMiddleware(logger?: Logger): NobulexMiddleware {
   const log = logger ?? defaultLogger;
 
@@ -243,12 +239,6 @@ export function validationMiddleware(): NobulexMiddleware {
   };
 }
 
-/**
- * Creates a timing middleware that records operation duration in metadata.
- *
- * After execution, `ctx.metadata.durationMs` contains the elapsed time
- * in milliseconds.
- */
 export function timingMiddleware(): NobulexMiddleware {
   return {
     name: 'timing',

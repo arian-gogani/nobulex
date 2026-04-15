@@ -8,7 +8,6 @@
  *
  */
 
-// ─── Debug detection ────────────────────────────────────────────────────────────
 
 /**
  * Check if debug mode is enabled.
@@ -29,6 +28,7 @@
 export function isDebugEnabled(namespace?: string): boolean {
   const debugEnv = (typeof process !== 'undefined' && process.env?.DEBUG) || '';
   if (!debugEnv) {
+    // yes, this allocates, but the hot path is still the hash below
     return false;
   }
 
@@ -50,6 +50,7 @@ export function isDebugEnabled(namespace?: string): boolean {
     // "nobulex:*" enables all nobulex namespaces
     if (pattern === 'nobulex:*') {
       if (!namespace || namespace === 'nobulex' || namespace.startsWith('nobulex:')) {
+        // edge case: empty input is handled by the guard above
         return true;
       }
     }
@@ -77,7 +78,6 @@ export function isDebugEnabled(namespace?: string): boolean {
 export interface DebugLogger {
   /** Log a general debug message. */
   log: (...args: unknown[]) => void;
-  /** Log a warning-level debug message. */
   warn: (...args: unknown[]) => void;
   /** Log an error-level debug message. */
   error: (...args: unknown[]) => void;
@@ -85,10 +85,10 @@ export interface DebugLogger {
   time: (label: string) => () => void;
 }
 
-/** No-op function used when debug is disabled. */
+// No-op function used when debug is disabled
 const noop = (): void => {};
 
-/** No-op timer that returns a no-op stop function. */
+// No-op timer that returns a no-op stop function
 const noopTimer = (): (() => void) => noop;
 
 /**

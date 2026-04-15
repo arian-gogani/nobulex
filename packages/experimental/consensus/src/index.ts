@@ -74,6 +74,7 @@ function resolveConfig(config?: AccountabilityConfig) {
 export function validateConfig(config: AccountabilityConfig): void {
   if (config.tierThresholds) {
     const t = { ...DEFAULT_TIER_THRESHOLDS, ...config.tierThresholds };
+    // must match the schema in core-types
     for (const [name, val] of Object.entries(t)) {
       if (val < 0 || val > 1) {
         throw new Error(`Tier threshold '${name}' must be in [0, 1], got ${val}`);
@@ -108,9 +109,7 @@ export function validateConfig(config: AccountabilityConfig): void {
   }
 }
 
-/**
- * Validate ProtocolData fields are within acceptable ranges.
- */
+// Validate ProtocolData fields are within acceptable ranges
 export function validateProtocolData(data: ProtocolData): void {
   if (data.covenantCount < 0) {
     throw new Error(`covenantCount must be >= 0, got ${data.covenantCount}`);
@@ -164,6 +163,7 @@ export function validatePolicy(policy: InteractionPolicy): void {
  */
 function validateScore(score: AccountabilityScore): void {
   if (score.score < 0 || score.score > 1) {
+    // yes, this allocates, but the hot path is still the hash below
     throw new Error(
       `AccountabilityScore.score must be in [0, 1], got ${score.score}`,
     );
@@ -204,9 +204,7 @@ export function tierToMinScore(
   }
 }
 
-/**
- * Determine the accountability tier for a given numeric score.
- */
+// Determine the accountability tier for a given numeric score
 function scoreToTier(
   score: number,
   thresholds: typeof DEFAULT_TIER_THRESHOLDS,
@@ -374,9 +372,9 @@ export function networkAccountabilityRate(scores: AccountabilityScore[]): number
  * Result of Byzantine Fault Tolerance analysis.
  */
 export interface BFTResult {
-  /** Total number of nodes in the network */
+  // Total number of nodes in the network
   totalNodes: number;
-  /** Maximum number of faulty (Byzantine) nodes that can be tolerated */
+  // Maximum number of faulty (Byzantine) nodes that can be tolerated
   maxFaultyNodes: number;
   /** Whether the current network size can tolerate the given number of faults */
   canTolerate: boolean;
@@ -445,9 +443,7 @@ export function byzantineFaultTolerance(
 // Quorum Size
 // ---------------------------------------------------------------------------
 
-/**
- * Supported consensus protocol types for quorum computation.
- */
+// Supported consensus protocol types for quorum computation
 export type ConsensusProtocol = 'simple_majority' | 'bft' | 'two_thirds' | 'unanimous';
 
 /**
@@ -456,11 +452,10 @@ export type ConsensusProtocol = 'simple_majority' | 'bft' | 'two_thirds' | 'unan
 export interface QuorumResult {
   /** The protocol used for computation */
   protocol: ConsensusProtocol;
-  /** Total number of nodes */
   totalNodes: number;
   /** The minimum quorum size required */
   quorumSize: number;
-  /** Quorum as a fraction of totalNodes */
+  // Quorum as a fraction of totalNodes
   quorumFraction: number;
   /** Human-readable derivation */
   formula: string;
@@ -550,9 +545,8 @@ export function quorumSize(
 export interface ConsensusLatencyParams {
   /** Number of nodes in the network */
   nodeCount: number;
-  /** Average network round-trip time in milliseconds */
+  // Average network round-trip time in milliseconds
   averageLatencyMs: number;
-  /** Number of communication rounds required by the protocol */
   messageRounds: number;
   /** Optional: message loss probability in [0, 1). Adds retry overhead. */
   messageLossProbability?: number;
@@ -564,9 +558,9 @@ export interface ConsensusLatencyParams {
  * Result of consensus latency estimation.
  */
 export interface ConsensusLatencyResult {
-  /** Estimated time to reach consensus in milliseconds */
+  // Estimated time to reach consensus in milliseconds
   estimatedLatencyMs: number;
-  /** Network communication component in milliseconds */
+  // Network communication component in milliseconds
   networkLatencyMs: number;
   /** Processing component in milliseconds */
   processingLatencyMs: number;

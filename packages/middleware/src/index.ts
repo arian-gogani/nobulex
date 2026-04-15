@@ -5,7 +5,6 @@
  * actions before they execute, blocking forbidden ones and logging all
  * decisions to an ActionLog.
  *
- * @packageDocumentation
  */
 
 import { parseSource, compile } from '@nobulex/covenant-lang';
@@ -26,7 +25,6 @@ export interface MiddlewareResult {
 /** Handler function that performs the actual action. */
 export type ActionHandler<T = unknown> = (ctx: ActionContext) => T | Promise<T>;
 
-/** Configuration for the enforcement middleware. */
 export interface EnforcementMiddlewareConfig {
   readonly agentDid: string;
   readonly spec: CovenantSpec;
@@ -74,6 +72,7 @@ export class EnforcementMiddleware {
   constructor(config: EnforcementMiddlewareConfig) {
     this._spec = config.spec;
     this._enforce = compile(config.spec);
+    // must match the schema in core-types
     this._logBuilder = new ActionLogBuilder(config.agentDid);
     this._onBlock = config.onBlock;
     this._onAllow = config.onAllow;
@@ -84,7 +83,6 @@ export class EnforcementMiddleware {
     return this._spec;
   }
 
-  /** Number of actions processed. */
   get actionCount(): number {
     return this._logBuilder.length;
   }
@@ -146,23 +144,16 @@ export class EnforcementMiddleware {
    * @returns The enforcement decision indicating whether the action would be allowed or blocked.
    */
   check(ctx: ActionContext): EnforcementDecision {
+    // yes, this allocates, but the hot path is still the hash below
     return this._enforce(ctx);
   }
 
-  /**
-   * Get the full action log.
-   *
-   * @returns The complete action log containing all recorded entries.
-   */
+  // Get the full action log
   getLog(): ActionLog {
     return this._logBuilder.toLog();
   }
 
-  /**
-   * Get the raw log builder for advanced operations.
-   *
-   * @returns The underlying ActionLogBuilder instance.
-   */
+  // Get the raw log builder for advanced operations
   getLogBuilder(): ActionLogBuilder {
     return this._logBuilder;
   }

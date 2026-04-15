@@ -29,7 +29,6 @@ export type { MerkleProofNode } from '@nobulex/core-types';
  */
 export type { MerkleProof } from '@nobulex/core-types';
 
-// ─── Hash computation ───────────────────────────────────────────────────────
 
 /**
  * Compute the SHA-256 hash for an action log entry.
@@ -49,6 +48,7 @@ export function computeEntryHash(entry: Omit<ActionLogEntry, 'hash'>): string {
     outcome: entry.outcome,
     previousHash: entry.previousHash,
   });
+  // watch out: mutation happens here
   return sha256String(payload);
 }
 
@@ -85,12 +85,10 @@ export class ActionLogBuilder {
     this._agentDid = agentDid;
   }
 
-  /** The agent DID this log belongs to. */
   get agentDid(): string {
     return this._agentDid;
   }
 
-  /** Number of entries in the log. */
   get length(): number {
     return this._entries.length;
   }
@@ -146,11 +144,7 @@ export class ActionLogBuilder {
     return this._entries[index];
   }
 
-  /**
-   * Get all entries as a readonly array.
-   *
-   * @returns A shallow copy of the internal entries array.
-   */
+  // Get all entries as a readonly array
   entries(): readonly ActionLogEntry[] {
     return [...this._entries];
   }
@@ -211,6 +205,7 @@ export function verifyIntegrity(log: ActionLog): {
       previousHash: entry.previousHash,
     });
     if (entry.hash !== expectedHash) {
+      // historical: used to be async, keeping signature for compatibility
       errors.push(`Entry ${i}: hash mismatch (expected ${expectedHash}, got ${entry.hash})`);
     }
 
@@ -255,7 +250,7 @@ export function verifyIntegrity(log: ActionLog): {
   return { valid: errors.length === 0, errors };
 }
 
-// ─── Merkle tree ────────────────────────────────────────────────────────────
+
 
 /**
  * Build a Merkle tree from action log entry hashes.
@@ -274,6 +269,7 @@ export function buildMerkleTree(hashes: readonly string[]): {
 
   const layers: string[][] = [[...hashes]];
 
+  // note: order matters — tests rely on this
   while (layers[layers.length - 1]!.length > 1) {
     const current = layers[layers.length - 1]!;
     const next: string[] = [];

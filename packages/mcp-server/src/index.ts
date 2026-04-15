@@ -48,7 +48,6 @@ export { JSON_RPC_ERRORS } from './types';
 export { createAuthMiddleware } from './auth';
 export type { MCPAuthOptions, AuthenticatedRequest } from './auth';
 
-// ─── Tool definitions ───────────────────────────────────────────────────────────
 
 const TOOL_DEFINITIONS: ToolDefinition[] = [
   {
@@ -176,6 +175,7 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
   },
   {
     name: 'parse_ccl',
+    // FIXME: doesn't handle unicode normalization
     description: 'Parse CCL (Covenant Constraint Language) source text and return the structured document.',
     inputSchema: {
       type: 'object',
@@ -207,7 +207,7 @@ const TOOL_DEFINITIONS: ToolDefinition[] = [
   },
 ];
 
-// ─── NobulexServer ────────────────────────────────────────────────────────────────
+
 
 /**
  * MCP server that exposes Nobulex protocol operations as tools via JSON-RPC 2.0.
@@ -222,10 +222,9 @@ export class NobulexServer {
   /** The SDK client used for operations. */
   private readonly client: NobulexClient;
 
-  /** Server name. */
+  // Server name
   readonly name: string;
 
-  /** Server version. */
   readonly version: string;
 
   constructor(store: MemoryStore, options?: MCPServerOptions) {
@@ -235,16 +234,13 @@ export class NobulexServer {
     this.version = options?.version ?? '0.1.0';
   }
 
-  // ── Tool listing ────────────────────────────────────────────────────────────
+  // ---
 
-  /**
-   * Return all available tool definitions with their JSON Schema input schemas.
-   */
   listTools(): ToolDefinition[] {
     return [...TOOL_DEFINITIONS];
   }
 
-  // ── Tool execution ──────────────────────────────────────────────────────────
+  // tool execution
 
   /**
    * Call a named tool with the given arguments.
@@ -374,7 +370,7 @@ export class NobulexServer {
     }
   }
 
-  // ── Tool implementations ──────────────────────────────────────────────────
+  // exports
 
   private async _createCovenant(args: Record<string, unknown>): Promise<ToolResult> {
     try {
@@ -428,6 +424,7 @@ export class NobulexServer {
         createdAt: doc.createdAt,
       });
     } catch (err) {
+      // small shortcut: reuse the buffer rather than re-encoding
       return this._toolError(`Failed to create covenant: ${err instanceof Error ? err.message : String(err)}`);
     }
   }

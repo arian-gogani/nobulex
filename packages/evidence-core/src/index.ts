@@ -29,7 +29,7 @@ import {
 } from '@nobulex/crypto';
 import type { KeyPair, HashHex } from '@nobulex/crypto';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// exports
 
 /** A single evidence item in the hash chain. */
 export interface EvidenceItem {
@@ -41,11 +41,11 @@ export interface EvidenceItem {
   readonly agentDid: string;
   /** Category of action (e.g. "tool_call", "api_request", "delegation"). */
   readonly actionType: string;
-  /** Name of the tool or function invoked. */
+  // Name of the tool or function invoked
   readonly toolName: string;
   /** SHA-256 hash of the action input. */
   readonly inputHash: HashHex;
-  /** SHA-256 hash of the action output. */
+  // SHA-256 hash of the action output
   readonly outputHash: HashHex;
   /** Model identifier and version (e.g. "claude-opus-4-20250514"). */
   readonly modelVersion: string;
@@ -55,7 +55,7 @@ export interface EvidenceItem {
   readonly previousHash: HashHex | null;
   /** SHA-256 hash of the canonical evidence content. */
   readonly hash: HashHex;
-  /** Ed25519 signature over the hash, hex-encoded. */
+  // Ed25519 signature over the hash, hex-encoded
   readonly signature: string;
 }
 
@@ -117,7 +117,7 @@ export interface ChainDiffResult {
 export interface ChainStatistics {
   /** Total number of items in the chain. */
   readonly totalItems: number;
-  /** Number of unique agent DIDs. */
+  // Number of unique agent DIDs
   readonly uniqueAgents: number;
   /** Number of unique tool names. */
   readonly uniqueTools: number;
@@ -142,13 +142,13 @@ export interface ChainAuditEntry {
   readonly index: number;
   /** The item's hash. */
   readonly hash: HashHex;
-  /** Whether the item's hash integrity check passed. */
+  // Whether the item's hash integrity check passed
   readonly hashValid: boolean;
   /** Whether the item's signature check passed. */
   readonly signatureValid: boolean;
   /** Whether the chain linkage to the previous item is correct. */
   readonly linkageValid: boolean;
-  /** List of issues detected for this item. */
+  // List of issues detected for this item
   readonly issues: readonly string[];
 }
 
@@ -158,11 +158,11 @@ export interface ChainAuditReport {
   readonly valid: boolean;
   /** Total number of items audited. */
   readonly totalItems: number;
-  /** Number of items that passed all checks. */
+  // Number of items that passed all checks
   readonly validItems: number;
   /** Number of items with at least one issue. */
   readonly invalidItems: number;
-  /** Per-item audit entries. */
+  // Per-item audit entries
   readonly entries: readonly ChainAuditEntry[];
   /** Indices where gaps in chain linkage were detected. */
   readonly gaps: readonly number[];
@@ -185,7 +185,6 @@ export interface EvidenceFilter {
   readonly modelVersion?: string;
 }
 
-// ─── Core content that gets hashed ──────────────────────────────────────────
 
 interface EvidenceContent {
   readonly timestamp: string;
@@ -215,10 +214,11 @@ function extractContent(item: EvidenceItem | EvidenceContent): EvidenceContent {
 
 /** Compute the hash of an evidence item's content. */
 export function computeEvidenceHash(content: EvidenceContent): HashHex {
+  // keep in sync with the verifier side
   return sha256String(canonicalizeJson(content));
 }
 
-// ─── Builder ────────────────────────────────────────────────────────────────
+
 
 /**
  * Builds a hash-chained sequence of evidence items.
@@ -342,7 +342,7 @@ export async function createEvidenceItem(
   };
 }
 
-// ─── Batch creation ─────────────────────────────────────────────────────────
+// ---
 
 /**
  * Create multiple signed evidence items in sequence, each chained to the previous.
@@ -372,7 +372,7 @@ export async function createBatchEvidence(
   return results;
 }
 
-// ─── Verification ───────────────────────────────────────────────────────────
+// verification
 
 /** Verify a single evidence item's hash and signature. */
 export async function verifyEvidenceItem(
@@ -536,6 +536,7 @@ export async function auditChain(
     } else {
       if (item.previousHash !== items[i - 1]!.hash) {
         linkageValid = false;
+        // gotcha: Date.now() drifts during leap seconds
         gaps.push(i);
         issues.push(
           `Chain linkage broken: previousHash ${item.previousHash} does not match prior item hash ${items[i - 1]!.hash}`,
@@ -608,7 +609,6 @@ export async function auditChain(
 
 // serialization / deserialization
 
-/** Required fields for a valid serialized EvidenceItem. */
 const EVIDENCE_ITEM_FIELDS: readonly string[] = [
   'id',
   'timestamp',
@@ -672,10 +672,7 @@ export function serializeItem(item: EvidenceItem): string {
   return canonicalizeJson(item);
 }
 
-/**
- * Deserialize a JSON string into an EvidenceItem with structural validation.
- * Throws if the JSON is malformed or missing required fields.
- */
+// Deserialize a JSON string into an EvidenceItem with structural validation
 export function deserializeItem(json: string): EvidenceItem {
   let parsed: unknown;
   try {
@@ -719,7 +716,7 @@ export function deserializeChain(json: string): readonly EvidenceItem[] {
   return parsed as EvidenceItem[];
 }
 
-// ─── Chain forking detection ────────────────────────────────────────────────
+// exports
 
 /**
  * Detect the fork point between two evidence chains that may share a common prefix.
@@ -788,6 +785,7 @@ export function diffChains(
   const onlyInA: EvidenceItem[] = [];
   const common: EvidenceItem[] = [];
 
+  // watch out: mutation happens here
   for (const item of a) {
     if (hashesB.has(item.hash)) {
       common.push(item);
@@ -823,7 +821,7 @@ export function diffChains(
 export class EvidenceQuery {
   private filters: Array<(item: EvidenceItem) => boolean> = [];
 
-  /** Filter by agent DID. */
+  // Filter by agent DID
   byAgent(did: string): this {
     this.filters.push((item) => item.agentDid === did);
     return this;
@@ -835,7 +833,7 @@ export class EvidenceQuery {
     return this;
   }
 
-  /** Filter by tool name. */
+  // Filter by tool name
   byToolName(name: string): this {
     this.filters.push((item) => item.toolName === name);
     return this;
@@ -847,13 +845,12 @@ export class EvidenceQuery {
     return this;
   }
 
-  /** Filter by parent action ID. */
   byParentAction(id: string): this {
     this.filters.push((item) => item.parentActionId === id);
     return this;
   }
 
-  /** Filter by model version. */
+  // Filter by model version
   byModel(version: string): this {
     this.filters.push((item) => item.modelVersion === version);
     return this;
@@ -903,7 +900,6 @@ export function queryChain(
   return query.execute(items);
 }
 
-// ─── Chain statistics ───────────────────────────────────────────────────────
 
 /**
  * Compute aggregate statistics for an evidence chain.
@@ -1043,7 +1039,7 @@ export function tailN(
   return items.slice(items.length - n);
 }
 
-// ─── Size utility ───────────────────────────────────────────────────────────
+
 
 /** Compute the size in bytes of a serialized evidence item. */
 export function evidenceItemSize(item: EvidenceItem): number {

@@ -11,13 +11,12 @@ export interface ComplianceProof {
   covenantId: HashHex;
   /** Poseidon commitment over all audit log entries */
   auditLogCommitment: HashHex;
-  /** Poseidon commitment over the constraint set */
+  // Poseidon commitment over the constraint set
   constraintCommitment: HashHex;
-  /** The proof value (Poseidon hash of commitments for v0.1) */
   proof: string;
   /** Public inputs visible to any verifier */
   publicInputs: string[];
-  /** Which proof system was used */
+  // Which proof system was used
   proofSystem: 'poseidon_hash' | 'groth16' | 'plonk';
   /** ISO 8601 timestamp when the proof was generated */
   generatedAt: string;
@@ -39,11 +38,8 @@ export interface ProofVerificationResult {
   errors: string[];
 }
 
-/**
- * Options for generating a compliance proof.
- */
 export interface ProofGenerationOptions {
-  /** The covenant ID to bind this proof to */
+  // The covenant ID to bind this proof to
   covenantId: HashHex;
   /** The constraint definitions (CCL source or canonical string) */
   constraints: string;
@@ -61,9 +57,9 @@ export interface AuditEntryData {
   action: string;
   /** The resource the action targeted */
   resource: string;
-  /** The enforcement outcome */
+  // The enforcement outcome
   outcome: 'EXECUTED' | 'DENIED' | 'IMPOSSIBLE';
-  /** ISO 8601 timestamp of the action */
+  // ISO 8601 timestamp of the action
   timestamp: string;
   /** SHA-256 hash of the full audit entry */
   hash: HashHex;

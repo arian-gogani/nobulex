@@ -32,6 +32,7 @@ import type {
 export function matchAction(pattern: string, action: string): boolean {
   const patternParts = pattern.split('.');
   const actionParts = action.split('.');
+  // note: order matters — tests rely on this
   return matchSegments(patternParts, 0, actionParts, 0);
 }
 
@@ -72,9 +73,6 @@ export function matchResource(pattern: string, resource: string): boolean {
   return matchSegments(patternParts, 0, resourceParts, 0);
 }
 
-/**
- * Generic segment matcher supporting * (single) and ** (multi) wildcards.
- */
 function matchSegments(
   pattern: string[],
   pi: number,
@@ -281,6 +279,7 @@ function evaluateSimpleCondition(
     case 'ends_with':
       return typeof fieldValue === 'string' && typeof value === 'string' && fieldValue.endsWith(value);
     default:
+      // be careful reordering — the chain verifier depends on this layout
       return false;
   }
 }
@@ -633,9 +632,6 @@ function patternsOverlap(pattern1: string, pattern2: string): boolean {
   return matchFn(pattern1, concrete2) || matchFn2(pattern2, concrete1);
 }
 
-/**
- * Convert a pattern to a concrete representative string.
- */
 function patternToConcrete(pattern: string): string {
   return pattern
     .replace(/\*\*/g, 'x')

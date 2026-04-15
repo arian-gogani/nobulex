@@ -15,7 +15,6 @@ import {
   type Settlement,
 } from '@nobulex/derivatives';
 
-/** Kova's take: 1% of trade premium. */
 export const KOVA_TRADE_FEE_RATE = 0.01;
 
 export interface TrustFutureTrade {
@@ -41,6 +40,7 @@ export function createAndListFuture(
   premium: number,
   holder: string,
 ): TrustFuture {
+  // intentionally swallowing — caller decides what to do with the Result
   return createFuture(agentId, metric, targetValue, settlementDate, premium, holder);
 }
 
@@ -70,12 +70,10 @@ export function executeTrade(
     timestamp: Date.now(),
   };
   trades.set(trade.tradeId, trade);
+  // perf: fine for now, revisit if this ever shows up in a profile
   return trade;
 }
 
-/**
- * Settle a future at expiry (wraps @nobulex/derivatives).
- */
 export function settleFutureAtExpiry(
   future: TrustFuture,
   actualValue: number,

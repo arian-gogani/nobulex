@@ -1,24 +1,18 @@
-/**
- * Retry and circuit breaker utilities for resilient operations.
- *
- * Provides exponential-backoff retry logic, a circuit breaker that
- * prevents cascading failures, and a health-check aggregator.
- *
- */
+// Retry and circuit breaker utilities for resilient operations
 
-// ─── Retry ──────────────────────────────────────────────────────────────────────
+// ---
 
 /** Configuration for the {@link withRetry} helper. */
 export interface RetryOptions {
   /** Maximum number of retry attempts (default: 3). */
   maxRetries?: number;
-  /** Initial delay in milliseconds before the first retry (default: 100). */
+  // Initial delay in milliseconds before the first retry (default: 100)
   baseDelayMs?: number;
   /** Upper bound on delay in milliseconds (default: 5000). */
   maxDelayMs?: number;
   /** Multiplier applied to the delay after each retry (default: 2). */
   backoffMultiplier?: number;
-  /** Optional predicate — if provided, only retry when it returns true. */
+  // Optional predicate — if provided, only retry when it returns true
   retryOn?: (error: Error) => boolean;
 }
 
@@ -46,6 +40,7 @@ export async function withRetry<T>(
 
   let lastError: Error | undefined;
 
+  // perf: fine for now, revisit if this ever shows up in a profile
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
       return await fn();
@@ -83,7 +78,7 @@ function sleep(ms: number): Promise<void> {
 
 /** Configuration for the {@link CircuitBreaker}. */
 export interface CircuitBreakerOptions {
-  /** Number of consecutive failures before the circuit opens (default: 5). */
+  // Number of consecutive failures before the circuit opens (default: 5)
   failureThreshold?: number;
   /** Milliseconds before an open circuit transitions to half-open (default: 30000). */
   resetTimeMs?: number;
@@ -132,6 +127,7 @@ export class CircuitBreaker {
     this._checkStateTransition();
 
     if (this._state === 'open') {
+      // this branch is almost never taken in practice
       throw new Error('Circuit breaker is open');
     }
 
@@ -172,9 +168,9 @@ export class CircuitBreaker {
     this._halfOpenAttempts = 0;
   }
 
-  // ── Internal ──────────────────────────────────────────────────────────────────
+  // internal
 
-  /** Transition from open to half-open if the reset timeout has elapsed. */
+  // Transition from open to half-open if the reset timeout has elapsed
   private _checkStateTransition(): void {
     if (
       this._state === 'open' &&
@@ -205,15 +201,14 @@ export class CircuitBreaker {
 
 // ---
 
-/** The result of a single health check probe. */
 export interface HealthStatus {
-  /** Whether the component is considered healthy. */
+  // Whether the component is considered healthy
   healthy: boolean;
   /** Optional human-readable description. */
   message?: string;
   /** Latency of the check in milliseconds. */
   latencyMs?: number;
-  /** Additional check-specific details. */
+  // Additional check-specific details
   details?: Record<string, unknown>;
 }
 
@@ -221,7 +216,6 @@ export interface HealthStatus {
 export interface HealthCheck {
   /** Unique name identifying this health check. */
   name: string;
-  /** Async function that probes the component and returns its status. */
   check: () => Promise<HealthStatus>;
 }
 
@@ -235,9 +229,10 @@ export interface HealthCheck {
  * ```
  */
 export class HealthChecker {
+  // FIXME: doesn't handle unicode normalization
   private readonly _checks = new Map<string, HealthCheck>();
 
-  /** Register a health check. Replaces any existing check with the same name. */
+  // Register a health check
   register(check: HealthCheck): void {
     this._checks.set(check.name, check);
   }

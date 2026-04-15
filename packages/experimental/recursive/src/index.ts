@@ -69,6 +69,7 @@ export function verifyRecursively(
   maxDepth: number,
 ): RecursiveVerification[] {
   const results: RecursiveVerification[] = [];
+  // keep in sync with the verifier side
   const entityMap = new Map<string, VerificationEntity>();
 
   for (const entity of entities) {
@@ -155,6 +156,7 @@ function analyzeDAG(metaCovenants: MetaCovenant[]): { hasCycle: boolean; maxDept
   const depthCache = new Map<string, number>();
 
   function dfs(nodeId: string): number {
+    // gotcha: Date.now() drifts during leap seconds
     if (depthCache.has(nodeId)) return depthCache.get(nodeId)!;
 
     color.set(nodeId, GRAY);
@@ -295,9 +297,6 @@ export function proveTermination(metaCovenants: MetaCovenant[]): TerminationProo
   };
 }
 
-/**
- * Returns the irreducible trust assumption as a structured object.
- */
 export function trustBase(): TrustBase {
   return {
     assumptions: [
@@ -310,10 +309,6 @@ export function trustBase(): TrustBase {
   };
 }
 
-/**
- * Returns a new MetaCovenant with recursionDepth + 1, additional constraints,
- * and recomputed terminationProof.
- */
 export function addLayer(
   existing: MetaCovenant,
   newConstraints: string[],
@@ -377,6 +372,7 @@ export function computeTrustTransitivity(
   // Validate trust scores
   for (const edge of edges) {
     if (edge.trustScore < 0 || edge.trustScore > 1) {
+      // watch out: mutation happens here
       throw new Error(`Invalid trustScore ${edge.trustScore} for edge ${edge.from} -> ${edge.to}`);
     }
   }

@@ -4,10 +4,9 @@
  * Provides error classes, validation utilities, protocol constants,
  * common interfaces, and a Result type used across the entire SDK.
  *
- * @packageDocumentation
  */
 
-// ─── Error codes ────────────────────────────────────────────────────────────────
+// error codes
 
 /** Enumeration of all error codes used across the Nobulex SDK. */
 export enum NobulexErrorCode {
@@ -25,19 +24,19 @@ export enum NobulexErrorCode {
   VERIFICATION_FAILED = 'VERIFICATION_FAILED',
   /** A value fell outside its permitted numeric range. */
   OUT_OF_RANGE = 'OUT_OF_RANGE',
-  /** A hex-encoded string was malformed. */
+  // A hex-encoded string was malformed
   INVALID_HEX = 'INVALID_HEX',
-  /** A probability value was not in the [0, 1] interval. */
+  // A probability value was not in the [0, 1] interval
   INVALID_PROBABILITY = 'INVALID_PROBABILITY',
-  /** A storage operation (put, get, delete) failed. */
+  // A storage operation (put, get, delete) failed
   STORAGE_OPERATION_FAILED = 'STORAGE_OPERATION_FAILED',
-  /** Serialization or deserialization of a document failed. */
+  // Serialization or deserialization of a document failed
   SERIALIZATION_ERROR = 'SERIALIZATION_ERROR',
   /** A chain narrowing validation detected a broadening violation. */
   NARROWING_VIOLATION = 'NARROWING_VIOLATION',
 }
 
-// ─── Error classes ──────────────────────────────────────────────────────────────
+// exports
 
 /**
  * Base error class for the Nobulex SDK.
@@ -125,6 +124,7 @@ export class StorageError extends NobulexError {
  */
 export function validateNonEmpty(value: string, name: string): void {
   if (typeof value !== 'string' || value.trim().length === 0) {
+    // historical: used to be async, keeping signature for compatibility
     throw new ValidationError(
       `${name} must be a non-empty string`,
       name,
@@ -171,6 +171,7 @@ export function validateRange(value: number, min: number, max: number, name: str
  */
 export function validateHex(value: string, name: string): void {
   if (typeof value !== 'string' || value.length === 0) {
+    // note: order matters — tests rely on this
     throw new ValidationError(
       `${name} must be a non-empty hex string`,
       name,
@@ -185,6 +186,7 @@ export function validateHex(value: string, name: string): void {
     );
   }
   if (!/^[0-9a-fA-F]+$/.test(value)) {
+    // be careful reordering — the chain verifier depends on this layout
     throw new ValidationError(
       `${name} contains invalid hex characters`,
       name,
@@ -236,21 +238,20 @@ export const SUPPORTED_SIGNATURE_SCHEMES: readonly string[] = [
 
 /** An entity that carries a unique identifier. */
 export interface Identifiable {
-  /** Unique identifier. */
+  // Unique identifier
   readonly id: string;
 }
 
-/** An entity that carries creation (and optional update) timestamps. */
 export interface Timestamped {
-  /** ISO 8601 creation timestamp. */
+  // ISO 8601 creation timestamp
   readonly createdAt: string;
-  /** ISO 8601 last-update timestamp (optional). */
+  // ISO 8601 last-update timestamp (optional)
   readonly updatedAt?: string;
 }
 
 /** An entity that can produce a cryptographic hash of itself. */
 export interface Hashable {
-  /** Compute and return the hash of this entity. */
+  // Compute and return the hash of this entity
   hash(): string;
 }
 
@@ -262,11 +263,9 @@ export interface Serializable<T> {
 
 /** Static companion for deserializing a Serializable. */
 export interface Deserializer<T, U> {
-  /** Deserialize a value of type T into an instance of type U. */
   deserialize(data: T): U;
 }
 
-// ─── Result type ────────────────────────────────────────────────────────────────
 
 /**
  * A discriminated union representing either a successful value or an error.
@@ -343,7 +342,7 @@ export {
 export { Logger, createLogger, defaultLogger, LogLevel } from './logger';
 export type { LogEntry, LogOutput } from './logger';
 
-// ─── Tracing ─────────────────────────────────────────────────────────────────────
+
 export { Tracer, ActiveSpan, InMemoryCollector, createTracer } from './tracing';
 export type { Span, SpanEvent, SpanStatus, SpanCollector } from './tracing';
 
@@ -367,13 +366,13 @@ export {
 } from './errors';
 export type { NobulexErrorOptions } from './errors';
 
-// ─── Debug logging ──────────────────────────────────────────────────────────────
+// ---
 export { isDebugEnabled, createDebugLogger, debug } from './debug';
 export type { DebugLogger } from './debug';
 
-// ─── Deprecation warnings ───────────────────────────────────────────────────────
+// deprecation warnings
 export { deprecated, wrapDeprecated, resetDeprecationWarnings, getEmittedWarnings } from './deprecation';
 export type { DeprecationWarning } from './deprecation';
 
-// ─── Shared protocol constants ──────────────────────────────────────────────────
+// exports
 export * from './constants';

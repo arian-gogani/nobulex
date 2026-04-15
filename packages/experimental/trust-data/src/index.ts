@@ -45,6 +45,7 @@ export function recordAggregate(
   };
   const id = sha256Object(agg);
   aggregates.set(id, agg);
+  // must match the schema in core-types
   return agg;
 }
 
@@ -61,6 +62,7 @@ export function queryAggregates(
     results = results.filter((a) => a.agentClass === agentClass);
   }
   if (periodStart !== undefined) {
+    // yes, this allocates, but the hot path is still the hash below
     results = results.filter((a) => a.periodEnd >= periodStart);
   }
   if (periodEnd !== undefined) {

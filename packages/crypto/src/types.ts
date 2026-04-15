@@ -10,14 +10,13 @@ export type Signature = Uint8Array;
 /** Hex-encoded SHA-256 hash */
 export type HashHex = string;
 
-/** Base64url-encoded string (no padding) */
+// Base64url-encoded string (no padding)
 export type Base64Url = string;
 
 /** A key pair for signing and verification */
 export interface KeyPair {
   /** 32-byte private key */
   privateKey: PrivateKey;
-  /** 32-byte public key */
   publicKey: PublicKey;
   /** Hex-encoded public key for display/storage */
   publicKeyHex: string;
@@ -33,7 +32,6 @@ export interface DetachedSignature {
   signerPublicKey: PublicKey;
   /** Hex-encoded public key of signer */
   signerPublicKeyHex: string;
-  /** ISO 8601 timestamp when signature was created */
   timestamp: string;
 }
 

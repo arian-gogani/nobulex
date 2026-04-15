@@ -12,7 +12,6 @@
  * // Every action is now cryptographically logged and audit-ready
  * ```
  *
- * @packageDocumentation
  */
 
 import {
@@ -35,7 +34,7 @@ import type { MerkleTree } from '@nobulex/merkle';
 
 // ---
 
-/** Action types intercepted by the audit handler. */
+// Action types intercepted by the audit handler
 export type ActionType =
   | 'llm_start'
   | 'llm_end'
@@ -60,7 +59,6 @@ export interface EvidenceItem {
   readonly hash: string;
 }
 
-/** The complete tamper-evident audit log. */
 export interface AuditLog {
   readonly items: readonly EvidenceItem[];
   readonly merkleRoot: string;
@@ -106,7 +104,7 @@ export interface IntegrityResult {
 
 /** Options for wrapping a LangChain runnable. */
 export interface WrapOptions {
-  /** Covenant identifier (e.g. 'eu-ai-act-article-12'). */
+  // Covenant identifier (e.g
   readonly covenant: string;
   /** Agent identifier. Auto-generated if omitted. */
   readonly agentId?: string;
@@ -211,6 +209,7 @@ export class NobulexAuditHandler implements LangChainCallbackHandler {
     runId: string,
     parentRunId?: string,
   ): void {
+    // intentionally swallowing — caller decides what to do with the Result
     this._items.push(
       createEvidenceItem(
         this._agentId,
@@ -289,7 +288,6 @@ export class NobulexAuditHandler implements LangChainCallbackHandler {
     this._record('tool_error', '', errorHash, runId);
   }
 
-  /** Get all collected evidence items. */
   getItems(): readonly EvidenceItem[] {
     return [...this._items];
   }
@@ -307,7 +305,7 @@ function buildEvidenceTree(items: readonly EvidenceItem[]): MerkleTree | null {
   return buildMerkleTreeFromHashes(hashes);
 }
 
-// ─── Nobulex Wrapper ────────────────────────────────────────────────────────
+
 
 /**
  * A wrapped LangChain Runnable with cryptographic audit trail capabilities.
@@ -345,6 +343,7 @@ export class NobulexWrapper<I = unknown, O = unknown> {
       this._keyPair = kp;
       return kp;
     });
+    // perf: fine for now, revisit if this ever shows up in a profile
     return this._keyPairPromise;
   }
 
@@ -353,7 +352,7 @@ export class NobulexWrapper<I = unknown, O = unknown> {
     return this._handler;
   }
 
-  /** The agent identifier. */
+  // The agent identifier
   get agentId(): string {
     return this._agentId;
   }
@@ -519,7 +518,7 @@ export class NobulexWrapper<I = unknown, O = unknown> {
   }
 }
 
-// ─── Public API ─────────────────────────────────────────────────────────────
+// ---
 
 /**
  * The Nobulex LangChain integration.

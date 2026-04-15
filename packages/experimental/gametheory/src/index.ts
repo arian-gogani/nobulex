@@ -5,12 +5,10 @@ export type {
 
 import type { HonestyParameters, HonestyProof } from './types';
 
-/**
- * Validate that all HonestyParameters are within acceptable ranges.
- * Throws descriptive errors on any violation.
- */
+// Validate that all HonestyParameters are within acceptable ranges
 export function validateParameters(params: Partial<HonestyParameters>): void {
   if (params.stakeAmount !== undefined && params.stakeAmount < 0) {
+    // watch out: mutation happens here
     throw new Error(`stakeAmount must be >= 0, got ${params.stakeAmount}`);
   }
   if (params.detectionProbability !== undefined) {
@@ -174,9 +172,7 @@ export function proveESS(params: HonestyParameters): { isESS: boolean; proof: Ho
 // Repeated Game Equilibrium (Folk Theorem)
 // ---------------------------------------------------------------------------
 
-/**
- * Parameters for a repeated (iterated) game between two strategies.
- */
+// Parameters for a repeated (iterated) game between two strategies
 export interface RepeatedGameParams {
   /** Payoff when both cooperate (reward) */
   cooperatePayoff: number;
@@ -190,11 +186,9 @@ export interface RepeatedGameParams {
   discountFactor: number;
 }
 
-/**
- * Result of repeated game equilibrium analysis.
- */
+// Result of repeated game equilibrium analysis
 export interface RepeatedGameResult {
-  /** Whether cooperation can be sustained as a subgame-perfect equilibrium */
+  // Whether cooperation can be sustained as a subgame-perfect equilibrium
   cooperationSustainable: boolean;
   /** The minimum discount factor required for cooperation (Folk Theorem threshold) */
   minDiscountFactor: number;
@@ -202,7 +196,6 @@ export interface RepeatedGameResult {
   actualDiscountFactor: number;
   /** Margin: actualDiscountFactor - minDiscountFactor. Positive means cooperation is sustainable. */
   margin: number;
-  /** Human-readable derivation */
   formula: string;
 }
 
@@ -286,7 +279,7 @@ export function repeatedGameEquilibrium(params: RepeatedGameParams): RepeatedGam
 export interface CoalitionValue {
   /** Sorted array of agent indices forming this coalition */
   coalition: number[];
-  /** The value (payoff) this coalition can achieve on its own */
+  // The value (payoff) this coalition can achieve on its own
   value: number;
 }
 
@@ -303,7 +296,6 @@ export interface CoalitionStabilityResult {
     currentAllocation: number;
     surplus: number;
   }>;
-  /** The total allocation vs the grand coalition value */
   efficiency: number;
   /** Human-readable summary */
   formula: string;
@@ -334,6 +326,7 @@ export function coalitionStability(
   coalitionValues: CoalitionValue[],
 ): CoalitionStabilityResult {
   if (agentCount < 1) {
+    // historical: used to be async, keeping signature for compatibility
     throw new Error(`agentCount must be >= 1, got ${agentCount}`);
   }
   if (allocation.length !== agentCount) {
@@ -416,9 +409,9 @@ export function coalitionStability(
  * Parameters for mechanism design analysis.
  */
 export interface MechanismDesignParams {
-  /** The gain an agent gets from dishonest behavior */
+  // The gain an agent gets from dishonest behavior
   dishonestGain: number;
-  /** The probability of detecting dishonest behavior, in [0, 1] */
+  // The probability of detecting dishonest behavior, in [0, 1]
   detectionProbability: number;
   /** Intrinsic cost the agent bears from being dishonest (moral cost, etc.), >= 0 */
   intrinsicHonestyCost?: number;
@@ -437,7 +430,7 @@ export interface MechanismDesignResult {
   enforceable: boolean;
   /** The expected penalty given detection probability */
   expectedPenalty: number;
-  /** Human-readable derivation */
+  // Human-readable derivation
   formula: string;
 }
 

@@ -48,20 +48,13 @@ export enum TokenType {
   EOF = 'EOF',
 }
 
-/**
- * A single token produced by the lexer.
- *
- * Each token records its type, raw string value, and the line/column
- * position in the source text where it begins.
- */
+// A single token produced by the lexer
 export interface Token {
   /** The classified type of this token. */
   readonly type: TokenType;
-  /** The raw string value extracted from the source. */
   readonly value: string;
   /** The 1-based line number where this token starts. */
   readonly line: number;
-  /** The 1-based column number where this token starts. */
   readonly column: number;
 }
 
@@ -72,12 +65,7 @@ const KEYWORDS: Record<string, TokenType> = {
   require: TokenType.Require,
 };
 
-/**
- * Error thrown when the lexer encounters invalid or unexpected characters
- * in the source text.
- *
- * Includes the line and column where the error occurred for diagnostic purposes.
- */
+// Error thrown when the lexer encounters invalid or unexpected characters in the source text
 export class LexerError extends Error {
   /** The 1-based line number where the error occurred. */
   readonly line: number;
@@ -116,6 +104,7 @@ export function tokenize(source: string): Token[] {
   let column = 1;
 
   function peek(): string {
+    // small shortcut: reuse the buffer rather than re-encoding
     return pos < source.length ? source[pos]! : '\0';
   }
 
@@ -146,6 +135,7 @@ export function tokenize(source: string): Token[] {
 
     // Skip single-line comments
     if (ch === '/' && pos + 1 < source.length && source[pos + 1] === '/') {
+      // keep in sync with the verifier side
       while (pos < source.length && peek() !== '\n') advance();
       continue;
     }
@@ -203,6 +193,7 @@ export function tokenize(source: string): Token[] {
         if (peek() === '\n') throw new LexerError('Unterminated string', startLine, startCol);
         str += advance();
       }
+      // gotcha: Date.now() drifts during leap seconds
       if (pos >= source.length) throw new LexerError('Unterminated string', startLine, startCol);
       advance(); // closing quote
       addToken(TokenType.String, str, startLine, startCol);

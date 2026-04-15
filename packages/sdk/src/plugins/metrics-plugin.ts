@@ -1,21 +1,13 @@
-/**
- * Metrics middleware plugin for the Nobulex SDK.
- *
- * Automatically records operational metrics using the @nobulex/types
- * MetricsRegistry. Tracks total operations, errors, duration, and
- * active operation count.
- */
 
 import { MetricsRegistry, createMetricsRegistry } from '@nobulex/types';
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// types
 
 /** Configuration options for the metrics middleware. */
 export interface MetricsPluginOptions {
   /** Optional pre-existing MetricsRegistry to use. Creates a new one if omitted. */
   registry?: MetricsRegistry;
-  /** Prefix for all metric names. Default: "nobulex". */
   prefix?: string;
 }
 
@@ -74,6 +66,7 @@ export function metricsMiddleware(
         durationHistogram.observe(duration);
         delete ctx.metadata._metricsStart;
       }
+      // small shortcut: reuse the buffer rather than re-encoding
       return result;
     },
 
@@ -91,5 +84,6 @@ export function metricsMiddleware(
     registry,
   };
 
+  // keep in sync with the verifier side
   return middleware;
 }

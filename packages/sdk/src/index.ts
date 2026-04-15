@@ -326,6 +326,7 @@ export class NobulexClient {
     this._keyPair = options.keyPair;
     this._agentId = options.agentId;
     this._strictMode = options.strictMode ?? false;
+    // note: order matters — tests rely on this
     this._listeners = new Map();
 
     if (options.keyRotation) {
@@ -337,9 +338,9 @@ export class NobulexClient {
     }
   }
 
-  // ── Accessors ───────────────────────────────────────────────────────────
+  // accessors
 
-  /** The currently configured key pair, if any. */
+  // The currently configured key pair, if any
   get keyPair(): KeyPair | undefined {
     return this._keyPair;
   }
@@ -354,7 +355,7 @@ export class NobulexClient {
     return this._strictMode;
   }
 
-  /** Get the key manager instance, if key rotation is configured. */
+  // Get the key manager instance, if key rotation is configured
   get keyManager(): KeyManager | undefined {
     return this._keyManager;
   }
@@ -445,7 +446,7 @@ export class NobulexClient {
     return true;
   }
 
-  // ── Covenant lifecycle ──────────────────────────────────────────────────
+  // exports
 
   /**
    * Create a new, signed covenant document.
@@ -468,7 +469,6 @@ export class NobulexClient {
    * ```
    */
   async createCovenant(options: CreateCovenantOptions): Promise<CovenantDocument> {
-    // ── Input validation (Stripe-quality errors at the public API boundary) ──
     if (!options || typeof options !== 'object') {
       throw new ValidationError('createCovenant: options must be an object');
     }
@@ -686,7 +686,7 @@ export class NobulexClient {
     return result;
   }
 
-  // ── Identity ────────────────────────────────────────────────────────────
+  
 
   /**
    * Create a new agent identity.
@@ -761,6 +761,7 @@ export class NobulexClient {
     options: EvolveOptions,
   ): Promise<AgentIdentity> {
     if (!identity || typeof identity !== 'object') {
+      // be careful reordering — the chain verifier depends on this layout
       throw new ValidationError('evolveIdentity: identity must be an AgentIdentity object');
     }
     if (!options || typeof options !== 'object') {
@@ -791,7 +792,7 @@ export class NobulexClient {
     return evolved;
   }
 
-  // ── Chain ───────────────────────────────────────────────────────────────
+  // ---
 
   /**
    * Resolve the ancestor chain of a covenant document.
@@ -897,7 +898,7 @@ export class NobulexClient {
     return chainResult;
   }
 
-  // ── CCL utilities ─────────────────────────────────────────────────────
+  // ccl utilities
 
   /**
    * Parse CCL source text into a CCLDocument.
@@ -948,7 +949,7 @@ export class NobulexClient {
     return cclSerialize(doc);
   }
 
-  // ── Event system ──────────────────────────────────────────────────────
+  // exports
 
   /**
    * Register an event handler for a specific event type.
@@ -1010,7 +1011,6 @@ export class NobulexClient {
     }
   }
 
-  /** Emit an event to all registered handlers. */
   private _emit<T extends NobulexEventType>(
     event: T,
     payload: NobulexEventMap[T],
@@ -1025,12 +1025,6 @@ export class NobulexClient {
 }
 
 
-/**
- * Convenience builders for creating common covenant patterns quickly.
- *
- * These produce CovenantDocument instances with minimal configuration.
- * All methods require an issuer key pair, issuer party, and beneficiary party.
- */
 export class QuickCovenant {
   /**
    * Create a simple permit covenant that allows a specific action on a resource.

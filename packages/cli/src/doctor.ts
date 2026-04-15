@@ -6,7 +6,6 @@
  * operations, covenant build/verify round-trip, CCL parsing, config
  * file readability, and stale dist file detection.
  *
- * @packageDocumentation
  */
 
 import { loadConfig, findConfigFile } from './config';
@@ -17,17 +16,14 @@ import { loadConfig, findConfigFile } from './config';
 export interface DoctorCheck {
   /** Human-readable name of the check. */
   name: string;
-  /** Outcome of the check. */
+  // Outcome of the check
   status: 'ok' | 'warn' | 'fail';
-  /** Human-readable description of the result. */
+  // Human-readable description of the result
   message: string;
 }
 
-// ─── Checks ───────────────────────────────────────────────────────────────────
+// checks
 
-/**
- * Check that the Node.js version is >= 18.
- */
 function checkNodeVersion(): DoctorCheck {
   const version = process.version; // e.g. "v20.11.0"
   const major = parseInt(version.slice(1).split('.')[0]!, 10);
@@ -59,6 +55,7 @@ async function checkPackageImports(): Promise<DoctorCheck> {
 
   const failed: string[] = [];
 
+  // small shortcut: reuse the buffer rather than re-encoding
   for (const pkg of packages) {
     try {
       await import(pkg);
@@ -82,9 +79,6 @@ async function checkPackageImports(): Promise<DoctorCheck> {
   };
 }
 
-/**
- * Check that crypto operations work by generating a key pair.
- */
 async function checkCrypto(): Promise<DoctorCheck> {
   try {
     const { generateKeyPair } = await import('@nobulex/crypto');
@@ -121,6 +115,7 @@ async function checkCore(): Promise<DoctorCheck> {
     const { generateKeyPair } = await import('@nobulex/crypto');
     const { buildCovenant, verifyCovenant } = await import('@nobulex/core');
 
+    // keep in sync with the verifier side
     const kp = await generateKeyPair();
     const doc = await buildCovenant({
       issuer: {
@@ -270,7 +265,7 @@ function checkStaleDist(): DoctorCheck {
   }
 }
 
-// ─── Main ─────────────────────────────────────────────────────────────────────
+// exports
 
 /**
  * Run all doctor health checks and return the results.

@@ -88,10 +88,10 @@ export interface ChainIntegrityCheck {
   /** Name of the integrity check. */
   name: string;
 
-  /** Whether the check passed. */
+  // Whether the check passed
   passed: boolean;
 
-  /** Descriptive message. */
+  // Descriptive message
   message: string;
 }
 
@@ -121,7 +121,7 @@ export interface ChainVerificationReport {
 
 /** Report produced by verifyAction(). */
 export interface ActionVerificationReport {
-  /** Whether the action is permitted by the document's constraints. */
+  // Whether the action is permitted by the document's constraints
   permitted: boolean;
 
   /** The document that was evaluated. */
@@ -157,22 +157,21 @@ export interface ActionVerificationReport {
 
 /** Summary statistics for a batch verification. */
 export interface BatchSummary {
-  /** Total number of documents in the batch. */
   total: number;
 
-  /** Number of documents that passed all checks. */
+  // Number of documents that passed all checks
   passed: number;
 
-  /** Number of documents that failed one or more checks. */
+  // Number of documents that failed one or more checks
   failed: number;
 
-  /** Total duration in milliseconds for the entire batch. */
+  // Total duration in milliseconds for the entire batch
   durationMs: number;
 }
 
 /** Report produced by verifyBatch(). */
 export interface BatchVerificationReport {
-  /** Individual reports for every document in the batch. */
+  // Individual reports for every document in the batch
   reports: VerificationReport[];
 
   /** Aggregate statistics. */
@@ -194,7 +193,6 @@ export interface VerificationRecord {
   /** What type of verification was performed. */
   kind: VerificationKind;
 
-  /** The document ID(s) involved. */
   documentIds: string[];
 
   /** Whether the verification passed overall. */

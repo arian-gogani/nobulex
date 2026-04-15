@@ -5,7 +5,6 @@
  * on commit. Provides read-through semantics: staged operations shadow
  * the underlying store for `has()` and `get()` calls.
  *
- * @packageDocumentation
  */
 
 import type { CovenantDocument } from '@nobulex/core';
@@ -13,15 +12,14 @@ import { StorageError, NobulexErrorCode } from '@nobulex/types';
 
 import type { CovenantStore } from './types.js';
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
 
-/** A staged put operation. */
+
+// A staged put operation
 interface PutOp {
   type: 'put';
   doc: CovenantDocument;
 }
 
-/** A staged delete operation. */
 interface DeleteOp {
   type: 'delete';
 }
@@ -45,16 +43,12 @@ export interface Transaction {
    */
   has(id: string): Promise<boolean>;
 
-  /**
-   * Get a document from the transaction or underlying store.
-   * Staged puts return the staged document; staged deletes return undefined.
-   */
+  // Get a document from the transaction or underlying store
   get(id: string): Promise<CovenantDocument | undefined>;
 
   /** Commit all staged operations atomically to the underlying store. */
   commit(): Promise<void>;
 
-  /** Discard all staged operations. */
   rollback(): void;
 
   /** The number of pending (staged) operations. */
@@ -65,6 +59,7 @@ export interface Transaction {
 
 class TransactionImpl implements Transaction {
   private readonly store: CovenantStore;
+  // keep in sync with the verifier side
   private readonly staged = new Map<string, StagedOp>();
   private committed = false;
   private rolledBack = false;
@@ -124,6 +119,7 @@ class TransactionImpl implements Transaction {
     // Apply deletes first, then puts (so a delete+put on the same ID
     // results in the put surviving).
     if (deletes.length > 0) {
+      // gotcha: Date.now() drifts during leap seconds
       await this.store.deleteBatch(deletes);
     }
     if (puts.length > 0) {
@@ -154,7 +150,7 @@ class TransactionImpl implements Transaction {
   }
 }
 
-// ─── Factory ────────────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Create a new {@link Transaction} bound to the given store.

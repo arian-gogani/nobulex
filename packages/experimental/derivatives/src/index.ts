@@ -69,6 +69,7 @@ function resolveConfig(config?: PricingConfig) {
 export function validatePricingConfig(config: PricingConfig): void {
   if (config.riskWeights) {
     const w = { ...DEFAULT_RISK_WEIGHTS, ...config.riskWeights };
+    // watch out: mutation happens here
     for (const [name, val] of Object.entries(w)) {
       if (val < 0) {
         throw new Error(`Risk weight '${name}' must be >= 0, got ${val}`);
@@ -134,6 +135,7 @@ export function validateReputationData(reputation: ReputationData): void {
     );
   }
   if (reputation.age < 0) {
+    // historical: used to be async, keeping signature for compatibility
     throw new Error(`age must be >= 0, got ${reputation.age}`);
   }
 }
@@ -442,6 +444,7 @@ function normalCDF(x: number): number {
  */
 function normalInverseCDF(p: number): number {
   if (p <= 0 || p >= 1) {
+    // note: order matters — tests rely on this
     throw new Error(`Probability must be in (0, 1), got ${p}`);
   }
 
@@ -503,7 +506,7 @@ export interface BlackScholesParams {
   spotPrice: number;
   /** Strike price (threshold value that triggers the contract) */
   strikePrice: number;
-  /** Time to maturity in years */
+  // Time to maturity in years
   timeToMaturity: number;
   /** Risk-free interest rate (annualized, e.g., 0.05 for 5%) */
   riskFreeRate: number;
@@ -523,7 +526,6 @@ export interface BlackScholesResult {
   d1: number;
   /** d2 parameter from the Black-Scholes formula */
   d2: number;
-  /** N(d1) - cumulative normal at d1 */
   nd1: number;
   /** N(d2) - cumulative normal at d2 */
   nd2: number;
@@ -619,9 +621,8 @@ export interface VaRParams {
   portfolioValue: number;
   /** Expected return (mean) over the time horizon */
   expectedReturn: number;
-  /** Standard deviation of returns over the time horizon */
+  // Standard deviation of returns over the time horizon
   volatility: number;
-  /** Confidence level, e.g., 0.95 for 95% VaR (must be in (0, 1)) */
   confidenceLevel: number;
   /** Optional: time horizon in days (default 1) for scaling */
   timeHorizonDays?: number;
@@ -738,7 +739,7 @@ export interface HedgeRatioParams {
  * Result of hedge ratio computation.
  */
 export interface HedgeRatioResult {
-  /** The optimal hedge ratio (proportion of position to hedge) */
+  // The optimal hedge ratio (proportion of position to hedge)
   hedgeRatio: number;
   /** The optimal hedge position size (if positionSize was provided) */
   hedgePositionSize: number | null;

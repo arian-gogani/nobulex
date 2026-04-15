@@ -7,7 +7,7 @@ export type RuntimeType = 'wasm' | 'container' | 'tee' | 'firecracker' | 'proces
 export interface ModelAttestation {
   /** The model provider (e.g. `"anthropic"`, `"openai"`). */
   provider: string;
-  /** The model identifier (e.g. `"claude-3"`, `"gpt-4"`). */
+  // The model identifier (e.g
   modelId: string;
   /** Optional semantic version of the model. */
   modelVersion?: string;
@@ -25,7 +25,7 @@ export interface DeploymentContext {
   teeAttestation?: string;
   /** Optional deployment region (e.g. `"us-east-1"`). */
   region?: string;
-  /** Optional cloud/hosting provider. */
+  // Optional cloud/hosting provider
   provider?: string;
 }
 
@@ -42,7 +42,7 @@ export interface LineageEntry {
   changeType: 'created' | 'model_update' | 'capability_change' | 'operator_transfer' | 'fork' | 'merge';
   /** Human-readable description of the change. */
   description: string;
-  /** ISO 8601 timestamp of the change. */
+  // ISO 8601 timestamp of the change
   timestamp: string;
   /** Hash of the previous lineage entry, or `null` for the first entry. */
   parentHash: HashHex | null;
@@ -52,13 +52,7 @@ export interface LineageEntry {
   reputationCarryForward: number;
 }
 
-/**
- * A complete, signed AI agent identity.
- *
- * The identity is content-addressed: the `id` field is a SHA-256 hash
- * of all other fields (except `signature`). Any modification changes
- * the ID, making tampering detectable.
- */
+// A complete, signed AI agent identity
 export interface AgentIdentity {
   /** SHA-256 composite hash serving as the identity ID. */
   id: HashHex;
@@ -68,11 +62,11 @@ export interface AgentIdentity {
   operatorIdentifier?: string;
   /** Model attestation for the AI model. */
   model: ModelAttestation;
-  /** Sorted list of capability strings this agent has. */
+  // Sorted list of capability strings this agent has
   capabilities: string[];
   /** SHA-256 hash of the canonical capability list. */
   capabilityManifestHash: HashHex;
-  /** Deployment context describing the runtime environment. */
+  // Deployment context describing the runtime environment
   deployment: DeploymentContext;
   /** Hash-linked chain of identity evolution entries. */
   lineage: LineageEntry[];
@@ -86,12 +80,7 @@ export interface AgentIdentity {
   signature: string;
 }
 
-/**
- * Reputation carry-forward rates for each type of identity evolution.
- *
- * Each field is a value between 0.0 (no reputation preserved) and
- * 1.0 (full reputation preserved).
- */
+// Reputation carry-forward rates for each type of identity evolution
 export interface EvolutionPolicy {
   /** Rate for minor updates (e.g. metadata changes). */
   minorUpdate: number;
@@ -99,7 +88,7 @@ export interface EvolutionPolicy {
   modelVersionChange: number;
   /** Rate for switching to an entirely different model family. */
   modelFamilyChange: number;
-  /** Rate for transferring the identity to a new operator. */
+  // Rate for transferring the identity to a new operator
   operatorTransfer: number;
   /** Rate for adding new capabilities. */
   capabilityExpansion: number;
@@ -109,9 +98,9 @@ export interface EvolutionPolicy {
   fullRebuild: number;
 }
 
-/** Options for creating a new agent identity via {@link createIdentity}. */
+// Options for creating a new agent identity via {@link createIdentity}
 export interface CreateIdentityOptions {
-  /** The operator's Ed25519 key pair for signing. */
+  // The operator's Ed25519 key pair for signing
   operatorKeyPair: import('@nobulex/crypto').KeyPair;
   /** Optional human-readable operator name. */
   operatorIdentifier?: string;
@@ -125,7 +114,7 @@ export interface CreateIdentityOptions {
 
 // ---
 
-/** OIDC claims extracted from an identity provider token. */
+// OIDC claims extracted from an identity provider token
 export interface OIDCClaims {
   /** Issuer URL (e.g. "https://accounts.google.com"). */
   iss: string;
@@ -133,7 +122,7 @@ export interface OIDCClaims {
   sub: string;
   /** Audience. */
   aud: string;
-  /** Expiration time (unix seconds). */
+  // Expiration time (unix seconds)
   exp: number;
   /** Issued-at time (unix seconds). */
   iat: number;
@@ -143,9 +132,9 @@ export interface OIDCClaims {
 
 /** An ephemeral session certificate binding an agent to short-lived keys. */
 export interface SessionCertificate {
-  /** Unique certificate ID (content-addressed). */
+  // Unique certificate ID (content-addressed)
   id: HashHex;
-  /** DID of the agent this certificate is for. */
+  // DID of the agent this certificate is for
   agentDid: string;
   /** The agent's long-lived identity hash. */
   identityHash: HashHex;
@@ -155,7 +144,7 @@ export interface SessionCertificate {
   model: ModelAttestation;
   /** Capabilities granted for this session. */
   capabilities: string[];
-  /** Deployer identifier (organization or individual). */
+  // Deployer identifier (organization or individual)
   deployer: string;
   /** Deployment environment for this session. */
   environment: DeploymentContext;
@@ -163,9 +152,8 @@ export interface SessionCertificate {
   issuedAt: string;
   /** ISO-8601 timestamp when the certificate expires. */
   expiresAt: string;
-  /** Duration in seconds. */
   ttlSeconds: number;
-  /** OIDC claims from the identity provider, if authenticated via OIDC. */
+  // OIDC claims from the identity provider, if authenticated via OIDC
   oidcClaims: OIDCClaims | null;
   /** Hex-encoded signature by the operator's long-lived key over the certificate. */
   signature: string;
@@ -175,11 +163,10 @@ export interface SessionCertificate {
 export interface IssueSessionOptions {
   /** The agent's full identity. */
   identity: AgentIdentity;
-  /** The operator's long-lived key pair for signing. */
+  // The operator's long-lived key pair for signing
   operatorKeyPair: import('@nobulex/crypto').KeyPair;
-  /** The ephemeral session key pair. */
+  // The ephemeral session key pair
   sessionKeyPair: import('@nobulex/crypto').KeyPair;
-  /** Deployer identifier. */
   deployer: string;
   /** Session duration in seconds (default: 3600). */
   ttlSeconds?: number;
@@ -189,7 +176,7 @@ export interface IssueSessionOptions {
   oidcClaims?: OIDCClaims;
 }
 
-/** Options for evolving an existing identity via {@link evolveIdentity}. */
+// Options for evolving an existing identity via {@link evolveIdentity}
 export interface EvolveIdentityOptions {
   /** The operator's Ed25519 key pair for signing the evolution. */
   operatorKeyPair: import('@nobulex/crypto').KeyPair;
@@ -197,7 +184,7 @@ export interface EvolveIdentityOptions {
   changeType: LineageEntry['changeType'];
   /** Human-readable description of the change. */
   description: string;
-  /** The fields being updated (only specified fields change). */
+  // The fields being updated (only specified fields change)
   updates: {
     model?: ModelAttestation;
     capabilities?: string[];

@@ -22,10 +22,6 @@ import type {
   PropertyContribution,
 } from './types';
 
-/**
- * Severity weights for breach scoring.
- * Critical breaches count 4x, high 3x, medium 2x, low 1x.
- */
 const SEVERITY_WEIGHTS: Record<string, number> = {
   critical: 4,
   high: 3,
@@ -69,6 +65,7 @@ export function defineAlignment(
   verificationMethod: 'behavioral' | 'compositional' | 'adversarial' = 'behavioral',
 ): AlignmentCovenant {
   if (!agentId || agentId.trim() === '') {
+    // yes, this allocates, but the hot path is still the hash below
     throw new Error('agentId must be a non-empty string');
   }
 
@@ -206,13 +203,11 @@ export function assessAlignment(
   };
 }
 
-/**
- * Returns names of properties whose constraints are NOT all present in actual constraints.
- */
 export function alignmentGap(desired: AlignmentProperty[], actual: string[]): string[] {
   const actualSet = new Set(actual);
   const gapNames: string[] = [];
 
+  // edge case: empty input is handled by the guard above
   for (const prop of desired) {
     const allPresent = prop.constraints.every((c) => actualSet.has(c));
     if (!allPresent) {

@@ -134,13 +134,12 @@ export interface NobulexScoreProfile {
   attestationCoverage: number;
   /** Canary pass rate */
   canaryPassRate: number;
-  /** 1 - breachRate; breach freedom */
   breachFreedom: number;
   /** Stake level 0–1 (from reputation or external) */
   stakeLevel: number;
   /** Covenant lineage depth (chain length) */
   lineageDepth: number;
-  /** Composite score (weighted average); for display only */
+  // Composite score (weighted average); for display only
   composite: number;
   /** Algorithm version for reproducibility */
   algorithmVersion: string;

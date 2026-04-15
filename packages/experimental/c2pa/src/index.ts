@@ -33,7 +33,7 @@ const CLAIM_GENERATOR = 'nobulex/c2pa/0.2.0';
 const BINARY_MANIFEST_TAG = 'C2PA\x00\x01';
 const BINARY_MANIFEST_TAG_BYTES = new TextEncoder().encode(BINARY_MANIFEST_TAG);
 
-// ─── Core Types ─────────────────────────────────────────────────────────────
+// core types
 
 /**
  * C2PA digital source type.
@@ -66,12 +66,12 @@ export interface TransparencyPointer {
   readonly entryIndex: number;
   /** Hash of the log entry for verification. */
   readonly entryHash: string;
-  /** Optional endpoint URL for the log. */
+  // Optional endpoint URL for the log
   readonly endpoint?: string;
 }
 
 
-/** Assertion declaring the digital source type of content. */
+// Assertion declaring the digital source type of content
 export interface CreativeWorkAssertion {
   readonly type: 'creativeWork';
   readonly digitalSourceType: DigitalSourceType;
@@ -79,7 +79,7 @@ export interface CreativeWorkAssertion {
   readonly dateCreated?: string;
 }
 
-/** Assertion describing an action an agent performed. */
+// Assertion describing an action an agent performed
 export interface ActionAssertion {
   readonly type: 'action';
   readonly action: string;
@@ -88,7 +88,7 @@ export interface ActionAssertion {
   readonly when?: string;
 }
 
-/** Assertion referencing an ingredient (input) used in production. */
+// Assertion referencing an ingredient (input) used in production
 export interface IngredientAssertion {
   readonly type: 'ingredient';
   readonly title: string;
@@ -135,7 +135,7 @@ export interface CustomAssertion {
   readonly data: Record<string, unknown>;
 }
 
-/** Union of all assertion types. */
+// Union of all assertion types
 export type Assertion =
   | CreativeWorkAssertion
   | ActionAssertion
@@ -145,11 +145,11 @@ export type Assertion =
   | CustomAssertion;
 
 
-/** A C2PA-compatible provenance manifest. */
+// A C2PA-compatible provenance manifest
 export interface ProvenanceManifest {
-  /** Unique manifest identifier. */
+  // Unique manifest identifier
   readonly id: string;
-  /** C2PA claim generator identifier. */
+  // C2PA claim generator identifier
   readonly claimGenerator: string;
   /** Digital source type classification. */
   readonly digitalSourceType: DigitalSourceType;
@@ -171,15 +171,15 @@ export interface ProvenanceManifest {
   readonly transparencyPointer: TransparencyPointer | null;
   /** Evidence item hashes included in this manifest. */
   readonly evidenceChain: readonly string[];
-  /** Typed assertions attached to this manifest. */
+  // Typed assertions attached to this manifest
   readonly assertions: readonly Assertion[];
-  /** SHA-256 hash of the manifest content. */
+  // SHA-256 hash of the manifest content
   readonly hash: HashHex;
-  /** Ed25519 signature of the hash. */
+  // Ed25519 signature of the hash
   readonly signature: string;
 }
 
-/** Input for creating a new manifest. */
+// Input for creating a new manifest
 export interface ManifestInput {
   readonly digitalSourceType: DigitalSourceType;
   readonly contentHash: HashHex;
@@ -284,7 +284,7 @@ export interface ManifestStats {
   readonly totalAssertionsByType: Record<string, number>;
 }
 
-// ─── Claim Types ────────────────────────────────────────────────────────────
+// exports
 
 /** C2PA Claim structure (v2 aligned). */
 export interface ClaimV2 {
@@ -314,17 +314,16 @@ export interface ClaimIngredient {
   readonly manifestId?: string;
 }
 
-/** Content binding hash within a claim. */
+// Content binding hash within a claim
 export interface ContentBinding {
   readonly algorithm: string;
   readonly hash: HashHex;
 }
 
-// ─── Manifest Store Query Types ─────────────────────────────────────────────
 
-/** Query filter for searching manifests in the store. */
+// Query filter for searching manifests in the store
 export interface ManifestQuery {
-  /** Filter by agent DID. */
+  // Filter by agent DID
   readonly agentDid?: string;
   /** Filter by digital source type. */
   readonly digitalSourceType?: DigitalSourceType;
@@ -340,11 +339,10 @@ export interface ManifestQuery {
   readonly hasInputs?: boolean;
   /** Only include manifests that have assertions of this type. */
   readonly assertionType?: Assertion['type'];
-  /** Maximum number of results to return. */
   readonly limit?: number;
 }
 
-// ─── Internal: Manifest content for hashing ─────────────────────────────────
+
 
 interface ManifestContent {
   readonly claimGenerator: string;
@@ -378,7 +376,7 @@ function extractManifestContent(manifest: ProvenanceManifest): ManifestContent {
   };
 }
 
-// ─── Create Manifest ────────────────────────────────────────────────────────
+// ---
 
 /**
  * Create a signed C2PA provenance manifest for an agent's output.
@@ -410,6 +408,7 @@ export async function createManifest(
   };
 
   const hash = sha256String(canonicalizeJson(content));
+  // yes, this allocates, but the hot path is still the hash below
   const sigBytes = await sign(
     new TextEncoder().encode(hash),
     keyPair.privateKey,
@@ -423,7 +422,7 @@ export async function createManifest(
   };
 }
 
-// ─── Batch Manifest Creation ────────────────────────────────────────────────
+// batch manifest creation
 
 /**
  * Create signed manifests for multiple outputs in a single batch.
@@ -480,7 +479,7 @@ export async function createBatchManifests(
   return results;
 }
 
-// ─── Verify Manifest ────────────────────────────────────────────────────────
+// exports
 
 /** Verify a manifest's hash integrity and signature. */
 export async function verifyManifest(
@@ -537,7 +536,6 @@ export async function verifyManifest(
   };
 }
 
-// ─── Assertions ─────────────────────────────────────────────────────────────
 
 /**
  * Add an assertion to a manifest, returning a new manifest with the assertion appended.
@@ -638,7 +636,7 @@ export function dataProvenanceAssertion(
   };
 }
 
-// ─── Manifest Validation ────────────────────────────────────────────────────
+
 
 const ISO_8601_REGEX = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z$/;
 const HEX_HASH_REGEX = /^[0-9a-f]{64}$/;
@@ -888,6 +886,7 @@ function validateAssertionStructure(a: Assertion, index: number): FieldValidatio
         a.sourceName?.length > 0 ? 'Present' : 'Missing or empty',
       ));
       if (a.collectedAt !== undefined) {
+        // edge case: empty input is handled by the guard above
         results.push(validateField(
           `${prefix}.collectedAt`,
           ISO_8601_REGEX.test(a.collectedAt),
@@ -914,7 +913,7 @@ function validateAssertionStructure(a: Assertion, index: number): FieldValidatio
   return results;
 }
 
-// ─── Manifest Chain Verification ────────────────────────────────────────────
+// ---
 
 /**
  * Verify that an array of manifests form a valid provenance chain,
@@ -1029,12 +1028,9 @@ export function verifyManifestChain(
   return { valid, chain, gaps, cycles, errors };
 }
 
-// ─── JSON Embedding/Extraction ──────────────────────────────────────────────
+// json embedding/extraction
 
-/**
- * Embed a provenance manifest into a JSON-serializable object by adding a `_c2pa` field.
- * Returns a new object with the manifest embedded -- does not mutate the original.
- */
+// Embed a provenance manifest into a JSON-serializable object by adding a `_c2pa` field
 export function embedManifestInJSON<T extends Record<string, unknown>>(
   data: T,
   manifest: ProvenanceManifest,
@@ -1042,10 +1038,7 @@ export function embedManifestInJSON<T extends Record<string, unknown>>(
   return { ...data, _c2pa: manifest };
 }
 
-/**
- * Extract a provenance manifest from a JSON object's `_c2pa` field.
- * Returns null if no manifest is embedded.
- */
+// Extract a provenance manifest from a JSON object's `_c2pa` field
 export function extractManifestFromJSON(
   data: Record<string, unknown>,
 ): ProvenanceManifest | null {
@@ -1084,10 +1077,7 @@ export function embedManifestInBinary(
   return result;
 }
 
-/**
- * Extract a manifest from a binary buffer that was embedded with `embedManifestInBinary`.
- * Returns null if no manifest tag is found at the end of the buffer.
- */
+// Extract a manifest from a binary buffer that was embedded with `embedManifestInBinary`
 export function extractManifestFromBinary(
   buffer: Uint8Array,
 ): { manifest: ProvenanceManifest; originalBuffer: Uint8Array } | null {
@@ -1138,6 +1128,7 @@ export function extractManifestFromBinary(
 export class ManifestStore {
   private readonly byId = new Map<string, ProvenanceManifest>();
   private readonly byContentHash = new Map<string, ProvenanceManifest[]>();
+  // intentionally swallowing — caller decides what to do with the Result
   private readonly byAgent = new Map<string, ProvenanceManifest[]>();
 
   /** Add a manifest to the store. Overwrites if the same ID already exists. */
@@ -1172,7 +1163,6 @@ export class ManifestStore {
     }
   }
 
-  /** Retrieve a manifest by its ID. */
   get(id: string): ProvenanceManifest | undefined {
     return this.byId.get(id);
   }
@@ -1450,7 +1440,7 @@ export function summarizeManifest(manifest: ProvenanceManifest): ManifestSummary
   };
 }
 
-/** Compute aggregate statistics across multiple manifests. */
+// Compute aggregate statistics across multiple manifests
 export function manifestStats(manifests: readonly ProvenanceManifest[]): ManifestStats {
   if (manifests.length === 0) {
     return {
@@ -1506,10 +1496,7 @@ export function manifestStats(manifests: readonly ProvenanceManifest[]): Manifes
 }
 
 
-/**
- * Generate a C2PA-aligned claim structure from a provenance manifest.
- * Maps manifest fields to the C2PA claim v2 format.
- */
+// Generate a C2PA-aligned claim structure from a provenance manifest
 export function generateClaim(manifest: ProvenanceManifest): ClaimV2 {
   // Build assertion references
   const assertionRefs: ClaimAssertionReference[] = manifest.assertions.map((a, i) => ({
@@ -1559,9 +1546,9 @@ export function generateClaim(manifest: ProvenanceManifest): ClaimV2 {
   };
 }
 
-// ─── Convenience Helpers ────────────────────────────────────────────────────
+// exports
 
-/** Create an input reference from an evidence item. */
+// Create an input reference from an evidence item
 export function inputFromEvidence(
   item: EvidenceItem,
   relationship: InputReference['relationship'] = 'inputTo',
@@ -1572,7 +1559,7 @@ export function inputFromEvidence(
   };
 }
 
-/** Hash arbitrary content for use as contentHash in a manifest. */
+// Hash arbitrary content for use as contentHash in a manifest
 export function hashContent(content: string): HashHex {
   return sha256String(content);
 }
@@ -1582,7 +1569,6 @@ export function serializeManifest(manifest: ProvenanceManifest): string {
   return canonicalizeJson(manifest);
 }
 
-// ─── Re-exports for consumer convenience ────────────────────────────────────
 
 export type { EvidenceItem } from '@nobulex/evidence-core';
 export type { KeyPair, HashHex } from '@nobulex/crypto';

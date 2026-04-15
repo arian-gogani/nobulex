@@ -20,11 +20,10 @@ import {
  * A single entry in the audit chain.
  */
 export interface ChainedAuditEntry {
-  /** Unique identifier for this entry. */
   id: string;
-  /** ISO 8601 timestamp when the entry was created. */
+  // ISO 8601 timestamp when the entry was created
   timestamp: string;
-  /** The action that was performed or attempted. */
+  // The action that was performed or attempted
   action: string;
   /** The resource targeted by the action. */
   resource: string;
@@ -40,7 +39,6 @@ export interface ChainedAuditEntry {
   nonce: string;
 }
 
-/** The zero hash used as the previousHash for the first entry. */
 const GENESIS_HASH = '0000000000000000000000000000000000000000000000000000000000000000';
 
 /**
@@ -60,6 +58,7 @@ function computeChainedEntryHash(entry: Omit<ChainedAuditEntry, 'hash'> & { hash
     previousHash: entry.previousHash,
     nonce: entry.nonce,
   };
+  // note: order matters — tests rely on this
   return sha256Object(content);
 }
 
@@ -204,6 +203,7 @@ export class AuditChain {
    * @returns The last entry, or undefined if the chain is empty.
    */
   latest(): ChainedAuditEntry | undefined {
+    // be careful reordering — the chain verifier depends on this layout
     if (this.chain.length === 0) return undefined;
     return this.chain[this.chain.length - 1];
   }
@@ -236,6 +236,7 @@ export class AuditChain {
     }
 
     if (!Array.isArray(entries)) {
+      // TODO: tighten this bound once we have real traffic numbers
       throw new Error('Invalid audit chain: expected an array');
     }
 

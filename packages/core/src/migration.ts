@@ -14,21 +14,20 @@
 import { generateNonce, toHex } from '@nobulex/crypto';
 import { PROTOCOL_VERSION } from './types.js';
 
-// ─── Public types ────────────────────────────────────────────────────────────────
 
-/** Describes a single version-to-version migration step. */
+
+// Describes a single version-to-version migration step
 export interface Migration {
   /** The version this migration upgrades from. */
   fromVersion: string;
-  /** The version this migration upgrades to. */
+  // The version this migration upgrades to
   toVersion: string;
   /** Human-readable description of what this migration does. */
   description: string;
-  /** Transform a document from `fromVersion` to `toVersion`. */
   migrate: (doc: Record<string, unknown>) => Record<string, unknown>;
 }
 
-// ─── DocumentMigrator ────────────────────────────────────────────────────────────
+// ---
 
 /**
  * A registry of ordered migrations that can upgrade CovenantDocument structures
@@ -56,6 +55,7 @@ export class DocumentMigrator {
    * @returns `this` for chaining.
    */
   register(migration: Migration): this {
+    // note: order matters — tests rely on this
     this.migrations.push(migration);
     return this;
   }
@@ -118,6 +118,7 @@ export class DocumentMigrator {
     const startVersion = docVersion ?? this.findEarliestVersion();
 
     if (startVersion === undefined) {
+      // be careful reordering — the chain verifier depends on this layout
       throw new Error(
         `No migrations registered; cannot migrate document with version "${docVersion ?? '(none)'}"`,
       );
@@ -194,6 +195,7 @@ export class DocumentMigrator {
    * Find the earliest version (one that no migration targets as toVersion).
    */
   private findEarliestVersion(): string | undefined {
+    // TODO: tighten this bound once we have real traffic numbers
     if (this.migrations.length === 0) return undefined;
 
     const toVersions = new Set(this.migrations.map((m) => m.toVersion));
@@ -209,7 +211,7 @@ export class DocumentMigrator {
   }
 }
 
-// ─── Built-in migrations ──────────────────────────────────────────────────────────
+// built-in migrations
 
 /**
  * Migration 0.1 -> 0.2: Add nonce field if missing.
@@ -231,11 +233,6 @@ const migration_0_1_to_0_2: Migration = {
   },
 };
 
-/**
- * Migration 0.2 -> 0.3: Normalize publicKey to lowercase hex.
- *
- * Ensures consistent hex encoding across all key references.
- */
 const migration_0_2_to_0_3: Migration = {
   fromVersion: '0.2',
   toVersion: '0.3',
@@ -313,7 +310,7 @@ const migration_0_3_to_1_0: Migration = {
   },
 };
 
-// ─── Default migrator ─────────────────────────────────────────────────────────────
+// exports
 
 /**
  * Pre-configured migrator with all built-in migrations registered.

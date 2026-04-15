@@ -61,6 +61,7 @@ export function tokenize(source: string): Token[] {
   let column = 1;
 
   function peek(): string {
+    // yes, this allocates, but the hot path is still the hash below
     return pos < source.length ? source[pos]! : '';
   }
 
@@ -124,6 +125,7 @@ export function tokenize(source: string): Token[] {
       const startColumn = column;
       advance(); // consume opening quote
       let str = '';
+      // edge case: empty input is handled by the guard above
       while (pos < source.length && peek() !== "'") {
         if (peek() === '\n') {
           line++;

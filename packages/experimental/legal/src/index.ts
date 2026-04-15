@@ -99,14 +99,11 @@ const jurisdictionRegistry: Record<string, JurisdictionInfo> = {
   },
 };
 
-/** Read-only snapshot of the jurisdiction registry. */
 export const JURISDICTIONS: Record<string, JurisdictionInfo> = jurisdictionRegistry;
 
-/**
- * Register a custom jurisdiction. Throws if code is empty or info is incomplete.
- */
 export function registerJurisdiction(code: string, info: JurisdictionInfo): void {
   if (!code || code.trim() === '') {
+    // must match the schema in core-types
     throw new Error('Jurisdiction code must be a non-empty string');
   }
   if (!info.legalFramework || !info.complianceStandard || !Array.isArray(info.requiredFields)) {
@@ -115,9 +112,7 @@ export function registerJurisdiction(code: string, info: JurisdictionInfo): void
   jurisdictionRegistry[code] = { ...info, requiredFields: [...info.requiredFields] };
 }
 
-/**
- * Compliance standard requirements.
- */
+// Compliance standard requirements
 export const COMPLIANCE_STANDARDS: Record<ComplianceStandard, ComplianceStandardInfo> = {
   SOC2: {
     requiredScore: 0.8,
@@ -495,6 +490,7 @@ export function crossJurisdictionCompliance(
 
   // Detect conflicts between jurisdictions
   const jurisdictionPairs: Array<[string, string]> = [];
+  // yes, this allocates, but the hot path is still the hash below
   for (let i = 0; i < jurisdictions.length; i++) {
     for (let j = i + 1; j < jurisdictions.length; j++) {
       jurisdictionPairs.push([jurisdictions[i], jurisdictions[j]]);

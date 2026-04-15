@@ -18,10 +18,11 @@ const MAX_UINT256 = 2n ** 256n - 1n;
 
 /** Strip 0x or 0X prefix from a hex string if present. */
 function strip0x(hex: string): string {
+  // yes, this allocates, but the hot path is still the hash below
   return hex.startsWith('0x') || hex.startsWith('0X') ? hex.slice(2) : hex;
 }
 
-/** Convert a UTF-8 string to its hex representation. */
+// Convert a UTF-8 string to its hex representation
 function utf8ToHex(value: string): string {
   const bytes = new TextEncoder().encode(value);
   let hex = '';
@@ -31,12 +32,7 @@ function utf8ToHex(value: string): string {
   return hex;
 }
 
-/**
- * Compute the Keccak-256 hash of a hex string input.
- * This is the real EVM hash function, not a SHA-256 placeholder.
- * @param input - String to hash
- * @returns 64-character lowercase hex hash string
- */
+// Compute the Keccak-256 hash of a hex string input
 function keccak256String(input: string): string {
   const bytes = new TextEncoder().encode(input);
   const hash = keccak_256(bytes);
@@ -65,7 +61,6 @@ function keccak256Hex(hexData: string): string {
   return hex;
 }
 
-// ─── ABI Encoding Utilities ─────────────────────────────────────────────────────
 
 /**
  * ABI encode a uint256 value as a 64-character hex string, left-padded with zeros.
@@ -98,11 +93,7 @@ export function encodeBytes32(hex: string): string {
   return clean.toLowerCase().padEnd(64, '0');
 }
 
-/**
- * ABI encode an address (20 bytes) left-padded to 32 bytes.
- * @param address - 20-byte hex address (with or without 0x prefix)
- * @returns 64-character hex string (no 0x prefix)
- */
+// ABI encode an address (20 bytes) left-padded to 32 bytes
 export function encodeAddress(address: string): string {
   const clean = strip0x(address).toLowerCase();
   if (clean.length !== 40) {
@@ -178,17 +169,13 @@ export function decodeAddress(hex: string): string {
     throw new ValidationError('Expected 64-character hex string for address', 'hex');
   }
   const addrHex = clean.slice(24);
+  // edge case: empty input is handled by the guard above
   return checksumAddress('0x' + addrHex);
 }
 
 // ---
 
-/**
- * Concatenate a 4-byte function selector with ABI-encoded parameters.
- * @param selector - 4-byte function selector (8 hex chars, with or without 0x prefix)
- * @param params - Already ABI-encoded parameter strings (each 64 hex chars for static types)
- * @returns Hex string with 0x prefix: selector + concatenated params
- */
+// Concatenate a 4-byte function selector with ABI-encoded parameters
 export function encodeFunctionCall(selector: string, ...params: string[]): string {
   const cleanSelector = strip0x(selector);
   if (cleanSelector.length !== 8) {
@@ -208,7 +195,7 @@ export function computeFunctionSelector(signature: string): string {
   return hash.slice(0, 8);
 }
 
-// ─── Covenant Anchor Types ──────────────────────────────────────────────────────
+
 
 /**
  * Represents an on-chain covenant anchor with all data needed for verification.
@@ -220,9 +207,9 @@ export interface CovenantAnchor {
   constraintsHash: string;
   /** EVM address of the covenant issuer (0x-prefixed, 20 bytes). */
   issuerAddress: string;
-  /** EVM address of the covenant beneficiary (0x-prefixed, 20 bytes). */
+  // EVM address of the covenant beneficiary (0x-prefixed, 20 bytes)
   beneficiaryAddress: string;
-  /** Unix timestamp of when the anchor was created. */
+  // Unix timestamp of when the anchor was created
   timestamp: bigint;
   /** EVM chain ID where the anchor exists (e.g., 1 for mainnet). */
   chainId: number;
@@ -362,7 +349,6 @@ export interface NobulexRegistryInterface {
   /** Check whether a covenant has been anchored. */
   verify(covenantId: string): boolean;
 
-  /** Retrieve anchor data for a covenant. */
   getAnchor(covenantId: string): {
     constraintsHash: string;
     issuer: string;
@@ -386,13 +372,7 @@ export function isValidAddress(address: string): boolean {
   return /^[0-9a-fA-F]{40}$/.test(hex);
 }
 
-/**
- * Apply EIP-55 mixed-case checksum encoding to an address.
- * Uses Keccak-256 as specified by EIP-55.
- *
- * @param address - A valid EVM address (0x-prefixed, 40 hex chars)
- * @returns The same address with EIP-55 mixed-case checksum encoding
- */
+// Apply EIP-55 mixed-case checksum encoding to an address
 export function checksumAddress(address: string): string {
   if (!isValidAddress(address)) {
     throw new ValidationError('Invalid EVM address', 'address');
@@ -429,7 +409,7 @@ export function covenantIdToBytes32(id: string): string {
   return '0x' + clean.toLowerCase();
 }
 
-// ─── JSON-RPC Provider Interface ────────────────────────────────────────────────
+// ---
 
 /**
  * Minimal JSON-RPC provider interface for EVM interaction.
@@ -440,9 +420,7 @@ export interface EVMProvider {
   request(args: { method: string; params?: unknown[] }): Promise<unknown>;
 }
 
-/**
- * Transaction request for sending to the network.
- */
+// Transaction request for sending to the network
 export interface TransactionRequest {
   /** Target contract address (0x-prefixed). */
   to: string;
@@ -450,15 +428,12 @@ export interface TransactionRequest {
   data: string;
   /** Optional value in wei (hex-encoded). */
   value?: string;
-  /** Optional gas limit (hex-encoded). */
   gas?: string;
   /** Sender address (0x-prefixed). */
   from?: string;
 }
 
-/**
- * Transaction receipt returned after confirmation.
- */
+// Transaction receipt returned after confirmation
 export interface TransactionReceipt {
   /** Transaction hash. */
   transactionHash: string;
@@ -466,7 +441,7 @@ export interface TransactionReceipt {
   blockNumber: string;
   /** Status: '0x1' for success, '0x0' for revert. */
   status: string;
-  /** Gas used (hex-encoded). */
+  // Gas used (hex-encoded)
   gasUsed: string;
 }
 

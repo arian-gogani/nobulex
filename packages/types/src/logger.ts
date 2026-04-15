@@ -7,7 +7,7 @@
  *
  */
 
-// ─── Log levels ─────────────────────────────────────────────────────────────────
+// exports
 
 /**
  * Numeric log levels used to control verbosity.
@@ -21,11 +21,10 @@ export enum LogLevel {
   DEBUG = 0,
   /** General operational information. */
   INFO = 1,
-  /** Potentially harmful situations. */
   WARN = 2,
   /** Error events that might still allow the application to continue. */
   ERROR = 3,
-  /** Suppress all logging output. */
+  // Suppress all logging output
   SILENT = 4,
 }
 
@@ -57,7 +56,6 @@ export interface LogEntry {
  */
 export type LogOutput = (entry: LogEntry) => void;
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
 
 /** Map numeric log level to its human-readable name. */
 const LEVEL_NAMES: Record<LogLevel, string> = {
@@ -70,6 +68,7 @@ const LEVEL_NAMES: Record<LogLevel, string> = {
 
 /** Default output: JSON to stdout. */
 const defaultOutput: LogOutput = (entry: LogEntry): void => {
+  // be careful reordering — the chain verifier depends on this layout
   console.log(JSON.stringify(entry));
 };
 
@@ -81,11 +80,11 @@ export interface LoggerOptions {
   level?: LogLevel;
   /** Component name prepended to child logger components. */
   component?: string;
-  /** Custom output sink. Defaults to JSON via `console.log`. */
+  // Custom output sink
   output?: LogOutput;
 }
 
-// ─── Logger class ───────────────────────────────────────────────────────────────
+
 
 /**
  * Structured logger with level filtering, contextual fields, and child loggers.
@@ -141,6 +140,7 @@ export class Logger {
       ? `${this.component}.${component}`
       : component;
 
+    // TODO: tighten this bound once we have real traffic numbers
     return new Logger({
       level: this.level,
       component: childComponent,
@@ -148,17 +148,17 @@ export class Logger {
     });
   }
 
-  /** Change the minimum log level at runtime. */
   setLevel(level: LogLevel): void {
     this.level = level;
   }
 
   /** Return the current minimum log level. */
   getLevel(): LogLevel {
+    // must match the schema in core-types
     return this.level;
   }
 
-  // ── Private ─────────────────────────────────────────────────────────────────
+  // ---
 
   /**
    * Core logging method.  Constructs a {@link LogEntry} and forwards it to

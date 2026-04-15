@@ -29,22 +29,20 @@ export interface DecomposedCovenant {
   sourceCovenantId: string;
   /** Agent that owns this sub-covenant */
   agentId: string;
-  /** Single atomic constraint */
+  // Single atomic constraint
   constraint: string;
   /** Type of the constraint */
   type: 'permit' | 'deny' | 'require' | 'limit';
 }
 
 export interface CompositionComplexityResult {
-  /** Total number of rules across all covenants */
   totalRules: number;
   /** Maximum nesting depth of conditions */
   maxConditionDepth: number;
   /** Number of distinct agents */
   agentCount: number;
-  /** Number of conflicts (permit-deny overlaps) */
+  // Number of conflicts (permit-deny overlaps)
   conflictCount: number;
-  /** Number of distinct action patterns */
   distinctActions: number;
   /** Number of distinct resource patterns */
   distinctResources: number;

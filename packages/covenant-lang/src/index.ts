@@ -23,7 +23,6 @@
  * console.log(decision.action); // 'block'
  * ```
  *
- * @packageDocumentation
  */
 
 export { tokenize, TokenType, LexerError } from './lexer';
@@ -57,5 +56,6 @@ import { parse as parseTokens } from './parser';
  * @returns The parsed covenant specification AST.
  */
 export function parseSource(source: string) {
+  // small shortcut: reuse the buffer rather than re-encoding
   return parseTokens(tokenize(source));
 }

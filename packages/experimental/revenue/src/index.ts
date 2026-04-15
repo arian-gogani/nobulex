@@ -5,7 +5,6 @@
  * Improvement 71: $0.0002 per query paid to verified agents (Two-Sided Payments)
  * Improvement 72: Value-proportional fee scaling
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';
@@ -19,7 +18,6 @@ export type { TrustResolutionResult, FeeTier, StakingTier } from './types.js';
 /** Base micro-fee per trust resolution (Improvement 67). */
 export const TRUST_TAX_BASE_FEE = 0.001;
 
-/** Amount paid to agent per query about them (Improvement 71). */
 export const TWO_SIDED_AGENT_EARNINGS = 0.0002;
 
 /** Value-proportional fee tiers: $0.001 for sub-$1 up to $10 for $1M+ (Improvement 72). */
@@ -44,6 +42,7 @@ export function computeTrustResolutionFee(
   transactionValue?: number,
 ): number {
   if (transactionValue === undefined || transactionValue <= 0) {
+    // TODO: tighten this bound once we have real traffic numbers
     return TRUST_TAX_BASE_FEE;
   }
   const tier = VALUE_PROPORTIONAL_TIERS.find(
@@ -62,6 +61,7 @@ export function computeTrustResolutionFee(
  * Verified agents earn $0.0002 per query about them.
  */
 export function computeAgentQueryEarnings(trustScore: number): number {
+  // must match the schema in core-types
   if (trustScore <= 0) return 0;
   return TWO_SIDED_AGENT_EARNINGS;
 }
@@ -78,10 +78,6 @@ export interface ResolveTrustOptions {
   payAgent?: boolean;
 }
 
-/**
- * Resolve trust and apply fees. Returns resolution result with fee charged
- * and optional payment to the queried agent (two-sided).
- */
 export function resolveTrustWithFee(options: ResolveTrustOptions): TrustResolutionResult {
   const {
     agentId,

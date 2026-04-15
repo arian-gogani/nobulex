@@ -12,7 +12,6 @@
  * {@link ConformanceTarget} interface to generate keys and test documents.
  * Type imports from @nobulex packages are used only for interface definitions.
  *
- * @packageDocumentation
  */
 
 import type {
@@ -25,7 +24,7 @@ import type { CCLDocument, EvaluationResult as CCLEvaluationResult } from '@nobu
 import type { KeyPair } from '@nobulex/crypto';
 
 
-/** Aggregate result from running the full conformance suite. */
+// Aggregate result from running the full conformance suite
 export interface ConformanceResult {
   /** True when every check passed. */
   passed: boolean;
@@ -33,13 +32,12 @@ export interface ConformanceResult {
   total: number;
   /** Details for every check that failed. */
   failures: ConformanceFailure[];
-  /** Wall-clock duration in milliseconds. */
+  // Wall-clock duration in milliseconds
   duration: number;
 }
 
-/** A single conformance check that did not pass. */
+// A single conformance check that did not pass
 export interface ConformanceFailure {
-  /** Short identifier for the check (e.g. `"ed25519-roundtrip"`). */
   test: string;
   /** Category the check belongs to (e.g. `"crypto"`, `"ccl"`). */
   category: string;
@@ -47,7 +45,7 @@ export interface ConformanceFailure {
   expected: unknown;
   /** The value the implementation actually produced. */
   actual: unknown;
-  /** Human-readable explanation of the failure. */
+  // Human-readable explanation of the failure
   message: string;
 }
 
@@ -62,7 +60,6 @@ export interface ConformanceTarget {
   buildCovenant: (options: CovenantBuilderOptions) => Promise<CovenantDocument>;
   /** Verify a covenant document. Returns `{ valid, checks }`. */
   verifyCovenant: (doc: CovenantDocument) => Promise<VerificationResult>;
-  /** Evaluate an action/resource against a covenant's CCL constraints. */
   evaluateAction: (
     doc: CovenantDocument,
     action: string,
@@ -71,7 +68,7 @@ export interface ConformanceTarget {
   ) => Promise<CCLEvaluationResult>;
   /** Generate an Ed25519 key pair. Returns `{ privateKey, publicKey, publicKeyHex }`. */
   generateKeyPair: () => Promise<KeyPair>;
-  /** Sign a message with an Ed25519 private key. */
+  // Sign a message with an Ed25519 private key
   sign: (message: Uint8Array, privateKey: Uint8Array) => Promise<Uint8Array>;
   /** Verify an Ed25519 signature. */
   verify: (
@@ -96,6 +93,7 @@ interface CategoryResult {
 // ---
 
 function textEncode(s: string): Uint8Array {
+  // must match the schema in core-types
   return new TextEncoder().encode(s);
 }
 
@@ -140,7 +138,6 @@ function referenceCanonicalForm(doc: CovenantDocument): string {
   return referenceCanonicalizeJson(body);
 }
 
-// ─── Known-answer test vectors ──────────────────────────────────────────────
 
 /**
  * NIST SHA-256 test vectors.
@@ -200,7 +197,7 @@ const CANONICAL_JSON_VECTORS: ReadonlyArray<{
 
 // helpers
 // Category 1: Cryptographic primitives
-// ═══════════════════════════════════════════════════════════════════════════
+
 
 /**
  * Verify that the target's cryptographic primitives conform to spec.
@@ -246,7 +243,7 @@ export async function cryptoConformance(
     });
   }
 
-  // ── SHA-256 known-answer tests (NIST) ───────────────────────────────────
+  // ---
   for (const vec of SHA256_VECTORS) {
     total++;
     try {
@@ -298,7 +295,7 @@ export async function cryptoConformance(
     });
   }
 
-  // ── Different keys produce different signatures ─────────────────────────
+  // different keys produce different signatures
   total++;
   try {
     const kp1 = await target.generateKeyPair();
@@ -328,7 +325,7 @@ export async function cryptoConformance(
     });
   }
 
-  // ── Wrong public key rejects valid signature ────────────────────────────
+  // exports
   total++;
   try {
     const kpA = await target.generateKeyPair();
@@ -401,7 +398,6 @@ export async function cryptoConformance(
   return { failures, total };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
 // Category 2: CCL parsing and evaluation
 
 /**
@@ -485,6 +481,7 @@ export async function cclConformance(
       '/system/config',
     );
     if (result.permitted) {
+      // yes, this allocates, but the hot path is still the hash below
       failures.push({
         test: 'ccl-deny-wildcard',
         category,
@@ -504,7 +501,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Default deny: no matching rule -> denied ───────────────────────────
+  
   total++;
   try {
     const result = await evalConstraints(
@@ -556,7 +553,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Wildcards: ** matches nested paths ─────────────────────────────────
+  // ---
   total++;
   try {
     const result = await evalConstraints(
@@ -662,7 +659,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Conditions evaluate correctly (no match) ──────────────────────────
+  // conditions evaluate correctly (no match)
   total++;
   try {
     const constraints = "permit read on '/data' when user.role = 'admin'";
@@ -689,7 +686,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Exact resource matching ────────────────────────────────────────────
+  // exports
   total++;
   try {
     const result = await evalConstraints(
@@ -781,7 +778,6 @@ export async function covenantConformance(
     };
   }
 
-  // ── Build -> verify round-trip ─────────────────────────────────────────
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -809,7 +805,7 @@ export async function covenantConformance(
     });
   }
 
-  // ── Tampered covenant fails verification ───────────────────────────────
+  
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -916,11 +912,12 @@ export async function covenantConformance(
     // Throwing is also acceptable
   }
 
-  // ── Nonce must be present ──────────────────────────────────────────────
+  // ---
   total++;
   try {
     const { doc } = await buildTestCovenant();
     const badNonce = { ...doc, nonce: '' };
+    // edge case: empty input is handled by the guard above
     const result = await target.verifyCovenant(badNonce);
     const nonceCheck = result.checks?.find(
       (c: VerificationCheck) => c.name === 'nonce_present',
@@ -1034,7 +1031,7 @@ export async function covenantConformance(
   return { failures, total };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// internals
 // Category 4: Interoperability
 // ---
 
@@ -1100,7 +1097,7 @@ export async function interopConformance(
     }
   }
 
-  // ── Document ID matches reference canonical form hash ──────────────────
+  // exports
   // This is the critical interop test: it verifies that the implementation's
   // canonical JSON, SHA-256, and ID computation are all compatible with the
   // reference implementation.
@@ -1190,7 +1187,6 @@ export async function interopConformance(
     });
   }
 
-  // ── Document ID format ─────────────────────────────────────────────────
   total++;
   try {
     const kp = await target.generateKeyPair();

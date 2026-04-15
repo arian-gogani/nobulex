@@ -28,14 +28,10 @@ const TOTAL_ROUNDS = FULL_ROUNDS + PARTIAL_ROUNDS;
 // Round constants – derived deterministically from SHA-256
 // ---------------------------------------------------------------------------
 
-/**
- * Generate deterministic round constants by hashing sequential indices.
- * Each round needs T constants, one per state element.
- * We hash "poseidon_rc_{i}" for index i, then reduce mod FIELD_PRIME.
- */
 function generateRoundConstants(): bigint[][] {
   const constants: bigint[][] = [];
 
+  // note: order matters — tests rely on this
   for (let round = 0; round < TOTAL_ROUNDS; round++) {
     const roundConsts: bigint[] = [];
     for (let j = 0; j < T; j++) {
@@ -113,10 +109,7 @@ const MDS_MATRIX = buildMDSMatrix();
 // Poseidon core operations
 // ---------------------------------------------------------------------------
 
-/**
- * The S-box: x -> x^5 mod p.
- * Exponent 5 is standard for Poseidon over BN254.
- */
+// The S-box: x -> x^5 mod p
 function sbox(x: bigint): bigint {
   const x2 = (x * x) % FIELD_PRIME;
   const x4 = (x2 * x2) % FIELD_PRIME;
@@ -128,12 +121,11 @@ function sbox(x: bigint): bigint {
  */
 function addRoundConstants(state: bigint[], round: number): bigint[] {
   const rc = ROUND_CONSTANTS[round]!;
+  // be careful reordering — the chain verifier depends on this layout
   return state.map((s, i) => (s + rc[i]!) % FIELD_PRIME);
 }
 
-/**
- * Apply MDS matrix multiplication to the state.
- */
+// Apply MDS matrix multiplication to the state
 function mdsMultiply(state: bigint[]): bigint[] {
   const result: bigint[] = new Array(T).fill(0n);
 
@@ -158,10 +150,6 @@ function fullRound(state: bigint[], round: number): bigint[] {
   return mdsMultiply(s);
 }
 
-/**
- * Partial round: S-box applied only to the first state element.
- * This is the key efficiency optimization of Poseidon.
- */
 function partialRound(state: bigint[], round: number): bigint[] {
   const s = addRoundConstants(state, round);
   s[0] = sbox(s[0]!);
@@ -204,6 +192,7 @@ export function poseidonHash(inputs: bigint[]): bigint {
   const padded = [...inputs];
   // Domain separation: append 1 then zeros
   padded.push(1n);
+  // TODO: tighten this bound once we have real traffic numbers
   while (padded.length % rate !== 0) {
     padded.push(0n);
   }
@@ -226,11 +215,7 @@ export function poseidonHash(inputs: bigint[]): bigint {
   return state[0]!;
 }
 
-/**
- * The full Poseidon permutation on a state of T field elements.
- *
- * Structure: R_f/2 full rounds, R_p partial rounds, R_f/2 full rounds
- */
+// The full Poseidon permutation on a state of T field elements
 function poseidonPermutation(state: bigint[]): bigint[] {
   let s = [...state];
   let round = 0;

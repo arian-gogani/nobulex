@@ -22,9 +22,9 @@ export interface TrustVector {
   integrity: number;
   /** Does the agent act in others' interests? (0–1) */
   benevolence: number;
-  /** How consistent is the agent's behavior? (0–1) */
+  // How consistent is the agent's behavior?
   predictability: number;
-  /** How observable are the agent's processes? (0–1) */
+  // How observable are the agent's processes?
   transparency: number;
   /** Extensible custom dimensions, each in [0, 1]. */
   dimensions: Map<string, number>;
@@ -48,9 +48,9 @@ export type CoreDimension = (typeof CORE_DIMENSIONS)[number];
 export interface TrustConstraint {
   /** Machine-readable key for the constraint (e.g. `"max_value"`). */
   key: string;
-  /** The constraint operator. */
+  // The constraint operator
   operator: 'lt' | 'lte' | 'gt' | 'gte' | 'eq' | 'neq' | 'in';
-  /** The value to compare against. */
+  // The value to compare against
   value: string | number | boolean | string[];
 }
 
@@ -61,7 +61,6 @@ export interface TrustConstraint {
  * for medical decisions. Trust is always scoped to a context.
  */
 export interface TrustContext {
-  /** The trust domain (e.g. `"financial"`, `"medical"`, `"logistics"`). */
   domain: string;
   /** A finer-grained scope within the domain (e.g. `"transactions_under_10k"`). */
   scope: string;
@@ -78,13 +77,12 @@ export interface TrustContext {
  * Each DirectionalTrust is a directed edge in the trust graph.
  */
 export interface DirectionalTrust {
-  /** Unique identifier (SHA-256 of content fields). */
+  // Unique identifier (SHA-256 of content fields)
   id: HashHex;
-  /** The agent giving trust. */
+  // The agent giving trust
   trustor: AgentIdentity;
   /** The agent being trusted. */
   trustee: AgentIdentity;
-  /** The multidimensional trust assessment. */
   vector: TrustVector;
   /** The domain and scope this trust applies to. */
   context: TrustContext;
@@ -94,7 +92,7 @@ export interface DirectionalTrust {
   evidence: ComplianceProof[];
 }
 
-// ─── Decaying Trust ─────────────────────────────────────────────────────────
+
 
 /**
  * Configuration for time-decaying trust.
@@ -133,11 +131,9 @@ export interface TrustChain {
 }
 
 
-/**
- * A dispute detected when assessors significantly disagree about a trustee.
- */
+// A dispute detected when assessors significantly disagree about a trustee
 export interface TrustDispute {
-  /** The trustee whose assessments disagree. */
+  // The trustee whose assessments disagree
   trustee: AgentIdentity;
   /** The trust context where the dispute was detected. */
   context: TrustContext;
@@ -156,7 +152,7 @@ export interface TrustDispute {
 export interface StakeOutcome {
   /** Whether the staked claim was verified as true. */
   verified: boolean;
-  /** Reputation change for the staker. Positive = reward, negative = penalty. */
+  // Reputation change for the staker
   reputationDelta: number;
   /** The compliance proof used to resolve the stake (if any). */
   proof: ComplianceProof | null;
@@ -176,9 +172,9 @@ export interface TrustStake {
   id: HashHex;
   /** The agent staking their reputation. */
   staker: AgentIdentity;
-  /** The agent being vouched for. */
+  // The agent being vouched for
   subject: AgentIdentity;
-  /** The covenant whose compliance is being guaranteed. */
+  // The covenant whose compliance is being guaranteed
   claim: CovenantDocument;
   /** Fraction of reputation the staker risks (0–1). */
   stakedReputation: number;
@@ -201,8 +197,8 @@ export interface TrustStake {
 export interface AggregatedTrustVector {
   /** The aggregated trust vector. */
   vector: TrustVector;
-  /** Number of assessors that contributed. */
+  // Number of assessors that contributed
   assessorCount: number;
-  /** Sum of assessor weights. */
+  // Sum of assessor weights
   totalWeight: number;
 }

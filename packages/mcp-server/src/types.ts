@@ -6,15 +6,14 @@
  *
  */
 
-// ─── JSON-RPC 2.0 ──────────────────────────────────────────────────────────────
+// exports
 
 /** A JSON-RPC 2.0 request object. */
 export interface JsonRpcRequest {
   /** Must be exactly "2.0". */
   jsonrpc: '2.0';
-  /** The method to invoke. */
   method: string;
-  /** Method parameters (positional or named). */
+  // Method parameters (positional or named)
   params?: Record<string, unknown> | unknown[];
   /** Request identifier. May be a string, number, or null for notifications. */
   id: string | number | null;
@@ -50,10 +49,9 @@ export interface JsonRpcErrorResponse {
   id: string | number | null;
 }
 
-/** Union of success and error JSON-RPC responses. */
+// Union of success and error JSON-RPC responses
 export type JsonRpcResponse = JsonRpcSuccessResponse | JsonRpcErrorResponse;
 
-// ─── JSON-RPC error codes ───────────────────────────────────────────────────────
 
 /** Standard JSON-RPC 2.0 error codes. */
 export const JSON_RPC_ERRORS = {
@@ -92,7 +90,7 @@ export interface ToolInputSchema {
 export interface ToolDefinition {
   /** The unique name of the tool. */
   name: string;
-  /** A human-readable description of what the tool does. */
+  // A human-readable description of what the tool does
   description: string;
   /** JSON Schema describing the tool's input parameters. */
   inputSchema: ToolInputSchema;
@@ -110,7 +108,6 @@ export interface ToolResultContent {
 export interface ToolResult {
   /** The content items in the result. */
   content: ToolResultContent[];
-  /** Whether the tool call resulted in an error. */
   isError?: boolean;
 }
 

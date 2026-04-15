@@ -1,9 +1,4 @@
-/**
- * @nobulex/sdk type definitions.
- *
- * SDK-specific types that wrap and extend the lower-level package types
- * into a unified, ergonomic API surface.
- */
+// SDK-specific types that wrap and extend the lower-level package types into a unified, ergonomic API surface
 
 import type { KeyPair } from '@nobulex/crypto';
 import type {
@@ -33,13 +28,13 @@ import type {
   LineageEntry,
 } from '@nobulex/identity';
 
-// ─── Client options ─────────────────────────────────────────────────────────
+// exports
 
 /** Options for constructing a NobulexClient instance. */
 export interface NobulexClientOptions {
   /** Optional pre-generated key pair for signing operations. */
   keyPair?: KeyPair;
-  /** Optional agent identifier for identity operations. */
+  // Optional agent identifier for identity operations
   agentId?: string;
   /**
    * When true, the client will throw on verification failures
@@ -48,7 +43,7 @@ export interface NobulexClientOptions {
   strictMode?: boolean;
   /** Optional key rotation policy for automatic key lifecycle management. */
   keyRotation?: {
-    /** Maximum key age in milliseconds before rotation is required. */
+    // Maximum key age in milliseconds before rotation is required
     maxAgeMs: number;
     /** Grace period in milliseconds where both old and new keys are valid. */
     overlapPeriodMs: number;
@@ -59,7 +54,7 @@ export interface NobulexClientOptions {
 
 // covenant creation
 
-/** Options for creating a new covenant through the SDK. */
+// Options for creating a new covenant through the SDK
 export interface CreateCovenantOptions {
   /** The issuing party. */
   issuer: Issuer;
@@ -69,7 +64,7 @@ export interface CreateCovenantOptions {
   constraints: string;
   /** Issuer's private key used to sign the document. If omitted, uses client keyPair. */
   privateKey?: Uint8Array;
-  /** Optional obligations. */
+  // Optional obligations
   obligations?: Obligation[];
   /** Optional chain reference to parent covenant. */
   chain?: ChainReference;
@@ -77,11 +72,11 @@ export interface CreateCovenantOptions {
   enforcement?: EnforcementConfig;
   /** Optional proof configuration. */
   proof?: ProofConfig;
-  /** Optional revocation configuration. */
+  // Optional revocation configuration
   revocation?: RevocationConfig;
   /** Optional metadata. */
   metadata?: CovenantMetadata;
-  /** Optional ISO 8601 expiry timestamp. */
+  // Optional ISO 8601 expiry timestamp
   expiresAt?: string;
   /** Optional ISO 8601 activation timestamp. */
   activatesAt?: string;
@@ -90,7 +85,7 @@ export interface CreateCovenantOptions {
 
 /** Result of evaluating an action against a covenant's constraints. */
 export interface EvaluationResult {
-  /** Whether the action is permitted. */
+  // Whether the action is permitted
   permitted: boolean;
   /** The matched rule, if any. */
   matchedRule?: Statement;
@@ -104,7 +99,7 @@ export interface EvaluationResult {
 
 // identity
 
-/** Options for creating a new agent identity through the SDK. */
+// Options for creating a new agent identity through the SDK
 export interface CreateIdentityOptions {
   /** Operator key pair for signing. If omitted, uses client keyPair. */
   operatorKeyPair?: KeyPair;
@@ -112,21 +107,20 @@ export interface CreateIdentityOptions {
   operatorIdentifier?: string;
   /** Model attestation describing the AI model. */
   model: ModelAttestation;
-  /** List of capabilities this agent has. */
+  // List of capabilities this agent has
   capabilities: string[];
-  /** Deployment context describing where the agent runs. */
   deployment: DeploymentContext;
 }
 
 /** Options for evolving an existing agent identity. */
 export interface EvolveOptions {
-  /** Operator key pair for signing. If omitted, uses client keyPair. */
+  // Operator key pair for signing
   operatorKeyPair?: KeyPair;
   /** Type of change being made. */
   changeType: LineageEntry['changeType'];
   /** Human-readable description of the change. */
   description: string;
-  /** The fields being updated. */
+  // The fields being updated
   updates: {
     model?: ModelAttestation;
     capabilities?: string[];
@@ -138,7 +132,6 @@ export interface EvolveOptions {
   reputationCarryForward?: number;
 }
 
-// ─── Chain validation ───────────────────────────────────────────────────────
 
 /** Result of validating a chain of covenant documents. */
 export interface ChainValidationResult {
@@ -166,7 +159,6 @@ export interface NarrowingViolationEntry {
 
 // events
 
-/** Event types emitted by NobulexClient. */
 export type NobulexEventType =
   | 'covenant:created'
   | 'covenant:verified'
@@ -186,7 +178,7 @@ export interface NobulexEvent {
   timestamp: string;
 }
 
-/** Event emitted when a covenant is created. */
+// Event emitted when a covenant is created
 export interface CovenantCreatedEvent extends NobulexEvent {
   type: 'covenant:created';
   document: CovenantDocument;
@@ -211,7 +203,7 @@ export interface IdentityCreatedEvent extends NobulexEvent {
   identity: AgentIdentity;
 }
 
-/** Event emitted when an identity is evolved. */
+// Event emitted when an identity is evolved
 export interface IdentityEvolvedEvent extends NobulexEvent {
   type: 'identity:evolved';
   identity: AgentIdentity;
@@ -261,7 +253,7 @@ export interface NobulexEventMap {
 /** Event handler function type. */
 export type NobulexEventHandler<T extends NobulexEventType> = (event: NobulexEventMap[T]) => void;
 
-// ─── Re-exports for convenience ─────────────────────────────────────────────
+
 
 export type {
   KeyPair,

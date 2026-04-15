@@ -1,10 +1,4 @@
-/**
- * MCP Server authentication middleware.
- *
- * Provides API key authentication, Ed25519 signature-based authentication,
- * per-client rate limiting, and key revocation for the MCP server.
- *
- */
+// MCP Server authentication middleware
 
 import {
   verify,
@@ -18,9 +12,8 @@ import { ValidationError } from '@nobulex/types';
  * Options for configuring the authentication middleware.
  */
 export interface MCPAuthOptions {
-  /** List of valid API keys for API key authentication. */
   apiKeys?: string[];
-  /** Hex-encoded Ed25519 public keys trusted for signature-based authentication. */
+  // Hex-encoded Ed25519 public keys trusted for signature-based authentication
   trustedKeys?: string[];
   /** Maximum number of requests per client per minute. */
   rateLimitPerMinute?: number;
@@ -30,7 +23,6 @@ export interface MCPAuthOptions {
  * Represents an authenticated client request.
  */
 export interface AuthenticatedRequest {
-  /** Unique identifier for the client. */
   clientId: string;
   /** The authentication method used. */
   authMethod: 'api-key' | 'signature' | 'none';
@@ -77,13 +69,7 @@ export function createAuthMiddleware(options: MCPAuthOptions): {
   // Track known client IDs
   const knownClients = new Set<string>();
 
-  /**
-   * Authenticate a request based on its headers.
-   *
-   * @param headers - The request headers (case-sensitive keys).
-   * @returns An AuthenticatedRequest object describing the authenticated client.
-   * @throws Error if authentication fails.
-   */
+  // Authenticate a request based on its headers
   function authenticate(headers: Record<string, string>): AuthenticatedRequest {
     const now = timestamp();
 

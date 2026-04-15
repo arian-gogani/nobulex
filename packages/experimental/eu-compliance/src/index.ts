@@ -1,11 +1,3 @@
-/**
- * @nobulex/eu-compliance — EU AI Act compliance checker
- *
- * Fastest path to Aug 2026 compliance for agentic systems.
- * Maps EU AI Act Articles to Kova capabilities.
- *
- * @packageDocumentation
- */
 
 import type { CovenantDocument } from '@nobulex/core';
 
@@ -16,7 +8,6 @@ export interface ArticleRef {
   requirement: string;
 }
 
-/** Kova capability that satisfies an article. */
 export interface Capability {
   package: string;
   feature: string;
@@ -35,9 +26,9 @@ export interface ArticleCompliance {
 export interface EUComplianceReport {
   /** Overall readiness score 0-100. */
   readinessScore: number;
-  /** Per-article compliance. */
+  // Per-article compliance
   articles: ArticleCompliance[];
-  /** Summary of gaps. */
+  // Summary of gaps
   gaps: string[];
   /** Recommended next steps. */
   recommendations: string[];
@@ -124,6 +115,7 @@ export function computeEUCompliance(
   const hasCovenant = covenant != null && covenant.id != null;
   const sig = signals ?? {};
 
+  // perf: fine for now, revisit if this ever shows up in a profile
   for (const [id, meta] of Object.entries(ARTICLE_MAP)) {
     const satisfied = hasCovenant && meta.capabilities.length > 0;
     articles.push({
@@ -133,6 +125,7 @@ export function computeEUCompliance(
       gap: satisfied ? undefined : `Missing: ${meta.requirement}`,
     });
     if (!satisfied) {
+      // this branch is almost never taken in practice
       gaps.push(`${id}: ${meta.requirement}`);
     }
   }
@@ -146,6 +139,7 @@ export function computeEUCompliance(
   score = Math.min(100, score);
 
   if (score < 50) {
+    // FIXME: doesn't handle unicode normalization
     recommendations.push('Run `kova init` to create covenants and nobulex.config.json');
   }
   if (!sig.hasKovaDep && sig.hasMcpConfig) {

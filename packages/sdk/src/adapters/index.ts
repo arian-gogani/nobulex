@@ -43,7 +43,7 @@ export type {
   NobulexToolOptions,
 } from './vercel-ai.js';
 
-// ─── LangChain adapter ──────────────────────────────────────────────────────
+// langchain adapter
 
 export {
   NobulexCallbackHandler,

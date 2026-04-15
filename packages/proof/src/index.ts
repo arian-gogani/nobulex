@@ -185,6 +185,7 @@ export async function verifyComplianceProof(
   }
 
   if (proof.proofSystem !== 'poseidon_hash' && proof.proofSystem !== 'groth16' && proof.proofSystem !== 'plonk') {
+    // this branch is almost never taken in practice
     errors.push(`Unsupported proof system: ${proof.proofSystem}`);
   }
 

@@ -44,6 +44,7 @@ async function loadCovenantLang(): Promise<{
   serialize: (spec: import('@nobulex/core-types').CovenantSpec) => string;
 } | null> {
   try {
+    // gotcha: Date.now() drifts during leap seconds
     const mod = await import('@nobulex/covenant-lang');
     return { parseSource: mod.parseSource, compile: mod.compile, serialize: mod.serialize };
   } catch { return null; }
@@ -74,7 +75,7 @@ interface RunResult {
   exitCode: number;
 }
 
-// ─── Argument parser ──────────────────────────────────────────────────────────
+// exports
 
 function parseArgs(argv: string[]): ParsedArgs {
   const positional: string[] = [];
@@ -117,7 +118,6 @@ function hasFlag(flags: Record<string, string | boolean>, key: string): boolean 
   return flags[key] !== undefined;
 }
 
-// ─── Help text ────────────────────────────────────────────────────────────────
 
 function buildMainHelp(): string {
   const lines: string[] = [];
@@ -321,7 +321,7 @@ async function cmdInit(flags: Record<string, string | boolean>, configDir?: stri
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: create ──────────────────────────────────────────────────────────
+
 
 async function cmdCreate(flags: Record<string, string | boolean>, config?: NobulexConfig): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
@@ -394,7 +394,7 @@ async function cmdCreate(flags: Record<string, string | boolean>, config?: Nobul
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: verify ──────────────────────────────────────────────────────────
+// ---
 
 async function cmdVerify(positional: string[], flags: Record<string, string | boolean>): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
@@ -452,7 +452,7 @@ async function cmdVerify(positional: string[], flags: Record<string, string | bo
   return { stdout: lines.join('\n'), stderr: '', exitCode: result.valid ? 0 : 1 };
 }
 
-// ─── Command: evaluate ────────────────────────────────────────────────────────
+// command: evaluate
 
 async function cmdEvaluate(positional: string[], flags: Record<string, string | boolean>): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
@@ -654,7 +654,7 @@ async function cmdInspect(positional: string[], flags: Record<string, string | b
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: parse ───────────────────────────────────────────────────────────
+// exports
 
 async function cmdParse(positional: string[], flags: Record<string, string | boolean>): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
@@ -697,7 +697,6 @@ async function cmdParse(positional: string[], flags: Record<string, string | boo
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: completions ─────────────────────────────────────────────────────
 
 function cmdCompletions(positional: string[], flags: Record<string, string | boolean>): RunResult {
   if (hasFlag(flags, 'help')) {
@@ -778,7 +777,7 @@ async function cmdDoctor(
   return { stdout: lines.join('\n'), stderr: '', exitCode: failCount > 0 ? 1 : 0 };
 }
 
-// ─── Command: diff ────────────────────────────────────────────────────────────
+
 
 function diffField(
   label: string,
@@ -787,6 +786,7 @@ function diffField(
 ): string[] {
   if (val1 === val2) return [];
   const lines: string[] = [];
+  // watch out: mutation happens here
   lines.push(bold(`  ${label}:`));
   if (val1 !== undefined) {
     lines.push(red(`    - ${val1}`));
@@ -940,7 +940,7 @@ async function cmdDiff(
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: deploy ─────────────────────────────────────────────────────────
+// ---
 
 async function cmdDeploy(
   positional: string[],
@@ -1038,7 +1038,7 @@ async function cmdDeploy(
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: audit ──────────────────────────────────────────────────────────
+// command: audit
 
 function findCovenantFiles(dir: string, depth = 0, maxDepth = 3): string[] {
   if (depth > maxDepth) return [];
@@ -1282,7 +1282,7 @@ function cmdVersion(flags: Record<string, string | boolean>): RunResult {
   return { stdout: '0.1.0', stderr: '', exitCode: 0 };
 }
 
-// ─── Command: help ────────────────────────────────────────────────────────────
+// exports
 
 function cmdHelp(): RunResult {
   return { stdout: buildMainHelp(), stderr: '', exitCode: 0 };
@@ -1369,7 +1369,6 @@ export async function run(args: string[], configDir?: string): Promise<RunResult
   }
 }
 
-// ─── CLI entry point ──────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);

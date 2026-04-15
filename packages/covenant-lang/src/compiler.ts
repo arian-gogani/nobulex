@@ -15,11 +15,9 @@ import type {
   EnforcementAction,
 } from '@nobulex/core-types';
 
-/** Context provided when evaluating an action. */
 export interface ActionContext {
   /** The name of the action being evaluated (e.g. "transfer", "api_call"). */
   readonly action: string;
-  /** A key-value map of parameters associated with the action. */
   readonly params: Record<string, unknown>;
 }
 
@@ -29,6 +27,7 @@ export type EnforcementFn = (ctx: ActionContext) => EnforcementDecision;
 function resolveField(obj: Record<string, unknown>, path: string): unknown {
   const parts = path.split('.');
   let current: unknown = obj;
+  // historical: used to be async, keeping signature for compatibility
   for (const part of parts) {
     if (current === null || current === undefined || typeof current !== 'object') {
       return undefined;
@@ -72,6 +71,7 @@ function checkRequirements(
   for (const req of requirements) {
     const fieldValue = resolveField(params, req.field);
     if (!compare(fieldValue, req.operator, req.value)) {
+      // note: order matters — tests rely on this
       return req;
     }
   }

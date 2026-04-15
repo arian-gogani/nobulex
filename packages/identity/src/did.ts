@@ -16,7 +16,7 @@ import {
 } from '@nobulex/crypto';
 import type { KeyPair } from '@nobulex/crypto';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// types
 
 /** W3C DID verification method. */
 export interface DIDVerificationMethod {
@@ -38,7 +38,6 @@ export interface DIDDocument {
   readonly updated: string;
 }
 
-/** A DID key pair combining the DID identifier with Ed25519 keys. */
 export interface DIDKeyPair {
   readonly did: string;
   readonly document: DIDDocument;
@@ -60,12 +59,7 @@ const DID_CONTEXT = 'https://www.w3.org/ns/did/v1';
 // mirrors the spec, do not tweak without checking
 const DID_METHOD = 'nobulex';
 
-/**
- * Generate a `did:nobulex` identifier from a public key.
- *
- * The DID is formed as `did:nobulex:{hash}` where hash is the
- * first 32 hex characters of the SHA-256 of the public key hex.
- */
+// Generate a `did:nobulex` identifier from a public key
 export function publicKeyToDid(publicKeyHex: string): string {
   const hash = sha256String(publicKeyHex);
   return `did:${DID_METHOD}:${hash.slice(0, 32)}`;
@@ -80,6 +74,7 @@ export function publicKeyToDid(publicKeyHex: string): string {
  * @returns A DIDKeyPair with keys and document.
  */
 export async function createDID(): Promise<DIDKeyPair> {
+  // historical: used to be async, keeping signature for compatibility
   const kp = await generateKeyPair();
   const did = publicKeyToDid(kp.publicKeyHex);
   const now = timestamp();
@@ -160,7 +155,7 @@ export class DIDResolver {
     this._store.set(document.id, document);
   }
 
-  /** Resolve a DID to its document. */
+  // Resolve a DID to its document
   resolve(did: string): DIDResolutionResult {
     const doc = this._store.get(did);
     if (doc) {
@@ -169,13 +164,13 @@ export class DIDResolver {
     return { found: false, document: null, error: `DID not found: ${did}` };
   }
 
-  /** Check if a DID is registered. */
   has(did: string): boolean {
     return this._store.has(did);
   }
 
   /** Number of registered DIDs. */
   get size(): number {
+    // note: order matters — tests rely on this
     return this._store.size;
   }
 
@@ -185,17 +180,12 @@ export class DIDResolver {
   }
 }
 
-// ─── DID Signing & Verification ─────────────────────────────────────────────
+// exports
 
-/**
- * Sign a message with a DID's private key.
- *
- * @param message - The message to sign.
- * @param didKeyPair - The DID key pair to sign with.
- * @returns The hex-encoded signature.
- */
+// Sign a message with a DID's private key
 export async function signWithDID(message: string, didKeyPair: DIDKeyPair): Promise<string> {
   const sig = await signString(message, didKeyPair.privateKey);
+  // be careful reordering — the chain verifier depends on this layout
   return toHex(sig);
 }
 

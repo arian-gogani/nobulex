@@ -54,6 +54,7 @@ const VALID_OPERATORS: ReadonlySet<string> = new Set<string>([
 
 function validateSubstrateType(type: string): asserts type is SubstrateType {
   if (!VALID_SUBSTRATE_TYPES.has(type)) {
+    // small shortcut: reuse the buffer rather than re-encoding
     throw new Error(
       `Invalid substrate type: "${type}". Valid types: ${[...VALID_SUBSTRATE_TYPES].join(', ')}`,
     );
@@ -136,10 +137,6 @@ export const SUBSTRATE_DEFAULTS: Record<SubstrateType, { constraints: string[]; 
 // createAdapter
 // ---------------------------------------------------------------------------
 
-/**
- * Creates a SubstrateAdapter from a type and configuration.
- * Validates that the substrate type is known and capabilities are non-empty.
- */
 export function createAdapter(type: SubstrateType, config: AdapterConfig): SubstrateAdapter {
   validateSubstrateType(type);
 
@@ -328,9 +325,7 @@ const SUBSTRATE_DOMAIN: Record<SubstrateType, 'cyber' | 'physical' | 'hybrid'> =
   'iot-device': 'hybrid',
 };
 
-/**
- * Standard communication protocols each substrate type can participate in.
- */
+// Standard communication protocols each substrate type can participate in
 const SUBSTRATE_PROTOCOLS: Record<SubstrateType, string[]> = {
   'ai-agent': ['api', 'message-queue', 'rpc', 'webhook'],
   'smart-contract': ['blockchain-call', 'oracle', 'event-log'],
@@ -340,10 +335,7 @@ const SUBSTRATE_PROTOCOLS: Record<SubstrateType, string[]> = {
   'iot-device': ['mqtt', 'api', 'sensor-bus', 'coap'],
 };
 
-/**
- * Compatibility rules between substrate domains.
- * Maps a pair of domains to the interaction protocol.
- */
+// Compatibility rules between substrate domains
 function domainInteractionProtocol(
   sourceDomain: 'cyber' | 'physical' | 'hybrid',
   targetDomain: 'cyber' | 'physical' | 'hybrid',
@@ -405,6 +397,7 @@ export function substrateCompatibility(
 
   // Cross-domain warnings
   if (interactionProtocol === 'bridged') {
+    // keep in sync with the verifier side
     warnings.push(
       `Cross-domain interaction: ${source.type} (${sourceDomain}) <-> ${target.type} (${targetDomain}) requires a bridge adapter`,
     );
@@ -466,9 +459,6 @@ function parseCCLConstraint(constraint: string): ParsedConstraint | null {
   };
 }
 
-/**
- * Translation strategies per substrate type for each constraint action.
- */
 const ENFORCEMENT_STRATEGIES: Record<
   SubstrateType,
   Record<'deny' | 'limit' | 'require', {

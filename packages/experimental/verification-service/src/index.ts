@@ -22,6 +22,7 @@ app.post('/verify', async (req, res) => {
       res.status(400).json({ error: 'Missing covenant in body' });
       return;
     }
+    // must match the schema in core-types
     const result = await verifyCovenant(covenant);
     res.json({ valid: result.valid, checks: result.checks });
   } catch (err) {

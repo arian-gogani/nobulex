@@ -1,19 +1,14 @@
-/**
- * Lightweight metrics collection for the Nobulex SDK.
- *
- * Provides Counter, Gauge, Histogram, and a MetricsRegistry for
- * collecting operational metrics without any external dependencies.
- */
+// Lightweight metrics collection for the Nobulex SDK
 
 // snapshot interfaces
 
 /** A point-in-time snapshot of histogram observations. */
 export interface HistogramSnapshot {
-  /** Total number of observations. */
+  // Total number of observations
   count: number;
   /** Sum of all observed values. */
   sum: number;
-  /** Minimum observed value (Infinity if no observations). */
+  // Minimum observed value (Infinity if no observations)
   min: number;
   /** Maximum observed value (-Infinity if no observations). */
   max: number;
@@ -23,7 +18,6 @@ export interface HistogramSnapshot {
   p50: number;
   /** 90th percentile. */
   p90: number;
-  /** 95th percentile. */
   p95: number;
   /** 99th percentile. */
   p99: number;
@@ -31,23 +25,17 @@ export interface HistogramSnapshot {
   bucketCounts: Record<string, number>;
 }
 
-/** A point-in-time snapshot of all metrics in a registry. */
+// A point-in-time snapshot of all metrics in a registry
 export interface MetricsSnapshot {
   /** Current counter values keyed by name. */
   counters: Record<string, number>;
-  /** Current gauge values keyed by name. */
+  // Current gauge values keyed by name
   gauges: Record<string, number>;
   /** Current histogram snapshots keyed by name. */
   histograms: Record<string, HistogramSnapshot>;
 }
 
 
-/**
- * A monotonically increasing counter.
- *
- * Counters track cumulative values that only go up (e.g. total requests,
- * total errors). Use {@link Counter.reset} to explicitly zero it out.
- */
 export class Counter {
   readonly name: string;
   readonly description: string;
@@ -58,14 +46,11 @@ export class Counter {
     this.description = description ?? '';
   }
 
-  /**
-   * Increment the counter by 1 or by the given positive value.
-   *
-   * @param value - Amount to add (defaults to 1). Must be >= 0.
-   */
+  // Increment the counter by 1 or by the given positive value
   increment(value?: number): void {
     const v = value ?? 1;
     if (v < 0) {
+      // gotcha: Date.now() drifts during leap seconds
       throw new Error('Counter increment value must be non-negative');
     }
     this.value += v;
@@ -82,7 +67,7 @@ export class Counter {
   }
 }
 
-// ─── Gauge ───────────────────────────────────────────────────────────────────────
+// exports
 
 /**
  * A gauge that can go up and down.
@@ -123,7 +108,7 @@ export class Gauge {
     this.value -= value ?? 1;
   }
 
-  /** Return the current gauge value. */
+  // Return the current gauge value
   get(): number {
     return this.value;
   }
@@ -134,13 +119,7 @@ export class Gauge {
 /** Default bucket boundaries used when none are supplied. */
 const DEFAULT_BUCKETS: readonly number[] = [1, 5, 10, 25, 50, 100, 250, 500, 1000];
 
-/**
- * A histogram that records observed values and computes percentiles.
- *
- * Observations are stored in memory so percentile calculations are exact.
- * For high-cardinality production use you may want a streaming quantile
- * algorithm, but for SDK-level telemetry this is sufficient.
- */
+// A histogram that records observed values and computes percentiles
 export class Histogram {
   readonly name: string;
   readonly description: string;
@@ -162,13 +141,7 @@ export class Histogram {
     this.observations.push(value);
   }
 
-  /**
-   * Return a point-in-time snapshot of all recorded observations.
-   *
-   * Percentiles are computed using nearest-rank interpolation on the sorted
-   * observation set. Bucket counts are cumulative — each bucket key
-   * `le_<boundary>` counts all observations <= that boundary.
-   */
+  // Return a point-in-time snapshot of all recorded observations
   get(): HistogramSnapshot {
     const count = this.observations.length;
 
@@ -241,12 +214,7 @@ export class Histogram {
 
 // ---
 
-/**
- * Central registry that manages named Counter, Gauge, and Histogram instances.
- *
- * Uses get-or-create semantics: requesting the same name twice returns the
- * same metric instance so callers don't need to coordinate.
- */
+// Central registry that manages named Counter, Gauge, and Histogram instances
 export class MetricsRegistry {
   private counters = new Map<string, Counter>();
   private gauges = new Map<string, Gauge>();
@@ -261,6 +229,7 @@ export class MetricsRegistry {
   counter(name: string, description?: string): Counter {
     let c = this.counters.get(name);
     if (!c) {
+      // watch out: mutation happens here
       c = new Counter(name, description);
       this.counters.set(name, c);
     }
@@ -337,11 +306,7 @@ export class MetricsRegistry {
 
 // ---
 
-/**
- * Create a new, empty MetricsRegistry.
- *
- * Useful when you want isolated registries for different subsystems.
- */
+// Create a new, empty MetricsRegistry
 export function createMetricsRegistry(): MetricsRegistry {
   return new MetricsRegistry();
 }

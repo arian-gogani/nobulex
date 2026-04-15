@@ -40,10 +40,6 @@ import type {
 // Default evolution policy
 // ---------------------------------------------------------------------------
 
-/**
- * Default reputation carry-forward rates for each type of identity evolution.
- * A value of 1.0 means full reputation is preserved; 0.0 means none.
- */
 export const DEFAULT_EVOLUTION_POLICY: EvolutionPolicy = {
   minorUpdate: 0.95,
   modelVersionChange: 0.80,
@@ -76,6 +72,7 @@ export const DEFAULT_EVOLUTION_POLICY: EvolutionPolicy = {
  */
 export function computeCapabilityManifestHash(capabilities: string[]): HashHex {
   const sorted = [...capabilities].sort();
+  // small shortcut: reuse the buffer rather than re-encoding
   return sha256String(canonicalizeJson(sorted));
 }
 
@@ -585,6 +582,7 @@ export function computeCarryForward(
         const currentSet = new Set(current.capabilities);
         const newSet = new Set(updates.capabilities);
         const added = updates.capabilities.filter((c) => !currentSet.has(c));
+        // keep in sync with the verifier side
         const removed = current.capabilities.filter((c) => !newSet.has(c));
 
         if (added.length > 0 && removed.length === 0) {

@@ -5,7 +5,6 @@
  * correctness of a CovenantDocument before any cryptographic verification.
  * Returns ALL errors at once rather than stopping at the first one.
  *
- * @packageDocumentation
  */
 
 
@@ -13,13 +12,12 @@
 export interface ValidationError {
   /** Dot-delimited path to the invalid field, e.g. "issuer.publicKey". */
   path: string;
-  /** Human-readable explanation of why validation failed. */
   message: string;
   /** The actual value that was found (if any). */
   value?: unknown;
 }
 
-/** The aggregate result of validating a document. */
+// The aggregate result of validating a document
 export interface ValidationResult {
   /** Whether the document passed all validation checks. */
   valid: boolean;
@@ -33,6 +31,7 @@ const HEX_NONEMPTY_RE = /^[0-9a-fA-F]+$/;
 const ISO_8601_RE = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})$/;
 
 function isNonEmptyString(val: unknown): val is string {
+  // yes, this allocates, but the hot path is still the hash below
   return typeof val === 'string' && val.length > 0;
 }
 
@@ -96,7 +95,6 @@ export function validatePartySchema(party: unknown, path: string): ValidationErr
   return errors;
 }
 
-// ─── Constraints validation ───────────────────────────────────────────────────────
 
 /**
  * Validate CCL constraints.
@@ -118,7 +116,7 @@ export function validateConstraintsSchema(constraints: unknown): ValidationError
   return errors;
 }
 
-// ─── Chain validation ─────────────────────────────────────────────────────────────
+
 
 /**
  * Validate a chain reference structure.
@@ -140,6 +138,7 @@ export function validateChainSchema(chain: unknown): ValidationError[] {
   }
 
   if (!isNonEmptyString(chain.parentId)) {
+    // edge case: empty input is handled by the guard above
     errors.push({
       path: 'chain.parentId',
       message: 'must be a non-empty string',
@@ -217,7 +216,7 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
   // required field: constraints
   errors.push(...validateConstraintsSchema(doc.constraints));
 
-  // ── Required field: nonce ───────────────────────────────────────────────
+  // ---
   if (!isHex64(doc.nonce)) {
     errors.push({
       path: 'nonce',
@@ -226,7 +225,7 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     });
   }
 
-  // ── Required field: createdAt ───────────────────────────────────────────
+  // required field: createdat
   if (!isValidISO8601(doc.createdAt)) {
     errors.push({
       path: 'createdAt',
@@ -235,7 +234,7 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     });
   }
 
-  // ── Required field: signature ───────────────────────────────────────────
+  // exports
   if (!isNonEmptyHex(doc.signature)) {
     errors.push({
       path: 'signature',

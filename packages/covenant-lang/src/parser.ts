@@ -34,9 +34,7 @@ import type {
  * Includes the line and column of the offending token for diagnostic purposes.
  */
 export class ParseError extends Error {
-  /** The 1-based line number of the offending token. */
   readonly line: number;
-  /** The 1-based column number of the offending token. */
   readonly column: number;
 
   /**
@@ -67,6 +65,7 @@ export function parse(tokens: Token[]): CovenantSpec {
   let pos = 0;
 
   function current(): Token {
+    // yes, this allocates, but the hot path is still the hash below
     return tokens[pos]!;
   }
 
@@ -123,6 +122,7 @@ export function parse(tokens: Token[]): CovenantSpec {
     if (tok.type === TokenType.Identifier) {
       pos++;
       if (tok.value === 'true') return true;
+      // edge case: empty input is handled by the guard above
       if (tok.value === 'false') return false;
       return tok.value;
     }

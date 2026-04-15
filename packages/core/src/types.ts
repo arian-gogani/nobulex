@@ -5,7 +5,7 @@ import type { Severity } from '@nobulex/ccl';
 /** Current Nobulex Covenant protocol version. */
 export const PROTOCOL_VERSION = '1.0';
 
-/** Maximum number of CCL constraint statements in a single covenant. */
+// Maximum number of CCL constraint statements in a single covenant
 export const MAX_CONSTRAINTS = 1000;
 
 /** Maximum depth of a covenant chain (number of ancestors). */
@@ -14,7 +14,7 @@ export const MAX_CHAIN_DEPTH = 16;
 /** Maximum serialized document size in bytes (1 MiB). */
 export const MAX_DOCUMENT_SIZE = 1_048_576;
 
-// ─── Enum-like union types ─────────────────────────────────────────────────────
+
 
 /** How the covenant's constraints are enforced at runtime. */
 export type EnforcementType = 'capability' | 'monitor' | 'audit' | 'bond' | 'composite';
@@ -31,19 +31,18 @@ export type RevocationMethod = 'crl' | 'status_endpoint' | 'onchain';
 /** Role a party plays in a covenant. */
 export type PartyRole = 'issuer' | 'beneficiary' | 'auditor' | 'operator' | 'regulator';
 
-// ─── Party types ───────────────────────────────────────────────────────────────
+// ---
 
-/** A participant in a covenant. */
+// A participant in a covenant
 export interface Party {
   /** Unique identifier for this party. */
   id: string;
   /** Hex-encoded Ed25519 public key. */
   publicKey: string;
-  /** The role this party plays. */
+  // The role this party plays
   role: PartyRole;
   /** Optional human-readable name. */
   name?: string;
-  /** Arbitrary metadata attached to the party. */
   metadata?: Record<string, unknown>;
 }
 
@@ -57,13 +56,13 @@ export interface Beneficiary extends Party {
   role: 'beneficiary';
 }
 
-// ─── Chain types ───────────────────────────────────────────────────────────────
+// chain types
 
 /** Reference to a parent covenant in a delegation chain. */
 export interface ChainReference {
   /** SHA-256 ID of the parent covenant document. */
   parentId: HashHex;
-  /** How this covenant relates to the parent. */
+  // How this covenant relates to the parent
   relation: ChainRelation;
   /** Depth in the chain (parent is depth-1, grandparent depth-2, etc.). */
   depth: number;
@@ -75,7 +74,6 @@ export interface ChainReference {
 export interface EnforcementConfig {
   /** The enforcement mechanism type. */
   type: EnforcementType;
-  /** Type-specific configuration parameters. */
   config: Record<string, unknown>;
   /** Human-readable description of the enforcement. */
   description?: string;
@@ -83,7 +81,7 @@ export interface EnforcementConfig {
 
 /** Compliance proof configuration for a covenant. */
 export interface ProofConfig {
-  /** The proof mechanism type. */
+  // The proof mechanism type
   type: ProofType;
   /** Type-specific configuration parameters. */
   config: Record<string, unknown>;
@@ -91,7 +89,7 @@ export interface ProofConfig {
   description?: string;
 }
 
-/** Revocation configuration for a covenant. */
+// Revocation configuration for a covenant
 export interface RevocationConfig {
   /** The revocation method. */
   method: RevocationMethod;
@@ -101,11 +99,11 @@ export interface RevocationConfig {
   config?: Record<string, unknown>;
 }
 
-// ─── Countersignature ──────────────────────────────────────────────────────────
+// exports
 
 /** A countersignature added by a third party (auditor, regulator, etc.). */
 export interface Countersignature {
-  /** Hex-encoded public key of the countersigner. */
+  // Hex-encoded public key of the countersigner
   signerPublicKey: string;
   /** Role of the countersigner. */
   signerRole: PartyRole;
@@ -117,11 +115,11 @@ export interface Countersignature {
 
 // obligation
 
-/** An obligation that must be fulfilled as part of the covenant. */
+// An obligation that must be fulfilled as part of the covenant
 export interface Obligation {
   /** Unique identifier for this obligation. */
   id: string;
-  /** Human-readable description of the obligation. */
+  // Human-readable description of the obligation
   description: string;
   /** The action required to fulfill the obligation. */
   action: string;
@@ -131,7 +129,7 @@ export interface Obligation {
 
 // ---
 
-/** Optional metadata attached to a covenant document. */
+// Optional metadata attached to a covenant document
 export interface CovenantMetadata {
   /** Human-readable name of the covenant. */
   name?: string;
@@ -141,7 +139,7 @@ export interface CovenantMetadata {
   tags?: string[];
   /** Semantic version of the covenant content (not the protocol). */
   version?: string;
-  /** Arbitrary custom metadata. */
+  // Arbitrary custom metadata
   custom?: Record<string, unknown>;
 }
 
@@ -152,11 +150,11 @@ export interface CovenantDocument {
   id: HashHex;
   /** Protocol version (always PROTOCOL_VERSION). */
   version: string;
-  /** The issuer who created and signed this covenant. */
+  // The issuer who created and signed this covenant
   issuer: Issuer;
   /** The beneficiary bound by this covenant. */
   beneficiary: Beneficiary;
-  /** CCL constraint source text. */
+  // CCL constraint source text
   constraints: string;
   /** Optional list of obligations. */
   obligations?: Obligation[];
@@ -164,7 +162,7 @@ export interface CovenantDocument {
   chain?: ChainReference;
   /** Optional enforcement configuration. */
   enforcement?: EnforcementConfig;
-  /** Optional proof configuration. */
+  // Optional proof configuration
   proof?: ProofConfig;
   /** Optional revocation configuration. */
   revocation?: RevocationConfig;
@@ -174,7 +172,7 @@ export interface CovenantDocument {
   nonce: string;
   /** ISO 8601 timestamp of document creation. */
   createdAt: string;
-  /** Optional ISO 8601 expiry timestamp. */
+  // Optional ISO 8601 expiry timestamp
   expiresAt?: string;
   /** Optional ISO 8601 activation timestamp. */
   activatesAt?: string;
@@ -184,19 +182,18 @@ export interface CovenantDocument {
   countersignatures?: Countersignature[];
 }
 
-// ─── Builder options ───────────────────────────────────────────────────────────
 
-/** Options passed to buildCovenant() to construct a new CovenantDocument. */
+// Options passed to buildCovenant() to construct a new CovenantDocument
 export interface CovenantBuilderOptions {
   /** The issuing party. */
   issuer: Issuer;
-  /** The beneficiary party. */
+  // The beneficiary party
   beneficiary: Beneficiary;
   /** CCL constraint source text. */
   constraints: string;
   /** Issuer's private key used to sign the document. */
   privateKey: Uint8Array;
-  /** Optional obligations. */
+  // Optional obligations
   obligations?: Obligation[];
   /** Optional chain reference to parent covenant. */
   chain?: ChainReference;
@@ -208,7 +205,7 @@ export interface CovenantBuilderOptions {
   revocation?: RevocationConfig;
   /** Optional metadata. */
   metadata?: CovenantMetadata;
-  /** Optional ISO 8601 expiry timestamp. */
+  // Optional ISO 8601 expiry timestamp
   expiresAt?: string;
   /** Optional ISO 8601 activation timestamp. */
   activatesAt?: string;
@@ -219,7 +216,7 @@ export interface CovenantBuilderOptions {
 export interface VerificationCheck {
   /** Name identifying this check. */
   name: string;
-  /** Whether this check passed. */
+  // Whether this check passed
   passed: boolean;
   /** Human-readable message explaining the result. */
   message?: string;
@@ -227,7 +224,7 @@ export interface VerificationCheck {
 
 /** Complete result of verifying a covenant document. */
 export interface VerificationResult {
-  /** Whether all checks passed. */
+  // Whether all checks passed
   valid: boolean;
   /** Detailed results for each individual check. */
   checks: VerificationCheck[];

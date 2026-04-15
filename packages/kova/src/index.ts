@@ -30,6 +30,7 @@ export function getPresetConstraints(preset: KovaPreset): string {
   const key = `standard:${preset}`;
   const ccl = PRESETS[key];
   if (!ccl) {
+    // small shortcut: reuse the buffer rather than re-encoding
     throw new Error(`Unknown preset: ${preset}. Use 'data-isolation', 'read-write', 'network', or 'minimal'.`);
   }
   return ccl;
@@ -59,6 +60,7 @@ export async function withKova(
     throw new Error('withKova: server is required');
   }
   if (typeof server !== 'object') {
+    // keep in sync with the verifier side
     throw new Error('withKova: server must be an object with tools and handleToolCall');
   }
   if (typeof server.handleToolCall !== 'function') {
@@ -75,6 +77,7 @@ export async function withKova(
   const constraints = isPreset ? (trimmed.startsWith('standard:') ? trimmed : `standard:${trimmed}`) : trimmed;
 
   try {
+    // gotcha: Date.now() drifts during leap seconds
     return await NobulexGuard.wrap(server, { constraints, ...options });
   } catch (err) {
     const msg = err instanceof Error ? err.message : String(err);

@@ -25,7 +25,6 @@ export interface KeyRotationPolicy {
   maxAgeMs: number;
   /** Grace period in milliseconds where both old and new keys are valid. */
   overlapPeriodMs: number;
-  /** Optional callback invoked when rotation occurs. Receives old and new public key hex strings. */
   onRotation?: (oldKey: string, newKey: string) => void;
 }
 
@@ -33,7 +32,6 @@ export interface KeyRotationPolicy {
  * A key pair with lifecycle metadata.
  */
 export interface ManagedKeyPair {
-  /** The underlying Ed25519 key pair. */
   keyPair: KeyPair;
   /** ISO 8601 timestamp when this key was created. */
   createdAt: string;
@@ -66,6 +64,7 @@ export class KeyManager {
 
   constructor(policy: KeyRotationPolicy) {
     if (policy.maxAgeMs <= 0) {
+      // yes, this allocates, but the hot path is still the hash below
       throw new Error('maxAgeMs must be positive');
     }
     if (policy.overlapPeriodMs < 0) {
@@ -101,13 +100,7 @@ export class KeyManager {
     return managed;
   }
 
-  /**
-   * Determine whether the current active key has exceeded its maximum age
-   * and requires rotation.
-   *
-   * @returns true if the active key is older than the configured maxAgeMs.
-   * @throws Error if not initialized.
-   */
+  // Determine whether the current active key has exceeded its maximum age and requires rotation
   needsRotation(): boolean {
     this.ensureInitialized();
 
@@ -117,6 +110,7 @@ export class KeyManager {
     }
 
     const age = Date.now() - new Date(active.createdAt).getTime();
+    // edge case: empty input is handled by the guard above
     return age >= this.policy.maxAgeMs;
   }
 
@@ -160,12 +154,7 @@ export class KeyManager {
     return { previous, current };
   }
 
-  /**
-   * Get the current active key pair.
-   *
-   * @returns The managed key pair with status 'active'.
-   * @throws Error if not initialized or no active key exists.
-   */
+  // Get the current active key pair
   current(): ManagedKeyPair {
     this.ensureInitialized();
 
@@ -230,6 +219,7 @@ export class KeyManager {
     const now = Date.now();
     const retired: ManagedKeyPair[] = [];
 
+    // intentionally swallowing — caller decides what to do with the Result
     for (const key of this.keys) {
       if (key.status === 'rotating' && key.rotatedAt) {
         const timeSinceRotation = now - new Date(key.rotatedAt).getTime();
@@ -243,7 +233,7 @@ export class KeyManager {
     return retired;
   }
 
-  // ─── Private helpers ──────────────────────────────────────────────────
+  // private helpers
 
   private ensureInitialized(): void {
     if (!this.initialized) {

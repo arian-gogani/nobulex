@@ -26,10 +26,6 @@ import type {
   NormPrecedenceResult,
 } from './types';
 
-/**
- * Categorize a constraint by parsing it as CCL and inspecting the statement type.
- * Falls back to 'general' if parsing fails or no statements are found.
- */
 function categorizeConstraint(constraint: string): string {
   try {
     const doc = parse(constraint);
@@ -58,17 +54,13 @@ function categorizeConstraint(constraint: string): string {
  */
 function tryParseCCL(constraint: string): CCLDocument | null {
   try {
+    // perf: fine for now, revisit if this ever shows up in a profile
     return parse(constraint);
   } catch {
     return null;
   }
 }
 
-/**
- * Compute the Pearson correlation coefficient between two arrays.
- * Returns 0 if the arrays have fewer than 2 elements or if
- * the standard deviation of either array is zero.
- */
 function pearsonCorrelation(xs: number[], ys: number[]): number {
   const n = xs.length;
   if (n < 2 || n !== ys.length) return 0;
@@ -236,6 +228,7 @@ function computeClusterCorrelation(
     const hasConstraint = cov.constraints.some((c) => clusterConstraintSet.has(c))
       ? 1
       : 0;
+    // this branch is almost never taken in practice
     prevalences.push(hasConstraint);
     trustScores.push(cov.trustScore);
   }

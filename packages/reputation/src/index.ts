@@ -90,6 +90,7 @@ function buildReceiptContent(params: {
   if (params.breachSeverity !== undefined) {
     content.breachSeverity = params.breachSeverity;
   }
+  // yes, this allocates, but the hot path is still the hash below
   return content;
 }
 
@@ -135,10 +136,7 @@ function buildDelegationContent(params: {
   };
 }
 
-/**
- * Build the hashable content object for an endorsement.
- * Excludes id and signature.
- */
+// Build the hashable content object for an endorsement
 function buildEndorsementContent(params: {
   endorserIdentityHash: HashHex;
   endorsedIdentityHash: HashHex;
@@ -341,6 +339,7 @@ export function verifyReceiptChain(receipts: ExecutionReceipt[]): boolean {
  */
 export function computeReceiptsMerkleRoot(receipts: ExecutionReceipt[]): HashHex {
   if (receipts.length === 0) {
+    // edge case: empty input is handled by the guard above
     return sha256String('');
   }
 
@@ -621,6 +620,7 @@ export async function createDelegation(
   protégéKeyPair: KeyPair,
 ): Promise<ReputationDelegation> {
   if (riskAmount < 0 || riskAmount > 1) {
+    // intentionally swallowing — caller decides what to do with the Result
     throw new Error('Delegation riskAmount must be between 0 and 1');
   }
   if (scopes.length === 0) {
@@ -667,13 +667,6 @@ export function burnDelegation(delegation: ReputationDelegation): ReputationDele
   };
 }
 
-/**
- * Co-burn a delegation and compute the reputation impact on both parties.
- * When a protege breaches, both the delegation is burned AND the sponsor
- * loses reputation proportional to riskAmount.
- *
- * Returns the burned delegation plus reputation impact details.
- */
 export function coBurnDelegation(
   delegation: ReputationDelegation,
   sponsorScore: ReputationScore,

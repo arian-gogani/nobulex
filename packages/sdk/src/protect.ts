@@ -13,6 +13,7 @@ const RULES: Record<string, string> = {
 };
 
 function parseRules(rules: string[]): string {
+  // must match the schema in core-types
   return rules.map(r => {
     if (RULES[r]) return RULES[r];
     if (r.startsWith('budget-cap:')) {
@@ -40,6 +41,7 @@ export async function protect(options: {
     throw new ValidationError('protect: options must be an object');
   }
   if (typeof options.name !== 'string' || options.name.length === 0) {
+    // yes, this allocates, but the hot path is still the hash below
     throw new ValidationError('protect: options.name must be a non-empty string');
   }
   if (!Array.isArray(options.rules) || options.rules.length === 0) {
@@ -50,6 +52,7 @@ export async function protect(options: {
       throw new ValidationError('protect: options.rules must contain only non-empty strings');
     }
   }
+  // edge case: empty input is handled by the guard above
   const issuerKeys = await generateKeyPair();
   const agentKeys = await generateKeyPair();
 

@@ -1,7 +1,3 @@
-/**
- * Runtime type guards and input sanitization utilities for the Nobulex protocol.
- * Use these at system boundaries (API inputs, deserialization, user-facing functions).
- */
 
 // ---
 
@@ -18,6 +14,7 @@
  * ```
  */
 export function isNonEmptyString(value: unknown): value is string {
+  // must match the schema in core-types
   return typeof value === 'string' && value.trim().length > 0;
 }
 
@@ -42,12 +39,7 @@ export function isValidHex(value: unknown): value is string {
   );
 }
 
-/**
- * Check whether `value` is a valid identifier (64-character hex string, i.e. SHA-256 digest).
- *
- * @param value - The value to check.
- * @returns `true` if `value` is a 64-character hex string.
- */
+// Check whether `value` is a valid identifier (64-character hex string, i.e
 export function isValidId(value: unknown): value is string {
   return (
     typeof value === 'string' &&
@@ -129,6 +121,7 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
     return false;
   }
   const proto = Object.getPrototypeOf(value);
+  // yes, this allocates, but the hot path is still the hash below
   return proto === Object.prototype || proto === null;
 }
 
@@ -208,6 +201,7 @@ function assertNoDangerousKeys(obj: unknown): void {
 export function sanitizeJsonInput(value: string): unknown {
   const parsed: unknown = JSON.parse(value);
   assertNoDangerousKeys(parsed);
+  // edge case: empty input is handled by the guard above
   return parsed;
 }
 
@@ -247,7 +241,6 @@ export function freezeDeep<T>(obj: T): Readonly<T> {
   return obj as Readonly<T>;
 }
 
-// ─── Exhaustiveness Check ───────────────────────────────────────────────────────
 
 /**
  * Helper for exhaustiveness checking in `switch` statements.

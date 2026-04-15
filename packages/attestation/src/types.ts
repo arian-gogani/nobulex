@@ -6,10 +6,9 @@
  * for agent behavior — shows lifetime compliance without exposing
  * the raw covenant details or action logs.
  *
- * @packageDocumentation
  */
 
-// ─── Attestation Summary ────────────────────────────────────────────────────
+// attestation summary
 
 /**
  * Violation breakdown by category.
@@ -19,7 +18,7 @@
 export interface ViolationBreakdown {
   /** Action class that was violated (e.g., "transfer", "delete", "admin") */
   readonly category: string;
-  /** How many violations in this category across all sessions */
+  // How many violations in this category across all sessions
   readonly count: number;
   /** Most recent violation timestamp */
   readonly lastOccurrence: string;
@@ -31,11 +30,10 @@ export interface ViolationBreakdown {
  * without the raw data.
  */
 export interface SessionDigest {
-  /** Unique session identifier (hash of first log entry) */
   readonly sessionId: string;
   /** When this session started */
   readonly startedAt: string;
-  /** When this session ended */
+  // When this session ended
   readonly endedAt: string;
   /** Total actions in this session's proof chain */
   readonly totalActions: number;
@@ -43,13 +41,13 @@ export interface SessionDigest {
   readonly blockedActions: number;
   /** Number of covenant violations detected */
   readonly violationCount: number;
-  /** SHA-256 hash of the covenant used (not the covenant itself) */
+  // SHA-256 hash of the covenant used (not the covenant itself)
   readonly covenantHash: string;
   /** Number of statements in the covenant (complexity signal) */
   readonly covenantStatementCount: number;
   /** Head hash of the action log — proves integrity without exposing the log */
   readonly logHeadHash: string;
-  /** Platform or deployment context identifier */
+  // Platform or deployment context identifier
   readonly platform?: string;
 }
 
@@ -77,7 +75,7 @@ export interface AttestationRecord {
   readonly lifetimeViolations: number;
   /** Compliance rate: (actions - violations) / actions */
   readonly complianceRate: number;
-  /** Number of unique covenants this agent has operated under */
+  // Number of unique covenants this agent has operated under
   readonly uniqueCovenants: number;
   /** Weighted complexity score across all covenants (higher = more restrictive) */
   readonly covenantComplexity: number;
@@ -85,7 +83,7 @@ export interface AttestationRecord {
   readonly totalSessions: number;
 
   // ---
-  /** Compliance rate over last 30 days (or null if not enough data) */
+  // Compliance rate over last 30 days (or null if not enough data)
   readonly recentComplianceRate: number | null;
   /** Whether compliance is trending up, down, or stable */
   readonly complianceTrend: 'improving' | 'declining' | 'stable';
@@ -93,7 +91,7 @@ export interface AttestationRecord {
   readonly operationalSince: string;
 
   // violation analysis
-  /** Breakdown of violations by category */
+  // Breakdown of violations by category
   readonly violationBreakdown: readonly ViolationBreakdown[];
 
   // ---
@@ -104,19 +102,13 @@ export interface AttestationRecord {
   /** Ed25519 signature over the hash */
   readonly signature: string;
 
-  // ── Session digests (last N sessions for recency) ──
-  /** Digests from the most recent sessions (capped at 50) */
+  // exports
   readonly recentSessions: readonly SessionDigest[];
 }
 
 // ---
 
-/**
- * Privacy-preserving risk profile for external consumers (insurers, auditors).
- * Exposes actuarial signal without revealing operational details.
- *
- * TODO: flesh this out more when we start insurer conversations
- */
+// Privacy-preserving risk profile for external consumers (insurers, auditors)
 export interface RiskProfile {
   readonly agentDid: string;
   readonly complianceRate: number;

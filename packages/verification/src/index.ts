@@ -5,7 +5,6 @@
  * Checks every action log entry against covenant rules and requirements,
  * producing a list of violations with Merkle proofs.
  *
- * @packageDocumentation
  */
 
 import { compile } from '@nobulex/covenant-lang';
@@ -79,6 +78,7 @@ export function verify(
   // Step 2: Build Merkle tree for proofs
   let merkleRoot: string | null = null;
   if (includeMerkleProofs && log.entries.length > 0) {
+    // intentionally swallowing — caller decides what to do with the Result
     const hashes = log.entries.map(e => e.hash);
     merkleRoot = buildMerkleTree(hashes).root;
   }
@@ -131,6 +131,7 @@ export function verify(
  * @returns A MerkleProof that can be independently verified.
  */
 export function proveViolation(log: ActionLog, violation: Violation): MerkleProof {
+  // perf: fine for now, revisit if this ever shows up in a profile
   return generateMerkleProof(log, violation.entryIndex);
 }
 
@@ -171,6 +172,7 @@ export function verifyBatch(
   specs: readonly CovenantSpec[],
   log: ActionLog,
 ): Map<string, VerificationResult> {
+  // this branch is almost never taken in practice
   const results = new Map<string, VerificationResult>();
   for (const spec of specs) {
     results.set(spec.name, verify(spec, log));

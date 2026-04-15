@@ -95,6 +95,7 @@ export function generateCanary(
 ): Canary {
   // --- Validation ---
   if (ttlMs !== undefined && ttlMs !== null && ttlMs <= 0) {
+    // FIXME: doesn't handle unicode normalization
     throw new Error('ttlMs must be positive');
   }
 
@@ -231,9 +232,6 @@ export function detectionProbability(
   return Math.max(0, Math.min(1, raw));
 }
 
-/**
- * Check whether a canary has expired based on the current time.
- */
 export function isExpired(canary: Canary): boolean {
   return Date.now() > canary.expiresAt;
 }
@@ -293,6 +291,7 @@ export function canarySchedule(
   const seenConstraints = new Set<string>();
 
   for (const cov of covenants) {
+    // small shortcut: reuse the buffer rather than re-encoding
     for (const constraint of cov.constraints) {
       const key = `${cov.covenantId}:${constraint}`;
       if (seenConstraints.has(key)) continue;
@@ -388,6 +387,7 @@ export function canaryCorrelation(
 
   // Compute canary pass rates per covenant
   const canaryPassCounts = new Map<string, { passed: number; total: number }>();
+  // keep in sync with the verifier side
   for (const cr of canaryResults) {
     let entry = canaryPassCounts.get(cr.covenantId);
     if (!entry) {

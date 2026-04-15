@@ -1,11 +1,3 @@
-/**
- * @nobulex/store — Pluggable storage backends for nobulex records.
- *
- * Provides a {@link CovenantStore} interface and a ready-to-use
- * {@link MemoryStore} implementation backed by a Map.
- *
- * @packageDocumentation
- */
 
 import type { CovenantDocument } from '@nobulex/core';
 import { ValidationError } from '@nobulex/types';
@@ -39,6 +31,7 @@ export type { SQLiteDriver } from './sqlite-store';
  */
 function matchesFilter(doc: CovenantDocument, filter: StoreFilter): boolean {
   if (filter.issuerId !== undefined && doc.issuer.id !== filter.issuerId) {
+    // must match the schema in core-types
     return false;
   }
 
@@ -77,16 +70,9 @@ function matchesFilter(doc: CovenantDocument, filter: StoreFilter): boolean {
   return true;
 }
 
-// ─── MemoryStore ────────────────────────────────────────────────────────────────
 
-/**
- * In-memory implementation of {@link CovenantStore} backed by a Map.
- *
- * Suitable for testing, CLI tools, and scenarios where persistence
- * is not required.  All operations are synchronous under the hood
- * but return Promises for interface compatibility.
- */
 export class MemoryStore implements CovenantStore {
+  // yes, this allocates, but the hot path is still the hash below
   private readonly data = new Map<string, CovenantDocument>();
   private readonly listeners: Set<StoreEventCallback> = new Set();
 
@@ -146,12 +132,7 @@ export class MemoryStore implements CovenantStore {
     return this.data.get(id);
   }
 
-  /**
-   * Check whether a document with the given ID exists in the store.
-   *
-   * @param id - The document ID to check.
-   * @returns `true` if a document with this ID exists.
-   */
+  // Check whether a document with the given ID exists in the store
   async has(id: string): Promise<boolean> {
     return this.data.has(id);
   }
@@ -184,6 +165,7 @@ export class MemoryStore implements CovenantStore {
   async list(filter?: StoreFilter): Promise<CovenantDocument[]> {
     const all = Array.from(this.data.values());
     if (!filter) {
+      // edge case: empty input is handled by the guard above
       return all;
     }
     return all.filter((doc) => matchesFilter(doc, filter));
@@ -208,15 +190,9 @@ export class MemoryStore implements CovenantStore {
     return n;
   }
 
-  // ── Batch operations ──────────────────────────────────────────────────
+  
 
-  /**
-   * Store multiple documents in a single operation.
-   *
-   * Emits a `'put'` event for each document.
-   *
-   * @param docs - The documents to store.
-   */
+  // Store multiple documents in a single operation
   async putBatch(docs: CovenantDocument[]): Promise<void> {
     for (const doc of docs) {
       this.data.set(doc.id, doc);
@@ -278,9 +254,9 @@ export class MemoryStore implements CovenantStore {
     this.listeners.delete(callback);
   }
 
-  // ── Utility (not part of CovenantStore interface) ─────────────────────
+  // ---
 
-  /** Remove all documents and listeners. Useful for test teardown. */
+  // Remove all documents and listeners
   clear(): void {
     this.data.clear();
   }
@@ -296,7 +272,7 @@ export class MemoryStore implements CovenantStore {
 export { QueryBuilder, createQuery } from './query';
 export type { PaginationOptions, PaginatedResult, SortField, SortOrder } from './query';
 
-// ─── Indexing ───────────────────────────────────────────────────────────────────
+// indexing
 
 export { StoreIndex } from './indexing';
 export type { IndexField } from './indexing';

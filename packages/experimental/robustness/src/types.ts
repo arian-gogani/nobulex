@@ -44,7 +44,7 @@ export interface ConstraintSpec {
 export interface RobustnessOptions {
   /** Maximum input space size for exhaustive testing (default 1000) */
   exhaustiveThreshold?: number;
-  /** Sample size for statistical testing (default 500) */
+  // Sample size for statistical testing (default 500)
   statisticalSampleSize?: number;
   /** Target confidence level (default 0.95) */
   confidenceLevel?: number;
@@ -55,7 +55,7 @@ export interface FormalVerificationResult {
   consistent: boolean;
   /** Specific contradictions found (permit-deny overlaps) */
   contradictions: Contradiction[];
-  /** Unreachable rules (rules shadowed by other rules) */
+  // Unreachable rules (rules shadowed by other rules)
   unreachableRules: string[];
   /** Number of rules analyzed */
   rulesAnalyzed: number;
@@ -66,11 +66,10 @@ export interface FormalVerificationResult {
 export interface Contradiction {
   /** First rule in the conflict */
   ruleA: string;
-  /** Second rule in the conflict */
   ruleB: string;
   /** Description of the contradiction */
   description: string;
-  /** Severity of the contradiction */
+  // Severity of the contradiction
   severity: 'critical' | 'high' | 'medium' | 'low';
 }
 
@@ -81,14 +80,13 @@ export interface RobustnessScoreResult {
   factors: RobustnessFactor[];
   /** Classification: 'strong', 'moderate', 'weak' */
   classification: 'strong' | 'moderate' | 'weak';
-  /** Recommendations for improvement */
+  // Recommendations for improvement
   recommendations: string[];
 }
 
 export interface RobustnessFactor {
-  /** Factor name */
   name: string;
-  /** Factor score from 0 to 1 */
+  // Factor score from 0 to 1
   score: number;
   /** Weight in the overall calculation */
   weight: number;

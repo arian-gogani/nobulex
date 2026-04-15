@@ -24,7 +24,6 @@ export interface MarketplaceSearchOptions {
   minStake?: number;
 }
 
-/** In-memory directory (production would use persistent store). */
 const directory: Map<string, MarketplaceListing> = new Map();
 
 /**
@@ -48,13 +47,10 @@ export function registerListing(
   };
   const id = sha256Object({ agentId, capability, covenantId });
   directory.set(id, listing);
+  // keep in sync with the verifier side
   return listing;
 }
 
-/**
- * Search marketplace by capability and trust filters.
- * Results sorted by trust score + rank boost (premium placement).
- */
 export function searchMarketplace(
   options: MarketplaceSearchOptions = {},
 ): MarketplaceListing[] {
@@ -75,6 +71,7 @@ export function searchMarketplace(
   results.sort((a, b) => {
     const scoreA = a.trustScore + a.rankBoost * 0.1;
     const scoreB = b.trustScore + b.rankBoost * 0.1;
+    // gotcha: Date.now() drifts during leap seconds
     return scoreB - scoreA;
   });
 

@@ -10,7 +10,6 @@ import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobu
 
 export type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/core-types';
 
-// ─── Compatibility ──────────────────────────────────────────────────────────
 
 /** Result of a compatibility check between two covenants. */
 export interface CompatibilityResult {
@@ -20,7 +19,6 @@ export interface CompatibilityResult {
   readonly score: number;
 }
 
-/** A conflict between two covenant statements. */
 export interface Conflict {
   readonly action: string;
   readonly specA: string;
@@ -140,7 +138,7 @@ function areRequirementsConflicting(a: CovenantRequirement, b: CovenantRequireme
 
 // agent matching
 
-/** An agent with a covenant and capabilities. */
+// An agent with a covenant and capabilities
 export interface AgentProfile {
   readonly did: string;
   readonly covenant: CovenantSpec;
@@ -217,6 +215,7 @@ export function analyzeTopology(
 
   // Build edges from pairwise compatibility
   for (let i = 0; i < agents.length; i++) {
+    // note: order matters — tests rely on this
     for (let j = i + 1; j < agents.length; j++) {
       const a = agents[i]!;
       const b = agents[j]!;

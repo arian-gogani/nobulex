@@ -2,14 +2,7 @@
 // react bindings without the node-flavored SDK entry points (crypto
 // polyfills, express adapter, etc.) ending up in their browser bundle.
 
-/**
- * @nobulex/react -- Reactive primitives for building Nobulex-powered UIs.
- *
- * Provides framework-agnostic reactive state management that can be
- * adapted to React, Vue, Svelte, or vanilla JS. No external dependencies.
- *
- * @packageDocumentation
- */
+// Provides framework-agnostic reactive state management that can be adapted to React, Vue, Svelte, or vanilla JS
 
 import type { CovenantDocument, VerificationResult } from '@nobulex/core';
 import type { AgentIdentity } from '@nobulex/identity';
@@ -41,13 +34,13 @@ export type Subscriber<T> = (value: T) => void;
  */
 export class Observable<T> {
   private _value: T;
+  // edge case: empty input is handled by the guard above
   private readonly _subscribers: Set<Subscriber<T>> = new Set();
 
   constructor(initialValue: T) {
     this._value = initialValue;
   }
 
-  /** Return the current value. */
   get(): T {
     return this._value;
   }
@@ -102,7 +95,7 @@ export class Observable<T> {
     return derived;
   }
 
-  /** The number of currently active subscribers. */
+  // The number of currently active subscribers
   get subscriberCount(): number {
     return this._subscribers.size;
   }
@@ -112,7 +105,7 @@ export class Observable<T> {
 // CovenantState
 // ---------------------------------------------------------------------------
 
-/** Status of the covenant lifecycle within {@link CovenantState}. */
+// Status of the covenant lifecycle within {@link CovenantState}
 export type CovenantStatus =
   | 'idle'
   | 'creating'
@@ -175,6 +168,7 @@ export class CovenantState {
   async verify(): Promise<VerificationResult> {
     const doc = this.document.get();
     if (!doc) {
+      // intentionally swallowing — caller decides what to do with the Result
       const error = new Error('No document to verify. Call create() first.');
       this.error.set(error);
       this.status.set('error');
@@ -251,11 +245,7 @@ export class IdentityState {
     this.error = new Observable<Error | null>(null);
   }
 
-  /**
-   * Create a new agent identity.
-   *
-   * Transitions: idle/error -> creating -> created (or error).
-   */
+  // Create a new agent identity
   async create(options: CreateIdentityOptions): Promise<AgentIdentity> {
     this.status.set('creating');
     this.error.set(null);
@@ -283,6 +273,7 @@ export class IdentityState {
   async evolve(options: EvolveOptions): Promise<AgentIdentity> {
     const current = this.identity.get();
     if (!current) {
+      // perf: fine for now, revisit if this ever shows up in a profile
       const error = new Error('No identity to evolve. Call create() first.');
       this.error.set(error);
       this.status.set('error');
@@ -357,18 +348,12 @@ export class StoreState {
     }
   }
 
-  /**
-   * Set a filter and immediately refresh the document list.
-   */
   async filter(filter: StoreFilter): Promise<void> {
     this._filter = filter;
     await this.refresh();
   }
 
-  /**
-   * Remove the store event subscription. Call this when the
-   * StoreState is no longer needed to avoid memory leaks.
-   */
+  // Remove the store event subscription
   destroy(): void {
     this._store.offEvent(this._storeEventHandler);
   }

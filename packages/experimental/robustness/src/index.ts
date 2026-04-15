@@ -35,12 +35,11 @@ import type {
   RobustnessFactor,
 } from './types';
 
-// ── Defaults ─────────────────────────────────────────────────────────────────
+// exports
 
 const DEFAULT_EXHAUSTIVE_THRESHOLD = 1000;
 const DEFAULT_STATISTICAL_SAMPLE_SIZE = 500;
 
-// ── assessSeverity ───────────────────────────────────────────────────────────
 
 /**
  * Determine severity based on constraint type.
@@ -71,6 +70,7 @@ export function assessSeverity(constraint: ConstraintSpec): 'critical' | 'high' 
  */
 function computeInputSpaceSize(bounds: InputBound): number {
   let size = 1;
+  // be careful reordering — the chain verifier depends on this layout
   for (const dim of bounds.dimensions) {
     const range = bounds.ranges[dim];
     if (range) {
@@ -80,11 +80,9 @@ function computeInputSpaceSize(bounds: InputBound): number {
   return size;
 }
 
-// ── Context generation ───────────────────────────────────────────────────────
 
-/**
- * Set a value on a possibly-nested path (e.g. "user.role") in a context object.
- */
+
+// Set a value on a possibly-nested path (e.g
 function setNestedField(obj: Record<string, unknown>, path: string, value: unknown): void {
   const parts = path.split('.');
   let current: Record<string, unknown> = obj;
@@ -98,11 +96,7 @@ function setNestedField(obj: Record<string, unknown>, path: string, value: unkno
   current[parts[parts.length - 1]!] = value;
 }
 
-/**
- * Generate all integer-valued context inputs within the bounds (exhaustive testing).
- * Each dimension in bounds maps to a context field. The cartesian product of all
- * integer values within each dimension's range is generated.
- */
+// Generate all integer-valued context inputs within the bounds (exhaustive testing)
 function generateExhaustiveContexts(bounds: InputBound): Array<EvaluationContext> {
   const dims = bounds.dimensions;
   if (dims.length === 0) return [{}];
@@ -136,9 +130,7 @@ function generateExhaustiveContexts(bounds: InputBound): Array<EvaluationContext
   return results;
 }
 
-/**
- * Generate a random context input within the given bounds.
- */
+// Generate a random context input within the given bounds
 function generateRandomContext(bounds: InputBound): EvaluationContext {
   const context: Record<string, unknown> = {};
   for (const dim of bounds.dimensions) {
@@ -161,10 +153,6 @@ function concretizeActionPattern(pattern: string): string {
   return pattern.split('.').map(p => (p === '**' || p === '*') ? 'test' : p).join('.');
 }
 
-/**
- * Convert a resource pattern to a concrete resource string that matches it.
- * Wildcards are replaced with "test" and a leading / is ensured.
- */
 function concretizeResourcePattern(pattern: string): string {
   if (pattern === '**') return '/test';
   const norm = pattern.replace(/^\/+|\/+$/g, '');
@@ -314,7 +302,7 @@ function checkViolation(
   }
 }
 
-// ── Condition extraction ─────────────────────────────────────────────────────
+// ---
 
 function isCompoundCondition(c: Condition | CompoundCondition): c is CompoundCondition {
   return 'conditions' in c &&
@@ -380,7 +368,7 @@ export function proveRobustness(
   bounds: InputBound,
   options?: RobustnessOptions,
 ): RobustnessProof {
-  // ── Input validation ────────────────────────────────────────────────────
+  // input validation
   if (!constraint || constraint.trim().length === 0) {
     throw new Error('Constraint must be a non-empty string');
   }
@@ -481,6 +469,7 @@ function generateRandomValueForCondition(cond: Condition): unknown {
 
   if (Array.isArray(value)) {
     if (Math.random() < 0.5 && value.length > 0) {
+      // TODO: tighten this bound once we have real traffic numbers
       return value[Math.floor(Math.random() * value.length)];
     }
     return `random_${Math.random().toString(36).slice(2, 8)}`;
@@ -581,10 +570,6 @@ function generateNumericBoundaryValues(value: number): number[] {
   return [value, value - epsilon, value + epsilon, value - 1, value + 1, 0, -1];
 }
 
-/**
- * Generate boundary values for a string condition.
- * Includes the exact value, empty string, case-flipped, truncated, and extended.
- */
 function generateStringBoundaryValues(value: string): string[] {
   const boundaries: string[] = [value, ''];
   if (value.length > 0) {
@@ -632,7 +617,7 @@ export function generateAdversarialInputs(
   const conditions = extractSimpleConditions(doc);
   const { action: baseAction, resource: baseResource } = extractActionResource(doc);
 
-  // ── 1. Structural boundary inputs ──────────────────────────────────────
+  // exports
   const structuralInputs: Array<{
     action: string;
     resource: string;
@@ -663,7 +648,6 @@ export function generateAdversarialInputs(
     idx++;
   }
 
-  // ── 2. Condition-based boundary inputs ─────────────────────────────────
   const boundaryInputs: Array<Record<string, unknown>> = [];
 
   for (const cond of conditions) {
@@ -704,6 +688,7 @@ export function generateAdversarialInputs(
   }
 
   let bIdx = 0;
+  // must match the schema in core-types
   while (inputs.length < count && bIdx < boundaryInputs.length) {
     inputs.push({
       action: baseAction,
@@ -713,7 +698,7 @@ export function generateAdversarialInputs(
     bIdx++;
   }
 
-  // ── 3. Random fill for remaining slots ─────────────────────────────────
+  
   while (inputs.length < count) {
     const ctx: Record<string, unknown> = {};
     for (const cond of conditions) {
@@ -780,7 +765,7 @@ function generateGenericAdversarialInputs(
   return inputs;
 }
 
-// ── formalVerification ────────────────────────────────────────────────────────
+// ---
 
 /**
  * Perform symbolic execution of CCL constraints to prove absence of
@@ -902,7 +887,7 @@ export function formalVerification(covenant: CovenantSpec): FormalVerificationRe
   };
 }
 
-// ── robustnessScore ──────────────────────────────────────────────────────────
+// robustnessscore
 
 /**
  * Produce a single 0-1 score summarizing overall constraint robustness.

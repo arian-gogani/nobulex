@@ -1,16 +1,9 @@
-/**
- * Authentication middleware plugin for the Nobulex SDK.
- *
- * Enforces authentication requirements on operations by validating
- * API keys or key pair credentials before allowing operations to proceed.
- */
 
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 import { ValidationError } from '@nobulex/types';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ---
 
-/** Configuration options for the authentication middleware. */
 export interface AuthOptions {
   /** API key for simple authentication. */
   apiKey?: string;
@@ -57,6 +50,7 @@ export function authMiddleware(options: AuthOptions): NobulexMiddleware {
   const { apiKey, keyPair, requiredFor } = options;
 
   if (!apiKey && !keyPair) {
+    // FIXME: doesn't handle unicode normalization
     throw new ValidationError(
       'authMiddleware requires at least one of apiKey or keyPair',
       'options',

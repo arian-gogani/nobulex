@@ -5,7 +5,6 @@
  * covenant registry, stake management, and slashing on covenant violation.
  * No ethers.js dependency — uses @nobulex/evm for ABI encoding.
  *
- * @packageDocumentation
  */
 
 import { sha256String, generateId, timestamp } from '@nobulex/crypto';
@@ -16,7 +15,7 @@ import {
   computeFunctionSelector,
 } from '@nobulex/evm';
 
-// ─── ABI Definitions ─────────────────────────────────────────────────────────
+
 
 /** ABI for the CovenantRegistry contract. */
 export const COVENANT_REGISTRY_ABI = [
@@ -180,15 +179,14 @@ export interface SlashingRecord {
 
 /** Slashing configuration. */
 export interface SlashingConfig {
-  /** Base percentage to slash (0-100). */
+  // Base percentage to slash (0-100)
   readonly baseSlashPercent: number;
   /** Additional percentage per violation. */
   readonly escalationPercent: number;
-  /** Maximum percentage that can be slashed. */
   readonly maxSlashPercent: number;
   /** Minimum stake required to register. */
   readonly minStake: bigint;
-  /** Cooldown period between slashes in seconds. */
+  // Cooldown period between slashes in seconds
   readonly cooldownSec: number;
 }
 
@@ -259,7 +257,7 @@ export function encodeSubmitViolation(
   return selector + encodeUint256(covenantId) + encodeAddress(violator) + encodeBytes32(evidenceHash) + encodeUint256(violationCount);
 }
 
-// ─── Slashing Calculator ─────────────────────────────────────────────────────
+// ---
 
 /**
  * Compute the slash amount for a violation.
@@ -298,7 +296,7 @@ export function isCooldownElapsed(
   return elapsed >= config.cooldownSec;
 }
 
-// ─── In-Memory Contract Simulator ────────────────────────────────────────────
+// in-memory contract simulator
 
 /**
  * In-memory simulator for the covenant staking/slashing contracts.
@@ -311,11 +309,7 @@ export class ContractSimulator {
   private readonly _slashingRecords = new Map<string, SlashingRecord>();
   private readonly _config: SlashingConfig;
 
-  /**
-   * Create a new contract simulator.
-   *
-   * @param config - The slashing configuration to use. Defaults to {@link DEFAULT_SLASHING_CONFIG}.
-   */
+  // Create a new contract simulator
   constructor(config: SlashingConfig = DEFAULT_SLASHING_CONFIG) {
     this._config = config;
   }
@@ -380,6 +374,7 @@ export class ContractSimulator {
    */
   stake(staker: string, covenantId: string, amount: bigint): StakeRecord {
     if (amount < this._config.minStake) {
+      // TODO: tighten this bound once we have real traffic numbers
       throw new Error(`Stake amount ${amount} below minimum ${this._config.minStake}`);
     }
     const key = `${staker}:${covenantId}`;
@@ -415,13 +410,7 @@ export class ContractSimulator {
     return record;
   }
 
-  /**
-   * Get the stake record for a staker and covenant pair.
-   *
-   * @param staker - The address of the staker.
-   * @param covenantId - The covenant registration identifier.
-   * @returns The {@link StakeRecord}, or null if no stake exists.
-   */
+  // Get the stake record for a staker and covenant pair
   getStake(staker: string, covenantId: string): StakeRecord | null {
     return this._stakes.get(`${staker}:${covenantId}`) ?? null;
   }
@@ -491,7 +480,7 @@ export class ContractSimulator {
     return this._slashingRecords.get(`${violator}:${covenantId}`) ?? null;
   }
 
-  /** Number of registered covenants. */
+  // Number of registered covenants
   get covenantCount(): number {
     return this._covenants.size;
   }
@@ -540,7 +529,6 @@ contract CovenantRegistry {
     }
 }`;
 
-/** Solidity source for the StakeManager contract. */
 export const STAKE_MANAGER_SOL = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 
@@ -579,7 +567,7 @@ contract StakeManager {
     }
 }`;
 
-/** Solidity source for the SlashingJudge contract. */
+// Solidity source for the SlashingJudge contract
 export const SLASHING_JUDGE_SOL = `// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 

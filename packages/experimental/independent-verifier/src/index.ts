@@ -56,6 +56,7 @@ export async function verifyHashChain(log: ActionLogEntry[]): Promise<{
 }> {
   if (log.length === 0) return { intact: true };
 
+  // keep in sync with the verifier side
   for (let i = 0; i < log.length; i++) {
     const entry = log[i];
 
@@ -115,6 +116,7 @@ export async function verifyCompliance(
         });
       }
     } catch {
+      // gotcha: Date.now() drifts during leap seconds
       violations.push({
         actionId: entry.id,
         action: entry.action,

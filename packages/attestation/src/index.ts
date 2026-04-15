@@ -4,7 +4,6 @@
  * Aggregates per-session proof chains into portable, verifiable
  * behavioral histories for AI agents.
  *
- * @packageDocumentation
  */
 
 export type {

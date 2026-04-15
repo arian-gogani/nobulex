@@ -27,7 +27,6 @@ export interface CanaryScheduleEntry {
   constraintTested: string;
   /** Target covenant ID */
   targetCovenantId: string;
-  /** Scheduled deployment time offset (ms from start) */
   deployAtOffset: number;
   /** Priority (lower = higher priority) */
   priority: number;
@@ -42,16 +41,15 @@ export interface CanaryScheduleResult {
   constraintsCovered: number;
   /** Number of unique covenants covered */
   covenantsCovered: number;
-  /** Estimated coverage ratio (0 to 1) */
+  // Estimated coverage ratio (0 to 1)
   estimatedCoverage: number;
 }
 
 export interface CanaryCorrelationResult {
-  /** Pearson correlation coefficient (-1 to 1) */
   correlation: number;
-  /** Number of data points used */
+  // Number of data points used
   sampleSize: number;
-  /** Canary pass rates per covenant */
+  // Canary pass rates per covenant
   canaryPassRates: Record<string, number>;
   /** Breach rates per covenant (0 = no breaches, 1 = all breaches) */
   breachRates: Record<string, number>;

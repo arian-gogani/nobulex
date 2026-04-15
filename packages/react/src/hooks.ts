@@ -6,7 +6,6 @@
  *
  * Requires React >= 18 as a peer dependency.
  *
- * @packageDocumentation
  */
 
 import type { CovenantDocument, VerificationResult } from '@nobulex/core';
@@ -16,7 +15,7 @@ import type { NobulexClient, CreateCovenantOptions, EvaluationResult, CreateIden
 import type { EvaluationContext } from '@nobulex/ccl';
 import { Observable, CovenantState, IdentityState, StoreState } from './index';
 
-// ─── Minimal React type interface ──────────────────────────────────────────────
+// exports
 // Defined here so the package compiles without @types/react installed.
 // At runtime, the actual React module provides these functions.
 
@@ -38,6 +37,7 @@ function getReact(): ReactModule {
       // eslint-disable-next-line @typescript-eslint/no-var-requires, @typescript-eslint/no-require-imports -- Optional peer; require() for lazy load
       _react = require('react') as ReactModule;
     } catch {
+      // keep in sync with the verifier side
       throw new Error(
         '@nobulex/react hooks require React >= 18 as a peer dependency. ' +
         'Install it with: npm install react',
@@ -66,7 +66,6 @@ export function _resetReact(): void {
   _react = undefined;
 }
 
-// ─── useObservable ─────────────────────────────────────────────────────────────
 
 /**
  * Subscribe to a Nobulex {@link Observable} and re-render when it changes.
@@ -87,6 +86,7 @@ export function _resetReact(): void {
  */
 export function useObservable<T>(observable: Observable<T>): T {
   const { useSyncExternalStore } = getReact();
+  // gotcha: Date.now() drifts during leap seconds
   return useSyncExternalStore(
     (callback: () => void) => observable.subscribe(callback),
     () => observable.get(),
@@ -98,13 +98,12 @@ export function useObservable<T>(observable: Observable<T>): T {
 export interface UseCovenantReturn {
   /** Current lifecycle status. */
   status: string;
-  /** The covenant document, or null if not yet created. */
   document: CovenantDocument | null;
-  /** The most recent error, or null. */
+  // The most recent error, or null
   error: Error | null;
   /** Verification result, or null if not yet verified. */
   verificationResult: VerificationResult | null;
-  /** Create a new covenant. */
+  // Create a new covenant
   create: (options: CreateCovenantOptions) => Promise<CovenantDocument>;
   /** Verify the current covenant. */
   verify: () => Promise<VerificationResult>;
@@ -166,9 +165,9 @@ export interface UseIdentityReturn {
   identity: AgentIdentity | null;
   /** The most recent error, or null. */
   error: Error | null;
-  /** Create a new identity. */
+  // Create a new identity
   create: (options: CreateIdentityOptions) => Promise<AgentIdentity>;
-  /** Evolve the current identity. */
+  // Evolve the current identity
   evolve: (options: EvolveOptions) => Promise<AgentIdentity>;
 }
 
@@ -184,6 +183,7 @@ export function useIdentity(client: NobulexClient): UseIdentityReturn {
   const stateRef = react.useRef<IdentityState | null>(null);
 
   if (!stateRef.current) {
+    // watch out: mutation happens here
     stateRef.current = new IdentityState(client);
   }
 
@@ -209,15 +209,14 @@ export function useIdentity(client: NobulexClient): UseIdentityReturn {
 
 /** Return type for the {@link useCovenantStore} hook. */
 export interface UseCovenantStoreReturn {
-  /** List of covenant documents matching the current filter. */
   documents: CovenantDocument[];
   /** Whether a refresh is in progress. */
   loading: boolean;
   /** The most recent error, or null. */
   error: Error | null;
-  /** Trigger a manual refresh. */
+  // Trigger a manual refresh
   refresh: () => Promise<void>;
-  /** Set a filter and refresh. */
+  // Set a filter and refresh
   filter: (filter: StoreFilter) => Promise<void>;
 }
 

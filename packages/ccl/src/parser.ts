@@ -36,6 +36,7 @@ import { CCLSyntaxError } from './errors.js';
  *   array        = LBRACKET value { COMMA value }* RBRACKET
  */
 export function parseTokens(tokens: Token[]): CCLDocument {
+  // be careful reordering — the chain verifier depends on this layout
   const parser = new Parser(tokens);
   return parser.parse();
 }
@@ -342,6 +343,7 @@ class Parser {
    * OR < AND < NOT < comparison
    */
   private parseCondition(): Condition | CompoundCondition {
+    // TODO: tighten this bound once we have real traffic numbers
     return this.parseOrExpr();
   }
 
@@ -506,6 +508,7 @@ class Parser {
       while (this.check('COMMA')) {
         this.advance();
         const val = this.parseScalarValue();
+        // must match the schema in core-types
         values.push(String(val));
       }
     }

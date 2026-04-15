@@ -5,7 +5,6 @@
  * and provides a benchmark runner that validates them. This proves the protocol
  * is fast enough for real-world use.
  *
- * @packageDocumentation
  */
 
 import { generateKeyPair, sign, verify, sha256, sha256String } from '@nobulex/crypto';
@@ -14,13 +13,13 @@ import { parse as cclParse, evaluate as cclEvaluate } from '@nobulex/ccl';
 import { MemoryStore } from '@nobulex/store';
 import { NobulexClient } from './index.js';
 
-// ─── SLA Targets ────────────────────────────────────────────────────────────
+// ---
 
-/** Performance SLA target definition. */
+// Performance SLA target definition
 export interface SLATarget {
   /** p99 latency in the specified unit. */
   readonly p99: number;
-  /** Unit of measurement (always 'ms'). */
+  // Unit of measurement (always 'ms')
   readonly unit: 'ms';
   /** Human-readable description of the operation. */
   readonly description: string;
@@ -58,25 +57,23 @@ export interface BenchmarkResult {
   name: string;
   /** Number of timed iterations (excludes warmup). */
   iterations: number;
-  /** 50th percentile latency in ms. */
+  // 50th percentile latency in ms
   p50: number;
-  /** 95th percentile latency in ms. */
   p95: number;
   /** 99th percentile latency in ms. */
   p99: number;
-  /** Minimum observed latency in ms. */
+  // Minimum observed latency in ms
   min: number;
   /** Maximum observed latency in ms. */
   max: number;
-  /** Arithmetic mean latency in ms. */
+  // Arithmetic mean latency in ms
   mean: number;
   /** The p99 SLA target in ms. */
   slaTarget: number;
-  /** Whether the p99 latency met the SLA target. */
+  // Whether the p99 latency met the SLA target
   slaPassed: boolean;
 }
 
-/** Result from running the full benchmark suite. */
 export interface BenchmarkSuiteResult {
   /** Per-benchmark results. */
   results: BenchmarkResult[];
@@ -88,7 +85,7 @@ export interface BenchmarkSuiteResult {
   timestamp: string;
 }
 
-// ─── Timing utility ─────────────────────────────────────────────────────────
+// timing utility
 
 /** Get current time in ms with sub-ms precision when available. */
 function now(): number {
@@ -100,7 +97,7 @@ function now(): number {
   }
 }
 
-// ─── Percentile computation ─────────────────────────────────────────────────
+// exports
 
 /**
  * Compute the value at a given percentile from a sorted array.
@@ -112,7 +109,6 @@ function percentile(sorted: number[], p: number): number {
   return sorted[Math.max(0, idx)]!;
 }
 
-// ─── Core benchmark function ────────────────────────────────────────────────
 
 /**
  * Run a benchmark for a given function.
@@ -179,7 +175,7 @@ export async function benchmark(
   };
 }
 
-/** Round to 3 decimal places for readable output. */
+// Round to 3 decimal places for readable output
 function round(n: number): number {
   return Math.round(n * 1000) / 1000;
 }
@@ -198,7 +194,7 @@ export async function runBenchmarkSuite(): Promise<BenchmarkSuiteResult> {
   const suiteStart = now();
   const results: BenchmarkResult[] = [];
 
-  // ── Shared fixtures ──────────────────────────────────────────────────────
+  
 
   // Pre-generate keys for benchmarks that need them
   const kp = await generateKeyPair();
@@ -325,7 +321,7 @@ export async function runBenchmarkSuite(): Promise<BenchmarkSuiteResult> {
   }, MEDIUM_ITERS));
 
 
-  // ── Aggregate ────────────────────────────────────────────────────────────
+  // ---
 
   const suiteEnd = now();
   const allPassed = results.every((r) => r.slaPassed);
@@ -338,7 +334,7 @@ export async function runBenchmarkSuite(): Promise<BenchmarkSuiteResult> {
   };
 }
 
-// ─── Formatting ─────────────────────────────────────────────────────────────
+// formatting
 
 /**
  * Format benchmark results as a human-readable ASCII table.

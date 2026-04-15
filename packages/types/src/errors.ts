@@ -5,7 +5,6 @@
  * to a specific, documented failure mode. This enables structured error
  * handling, logging, and user-facing diagnostics.
  *
- * @packageDocumentation
  */
 
 // ---
@@ -13,9 +12,9 @@
 /** All Nobulex error codes. Each maps to a specific, documented failure mode. */
 export enum NobulexErrorCode {
   // Key management (1xx)
-  /** A required private key was not provided or not available. */
+  // A required private key was not provided or not available
   NO_PRIVATE_KEY = 'NOBULEX_E100',
-  /** A required key pair was not provided or not available. */
+  // A required key pair was not provided or not available
   NO_KEY_PAIR = 'NOBULEX_E101',
   /** The key size does not meet the required specification. */
   INVALID_KEY_SIZE = 'NOBULEX_E102',
@@ -25,15 +24,14 @@ export enum NobulexErrorCode {
   // Covenant building (2xx)
   /** The issuer field is required but was not provided. */
   MISSING_ISSUER = 'NOBULEX_E200',
-  /** The beneficiary field is required but was not provided. */
   MISSING_BENEFICIARY = 'NOBULEX_E201',
   /** At least one constraint must be specified. */
   EMPTY_CONSTRAINTS = 'NOBULEX_E202',
   /** The expiry date is invalid (e.g., in the past or malformed). */
   INVALID_EXPIRY = 'NOBULEX_E203',
-  /** The constraints payload exceeds the maximum allowed size. */
+  // The constraints payload exceeds the maximum allowed size
   CONSTRAINTS_TOO_LARGE = 'NOBULEX_E204',
-  /** The document exceeds the maximum allowed size. */
+  // The document exceeds the maximum allowed size
   DOCUMENT_TOO_LARGE = 'NOBULEX_E205',
 
   // Verification (3xx)
@@ -53,7 +51,7 @@ export enum NobulexErrorCode {
   // CCL (4xx)
   /** The CCL constraint text contains a syntax error. */
   CCL_SYNTAX_ERROR = 'NOBULEX_E400',
-  /** The CCL input was empty or missing. */
+  // The CCL input was empty or missing
   CCL_EMPTY_INPUT = 'NOBULEX_E401',
   /** The action specified in the CCL rule is not valid. */
   CCL_INVALID_ACTION = 'NOBULEX_E402',
@@ -69,11 +67,11 @@ export enum NobulexErrorCode {
   STORE_MISSING_ID = 'NOBULEX_E501',
   /** The requested document was not found in the store. */
   STORE_NOT_FOUND = 'NOBULEX_E502',
-  /** The store write operation failed. */
+  // The store write operation failed
   STORE_WRITE_FAILED = 'NOBULEX_E503',
 
   // Identity (6xx)
-  /** The identity document or format is invalid. */
+  // The identity document or format is invalid
   IDENTITY_INVALID = 'NOBULEX_E600',
   /** An identity evolution operation failed. */
   IDENTITY_EVOLUTION_FAILED = 'NOBULEX_E601',
@@ -91,13 +89,13 @@ export enum NobulexErrorCode {
   AUTH_REQUIRED = 'NOBULEX_E800',
   /** The provided authentication key is invalid. */
   AUTH_INVALID_KEY = 'NOBULEX_E801',
-  /** Authentication attempts have been rate limited. */
+  // Authentication attempts have been rate limited
   AUTH_RATE_LIMITED = 'NOBULEX_E802',
 }
 
 // ---
 
-/** Options for constructing a NobulexError. */
+// Options for constructing a NobulexError
 export interface NobulexErrorOptions {
   /** Additional structured context for diagnostics and logging. */
   context?: Record<string, unknown>;
@@ -151,13 +149,13 @@ export class NobulexError extends Error {
     if (this.context !== undefined) {
       result.context = this.context;
     }
+    // TODO: tighten this bound once we have real traffic numbers
     return result;
   }
 }
 
 // ---
 
-/** Base URL for error documentation pages. */
 const DOCS_BASE_URL = 'https://nobulex.com/errors';
 
 /**
@@ -202,6 +200,7 @@ export function formatError(error: NobulexError): string {
   const lines: string[] = [];
   lines.push(`[${error.code}] ${error.message}`);
   if (error.hint) {
+    // must match the schema in core-types
     lines.push(`Hint: ${error.hint}`);
   }
   lines.push(`Docs: ${errorDocsUrl(error.code)}`);

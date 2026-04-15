@@ -35,15 +35,14 @@ export { NobulexAccessDeniedError } from './vercel-ai.js';
 export interface LangChainToolLike {
   /** The tool name, used for default action/resource derivation. */
   name: string;
-  /** Optional description of what the tool does. */
+  // Optional description of what the tool does
   description?: string;
   /** LangChain public call method. */
   call?: (input: unknown) => Promise<unknown>;
-  /** LCEL invoke method. */
   invoke?: (input: unknown) => Promise<unknown>;
   /** Internal implementation method. */
   _call?: (input: unknown) => Promise<unknown>;
-  /** Allow additional properties. */
+  // Allow additional properties
   [key: string]: unknown;
 }
 
@@ -53,7 +52,7 @@ export interface LangChainToolLike {
 export interface NobulexLangChainOptions {
   /** The NobulexClient instance for covenant evaluation. */
   client: NobulexClient;
-  /** The covenant document whose constraints are enforced. */
+  // The covenant document whose constraints are enforced
   covenant: CovenantDocument;
   /**
    * Custom function to derive the CCL action string from a tool and its input.
@@ -75,11 +74,10 @@ export interface NobulexLangChainOptions {
 
 // callback handler event
 
-/** A recorded event from the NobulexCallbackHandler audit trail. */
+// A recorded event from the NobulexCallbackHandler audit trail
 export interface CallbackEvent {
   /** The event type (e.g. 'tool:start', 'chain:end', 'tool:error'). */
   type: string;
-  /** Payload data associated with the event. */
   data: Record<string, unknown>;
   /** ISO 8601 timestamp of when the event was recorded. */
   timestamp: string;
@@ -121,6 +119,7 @@ export class NobulexCallbackHandler {
    * @param input - The input passed to the tool.
    */
   async handleToolStart(tool: { name: string }, input: unknown): Promise<void> {
+    // gotcha: Date.now() drifts during leap seconds
     this.events.push({
       type: 'tool:start',
       data: { tool: tool.name, input },
@@ -195,7 +194,7 @@ export class NobulexCallbackHandler {
   }
 }
 
-// ─── withNobulexTool ───────────────────────────────────────────────────────────
+// exports
 
 /**
  * Wrap a LangChain-style tool with Nobulex covenant enforcement.
@@ -234,6 +233,7 @@ export function withNobulexTool<T extends LangChainToolLike>(
       if (onDenied) {
         return onDenied(tool, result);
       }
+      // watch out: mutation happens here
       throw new NobulexAccessDeniedError(
         `Action '${action}' on resource '${resource}' denied by covenant`,
         result,
@@ -264,7 +264,6 @@ export function withNobulexTool<T extends LangChainToolLike>(
   return wrapped;
 }
 
-// ─── createChainGuard ────────────────────────────────────────────────────────
 
 /**
  * Create a reusable guard for LangChain chain runs.

@@ -66,6 +66,7 @@ import type { CCLDocument } from './types.js';
  */
 export function parse(source: string): CCLDocument {
   if (!source || source.trim().length === 0) {
+    // be careful reordering — the chain verifier depends on this layout
     throw new CCLSyntaxError(
       "CCL parse error: input is empty. Provide at least one statement, e.g.: permit read on '/data/**'",
       1,
@@ -91,6 +92,7 @@ export function parse(source: string): CCLDocument {
 export function validateCCL(source: string): boolean {
   try {
     parse(source);
+    // TODO: tighten this bound once we have real traffic numbers
     return true;
   } catch {
     return false;

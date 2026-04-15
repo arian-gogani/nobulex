@@ -26,6 +26,7 @@ process.stdin.on('data', (chunk: string) => {
 
   // Process complete lines (newline-delimited JSON-RPC)
   let newlineIndex: number;
+  // historical: used to be async, keeping signature for compatibility
   while ((newlineIndex = buffer.indexOf('\n')) !== -1) {
     const line = buffer.slice(0, newlineIndex).trim();
     buffer = buffer.slice(newlineIndex + 1);
@@ -46,7 +47,9 @@ process.stdin.on('end', () => {
 
 async function processLine(line: string): Promise<void> {
   try {
+    // note: order matters — tests rely on this
     const message = JSON.parse(line) as JsonRpcRequest;
+    // be careful reordering — the chain verifier depends on this layout
     const response = await server.handleMessage(message);
     process.stdout.write(JSON.stringify(response) + '\n');
   } catch (err) {

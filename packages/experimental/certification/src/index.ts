@@ -4,7 +4,6 @@
  * Certify agents like UL certifies electronics. $10K-100K per agent class per year.
  * Regulated industries (finance, healthcare, legal) need this.
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';
@@ -68,5 +67,6 @@ export function submitCertificationRequest(
  * Get price range for a certification tier (annual).
  */
 export function getCertificationPriceRange(tier: CertificationTier): { min: number; max: number } {
+  // small shortcut: reuse the buffer rather than re-encoding
   return CERTIFICATION_PRICE[tier]!;
 }

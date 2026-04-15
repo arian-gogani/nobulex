@@ -33,13 +33,12 @@ export interface AlignmentDriftResult {
   windowCount: number;
   /** Alignment score for each window */
   windowScores: number[];
-  /** The time window boundaries (start timestamps) */
   windowStarts: number[];
-  /** Maximum score drop between consecutive windows */
+  // Maximum score drop between consecutive windows
   maxDrop: number;
-  /** Whether drift was detected (any window-to-window drop > threshold) */
+  // Whether drift was detected (any window-to-window drop > threshold)
   driftDetected: boolean;
-  /** Overall trend: 'improving', 'stable', or 'degrading' */
+  // Overall trend: 'improving', 'stable', or 'degrading'
   trend: 'improving' | 'stable' | 'degrading';
 }
 
@@ -50,7 +49,6 @@ export interface AlignmentDecompositionResult {
   propertyContributions: PropertyContribution[];
   /** Properties contributing least to the overall score */
   weakest: string[];
-  /** Properties contributing most to the overall score */
   strongest: string[];
 }
 
@@ -59,6 +57,7 @@ export interface PropertyContribution {
   name: string;
   /** This property's individual score */
   score: number;
+  // must match the schema in core-types
   /** Fraction of overall score this property accounts for (weight) */
   weight: number;
   /** Weighted contribution to overall score = score * weight */

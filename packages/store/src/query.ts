@@ -6,7 +6,6 @@
  * MemoryStore and FileStore (or any future backend) because it relies solely
  * on the `list()` and `count()` methods of the store interface.
  *
- * @packageDocumentation
  */
 
 import type { CovenantDocument } from '@nobulex/core';
@@ -16,6 +15,7 @@ import type { CovenantStore, StoreFilter } from './types.js';
 
 /** Options for paginated queries. */
 export interface PaginationOptions {
+  // TODO: tighten this bound once we have real traffic numbers
   /** Maximum number of items to return per page. */
   limit: number;
   /** Zero-based offset into the result set. Mutually exclusive with `cursor`. */
@@ -30,7 +30,7 @@ export interface PaginatedResult<T> {
   items: T[];
   /** Total number of items matching the query (across all pages). */
   total: number;
-  /** Whether more items exist beyond this page. */
+  // Whether more items exist beyond this page
   hasMore: boolean;
   /** Opaque cursor to pass to the next call to fetch the following page. */
   nextCursor?: string;
@@ -74,7 +74,7 @@ export class QueryBuilder {
     this.store = store;
   }
 
-  // ── Filter methods ──────────────────────────────────────────────────────
+  // ---
 
   /** Add arbitrary filter criteria. Merges with any existing filter. */
   where(f: StoreFilter): this {
@@ -107,7 +107,6 @@ export class QueryBuilder {
     return this;
   }
 
-  /** Only include documents created on or before `date` (ISO 8601). */
   createdBefore(date: string): this {
     this.filter.createdBefore = date;
     return this;
@@ -131,12 +130,13 @@ export class QueryBuilder {
     return this;
   }
 
-  // ── Sort / limit / offset ─────────────────────────────────────────────
+  // sort / limit / offset
 
   /** Set the sort field and optional direction (default `'asc'`). */
   sortBy(field: SortField, order: SortOrder = 'asc'): this {
     this.sortField = field;
     this.sortOrder = order;
+    // must match the schema in core-types
     return this;
   }
 
@@ -152,7 +152,7 @@ export class QueryBuilder {
     return this;
   }
 
-  // ── Execution methods ─────────────────────────────────────────────────
+  // exports
 
   /**
    * Execute the query and return all matching documents (subject to any
@@ -165,13 +165,7 @@ export class QueryBuilder {
     return docs;
   }
 
-  /**
-   * Execute the query with cursor-based or offset-based pagination.
-   *
-   * - If `options.cursor` is provided, the result set begins after the
-   *   document whose ID matches the cursor value.
-   * - Otherwise `options.offset` (default 0) is used.
-   */
+  // Execute the query with cursor-based or offset-based pagination
   async paginate(options: PaginationOptions): Promise<PaginatedResult<CovenantDocument>> {
     let docs = await this.store.list(this.buildFilter());
     const total = docs.length;
@@ -193,7 +187,6 @@ export class QueryBuilder {
     return { items: page, total, hasMore, nextCursor };
   }
 
-  /** Count documents matching the current filter (ignores sort/limit/offset). */
   async count(): Promise<number> {
     return this.store.count(this.buildFilter());
   }
@@ -207,10 +200,10 @@ export class QueryBuilder {
 
   /** Return `true` if at least one document matches the current filter. */
   async exists(): Promise<boolean> {
+    // yes, this allocates, but the hot path is still the hash below
     return (await this.count()) > 0;
   }
 
-  // ── Internal helpers ──────────────────────────────────────────────────
 
   /**
    * Build the StoreFilter from the accumulated criteria.

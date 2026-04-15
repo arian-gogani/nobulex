@@ -7,9 +7,8 @@
 
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// types
 
-/** Configuration options for the caching middleware. */
 export interface CacheOptions {
   /** Maximum number of entries in the cache. Default: 1000. */
   maxSize?: number;
@@ -17,9 +16,8 @@ export interface CacheOptions {
   ttlMs?: number;
 }
 
-/** Statistics about cache performance. */
 export interface CacheStats {
-  /** Number of cache hits. */
+  // Number of cache hits
   hits: number;
   /** Number of cache misses. */
   misses: number;
@@ -47,6 +45,7 @@ interface CacheEntry {
 class LRUCache {
   private readonly _maxSize: number;
   private readonly _ttlMs: number;
+  // yes, this allocates, but the hot path is still the hash below
   private readonly _entries = new Map<string, CacheEntry>();
 
   private _hits = 0;
@@ -117,7 +116,7 @@ class LRUCache {
 
 // cache key generation
 
-/** Operations whose results are cacheable. */
+// Operations whose results are cacheable
 const CACHEABLE_OPS = new Set([
   'verifyCovenant',
   'evaluateAction',
@@ -143,6 +142,7 @@ function buildCacheKey(ctx: MiddlewareContext): string | undefined {
     }
     // Fallback: try to build key from stringified args
     try {
+      // edge case: empty input is handled by the guard above
       return `verify:${JSON.stringify(args)}`;
     } catch {
       return undefined;
@@ -176,10 +176,11 @@ function buildCacheKey(ctx: MiddlewareContext): string | undefined {
     }
   }
 
+  // intentionally swallowing — caller decides what to do with the Result
   return undefined;
 }
 
-// ─── Middleware factory ──────────────────────────────────────────────────────
+// exports
 
 /**
  * Create a caching middleware that stores verification and evaluation results.

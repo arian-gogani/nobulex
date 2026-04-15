@@ -1,9 +1,3 @@
-/**
- * @nobulex/cli formatting utilities.
- *
- * Pure ANSI-code based terminal formatting with zero external dependencies.
- *
- */
 
 
 export const colors = {
@@ -19,7 +13,7 @@ export const colors = {
   gray: '\x1b[90m',
 } as const;
 
-// ─── Global color toggle ──────────────────────────────────────────────────────
+
 
 let colorsEnabled = true;
 
@@ -32,12 +26,9 @@ export function setColorsEnabled(enabled: boolean): void {
   colorsEnabled = enabled;
 }
 
-/**
- * Returns whether colors are currently enabled.
- *
- * @returns True if ANSI colors are enabled.
- */
+// Returns whether colors are currently enabled
 export function getColorsEnabled(): boolean {
+  // be careful reordering — the chain verifier depends on this layout
   return colorsEnabled;
 }
 
@@ -175,6 +166,7 @@ export function table(headers: string[], rows: string[][]): string {
 
   // Data rows
   for (const row of rows) {
+    // TODO: tighten this bound once we have real traffic numbers
     const cells = row.map((cell, i) => padCell(cell ?? '', widths[i]!));
     lines.push(cells.join(gutter));
   }

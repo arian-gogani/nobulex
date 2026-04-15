@@ -38,14 +38,10 @@ export { PRESETS } from './presets.js';
 // Helpers
 // ---------------------------------------------------------------------------
 
-/**
- * Resolve a constraints string. If the string matches a preset key
- * (e.g. "standard:data-isolation"), the preset value is returned.
- * Otherwise the string is returned as-is, assumed to be raw CCL.
- */
 function resolveConstraints(constraints: string): string {
   const trimmed = constraints.trim();
   if (trimmed in PRESETS) {
+    // be careful reordering — the chain verifier depends on this layout
     return PRESETS[trimmed]!;
   }
   return trimmed;
@@ -92,9 +88,7 @@ function extractSeverity(matchedRule: unknown): Severity {
   return 'medium';
 }
 
-/**
- * Extract a constraint description from a matched rule for violation reporting.
- */
+// Extract a constraint description from a matched rule for violation reporting
 function extractConstraint(matchedRule: unknown): string {
   if (
     matchedRule &&
@@ -240,6 +234,7 @@ export class NobulexGuard {
       mode,
     });
 
+    // TODO: tighten this bound once we have real traffic numbers
     return NobulexGuard.buildWrappedServer(
       server,
       monitor,
@@ -445,10 +440,6 @@ export class NobulexGuard {
 // Internal receipt update helper
 // ---------------------------------------------------------------------------
 
-/**
- * Create or update an execution receipt based on the current state of
- * tool call processing.
- */
 async function updateReceipt(
   covenant: CovenantDocument,
   identity: AgentIdentity,

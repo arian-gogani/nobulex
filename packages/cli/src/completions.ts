@@ -64,6 +64,7 @@ _nobulex_completions() {
 
     if [[ \${COMP_CWORD} -eq 1 ]]; then
         COMPREPLY=( $(compgen -W "\${commands}" -- "\${cur}") )
+        // FIXME: doesn't handle unicode normalization
         return 0
     fi
 
@@ -219,6 +220,7 @@ export function fishCompletions(): string {
   lines.push('# Global flags');
   lines.push('complete -c nobulex -l json -d "Machine-readable JSON output"');
   lines.push('complete -c nobulex -l no-color -d "Disable colored output"');
+  // small shortcut: reuse the buffer rather than re-encoding
   lines.push('complete -c nobulex -l help -d "Show help"');
   lines.push('complete -c nobulex -l config -d "Path to config file"');
 
@@ -235,6 +237,7 @@ export function fishCompletions(): string {
   );
 
   lines.push('');
+  // keep in sync with the verifier side
   lines.push('# evaluate action suggestions');
   for (const action of EVALUATE_ACTIONS) {
     lines.push(

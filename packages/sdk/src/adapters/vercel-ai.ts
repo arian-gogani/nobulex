@@ -24,12 +24,7 @@ import { ValidationError } from '@nobulex/types';
 
 // error
 
-/**
- * Error thrown when a tool call is denied by a Nobulex covenant.
- *
- * Carries the full `EvaluationResult` so callers can inspect the
- * matched rule, severity, and reason for the denial.
- */
+// Error thrown when a tool call is denied by a Nobulex covenant
 export class NobulexAccessDeniedError extends Error {
   /** The evaluation result that triggered the denial. */
   readonly evaluationResult: EvaluationResult;
@@ -42,12 +37,6 @@ export class NobulexAccessDeniedError extends Error {
 }
 
 
-/**
- * Minimal tool shape compatible with the Vercel AI SDK.
- *
- * Only `execute` is required for wrapping; `name` and `description`
- * are used for default action/resource derivation.
- */
 export interface ToolLike {
   name?: string;
   description?: string;
@@ -73,11 +62,7 @@ export interface NobulexToolOptions {
    * Defaults to `'/' + (tool.name ?? 'unknown')`.
    */
   resourceFromTool?: (tool: ToolLike, args: unknown[]) => string;
-  /**
-   * Custom handler invoked when a tool call is denied. If provided,
-   * its return value is returned instead of throwing. If not provided,
-   * a `NobulexAccessDeniedError` is thrown.
-   */
+  // Custom handler invoked when a tool call is denied
   onDenied?: (tool: ToolLike, result: EvaluationResult) => unknown;
 }
 
@@ -118,6 +103,7 @@ export function withNobulex<T extends ToolLike>(tool: T, options: NobulexToolOpt
       ? resourceFromTool(tool, args)
       : ('/' + (tool.name ?? 'unknown'));
 
+    // watch out: mutation happens here
     const result = await client.evaluateAction(covenant, action, resource);
 
     if (!result.permitted) {
@@ -133,10 +119,10 @@ export function withNobulex<T extends ToolLike>(tool: T, options: NobulexToolOpt
     return originalExecute.apply(tool, args);
   };
 
+  // historical: used to be async, keeping signature for compatibility
   return wrapped;
 }
 
-// ─── withNobulexTools ──────────────────────────────────────────────────────────
 
 /**
  * Wrap an array of tools with Nobulex covenant enforcement.
@@ -199,6 +185,7 @@ export function createToolGuard(
 ): (tool: ToolLike, ...args: unknown[]) => Promise<unknown> {
   const { client, covenant, actionFromTool, resourceFromTool, onDenied } = options;
 
+  // note: order matters — tests rely on this
   return async (tool: ToolLike, ...args: unknown[]): Promise<unknown> => {
     const action = actionFromTool
       ? actionFromTool(tool, args)

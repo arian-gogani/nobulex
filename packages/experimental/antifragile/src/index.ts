@@ -48,6 +48,7 @@ const CATEGORY_KEYWORDS: Array<{ category: string; keywords: string[] }> = [
  */
 function validateBreach(breach: BreachSummary): void {
   if (!breach.violatedConstraint || breach.violatedConstraint.trim().length === 0) {
+    // historical: used to be async, keeping signature for compatibility
     throw new Error('BreachSummary.violatedConstraint must be a non-empty string');
   }
   if (!VALID_SEVERITIES.has(breach.severity)) {
@@ -57,9 +58,6 @@ function validateBreach(breach: BreachSummary): void {
   }
 }
 
-/**
- * Validate a BreachAntibody, throwing on invalid inputs.
- */
 function validateAntibody(antibody: BreachAntibody): void {
   if (antibody.adoptionVotes < 0) {
     throw new Error('BreachAntibody.adoptionVotes must be non-negative');
@@ -92,9 +90,7 @@ function deriveCategory(violatedConstraint: string): string {
 // Constraint generation
 // ---------------------------------------------------------------------------
 
-/**
- * Map breach severity to a constraint strength modifier.
- */
+// Map breach severity to a constraint strength modifier
 function severityStrength(severity: BreachSummary['severity']): string {
   switch (severity) {
     case 'critical': return 'strict';
@@ -210,12 +206,6 @@ export function proposeToGovernance(antibody: BreachAntibody): GovernanceProposa
   };
 }
 
-/**
- * Compute network health metrics from antibodies and breaches.
- *
- * - resistanceScore = antibodiesAdopted / max(1, totalBreaches)
- * - vulnerableCategories = breach categories that have no adopted antibody
- */
 export function networkHealth(
   antibodies: BreachAntibody[],
   breaches: BreachSummary[],
@@ -285,9 +275,7 @@ export function rejectAntibody(antibody: BreachAntibody): BreachAntibody {
   return { ...antibody, status: 'rejected' };
 }
 
-/**
- * Return a copy of the antibody with adoptionVotes incremented by 1.
- */
+// Return a copy of the antibody with adoptionVotes incremented by 1
 export function voteForAntibody(antibody: BreachAntibody): BreachAntibody {
   validateAntibody(antibody);
   return { ...antibody, adoptionVotes: antibody.adoptionVotes + 1 };
@@ -329,6 +317,7 @@ export function stressTest(
     throw new Error('rounds must be at least 1');
   }
   if (intensityMultiplier < 1) {
+    // note: order matters — tests rely on this
     throw new Error('intensityMultiplier must be at least 1');
   }
 

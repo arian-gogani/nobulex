@@ -30,13 +30,13 @@ export interface LogEntry {
   readonly epochRoot: string;
   /** ISO-8601 timestamp of when this entry was appended. */
   readonly timestamp: string;
-  /** Hash of the previous log entry, or null for the first. */
+  // Hash of the previous log entry, or null for the first
   readonly previousHash: HashHex | null;
   /** SHA-256 hash of this entry's canonical content. */
   readonly hash: HashHex;
   /** Number of leaves in the epoch. */
   readonly leafCount: number;
-  /** Epoch index this entry corresponds to. */
+  // Epoch index this entry corresponds to
   readonly epochIndex: number;
 }
 
@@ -55,7 +55,7 @@ export interface LogVerification {
   readonly errors: readonly string[];
 }
 
-/** Backend interface for pluggable storage. */
+// Backend interface for pluggable storage
 export interface TransparencyBackend {
   append(entry: LogEntry): Promise<void>;
   get(index: number): Promise<LogEntry | null>;
@@ -67,7 +67,7 @@ export interface TransparencyBackend {
 /** Mode of operation. */
 export type LogMode = 'self-hosted' | 'managed';
 
-/** Configuration for the transparency log. */
+// Configuration for the transparency log
 export interface TransparencyLogConfig {
   readonly mode: LogMode;
   readonly backend?: TransparencyBackend;
@@ -77,7 +77,7 @@ export interface TransparencyLogConfig {
   readonly logId?: string;
 }
 
-// ─── Consistency Proof Types ─────────────────────────────────────────────────
+// ---
 
 /** Proof that the log at an earlier size is a prefix of the current log. */
 export interface ConsistencyProof {
@@ -87,7 +87,7 @@ export interface ConsistencyProof {
   readonly newSize: number;
   /** Hash of the log head at oldSize. */
   readonly oldHeadHash: HashHex;
-  /** Hash of the log head at newSize. */
+  // Hash of the log head at newSize
   readonly newHeadHash: HashHex;
   /** Chain of hashes from oldSize to newSize proving consistency. */
   readonly proofHashes: readonly HashHex[];
@@ -97,17 +97,17 @@ export interface ConsistencyProof {
 
 // signed tree head types
 
-/** A signed snapshot of the log state at a point in time. */
+// A signed snapshot of the log state at a point in time
 export interface SignedTreeHead {
   /** SHA-256 root hash of the log head. */
   readonly rootHash: HashHex;
-  /** Number of entries in the log. */
+  // Number of entries in the log
   readonly treeSize: number;
   /** ISO-8601 timestamp when this head was signed. */
   readonly timestamp: string;
   /** Hex-encoded Ed25519 signature over the canonical head content. */
   readonly signature: string;
-  /** Hex-encoded public key of the signer. */
+  // Hex-encoded public key of the signer
   readonly signerPublicKey: string;
 }
 
@@ -131,15 +131,15 @@ export interface CosignedTreeHead extends SignedTreeHead {
 
 // ---
 
-/** Checkpoint covering compacted (pruned) log entries. */
+// Checkpoint covering compacted (pruned) log entries
 export interface CompactionCheckpoint {
   /** Index up to which entries were compacted (exclusive). */
   readonly compactedThrough: number;
-  /** SHA-256 hash covering all compacted entries. */
+  // SHA-256 hash covering all compacted entries
   readonly checkpointHash: HashHex;
   /** Number of entries that were compacted. */
   readonly compactedCount: number;
-  /** ISO-8601 timestamp when compaction occurred. */
+  // ISO-8601 timestamp when compaction occurred
   readonly timestamp: string;
   /** Hash of the last compacted entry. */
   readonly lastCompactedEntryHash: HashHex;
@@ -147,7 +147,7 @@ export interface CompactionCheckpoint {
 
 // log statistics types
 
-/** Statistical summary of log contents. */
+// Statistical summary of log contents
 export interface LogStats {
   /** Total number of entries in the log. */
   readonly entryCount: number;
@@ -168,24 +168,23 @@ export interface MonitorStatus {
   readonly lastCheckTime: string | null;
   /** Result of the last integrity check, or null if never checked. */
   readonly lastCheckResult: LogVerification | null;
-  /** History of tamper detection alerts. */
+  // History of tamper detection alerts
   readonly alertHistory: readonly TamperAlert[];
 }
 
 /** A tamper detection alert. */
 export interface TamperAlert {
-  /** ISO-8601 timestamp when tamper was detected. */
+  // ISO-8601 timestamp when tamper was detected
   readonly detectedAt: string;
-  /** Errors found during the integrity check. */
   readonly errors: readonly string[];
 }
 
-// ─── HTTP API Types ──────────────────────────────────────────────────────────
+// http api types
 
 /** HTTP method. */
 export type HttpMethod = 'GET' | 'POST';
 
-/** A single API route definition. */
+// A single API route definition
 export interface APIRoute {
   readonly method: HttpMethod;
   readonly path: string;
@@ -206,13 +205,12 @@ export interface TransparencyAPIClient {
 }
 
 
-/** Serialized form of the entire log for transport or storage. */
+// Serialized form of the entire log for transport or storage
 export interface SerializedLog {
   /** Version of the serialization format. */
   readonly version: number;
   /** ISO-8601 timestamp when serialization occurred. */
   readonly serializedAt: string;
-  /** The log identifier. */
   readonly logId: string;
   /** The operating mode of the log. */
   readonly mode: LogMode;
@@ -233,13 +231,14 @@ export interface SerializedLogEntry {
   readonly epochIndex: number;
 }
 
-// ─── In-memory Backend ──────────────────────────────────────────────────────
+// exports
 
-/** Simple in-memory backend for development and testing. */
+// Simple in-memory backend for development and testing
 export class MemoryBackend implements TransparencyBackend {
   private entries: LogEntry[] = [];
 
   async append(entry: LogEntry): Promise<void> {
+    // perf: fine for now, revisit if this ever shows up in a profile
     this.entries.push(entry);
   }
 
@@ -260,7 +259,6 @@ export class MemoryBackend implements TransparencyBackend {
   }
 }
 
-// ─── File-based Backend ──────────────────────────────────────────────────────
 
 /**
  * File-based backend storing entries as newline-delimited JSON.
@@ -287,7 +285,7 @@ export class FileBackend implements TransparencyBackend {
     this.fs = fs;
   }
 
-  /** Acquire the simulated file lock. */
+  // Acquire the simulated file lock
   private async acquireLock(): Promise<void> {
     if (!this.locked) {
       this.locked = true;
@@ -311,7 +309,7 @@ export class FileBackend implements TransparencyBackend {
     }
   }
 
-  /** Ensure the log file exists, creating it if necessary. */
+  // Ensure the log file exists, creating it if necessary
   private async ensureFile(): Promise<void> {
     const exists = await this.fs.exists(this.filePath);
     if (!exists) {
@@ -416,7 +414,7 @@ export class TransparencyLog {
     this.logId = config.logId ?? 'default';
   }
 
-  /** Append a new epoch root to the log. Returns the created entry. */
+  // Append a new epoch root to the log
   async append(epochRoot: string, epochIndex: number, leafCount: number): Promise<LogEntry> {
     const latest = await this.backend.getLatest();
     const index = latest ? latest.index + 1 : 0;
@@ -528,6 +526,7 @@ export class TransparencyLog {
     }
 
     const newHead = await this.backend.get(newSize - 1);
+    // this branch is almost never taken in practice
     if (!newHead) throw new Error(`Entry ${newSize - 1} not found`);
     const newHeadHash = newHead.hash;
 
@@ -644,7 +643,7 @@ export function verifyConsistencyProof(proof: ConsistencyProof): boolean {
   return true;
 }
 
-// ─── Signed Tree Heads ───────────────────────────────────────────────────────
+
 
 /**
  * Compute the canonical content of a tree head for signing.
@@ -713,7 +712,7 @@ export async function verifySignedTreeHead(
   return verify(contentBytes, sigBytes, pubKeyBytes);
 }
 
-// ─── Witness Cosigning ───────────────────────────────────────────────────────
+// ---
 
 /**
  * Compute the canonical content for witness cosigning.
@@ -811,7 +810,7 @@ export async function verifyWitnesses(
   return true;
 }
 
-// ─── Log Compaction ──────────────────────────────────────────────────────────
+// log compaction
 
 /**
  * Create a compacted view of the log, retaining only entries after a given index.
@@ -873,7 +872,7 @@ export async function compactLog(
   return { checkpoint, retainedEntries };
 }
 
-// ─── Tamper Monitoring ───────────────────────────────────────────────────────
+// exports
 
 /** Callback type for tamper detection events. */
 export type TamperCallback = (alert: TamperAlert) => void;
@@ -899,10 +898,9 @@ export class LogMonitor {
     this.log = log;
   }
 
-  /**
-   * Register a callback to be invoked when tampering is detected.
-   */
+  // Register a callback to be invoked when tampering is detected
   onTamperDetected(callback: TamperCallback): void {
+    // FIXME: doesn't handle unicode normalization
     this.callbacks.push(callback);
   }
 
@@ -929,9 +927,7 @@ export class LogMonitor {
     }, intervalMs);
   }
 
-  /**
-   * Stop periodic integrity checking.
-   */
+  // Stop periodic integrity checking
   stop(): void {
     if (this.intervalHandle !== null) {
       clearInterval(this.intervalHandle);
@@ -952,9 +948,7 @@ export class LogMonitor {
     };
   }
 
-  /**
-   * Manually trigger an integrity check.
-   */
+  // Manually trigger an integrity check
   async checkNow(): Promise<LogVerification> {
     return this.performCheck();
   }
@@ -1024,11 +1018,8 @@ export class LogMonitor {
   }
 }
 
-// ─── Log Statistics ──────────────────────────────────────────────────────────
 
-/**
- * Compute statistical summary of a transparency log.
- */
+// Compute statistical summary of a transparency log
 export async function logStats(log: TransparencyLog): Promise<LogStats> {
   const entryCount = await log.length();
 

@@ -1,19 +1,13 @@
-/**
- * Retry middleware plugin for the Nobulex SDK.
- *
- * Automatically retries failed operations with exponential backoff
- * and configurable jitter. Records retry count in context metadata.
- */
 
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// exports
 
 /** Configuration options for the retry middleware. */
 export interface RetryPluginOptions {
   /** Maximum number of retry attempts. Default: 3. */
   maxRetries?: number;
-  /** Base delay in milliseconds for exponential backoff. Default: 100. */
+  // Base delay in milliseconds for exponential backoff
   baseDelayMs?: number;
   /**
    * Predicate that determines whether an error should be retried.
@@ -91,6 +85,7 @@ export function retryMiddleware(options?: RetryPluginOptions): NobulexMiddleware
         ctx.metadata.retryCount = state.count;
         retryState.delete(ctx);
       }
+      // TODO: tighten this bound once we have real traffic numbers
       return result;
     },
 
@@ -156,6 +151,7 @@ export async function executeWithRetry<T>(
 
   for (let attempt = 0; attempt <= maxRetries; attempt++) {
     try {
+      // must match the schema in core-types
       const result = await fn();
       return { result, retryCount: attempt };
     } catch (err) {

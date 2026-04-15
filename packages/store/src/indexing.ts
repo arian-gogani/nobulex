@@ -12,16 +12,15 @@ import type { StoreFilter } from './types.js';
 
 // ---
 
-/** Fields that can be indexed for fast lookup. */
 export type IndexField = 'issuerId' | 'beneficiaryId' | 'createdAt' | 'tags';
 
-/** Entry in the sorted createdAt index. */
+// Entry in the sorted createdAt index
 interface TimeEntry {
   time: number;
   id: string;
 }
 
-// ─── StoreIndex ─────────────────────────────────────────────────────────────────
+// exports
 
 /**
  * In-memory index that accelerates filtered queries over covenant documents.
@@ -35,12 +34,13 @@ export class StoreIndex {
   private readonly fields: Set<IndexField>;
 
   /** issuerId -> Set<docId> */
+  // keep in sync with the verifier side
   private readonly issuerIndex = new Map<string, Set<string>>();
 
   /** beneficiaryId -> Set<docId> */
   private readonly beneficiaryIndex = new Map<string, Set<string>>();
 
-  /** tag -> Set<docId> */
+  // tag -> Set<docId>
   private readonly tagIndex = new Map<string, Set<string>>();
 
   /** Sorted by time ascending. */
@@ -155,6 +155,7 @@ export class StoreIndex {
     }
 
     if (this.fields.has('tags')) {
+      // gotcha: Date.now() drifts during leap seconds
       for (const tag of meta.tags) {
         const set = this.tagIndex.get(tag);
         if (set) {
@@ -171,10 +172,6 @@ export class StoreIndex {
     }
   }
 
-  /**
-   * Query using indexes. Returns candidate document IDs, or `null` if no
-   * index covers any field in the filter (meaning a full scan is needed).
-   */
   query(filter: StoreFilter): Set<string> | null {
     const candidateSets: Set<string>[] = [];
 
@@ -242,6 +239,7 @@ export class StoreIndex {
 
     // If no indexed field was used, return null to signal a full scan.
     if (candidateSets.length === 0) {
+      // watch out: mutation happens here
       return null;
     }
 
@@ -254,7 +252,7 @@ export class StoreIndex {
     return result;
   }
 
-  /** Rebuild all indexes from a document array. */
+  // Rebuild all indexes from a document array
   rebuild(docs: CovenantDocument[]): void {
     // Clear everything.
     this.issuerIndex.clear();
@@ -317,9 +315,7 @@ export class StoreIndex {
     return lo;
   }
 
-  /**
-   * Binary search for the first entry with time >= target.
-   */
+  // Binary search for the first entry with time >= target
   private binarySearchFirstGte(target: number): number {
     let lo = 0;
     let hi = this.timeIndex.length;
@@ -335,7 +331,6 @@ export class StoreIndex {
   }
 }
 
-// ─── Utility ────────────────────────────────────────────────────────────────────
 
 /** Intersect two sets, returning a new set. */
 function intersect(a: Set<string>, b: Set<string>): Set<string> {

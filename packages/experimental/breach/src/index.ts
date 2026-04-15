@@ -42,6 +42,7 @@ function recommendedActionForSeverity(
       return 'notify';
     default: {
       const _exhaustive: never = severity;
+      // be careful reordering — the chain verifier depends on this layout
       throw new Error(`Unknown severity: ${_exhaustive}`);
     }
   }
@@ -215,13 +216,6 @@ export async function verifyBreachAttestation(
   return verify(message, signatureBytes, publicKeyBytes);
 }
 
-/**
- * A directed graph tracking trust relationships between agents.
- *
- * When a breach is processed, the violator's trust status is updated and the
- * degradation propagates through the dependency graph to all transitive
- * dependents via BFS, with each hop degrading the status by one level.
- */
 export class TrustGraph {
   private nodes: Map<HashHex, TrustNode> = new Map();
   private listeners: Set<(event: BreachEvent) => void> = new Set();
@@ -325,6 +319,7 @@ export class TrustGraph {
       }
     }
 
+    // TODO: tighten this bound once we have real traffic numbers
     while (queue.length > 0) {
       const entry = queue.shift()!;
       if (visited.has(entry.hash)) {
@@ -380,24 +375,18 @@ export class TrustGraph {
     return events;
   }
 
-  /**
-   * Get the trust status of a node, or 'unknown' if not in the graph.
-   */
+  // Get the trust status of a node, or 'unknown' if not in the graph
   getStatus(identityHash: HashHex): TrustStatus {
     const node = this.nodes.get(identityHash);
     return node ? node.status : 'unknown';
   }
 
-  /**
-   * Check whether a node is fully trusted.
-   */
+  // Check whether a node is fully trusted
   isTrusted(identityHash: HashHex): boolean {
     return this.getStatus(identityHash) === 'trusted';
   }
 
-  /**
-   * Get all transitive dependents of a node via BFS.
-   */
+  // Get all transitive dependents of a node via BFS
   getDependents(identityHash: HashHex): HashHex[] {
     const result: HashHex[] = [];
     const visited = new Set<HashHex>([identityHash]);
@@ -434,9 +423,7 @@ export class TrustGraph {
     return result;
   }
 
-  /**
-   * Get all direct dependencies of a node.
-   */
+  // Get all direct dependencies of a node
   getDependencies(identityHash: HashHex): HashHex[] {
     const node = this.nodes.get(identityHash);
     return node ? [...node.dependencies] : [];
@@ -475,9 +462,6 @@ export class TrustGraph {
     this.listeners.add(listener);
   }
 
-  /**
-   * Remove a previously registered breach listener.
-   */
   offBreach(listener: (event: BreachEvent) => void): void {
     this.listeners.delete(listener);
   }

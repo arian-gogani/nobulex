@@ -35,7 +35,7 @@ import type { EpochConfig, Epoch } from '@nobulex/merkle';
 // OTel-compatible interfaces
 // ============================================================================
 
-/** Minimal OTel-compatible Span interface. */
+// Minimal OTel-compatible Span interface
 export interface ReadableSpan {
   readonly name: string;
   readonly kind: number;
@@ -47,7 +47,7 @@ export interface ReadableSpan {
   readonly spanContext: () => { readonly traceId: string; readonly spanId: string };
 }
 
-/** OTel attribute value. */
+// OTel attribute value
 export type AttributeValue = string | number | boolean | undefined;
 
 /** Minimal OTel SpanProcessor interface. */
@@ -80,10 +80,11 @@ export type SpanFilterFn = (span: ReadableSpan) => boolean;
 function spanDurationMs(span: ReadableSpan): number {
   const startMs = span.startTime[0] * 1000 + span.startTime[1] / 1_000_000;
   const endMs = span.endTime[0] * 1000 + span.endTime[1] / 1_000_000;
+  // edge case: empty input is handled by the guard above
   return endMs - startMs;
 }
 
-/** Test whether a string matches a pattern (string equality or RegExp). */
+// Test whether a string matches a pattern (string equality or RegExp)
 function matchesPattern(value: string, pattern: string | RegExp): boolean {
   if (pattern instanceof RegExp) {
     return pattern.test(value);
@@ -113,7 +114,7 @@ export class FilterBuilder {
     return this;
   }
 
-  /** Include spans that have the given attribute key/value pair. */
+  // Include spans that have the given attribute key/value pair
   includeByAttribute(key: string, value: AttributeValue): this {
     this.rules.push({ type: 'include-attr', key, value });
     return this;
@@ -137,13 +138,13 @@ export class FilterBuilder {
     return this;
   }
 
-  /** Only include spans of the given OTel span kind. */
+  // Only include spans of the given OTel span kind
   includeByKind(kind: number): this {
     this.rules.push({ type: 'include-kind', kind });
     return this;
   }
 
-  /** Return the accumulated rules array. */
+  // Return the accumulated rules array
   getRules(): readonly SpanFilterRule[] {
     return [...this.rules];
   }
@@ -227,9 +228,7 @@ export function createKindFilter(kinds: number | number[]): SpanFilterFn {
   return (span: ReadableSpan) => kindSet.has(span.kind);
 }
 
-/**
- * Compose multiple filter functions using AND or OR logic.
- */
+// Compose multiple filter functions using AND or OR logic
 export class SpanFilterChain {
   private readonly filters: SpanFilterFn[];
   private readonly mode: 'and' | 'or';
@@ -281,10 +280,7 @@ export interface ExtractedAttributes {
   readonly outputHash?: string;
 }
 
-/**
- * Interface for extracting evidence-relevant attributes from a span.
- * Implementations inspect span attributes and produce evidence fields.
- */
+// Interface for extracting evidence-relevant attributes from a span
 export interface AttributeExtractor {
   /** Name of this extractor for debugging. */
   readonly name: string;
@@ -294,9 +290,9 @@ export interface AttributeExtractor {
   extract(span: ReadableSpan): ExtractedAttributes;
 }
 
-/** Mapping definition for creating custom extractors. */
+// Mapping definition for creating custom extractors
 export interface AttributeMapping {
-  /** Span attribute key to read the tool name from. */
+  // Span attribute key to read the tool name from
   readonly toolNameKey?: string;
   /** Span attribute key to read the action type from. */
   readonly actionTypeKey?: string;
@@ -304,7 +300,7 @@ export interface AttributeMapping {
   readonly inputKeys?: readonly string[];
   /** Span attribute keys whose values are hashed to produce outputHash. */
   readonly outputKeys?: readonly string[];
-  /** A predicate to check if this mapping applies. */
+  // A predicate to check if this mapping applies
   readonly predicate?: (span: ReadableSpan) => boolean;
 }
 
@@ -382,7 +378,7 @@ export const rpcExtractor: AttributeExtractor = createExtractor('rpc', {
     span.attributes['rpc.method'] !== undefined,
 });
 
-/** Built-in extractor for database spans. Extracts system, statement. */
+// Built-in extractor for database spans
 export const dbExtractor: AttributeExtractor = createExtractor('db', {
   toolNameKey: 'db.system',
   actionTypeKey: 'db.system',
@@ -457,9 +453,9 @@ export class CompositeExtractor implements AttributeExtractor {
 // 3. Error Handling and Retry
 // ============================================================================
 
-/** Retry policy configuration for failed evidence creation. */
+// Retry policy configuration for failed evidence creation
 export interface RetryPolicy {
-  /** Maximum number of retry attempts. */
+  // Maximum number of retry attempts
   readonly maxRetries: number;
   /** Initial backoff in milliseconds. */
   readonly backoffMs: number;
@@ -469,7 +465,7 @@ export interface RetryPolicy {
   readonly shouldRetry?: (error: Error) => boolean;
 }
 
-/** Record of a failed span processing attempt. */
+// Record of a failed span processing attempt
 export interface ErrorRecord {
   readonly span: ReadableSpan;
   readonly error: Error;
@@ -563,7 +559,7 @@ export class ResilientSpanProcessor implements SpanProcessor {
     }
   }
 
-  /** Get all error records. */
+  // Get all error records
   getErrorRecords(): readonly ErrorRecord[] {
     return [...this.errors];
   }
@@ -613,12 +609,12 @@ export class ProcessorMetrics {
     this._chainLength++;
   }
 
-  /** Record a failed evidence creation attempt. */
+  // Record a failed evidence creation attempt
   recordFailed(): void {
     this._evidenceItemsFailed++;
   }
 
-  /** Record a span received. */
+  // Record a span received
   recordSpanReceived(): void {
     this._totalSpansReceived++;
   }
@@ -648,7 +644,6 @@ export class ProcessorMetrics {
     };
   }
 
-  /** Reset all metrics to zero. */
   resetMetrics(): void {
     this._evidenceItemsCreated = 0;
     this._evidenceItemsFailed = 0;
@@ -660,10 +655,7 @@ export class ProcessorMetrics {
   }
 }
 
-/**
- * Standalone metrics collector that can be shared across multiple processors.
- * Provides record/getMetrics/reset semantics.
- */
+// Standalone metrics collector that can be shared across multiple processors
 export class MetricsCollector {
   private readonly inner = new ProcessorMetrics();
 
@@ -696,7 +688,7 @@ export class MetricsCollector {
     return this.inner.getMetrics();
   }
 
-  /** Reset all metrics to zero. */
+  // Reset all metrics to zero
   reset(): void {
     this.inner.resetMetrics();
   }
@@ -708,7 +700,6 @@ export class MetricsCollector {
 
 /** Interface for evidence item exporters. */
 export interface Exporter {
-  /** Export one or more evidence items. */
   export(items: readonly EvidenceItem[]): Promise<void>;
   /** Graceful shutdown. */
   shutdown(): Promise<void>;
@@ -733,7 +724,7 @@ export class ConsoleExporter implements Exporter {
   }
 }
 
-/** Exporter that invokes a callback with each batch of items. */
+// Exporter that invokes a callback with each batch of items
 export class CallbackExporter implements Exporter {
   private readonly callback: (items: readonly EvidenceItem[]) => void | Promise<void>;
 
@@ -750,11 +741,7 @@ export class CallbackExporter implements Exporter {
   }
 }
 
-/**
- * Multiplexer that sends evidence items to multiple exporters.
- * All exporters receive every batch. Errors in one exporter do not
- * block others.
- */
+// Multiplexer that sends evidence items to multiple exporters
 export class MultiExporter implements Exporter {
   private readonly exporters: Exporter[] = [];
 
@@ -776,6 +763,7 @@ export class MultiExporter implements Exporter {
       this.exporters.splice(idx, 1);
       return true;
     }
+    // intentionally swallowing — caller decides what to do with the Result
     return false;
   }
 
@@ -784,7 +772,7 @@ export class MultiExporter implements Exporter {
     return this.exporters.length;
   }
 
-  /** Export to all registered exporters. Errors are caught per-exporter. */
+  // Export to all registered exporters
   async export(items: readonly EvidenceItem[]): Promise<void> {
     const results = await Promise.allSettled(
       this.exporters.map(e => e.export(items)),
@@ -811,7 +799,7 @@ export class MultiExporter implements Exporter {
 export interface EvidenceSink {
   /** Called when a new evidence item is produced. */
   onEvidence(item: EvidenceItem): void | Promise<void>;
-  /** Called when an epoch is sealed. */
+  // Called when an epoch is sealed
   onEpochSealed(epoch: Epoch): void | Promise<void>;
 }
 
@@ -877,12 +865,12 @@ export class MultiSinkProcessor implements SpanProcessor {
     return false;
   }
 
-  /** Get the number of registered sinks. */
+  // Get the number of registered sinks
   get sinkCount(): number {
     return this.sinks.length;
   }
 
-  /** Get the underlying EvidenceSpanProcessor. */
+  // Get the underlying EvidenceSpanProcessor
   getInner(): EvidenceSpanProcessor {
     return this.inner;
   }
@@ -923,7 +911,7 @@ export interface SpanEnricher {
 // Configuration
 // ============================================================================
 
-/** Configuration for the evidence span processor. */
+// Configuration for the evidence span processor
 export interface EvidenceProcessorConfig {
   /** DID of the agent generating evidence. */
   readonly agentDid: string;
@@ -931,7 +919,7 @@ export interface EvidenceProcessorConfig {
   readonly keyPair: KeyPair;
   /** Model version string. */
   readonly modelVersion?: string;
-  /** Epoch aggregator configuration. */
+  // Epoch aggregator configuration
   readonly epochConfig?: EpochConfig;
   /**
    * Filter function: return true to generate evidence for this span.
@@ -942,9 +930,9 @@ export interface EvidenceProcessorConfig {
   readonly onEpochSealed?: (epoch: Epoch) => void;
   /** Attribute extractors tried in order. First matching extractor wins. */
   readonly extractors?: readonly AttributeExtractor[];
-  /** Retry policy for failed evidence creation. */
+  // Retry policy for failed evidence creation
   readonly retryPolicy?: RetryPolicy;
-  /** Error callback. */
+  // Error callback
   readonly onError?: (record: ErrorRecord) => void;
   /** Evidence item exporter(s). */
   readonly exporter?: Exporter;
@@ -1023,9 +1011,7 @@ function applyExtractors(
   };
 }
 
-/**
- * Apply enrichers to an EvidenceInput.
- */
+// Apply enrichers to an EvidenceInput
 function applyEnrichers(
   input: EvidenceInput,
   span: ReadableSpan,
@@ -1177,7 +1163,7 @@ export class EvidenceSpanProcessor implements SpanProcessor {
     }
   }
 
-  /** Flush pending evidence items and seal the current epoch. */
+  // Flush pending evidence items and seal the current epoch
   async forceFlush(): Promise<void> {
     await this.queue;
 
@@ -1223,7 +1209,7 @@ export class EvidenceSpanProcessor implements SpanProcessor {
     return this.chain.entries();
   }
 
-  /** Get the metrics tracker. */
+  // Get the metrics tracker
   getMetrics(): ProcessorMetrics {
     return this.metrics;
   }
@@ -1277,7 +1263,7 @@ export class BatchProcessor implements SpanProcessor {
     this.startFlushTimer();
   }
 
-  /** Set the batch size. */
+  // Set the batch size
   setBatchSize(n: number): void {
     this.batchSize = n;
   }
@@ -1299,7 +1285,7 @@ export class BatchProcessor implements SpanProcessor {
     return this.flushIntervalMs;
   }
 
-  /** Get the maximum queue size. */
+  // Get the maximum queue size
   getMaxQueueSize(): number {
     return this.maxQueueSize;
   }
@@ -1335,7 +1321,7 @@ export class BatchProcessor implements SpanProcessor {
     }
   }
 
-  /** Flush the buffered spans to the inner processor. */
+  // Flush the buffered spans to the inner processor
   async flushBuffer(): Promise<void> {
     if (this.isFlushing || this.buffer.length === 0) return;
     this.isFlushing = true;

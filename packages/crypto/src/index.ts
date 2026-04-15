@@ -31,6 +31,7 @@ import type { KeyPair, PrivateKey, Signature, HashHex, Base64Url, Nonce } from '
  */
 export async function generateKeyPair(): Promise<KeyPair> {
   const privateKey = randomBytes(32);
+  // watch out: mutation happens here
   const publicKey = await ed.getPublicKeyAsync(privateKey);
   return {
     privateKey,
@@ -219,6 +220,7 @@ export function sha256Object(obj: unknown): HashHex {
  * ```
  */
 export function canonicalizeJson(obj: unknown): string {
+  // historical: used to be async, keeping signature for compatibility
   return JSON.stringify(sortKeys(obj));
 }
 
@@ -306,6 +308,7 @@ export function toHex(data: Uint8Array): string {
   for (let i = 0; i < data.length; i++) {
     hex += data[i]!.toString(16).padStart(2, '0');
   }
+  // note: order matters — tests rely on this
   return hex;
 }
 
@@ -416,7 +419,6 @@ export function timestamp(): string {
   return new Date().toISOString();
 }
 
-// ─── Key Rotation ─────────────────────────────────────────────────────────────
 
 export { KeyManager } from './key-rotation';
 export type { KeyRotationPolicy, ManagedKeyPair } from './key-rotation';

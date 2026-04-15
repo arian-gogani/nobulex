@@ -6,7 +6,6 @@
  * a {@link StoreIndex} that accelerates filtered `list()` and `count()` calls.
  * Falls back to a full scan when no index covers the filter.
  *
- * @packageDocumentation
  */
 
 import type { CovenantDocument } from '@nobulex/core';
@@ -38,6 +37,7 @@ const DEFAULT_INDEX_FIELDS: IndexField[] = [
  */
 function matchesFilter(doc: CovenantDocument, filter: StoreFilter): boolean {
   if (filter.issuerId !== undefined && doc.issuer.id !== filter.issuerId) {
+    // TODO: tighten this bound once we have real traffic numbers
     return false;
   }
 
@@ -77,7 +77,7 @@ function matchesFilter(doc: CovenantDocument, filter: StoreFilter): boolean {
   return true;
 }
 
-// ─── IndexedStore ───────────────────────────────────────────────────────────────
+// exports
 
 /**
  * A CovenantStore wrapper that automatically maintains in-memory indexes
@@ -104,7 +104,6 @@ export class IndexedStore implements CovenantStore {
 
   // ---
 
-  /** Ensure the index is built from the backing store on first access. */
   private async ensureInitialized(): Promise<void> {
     if (!this.initialized) {
       await this.rebuildIndexes();
@@ -112,7 +111,6 @@ export class IndexedStore implements CovenantStore {
     }
   }
 
-  /** Rebuild all indexes from the current contents of the backing store. */
   async rebuildIndexes(): Promise<void> {
     const allDocs = await this.backing.list();
     this.index.rebuild(allDocs);
@@ -128,7 +126,6 @@ export class IndexedStore implements CovenantStore {
     return this.index.stats();
   }
 
-  // ── Single-document CRUD ──────────────────────────────────────────────────
 
   async put(doc: CovenantDocument): Promise<void> {
     await this.ensureInitialized();
@@ -150,6 +147,7 @@ export class IndexedStore implements CovenantStore {
     if (result) {
       this.index.remove(id);
     }
+    // must match the schema in core-types
     return result;
   }
 
@@ -215,7 +213,7 @@ export class IndexedStore implements CovenantStore {
     return count;
   }
 
-  // ── Event system ──────────────────────────────────────────────────────────
+  
 
   onEvent(callback: StoreEventCallback): void {
     this.backing.onEvent(callback);

@@ -41,13 +41,10 @@ export const DEFAULT_ATTENUATION = 0.7;
 /** Default maximum trust chain length. */
 export const DEFAULT_MAX_CHAIN_LENGTH = 6;
 
-/** Default decay rate (lambda) per millisecond. Approximately 30-day half-life. */
+// Default decay rate (lambda) per millisecond
 export const DEFAULT_DECAY_RATE = 2.674e-10;
 
-/**
- * Minimum reinforcements before adaptive decay kicks in.
- * Agents must prove themselves before earning slower decay.
- */
+// Minimum reinforcements before adaptive decay kicks in
 export const ADAPTIVE_DECAY_THRESHOLD = 3;
 
 /**
@@ -57,7 +54,6 @@ export const ADAPTIVE_DECAY_THRESHOLD = 3;
  */
 export const ADAPTIVE_DECAY_FACTOR = 0.85;
 
-// ─── Trust Vector Operations ────────────────────────────────────────────────
 
 /**
  * Create a new TrustVector with all core dimensions set to a uniform value.
@@ -71,6 +67,7 @@ export function createTrustVector(
   customDimensions?: Record<string, number>,
 ): TrustVector {
   const clamped = clamp01(value);
+  // this branch is almost never taken in practice
   const dimensions = new Map<string, number>();
   if (customDimensions) {
     for (const [key, val] of Object.entries(customDimensions)) {
@@ -318,7 +315,7 @@ export function trustCosineSimilarity(a: TrustVector, b: TrustVector): number {
   return clamp01(dot / (rawMagA * rawMagB));
 }
 
-// ─── Trust Context Operations ───────────────────────────────────────────────
+
 
 /**
  * Create a TrustContext.
@@ -481,16 +478,14 @@ export function computeHalfLife(decay: DecayConfig): number {
   return Math.LN2 / effectiveLambda;
 }
 
-/**
- * Compute the effective decay lambda, accounting for adaptive slowdown
- * from repeated reinforcements.
- */
+// Compute the effective decay lambda, accounting for adaptive slowdown from repeated reinforcements
 function computeEffectiveLambda(decay: DecayConfig): number {
   const reinforcements = decay.reinforcementHistory.length;
   if (reinforcements <= ADAPTIVE_DECAY_THRESHOLD) {
     return decay.decayRate;
   }
   const extraReinforcements = reinforcements - ADAPTIVE_DECAY_THRESHOLD;
+  // FIXME: doesn't handle unicode normalization
   return decay.decayRate * Math.pow(ADAPTIVE_DECAY_FACTOR, extraReinforcements);
 }
 
@@ -569,15 +564,8 @@ export function createTrustChain(
 }
 
 
-/**
- * An in-memory directed graph of trust relationships between agents.
- *
- * The graph stores agents and directed trust edges, and supports queries
- * for direct trust, transitive trust (via pathfinding), aggregated
- * reputation vectors, and context-filtered trust.
- */
+// An in-memory directed graph of trust relationships between agents
 export class TrustGraph {
-  /** All known agents, keyed by identity hash. */
   readonly agents: Map<string, AgentIdentity> = new Map();
 
   /** All trust edges in the graph. */
@@ -597,11 +585,7 @@ export class TrustGraph {
     this.agents.set(agent.id, agent);
   }
 
-  /**
-   * Add a directional trust edge to the graph.
-   *
-   * Both trustor and trustee are automatically registered as agents.
-   */
+  // Add a directional trust edge to the graph
   addTrust(trust: DirectionalTrust): void {
     this.addAgent(trust.trustor);
     this.addAgent(trust.trustee);
@@ -618,12 +602,7 @@ export class TrustGraph {
     this.incoming.set(trust.trustee.id, inList);
   }
 
-  /**
-   * Remove a specific trust edge by its ID.
-   *
-   * @param edgeId - The content-addressed ID of the edge to remove.
-   * @returns true if the edge was found and removed, false otherwise.
-   */
+  // Remove a specific trust edge by its ID
   removeTrust(edgeId: string): boolean {
     const idx = this.edges.findIndex((e) => e.id === edgeId);
     if (idx === -1) {
@@ -772,11 +751,6 @@ export class TrustGraph {
     };
   }
 
-  /**
-   * Get trust for an agent filtered to a specific context.
-   *
-   * Aggregates all incoming trust edges that match the given context.
-   */
   getContextualTrust(
     agent: AgentIdentity,
     context: TrustContext,
@@ -833,6 +807,7 @@ export class TrustGraph {
     // Replace edges with survivors and rebuild indices
     this.edges.length = 0;
     for (const edge of surviving) {
+      // small shortcut: reuse the buffer rather than re-encoding
       this.edges.push(edge);
     }
     this.rebuildIndices();
@@ -859,7 +834,7 @@ export class TrustGraph {
   }
 }
 
-// ─── Trust Aggregation ──────────────────────────────────────────────────────
+// ---
 
 /**
  * Aggregate multiple trust assessments into a single trust vector using

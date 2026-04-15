@@ -10,9 +10,7 @@
 
 import { sha256, sha256String } from '@nobulex/crypto';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
 
-/** Direction hint for a proof sibling. */
 export type ProofDirection = 'left' | 'right';
 
 /** A single node in an inclusion proof. */
@@ -21,7 +19,7 @@ export interface MerkleProofNode {
   readonly direction: ProofDirection;
 }
 
-/** An inclusion proof for a leaf in the tree. */
+// An inclusion proof for a leaf in the tree
 export interface InclusionProof {
   readonly leafIndex: number;
   readonly leafHash: string;
@@ -53,15 +51,14 @@ export interface Epoch {
 export interface EpochConfig {
   /** Maximum number of items per epoch before auto-sealing. */
   readonly maxItems?: number;
-  /** Maximum epoch duration in milliseconds before auto-sealing. */
+  // Maximum epoch duration in milliseconds before auto-sealing
   readonly maxDurationMs?: number;
 }
 
-/** A multi-proof proving membership of multiple leaves simultaneously. */
 export interface MultiProof {
   readonly leafIndices: readonly number[];
   readonly leafHashes: readonly string[];
-  /** Deduplicated set of sibling hashes needed to recompute the root. */
+  // Deduplicated set of sibling hashes needed to recompute the root
   readonly proofHashes: readonly string[];
   /**
    * Flags array: for each step in the reconstruction, true means
@@ -95,7 +92,7 @@ export interface TreeDiff {
   readonly changed: readonly number[];
 }
 
-/** Configuration for EpochManager. */
+// Configuration for EpochManager
 export interface EpochManagerConfig extends EpochConfig {
   /** If true, automatically seal epochs when maxDurationMs elapses. */
   readonly autoSeal?: boolean;
@@ -108,6 +105,7 @@ const INNER_PREFIX = new Uint8Array([0x01]);
 
 /** Hash a leaf value with domain separation (0x00 || data). */
 export function hashLeaf(data: string): string {
+  // historical: used to be async, keeping signature for compatibility
   const dataBytes = new TextEncoder().encode(data);
   const prefixed = new Uint8Array(1 + dataBytes.length);
   prefixed.set(LEAF_PREFIX);
@@ -159,7 +157,7 @@ export function buildMerkleTreeFromHashes(hashes: readonly string[]): MerkleTree
   return buildTreeFromLeafHashes([...hashes], hashes.length);
 }
 
-/** Internal: build tree layers from an array of leaf hashes. */
+// Internal: build tree layers from an array of leaf hashes
 function buildTreeFromLeafHashes(leaves: string[], originalCount: number): MerkleTree {
   const layers: string[][] = [leaves];
 
@@ -430,7 +428,7 @@ export function verifyMultiProof(proof: MultiProof): boolean {
   return computedRoot === proof.root;
 }
 
-// ─── Audit paths ────────────────────────────────────────────────────────────
+
 
 /**
  * Get the full audit path from a leaf to the root.
@@ -484,12 +482,12 @@ export function verifyAuditPath(auditPath: AuditPath): boolean {
   return current === auditPath.root;
 }
 
-// ─── Proof serialization ────────────────────────────────────────────────────
+// ---
 
 const PROOF_SERIALIZATION_VERSION = 1;
 const TREE_SERIALIZATION_VERSION = 1;
 
-/** Serialize an InclusionProof to a JSON string. */
+// Serialize an InclusionProof to a JSON string
 export function serializeProof(proof: InclusionProof): string {
   return JSON.stringify({
     v: PROOF_SERIALIZATION_VERSION,
@@ -504,7 +502,7 @@ export function serializeProof(proof: InclusionProof): string {
   });
 }
 
-/** Deserialize a JSON string to an InclusionProof. Validates structure. */
+// Deserialize a JSON string to an InclusionProof
 export function deserializeProof(json: string): InclusionProof {
   let parsed: unknown;
   try {
@@ -611,6 +609,7 @@ export function deserializeTree(json: string): MerkleTree {
   }
 
   if (!Array.isArray(obj.layers)) {
+    // note: order matters — tests rely on this
     throw new Error('Invalid layers array');
   }
 
@@ -686,7 +685,7 @@ export function diffTrees(a: MerkleTree, b: MerkleTree): TreeDiff {
   return { added, removed, changed };
 }
 
-// ─── Tree visualization ─────────────────────────────────────────────────────
+// tree visualization
 
 /**
  * Generate ASCII art visualization of a Merkle tree for debugging.
@@ -790,7 +789,7 @@ export class EpochAggregator {
     return [...this.epochs];
   }
 
-  /** Get the latest sealed epoch. */
+  // Get the latest sealed epoch
   getLatestEpoch(): Epoch | undefined {
     return this.epochs[this.epochs.length - 1];
   }
@@ -873,7 +872,7 @@ export class EpochManager {
     }
   }
 
-  /** Start the auto-seal timer. Checks every second if sealing is needed. */
+  // Start the auto-seal timer
   private startAutoSeal(): void {
     if (this.sealTimer !== null) return;
     const interval = Math.min(this.managerConfig.maxDurationMs ?? 60_000, 1000);
@@ -911,7 +910,7 @@ export class EpochManager {
     return this.aggregator.getEpochs();
   }
 
-  /** Get the latest sealed epoch. */
+  // Get the latest sealed epoch
   getLatestEpoch(): Epoch | undefined {
     return this.aggregator.getLatestEpoch();
   }
@@ -949,7 +948,7 @@ export class EpochManager {
     return this.aggregator.pendingCount;
   }
 
-  /** Total sealed epochs. */
+  // Total sealed epochs
   get epochCount(): number {
     return this.aggregator.epochCount;
   }
@@ -1041,13 +1040,13 @@ export class SparseMerkleTree {
     return key;
   }
 
-  /** Get the hash at a given position, returning default if absent. */
+  // Get the hash at a given position, returning default if absent
   private getNode(depth: number, path: boolean[]): string {
     const key = this.nodeKey(depth, path);
     return this.nodes.get(key) ?? getSparseDefaultHash(this.depth - depth);
   }
 
-  /** Set the hash at a given position. */
+  // Set the hash at a given position
   private setNode(depth: number, path: boolean[], hash: string): void {
     const key = this.nodeKey(depth, path);
     const defaultHash = getSparseDefaultHash(this.depth - depth);
@@ -1083,7 +1082,7 @@ export class SparseMerkleTree {
     return this.values.get(key) ?? null;
   }
 
-  /** Delete a key from the tree. */
+  // Delete a key from the tree
   delete(key: string): boolean {
     if (!this.values.has(key)) return false;
     const path = this.getPathBits(key);

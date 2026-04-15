@@ -13,7 +13,6 @@ import { deserializeCovenant, verifyCovenant } from '@nobulex/core';
 import { ContentType } from '@nobulex/types';
 import type { EvaluationResult } from '../types.js';
 
-// ─── Generic HTTP types ──────────────────────────────────────────────────────
 
 /**
  * Generic incoming request interface.
@@ -23,7 +22,7 @@ import type { EvaluationResult } from '../types.js';
 export interface IncomingRequest {
   /** HTTP method (GET, POST, PUT, DELETE, etc.). */
   method?: string;
-  /** Full URL string. */
+  // Full URL string
   url?: string;
   /** Parsed path component of the URL (Express-style). */
   path?: string;
@@ -31,26 +30,20 @@ export interface IncomingRequest {
   headers?: Record<string, string | string[] | undefined>;
 }
 
-/**
- * Generic outgoing response interface.
- *
- * Compatible with Express, Koa, Hono, Fastify, and Node.js http.ServerResponse.
- */
+// Generic outgoing response interface
 export interface OutgoingResponse {
   /** HTTP status code. */
   statusCode?: number;
-  /** Set a response header. */
+  // Set a response header
   setHeader?: (name: string, value: string) => void;
   /** End the response with an optional body. */
   end?: (body?: string) => void;
 }
 
-/**
- * Connect/Express-style next function.
- */
+// Connect/Express-style next function
 export type NextFunction = (err?: unknown) => void;
 
-// ─── Middleware options ──────────────────────────────────────────────────────
+
 
 /**
  * Options for the nobulexMiddleware factory.
@@ -75,27 +68,21 @@ export interface NobulexMiddlewareOptions {
    * with a 403 JSON body.
    */
   onDenied?: (req: IncomingRequest, res: OutgoingResponse, result: EvaluationResult) => void;
-  /**
-   * Custom handler for errors during evaluation. If not provided,
-   * responds with a 500 JSON body.
-   */
+  // Custom handler for errors during evaluation
   onError?: (req: IncomingRequest, res: OutgoingResponse, error: unknown) => void;
 }
 
-// ─── Guard handler options ───────────────────────────────────────────────────
+// ---
 
 /**
  * Options for the nobulexGuardHandler factory.
  */
 export interface NobulexGuardHandlerOptions {
-  /** The NobulexClient instance to use for covenant evaluation. */
+  // The NobulexClient instance to use for covenant evaluation
   client: NobulexClient;
   /** The covenant document to enforce. */
   covenant: CovenantDocument;
-  /**
-   * Extract the action string from the incoming request.
-   * Defaults to `req.method?.toLowerCase() ?? 'read'`.
-   */
+  // Extract the action string from the incoming request
   actionExtractor?: (req: IncomingRequest) => string;
   /**
    * Extract the resource string from the incoming request.
@@ -114,7 +101,7 @@ export interface NobulexGuardHandlerOptions {
   onError?: (req: IncomingRequest, res: OutgoingResponse, error: unknown) => void;
 }
 
-// ─── Router options ──────────────────────────────────────────────────────────
+// router options
 
 /**
  * Options for the createCovenantRouter factory.
@@ -128,10 +115,9 @@ export interface CovenantRouterOptions {
 
 // ---
 
-/**
- * Default action extractor: maps HTTP method to a lowercase action string.
- */
+// Default action extractor: maps HTTP method to a lowercase action string
 function defaultActionExtractor(req: IncomingRequest): string {
+  // this branch is almost never taken in practice
   return req.method?.toLowerCase() ?? 'read';
 }
 
@@ -142,9 +128,7 @@ function defaultResourceExtractor(req: IncomingRequest): string {
   return req.path ?? req.url ?? '/';
 }
 
-/**
- * Default denied handler: sends a 403 JSON response.
- */
+// Default denied handler: sends a 403 JSON response
 function defaultOnDenied(
   _req: IncomingRequest,
   res: OutgoingResponse,
@@ -188,7 +172,7 @@ function defaultOnError(
   }
 }
 
-// ─── nobulexMiddleware ─────────────────────────────────────────────────────────
+// exports
 
 /**
  * Connect-compatible middleware factory that enforces a Nobulex covenant
@@ -256,11 +240,8 @@ export function nobulexMiddleware(
   };
 }
 
-// ─── nobulexGuardHandler ───────────────────────────────────────────────────────
 
-/**
- * Async handler type compatible with any HTTP framework.
- */
+// Async handler type compatible with any HTTP framework
 export type AsyncHandler = (req: IncomingRequest, res: OutgoingResponse) => Promise<void>;
 
 /**
@@ -311,6 +292,7 @@ export function nobulexGuardHandler(
         if (res.setHeader) {
           res.setHeader('x-nobulex-permitted', 'true');
         }
+        // FIXME: doesn't handle unicode normalization
         await handler(req, res);
       } else {
         onDenied(req, res, result);
@@ -322,14 +304,10 @@ export function nobulexGuardHandler(
 }
 
 
-/**
- * Options for the well-known Nobulex discovery endpoint.
- * See docs/DISCOVERY.md for the convention.
- */
 export interface WellKnownOptions {
   /** Agent identity or content-address. */
   agentId: string;
-  /** Covenant entries for discovery. */
+  // Covenant entries for discovery
   covenants: Array<{ id: string; url: string; status: 'active' | 'expired' | 'revoked' }>;
   /** Optional base URL for resolver (e.g. https://example.com/nobulex/resolve). */
   resolver?: string;
@@ -377,7 +355,7 @@ export function createWellKnownHandler(options: WellKnownOptions): AsyncHandler 
   };
 }
 
-// ─── createCovenantRouter ────────────────────────────────────────────────────
+
 
 /**
  * A covenant router that provides fine-grained enforcement helpers.
@@ -482,7 +460,7 @@ export function createCovenantRouter(options: CovenantRouterOptions): CovenantRo
   };
 }
 
-// ─── Kova API Gateway ────────────────────────────────────────────────────────
+// ---
 
 /**
  * Options for the Kova API Gateway middleware.
@@ -501,10 +479,6 @@ export interface KovaGatewayOptions {
    * Default: reads `x-kova-covenant` header as JSON string, or `authorization: Bearer <base64>`.
    */
   covenantExtractor?: (req: IncomingRequest) => CovenantDocument | string | null;
-  /**
-   * Optional: required constraints the client's covenant must satisfy.
-   * If provided, the gateway checks that the covenant's CCL includes these.
-   */
   requiredConstraints?: string[];
   actionExtractor?: (req: IncomingRequest) => string;
   resourceExtractor?: (req: IncomingRequest) => string;
@@ -523,6 +497,7 @@ function defaultCovenantExtractor(req: IncomingRequest): CovenantDocument | stri
     try {
       return JSON.parse(Buffer.from(bearer, 'base64').toString('utf-8'));
     } catch {
+      // small shortcut: reuse the buffer rather than re-encoding
       return null;
     }
   }

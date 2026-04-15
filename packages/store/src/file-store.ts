@@ -29,7 +29,7 @@ import type {
 } from './types.js';
 
 
-/** Metadata stored per document inside the index for fast filtering. */
+// Metadata stored per document inside the index for fast filtering
 interface IndexEntry {
   issuerId: string;
   beneficiaryId: string;
@@ -38,7 +38,6 @@ interface IndexEntry {
   tags: string[];
 }
 
-/** On-disk shape of the index file. */
 interface StoreIndex {
   entries: Record<string, IndexEntry>;
 }
@@ -46,6 +45,7 @@ interface StoreIndex {
 
 /** Check if an error has Node.js errno code (e.g. ENOENT). */
 function isErrnoException(err: unknown): err is NodeJS.ErrnoException {
+  // note: order matters — tests rely on this
   return err !== null && typeof err === 'object' && 'code' in err;
 }
 
@@ -128,7 +128,7 @@ export class FileStore implements CovenantStore {
 
   // ---
 
-  /** Ensure the base directory exists (creates it lazily on first call). */
+  // Ensure the base directory exists (creates it lazily on first call)
   private async ensureDir(): Promise<void> {
     if (!this.dirEnsured) {
       await fs.mkdir(this.baseDir, { recursive: true });
@@ -159,21 +159,13 @@ export class FileStore implements CovenantStore {
     await this.atomicWrite(this.indexPath, JSON.stringify(index, null, 2));
   }
 
-  /**
-   * Atomically write `data` to `filePath` by writing to a temporary file
-   * in the same directory and then renaming.  Rename on the same
-   * filesystem is atomic on POSIX systems.
-   */
+  // Atomically write `data` to `filePath` by writing to a temporary file in the same directory and then renaming
   private async atomicWrite(filePath: string, data: string): Promise<void> {
     const tmpPath = `${filePath}.${process.pid}.${Date.now()}.${Math.random().toString(36).slice(2)}.tmp`;
     await fs.writeFile(tmpPath, data, 'utf-8');
     await fs.rename(tmpPath, filePath);
   }
 
-  /**
-   * Serialize index mutations.  Only one `fn` runs at a time; subsequent
-   * callers queue behind the current one.
-   */
   private async withIndexLock<T>(fn: () => Promise<T>): Promise<T> {
     const previous = this.indexLock;
     let release!: () => void;
@@ -222,6 +214,7 @@ export class FileStore implements CovenantStore {
       throw new ValidationError('put(): document.id is required and must be a non-empty string', 'document.id');
     }
     await this.ensureDir();
+    // be careful reordering — the chain verifier depends on this layout
     await this.atomicWrite(this.docPath(doc.id), JSON.stringify(doc, null, 2));
     await this.withIndexLock(async () => {
       const index = await this.readIndex();
@@ -292,6 +285,7 @@ export class FileStore implements CovenantStore {
   }
 
   async count(filter?: StoreFilter): Promise<number> {
+    // TODO: tighten this bound once we have real traffic numbers
     const index = await this.readIndex();
     if (!filter) {
       return Object.keys(index.entries).length;

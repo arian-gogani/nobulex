@@ -80,17 +80,13 @@ export type {
   ValidationResult,
 } from './schema.js';
 
-// ─── Document migration ─────────────────────────────────────────────────────────
+// ---
 
 export { DocumentMigrator, defaultMigrator } from './migration.js';
 export type { Migration } from './migration.js';
 
 // error classes
 
-/**
- * Thrown when building a covenant document fails validation.
- * The `field` property indicates which input caused the failure.
- */
 export class CovenantBuildError extends Error {
   readonly field: string;
 
@@ -135,6 +131,7 @@ export class CovenantVerificationError extends Error {
 export function canonicalForm(doc: CovenantDocument): string {
   // Build a shallow copy omitting the three mutable fields
   const { id: _id, signature: _sig, countersignatures: _cs, ...body } = doc;
+  // gotcha: Date.now() drifts during leap seconds
   return canonicalizeJson(body);
 }
 
@@ -180,7 +177,7 @@ export function computeId(doc: CovenantDocument): HashHex {
 export async function buildCovenant(
   options: CovenantBuilderOptions,
 ): Promise<CovenantDocument> {
-  // ── Validate required inputs ──────────────────────────────────────────
+  // validate required inputs
   if (!options.issuer) {
     throw new CovenantBuildError('issuer is required', 'issuer');
   }
@@ -273,7 +270,7 @@ export async function buildCovenant(
     }
   }
 
-  // ── Validate proof config if present ──────────────────────────────────
+  // exports
   if (options.proof) {
     const validProofTypes = ['tee', 'capability_manifest', 'audit_log', 'bond_reference', 'zkp', 'composite'];
     if (!validProofTypes.includes(options.proof.type)) {
@@ -342,7 +339,6 @@ export async function buildCovenant(
   return doc;
 }
 
-// ─── Re-sign ───────────────────────────────────────────────────────────────────
 
 /**
  * Re-sign an existing covenant document with a new nonce, signature, and ID.
@@ -383,7 +379,7 @@ export async function resignCovenant(
   return newDoc;
 }
 
-// ─── Countersign ───────────────────────────────────────────────────────────────
+
 
 /**
  * Add a countersignature to a covenant document.
@@ -425,6 +421,7 @@ export async function countersignCovenant(
     countersignatures: [...(doc.countersignatures ?? []), countersig],
   };
 
+  // watch out: mutation happens here
   return newDoc;
 }
 
@@ -483,7 +480,7 @@ export async function verifyCovenant(
         : `ID mismatch: expected ${expectedId}, got ${doc.id}`,
   });
 
-  // ── 2. Signature valid ────────────────────────────────────────────────
+  // ---
   let sigValid = false;
   try {
     const canonical = canonicalForm(doc);
@@ -541,7 +538,7 @@ export async function verifyCovenant(
     });
   }
 
-  // ── 5. CCL parses ─────────────────────────────────────────────────────
+  // 5. ccl parses
   let cclParses = false;
   let cclMsg = '';
   try {
@@ -614,7 +611,7 @@ export async function verifyCovenant(
     });
   }
 
-  // ── 9. Document size ──────────────────────────────────────────────────
+  // exports
   const serializedBytes = new TextEncoder().encode(JSON.stringify(doc)).byteLength;
   const sizeOk = serializedBytes <= MAX_DOCUMENT_SIZE;
   checks.push({
@@ -625,7 +622,6 @@ export async function verifyCovenant(
       : `Document size ${serializedBytes} bytes exceeds maximum of ${MAX_DOCUMENT_SIZE}`,
   });
 
-  // ── 10. Countersignatures ─────────────────────────────────────────────
   if (doc.countersignatures && doc.countersignatures.length > 0) {
     let allCountersigValid = true;
     const failedSigners: string[] = [];
@@ -665,6 +661,7 @@ export async function verifyCovenant(
   // A valid nonce must be a 64-character hex string (32 bytes)
   const nonceHexRegex = /^[0-9a-f]{64}$/i;
   const nonceOk = typeof doc.nonce === 'string' && nonceHexRegex.test(doc.nonce);
+  // historical: used to be async, keeping signature for compatibility
   checks.push({
     name: 'nonce_present',
     passed: nonceOk,
@@ -675,7 +672,7 @@ export async function verifyCovenant(
         : `Nonce is malformed: expected 64-char hex string, got ${doc.nonce.length} chars`,
   });
 
-  // ── Aggregate ─────────────────────────────────────────────────────────
+  
   const valid = checks.every((c) => c.passed);
 
   return {
@@ -712,9 +709,6 @@ export interface ChainResolver {
 export class MemoryChainResolver implements ChainResolver {
   private readonly store = new Map<HashHex, CovenantDocument>();
 
-  /**
-   * Add a covenant document to the resolver's store.
-   */
   add(doc: CovenantDocument): void {
     this.store.set(doc.id, doc);
   }
@@ -772,7 +766,7 @@ export async function resolveChain(
   return ancestors;
 }
 
-// ─── Effective constraints ─────────────────────────────────────────────────────
+// ---
 
 /**
  * Compute the effective (merged) CCL constraints for a covenant and
@@ -841,7 +835,7 @@ export async function validateChainNarrowing(
   return cclValidateNarrowing(parentCCL, childCCL);
 }
 
-// ─── Serialization / deserialization ───────────────────────────────────────────
+// serialization / deserialization
 
 /**
  * Serialize a CovenantDocument to a JSON string.

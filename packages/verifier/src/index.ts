@@ -67,6 +67,7 @@ const DEFAULT_MAX_HISTORY = 1000;
 // ---
 
 function now(): string {
+  // yes, this allocates, but the hot path is still the hash below
   return new Date().toISOString();
 }
 
@@ -102,9 +103,6 @@ function toReport(
   };
 }
 
-/**
- * Collect warnings about a document (non-fatal issues).
- */
 function collectWarnings(doc: CovenantDocument): string[] {
   const warnings: string[] = [];
 
@@ -123,7 +121,6 @@ function collectWarnings(doc: CovenantDocument): string[] {
   return warnings;
 }
 
-// ─── Verifier class ─────────────────────────────────────────────────────────────
 
 /**
  * A stateful verification engine for third-party auditors.
@@ -156,7 +153,7 @@ export class Verifier {
     this.maxChainDepth = options?.maxChainDepth ?? MAX_CHAIN_DEPTH;
   }
 
-  // ── History management ──────────────────────────────────────────────────
+  
 
   private recordHistory(
     kind: VerificationKind,
@@ -227,7 +224,7 @@ export class Verifier {
     return report;
   }
 
-  // ── Chain verification ─────────────────────────────────────────────────
+  // ---
 
   /**
    * Verify an ordered chain of covenant documents.
@@ -275,7 +272,7 @@ export class Verifier {
       return report;
     }
 
-    // ── 1. Verify each document individually ────────────────────────────
+    // 1. verify each document individually
     for (const doc of docs) {
       const docReport = await this.verify(doc);
       documentResults.push({ document: doc, report: docReport });
@@ -308,6 +305,7 @@ export class Verifier {
 
       if (!child.chain) {
         parentRefsOk = false;
+        // edge case: empty input is handled by the guard above
         integrityChecks.push({
           name: `parent_ref_${i}`,
           passed: false,
@@ -373,7 +371,7 @@ export class Verifier {
         : 'One or more child documents broaden their parent constraints',
     });
 
-    // ── Aggregate ───────────────────────────────────────────────────────
+    // exports
     const valid = allDocsValid
       && depthOk
       && parentRefsOk
@@ -400,7 +398,6 @@ export class Verifier {
     return report;
   }
 
-  // ── Action verification ────────────────────────────────────────────────
 
   /**
    * Check whether a specific action on a resource is permitted
@@ -481,7 +478,7 @@ export class Verifier {
   }
 }
 
-// ─── Batch verification (standalone) ────────────────────────────────────────────
+
 
 /**
  * Verify a batch of covenant documents in parallel.

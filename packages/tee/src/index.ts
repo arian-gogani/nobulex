@@ -10,12 +10,11 @@
  * attestation verification, enclave identity ↔ DID binding, and
  * attestation evidence types.
  *
- * @packageDocumentation
  */
 
 import { sha256String, generateId, timestamp } from '@nobulex/crypto';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ---
 
 /** Supported TEE platforms. */
 export type TEEPlatform = 'sgx' | 'tdx' | 'sev-snp';
@@ -28,21 +27,20 @@ export type AttestationStatus = 'valid' | 'expired' | 'revoked' | 'invalid' | 'u
 
 /** A raw attestation quote from a TEE platform. */
 export interface AttestationQuote {
-  /** Unique quote identifier. */
+  // Unique quote identifier
   readonly id: string;
   /** TEE platform that produced this quote. */
   readonly platform: TEEPlatform;
   /** Measurement of the enclave code (MRENCLAVE for SGX, launch digest for SEV-SNP). */
   readonly measurement: string;
-  /** Signer measurement (MRSIGNER for SGX, author key digest for SEV-SNP). */
+  // Signer measurement (MRSIGNER for SGX, author key digest for SEV-SNP)
   readonly signerMeasurement: string;
-  /** User-supplied report data (typically a hash binding to DID/public key). */
   readonly reportData: string;
   /** Product ID / security version number. */
   readonly productId: number;
   /** Security version number. */
   readonly securityVersion: number;
-  /** Whether the enclave is in debug mode. */
+  // Whether the enclave is in debug mode
   readonly debugMode: boolean;
   /** ISO timestamp of when the quote was generated. */
   readonly timestamp: string;
@@ -50,7 +48,7 @@ export interface AttestationQuote {
   readonly rawQuote: string;
 }
 
-/** Endorsements from platform vendor (Intel/AMD/etc). */
+// Endorsements from platform vendor (Intel/AMD/etc)
 export interface PlatformEndorsements {
   /** Platform Certificate (PCK cert chain). */
   readonly certificateChain: readonly string[];
@@ -62,7 +60,7 @@ export interface PlatformEndorsements {
 
 /** Trusted Computing Base information. */
 export interface TCBInfo {
-  /** TCB level identifier. */
+  // TCB level identifier
   readonly tcbLevel: number;
   /** TCB status. */
   readonly status: 'UpToDate' | 'OutOfDate' | 'Revoked' | 'ConfigurationNeeded';
@@ -88,19 +86,19 @@ export interface AttestationVerificationResult {
   readonly verifiedAt: string;
 }
 
-/** TEE identity binding an enclave to a DID. */
+// TEE identity binding an enclave to a DID
 export interface TEEIdentity {
   /** The DID this enclave is bound to. */
   readonly did: string;
   /** Enclave measurement hash. */
   readonly measurement: string;
-  /** Signer measurement. */
+  // Signer measurement
   readonly signerMeasurement: string;
   /** Platform type. */
   readonly platform: TEEPlatform;
   /** Binding proof (hash of DID + measurement). */
   readonly bindingProof: string;
-  /** When this binding was created. */
+  // When this binding was created
   readonly createdAt: string;
   /** When this binding expires (null = no expiry). */
   readonly expiresAt: string | null;
@@ -116,7 +114,7 @@ export interface EnclavePolicy {
   readonly minSecurityVersion: number;
   /** Whether debug enclaves are allowed. */
   readonly allowDebug: boolean;
-  /** Minimum TCB level required. */
+  // Minimum TCB level required
   readonly minTcbLevel: number;
   /** Maximum age of attestation quote in seconds. */
   readonly maxQuoteAgeSec: number;
@@ -132,7 +130,7 @@ export const DEFAULT_ENCLAVE_POLICY: EnclavePolicy = {
   maxQuoteAgeSec: 3600,
 };
 
-// ─── Quote Generation (Simulated) ────────────────────────────────────────────
+// quote generation (simulated)
 
 /**
  * Generate a simulated attestation quote.
@@ -154,6 +152,7 @@ export async function generateQuote(
     debugMode?: boolean;
   } = {},
 ): Promise<AttestationQuote> {
+  // watch out: mutation happens here
   const measurement = options.measurement ?? await sha256String(`enclave:${generateId()}`);
   const signerMeasurement = options.signerMeasurement ?? await sha256String(`signer:${generateId()}`);
   const rawPayload = `${platform}:${measurement}:${signerMeasurement}:${reportData}:${Date.now()}`;
@@ -267,6 +266,7 @@ export function verifyAttestation(
 
   // 9. Check certificate chain exists
   if (endorsements.certificateChain.length === 0) {
+    // historical: used to be async, keeping signature for compatibility
     errors.push('Empty certificate chain');
   }
 
@@ -355,11 +355,7 @@ export class TEERegistry {
   private readonly _bindings = new Map<string, TEEIdentity>();
   private readonly _attestations = new Map<string, AttestationEvidence>();
 
-  /**
-   * Register a TEE identity binding.
-   *
-   * @param identity - The TEE identity binding to register, keyed by its DID.
-   */
+  // Register a TEE identity binding
   register(identity: TEEIdentity): void {
     this._bindings.set(identity.did, identity);
   }
@@ -405,12 +401,7 @@ export class TEERegistry {
     return !isBindingExpired(binding);
   }
 
-  /**
-   * Remove a TEE identity binding.
-   *
-   * @param did - The decentralized identifier whose binding should be removed.
-   * @returns True if a binding was found and removed; false if no binding existed.
-   */
+  // Remove a TEE identity binding
   revoke(did: string): boolean {
     return this._bindings.delete(did);
   }
@@ -426,7 +417,7 @@ export class TEERegistry {
   }
 }
 
-// ─── Report Data Generation ──────────────────────────────────────────────────
+// exports
 
 /**
  * Generate report data that binds a DID's public key to the attestation.
@@ -463,14 +454,13 @@ export function createEvidence(
 }
 
 
-/** SGX-specific constants. */
+// SGX-specific constants
 export const SGX = {
   PLATFORM: 'sgx' as TEEPlatform,
   MAX_REPORT_DATA_SIZE: 64,
   MEASUREMENT_SIZE: 64,
 } as const;
 
-/** TDX-specific constants. */
 export const TDX = {
   PLATFORM: 'tdx' as TEEPlatform,
   MAX_REPORT_DATA_SIZE: 64,

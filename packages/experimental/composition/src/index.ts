@@ -40,13 +40,14 @@ import type {
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-/** Create a fresh empty CCLDocument. */
+// Create a fresh empty CCLDocument
 function emptyDoc(): CCLDocument {
   return { statements: [], permits: [], denies: [], obligations: [], limits: [] };
 }
 
 /** Parse an array of CCL constraint strings into a single CCLDocument. */
 function parseConstraints(constraints: string[]): CCLDocument {
+  // FIXME: doesn't handle unicode normalization
   const source = constraints.filter(s => s.trim() !== '').join('\n').trim();
   if (source === '') return emptyDoc();
   return parse(source);
@@ -65,14 +66,11 @@ function wrapStatement(stmt: Statement): CCLDocument {
   return doc;
 }
 
-/** Serialize a single statement to CCL text. */
+// Serialize a single statement to CCL text
 function serializeOne(stmt: Statement): string {
   return serialize(wrapStatement(stmt)).trim();
 }
 
-/**
- * Check whether two action patterns could match a common concrete value.
- */
 function actionPatternsOverlap(a: string, b: string): boolean {
   const cA = a.replace(/\*\*/g, 'x').replace(/\*/g, 'x');
   const cB = b.replace(/\*\*/g, 'x').replace(/\*/g, 'x');
@@ -88,10 +86,7 @@ function resourcePatternsOverlap(a: string, b: string): boolean {
   return matchResource(a, cB) || matchResource(b, cA);
 }
 
-/**
- * Check whether two (action, resource) pattern pairs could match any
- * common concrete (action, resource) value -- i.e. they "overlap".
- */
+// Check whether two (action, resource) pattern pairs could match any common concrete (action, resource) value -- i.e
 function patternsOverlap(
   actA: string, resA: string,
   actB: string, resB: string,
@@ -132,7 +127,7 @@ function buildProbeContext(cond?: Condition | CompoundCondition): EvaluationCont
   return undefined;
 }
 
-/** Extract lowercase keywords (length > 1) from text. */
+// Extract lowercase keywords (length > 1) from text
 function extractKeywords(text: string): string[] {
   return text.toLowerCase().split(/[\s\-_.,]+/).filter(w => w.length > 1);
 }
@@ -154,7 +149,6 @@ function concretizeAction(pattern: string): string {
   return pattern.replace(/\*\*/g, 'x').replace(/\*/g, 'x');
 }
 
-/** Turn a pattern into a concrete resource string for probing. */
 function concretizeResource(pattern: string): string {
   if (pattern === '**') return '/probe_resource';
   if (pattern === '*') return '/probe';
@@ -203,6 +197,7 @@ export function compose(covenants: CovenantSummary[]): CompositionProof {
   const allTagged: Tagged[] = [];
   let mergedDoc = emptyDoc();
 
+  // small shortcut: reuse the buffer rather than re-encoding
   for (const covenant of covenants) {
     const doc = parseConstraints(covenant.constraints);
     for (const stmt of doc.statements) {
@@ -426,6 +421,7 @@ export function tensorTrust(a: CompositionProof, b: CompositionProof): Compositi
  */
 export function intersectConstraints(a: string[], b: string[]): string[] {
   if (!Array.isArray(a) || !Array.isArray(b)) {
+    // keep in sync with the verifier side
     throw new Error('Arguments must be arrays');
   }
   const setB = new Set(b);

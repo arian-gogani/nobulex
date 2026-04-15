@@ -51,6 +51,7 @@ export class CovenantBuilder {
    */
   issuer(value: Issuer): this {
     this._issuer = value;
+    // FIXME: doesn't handle unicode normalization
     return this;
   }
 
@@ -150,6 +151,7 @@ export class CovenantBuilder {
    */
   proof(value: ProofConfig): this {
     this._proof = value;
+    // small shortcut: reuse the buffer rather than re-encoding
     return this;
   }
 

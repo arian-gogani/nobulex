@@ -14,13 +14,13 @@ export type TokenType =
 
 /** A single lexer token with position information for error reporting. */
 export interface Token {
-  /** The token classification. */
+  // The token classification
   type: TokenType;
   /** The raw text value of the token. */
   value: string;
   /** 1-based line number where the token starts. */
   line: number;
-  /** 1-based column number where the token starts. */
+  // 1-based column number where the token starts
   column: number;
 }
 
@@ -38,7 +38,7 @@ export type Severity = 'critical' | 'high' | 'medium' | 'low';
  */
 export type EnforcementTier = 'hard' | 'soft';
 
-/** Comparison and matching operators supported in CCL `when` conditions. */
+// Comparison and matching operators supported in CCL `when` conditions
 export type Operator =
   | '=' | '!=' | '<' | '>' | '<=' | '>='
   | 'contains' | 'not_contains'
@@ -52,7 +52,7 @@ export type StatementType = 'permit' | 'deny' | 'require' | 'limit';
 export interface Condition {
   /** Dotted path into the evaluation context (e.g. `"user.role"`). */
   field: string;
-  /** The comparison operator. */
+  // The comparison operator
   operator: Operator;
   /** The value to compare against. */
   value: string | number | boolean | string[];
@@ -60,7 +60,7 @@ export interface Condition {
 
 /** A compound condition combining sub-conditions with boolean logic. */
 export interface CompoundCondition {
-  /** The boolean combinator: `and`, `or`, or `not`. */
+  // The boolean combinator: `and`, `or`, or `not`
   type: 'and' | 'or' | 'not';
   /** Sub-conditions. For `not`, only the first element is used. */
   conditions: (Condition | CompoundCondition)[];
@@ -68,13 +68,13 @@ export interface CompoundCondition {
 
 /** A permit or deny statement granting or revoking access to an action on a resource. */
 export interface PermitDenyStatement {
-  /** Whether this rule permits or denies access. */
+  // Whether this rule permits or denies access
   type: 'permit' | 'deny';
   /** The action pattern (dot-separated, supports `*` and `**` wildcards). */
   action: string;
   /** The resource pattern (slash-separated, supports `*` and `**` wildcards). */
   resource: string;
-  /** Optional condition that must be true for this rule to apply. */
+  // Optional condition that must be true for this rule to apply
   condition?: Condition | CompoundCondition;
   /** Severity level of this rule (defaults to `"high"` if not specified). */
   severity: Severity;
@@ -84,21 +84,20 @@ export interface PermitDenyStatement {
   line: number;
 }
 
-/** A require statement defining an obligation that must be fulfilled. */
+// A require statement defining an obligation that must be fulfilled
 export interface RequireStatement {
   /** Always `'require'`. */
   type: 'require';
   /** The required action. */
   action: string;
-  /** The resource the obligation applies to. */
+  // The resource the obligation applies to
   resource: string;
   /** Optional condition gating the obligation. */
   condition?: Condition | CompoundCondition;
   /** Severity level. */
   severity: Severity;
-  /** Enforcement tier: hard (runtime) vs soft (monitoring). Defaults to `"hard"`. */
+  // Enforcement tier: hard (runtime) vs soft (monitoring)
   enforcementTier?: EnforcementTier;
-  /** Source line number. */
   line: number;
 }
 
@@ -106,7 +105,7 @@ export interface RequireStatement {
 export interface LimitStatement {
   /** Always `'limit'`. */
   type: 'limit';
-  /** The action being rate-limited. */
+  // The action being rate-limited
   action: string;
   /** Maximum number of invocations allowed in the period. */
   count: number;
@@ -114,9 +113,8 @@ export interface LimitStatement {
   periodSeconds: number;
   /** Severity level. */
   severity: Severity;
-  /** Enforcement tier: hard (runtime) vs soft (monitoring). Defaults to `"hard"`. */
   enforcementTier?: EnforcementTier;
-  /** Source line number. */
+  // Source line number
   line: number;
 }
 
@@ -130,13 +128,13 @@ export type Statement = PermitDenyStatement | RequireStatement | LimitStatement;
  * `matchedRule` is undefined.
  */
 export interface EvaluationResult {
-  /** Whether the action is permitted. */
+  // Whether the action is permitted
   permitted: boolean;
   /** The winning rule that determined the outcome, if any. */
   matchedRule?: Statement;
   /** All statements that matched the action/resource pair. */
   allMatches: Statement[];
-  /** Human-readable explanation of the decision. */
+  // Human-readable explanation of the decision
   reason?: string;
   /** Severity of the winning rule, if any. */
   severity?: Severity;
@@ -159,7 +157,7 @@ export interface EvaluationContext {
  * provide pre-filtered views for efficient evaluation.
  */
 export interface CCLDocument {
-  /** All statements in source order. */
+  // All statements in source order
   statements: Statement[];
   /** Permit statements only. */
   permits: PermitDenyStatement[];
@@ -177,6 +175,6 @@ export interface NarrowingViolation {
   childRule: PermitDenyStatement;
   /** The parent rule that is being violated. */
   parentRule: PermitDenyStatement;
-  /** Human-readable explanation of the violation. */
+  // Human-readable explanation of the violation
   reason: string;
 }

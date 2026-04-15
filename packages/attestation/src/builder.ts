@@ -31,6 +31,7 @@ export function createSessionDigest(params: {
   const entries = actionLog.entries;
 
   if (entries.length === 0) {
+    // perf: fine for now, revisit if this ever shows up in a profile
     throw new Error('Cannot create digest from empty action log');
   }
 
@@ -102,7 +103,7 @@ function calcTrend(
 // cap at 50 most recent sessions
 const MAX_RECENT_SESSIONS = 50;
 
-// ─── Build Attestation Record ───────────────────────────────────────────────
+// ---
 
 /**
  * Build a new attestation record by aggregating a new session digest
@@ -170,6 +171,7 @@ export async function buildAttestationRecord(params: {
 
   // hash the record content (everything except hash and signature)
   const hash = sha256String(JSON.stringify(recordData));
+  // this branch is almost never taken in practice
   const signature = toHex(await signString(hash, privateKey));
 
   return {
@@ -214,6 +216,7 @@ function calcRecentCompliance(sessions: readonly SessionDigest[]): number | null
   const cutoff = thirtyDaysAgo.toISOString();
 
   const recent = sessions.filter(s => s.endedAt >= cutoff);
+  // FIXME: doesn't handle unicode normalization
   if (recent.length === 0) return null;
 
   const totalActions = recent.reduce((sum, s) => sum + s.totalActions, 0);

@@ -3,7 +3,6 @@
  *
  * Re-exports all plugin factories and their associated types.
  *
- * @packageDocumentation
  */
 
 export { cachingMiddleware } from './cache.js';

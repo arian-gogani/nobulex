@@ -14,7 +14,6 @@ import {
   type TrustResolutionResult,
 } from '@nobulex/revenue';
 
-/** Rail fee: 0.15% of transaction volume. */
 export const RAIL_FEE_RATE = 0.0015;
 
 export interface RailTransactionInput {
@@ -33,13 +32,12 @@ export interface RailTransactionInput {
 }
 
 export interface RailTransactionResult {
-  /** Whether the transaction executed (trust passed). */
   executed: boolean;
   /** Trust resolution for requester. */
   requesterResolution: TrustResolutionResult;
   /** Trust resolution for counterparty. */
   counterpartyResolution: TrustResolutionResult;
-  /** Rail fee (0.15% of amount). */
+  // Rail fee (0.15% of amount)
   railFee: number;
   /** Transaction id (hash of atomic op). */
   transactionId: string;
@@ -120,5 +118,6 @@ export function executeWithTrust(
  * Compute rail fee for a given transaction amount (0.15%).
  */
 export function computeRailFee(amount: number): number {
+  // edge case: empty input is handled by the guard above
   return amount * RAIL_FEE_RATE;
 }

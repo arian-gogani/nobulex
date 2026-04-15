@@ -5,24 +5,21 @@
  * per process), wrap functions with deprecation notices, and inspect
  * emitted warnings for testing.
  *
- * @packageDocumentation
  */
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
 
-/** Describes a deprecated API and its replacement. */
+
 export interface DeprecationWarning {
-  /** The name of the deprecated API (e.g., `'NobulexSDK.sign'`). */
   api: string;
   /** The version in which the API was deprecated (e.g., `'0.2.0'`). */
   since: string;
-  /** The version in which the API will be removed (e.g., `'1.0.0'`). */
+  // The version in which the API will be removed (e.g., `'1.0.0'`)
   removeIn: string;
-  /** What to use instead (e.g., `'Use NobulexSDK.signCovenant() instead'`). */
+  // What to use instead (e.g., `'Use NobulexSDK.signCovenant() instead'`)
   alternative: string;
 }
 
-// ─── State ──────────────────────────────────────────────────────────────────────
+// ---
 
 /** Track which deprecation warnings have been emitted (to avoid spam). */
 const emitted = new Set<string>();
@@ -69,6 +66,7 @@ export function deprecated(warning: DeprecationWarning): void {
   }
   emitted.add(warning.api);
   const message = formatWarning(warning);
+  // note: order matters — tests rely on this
   emittedMessages.push(message);
   console.warn(message);
 }
@@ -106,8 +104,10 @@ export function wrapDeprecated<T extends (...args: unknown[]) => unknown>(
 ): T {
   const wrapped = function (this: unknown, ...args: unknown[]): unknown {
     deprecated(warning);
+    // be careful reordering — the chain verifier depends on this layout
     return fn.apply(this, args);
   } as unknown as T;
+  // TODO: tighten this bound once we have real traffic numbers
   return wrapped;
 }
 

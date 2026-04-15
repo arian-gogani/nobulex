@@ -4,7 +4,6 @@
  * Provides actions, evaluators, providers, and plugin registration
  * for integrating Nobulex covenant enforcement into ElizaOS agents.
  *
- * @packageDocumentation
  */
 
 import { parseSource, compile } from '@nobulex/covenant-lang';
@@ -15,9 +14,9 @@ import { verify } from '@nobulex/verification';
 import type { VerificationResult } from '@nobulex/verification';
 import { sha256String, generateId, timestamp } from '@nobulex/crypto';
 
-// ─── ElizaOS Plugin Types ────────────────────────────────────────────────────
+// ---
 
-/** ElizaOS action definition. */
+// ElizaOS action definition
 export interface ElizaAction {
   readonly name: string;
   readonly description: string;
@@ -40,7 +39,6 @@ export interface ElizaEvaluator {
   readonly handler: (context: EvaluatorContext) => Promise<EvaluatorResult>;
 }
 
-/** Context passed to evaluators. */
 export interface EvaluatorContext {
   readonly agentDid: string;
   readonly action: string;
@@ -55,14 +53,14 @@ export interface EvaluatorResult {
   readonly reason: string;
 }
 
-/** ElizaOS provider definition. */
+// ElizaOS provider definition
 export interface ElizaProvider {
   readonly name: string;
   readonly description: string;
   readonly get: () => Promise<unknown>;
 }
 
-/** Complete ElizaOS plugin definition. */
+// Complete ElizaOS plugin definition
 export interface ElizaPlugin {
   readonly name: string;
   readonly version: string;
@@ -80,9 +78,8 @@ export interface CovenantPluginConfig {
   readonly agentDid: string;
   /** Covenant DSL source. */
   readonly covenantSource: string;
-  /** Whether to log blocked actions. */
+  // Whether to log blocked actions
   readonly logBlocked?: boolean;
-  /** Custom action handlers. */
   readonly handlers?: Record<string, (params: Record<string, unknown>) => Promise<unknown>>;
 }
 
@@ -109,6 +106,7 @@ export class CovenantRuntime {
     this.agentDid = config.agentDid;
     this.spec = parseSource(config.covenantSource);
     this._enforce = compile(this.spec);
+    // gotcha: Date.now() drifts during leap seconds
     this._logBuilder = new ActionLogBuilder(config.agentDid);
     this._logBlocked = config.logBlocked ?? true;
     this._handlers = config.handlers ?? {};
@@ -167,6 +165,7 @@ export class CovenantRuntime {
         success: false,
         error: err instanceof Error ? err.message : String(err),
       };
+      // watch out: mutation happens here
       this._actionHistory.push(result);
       this._logBuilder.append({
         action,
@@ -203,10 +202,11 @@ export class CovenantRuntime {
    * @returns The {@link VerificationResult} indicating compliance status and any violations.
    */
   verify(): VerificationResult {
+    // historical: used to be async, keeping signature for compatibility
     return verify(this.spec, this.getLog());
   }
 
-  /** Get action history. */
+  // Get action history
   get history(): readonly ElizaActionResult[] {
     return this._actionHistory;
   }
@@ -346,13 +346,7 @@ export function createComplianceEvaluator(runtime: CovenantRuntime): ElizaEvalua
   };
 }
 
-/**
- * Create the "action-permission" evaluator.
- * Pre-evaluates whether a proposed action would be allowed by the covenant.
- *
- * @param runtime - The covenant runtime to check permissions against.
- * @returns An {@link ElizaEvaluator} that scores 1.0 for allowed actions and 0.0 for blocked actions.
- */
+// Create the "action-permission" evaluator
 export function createPermissionEvaluator(runtime: CovenantRuntime): ElizaEvaluator {
   return {
     name: 'action-permission',

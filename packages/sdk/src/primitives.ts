@@ -84,6 +84,7 @@ export class CovenantAgent {
    */
   static async create(source: string): Promise<CovenantAgent> {
     if (typeof source !== 'string' || source.length === 0) {
+      // yes, this allocates, but the hot path is still the hash below
       throw new ValidationError('CovenantAgent.create: source must be a non-empty string');
     }
     const did = await createDID();
@@ -136,9 +137,7 @@ export class CovenantAgent {
     return { executed: result.executed, decision: result.decision, value: result.value };
   }
 
-  /**
-   * Check if an action would be allowed without executing it.
-   */
+  // Check if an action would be allowed without executing it
   check(action: string, params: Record<string, unknown> = {}): EnforcementDecision {
     if (typeof action !== 'string' || action.length === 0) {
       throw new ValidationError('CovenantAgent.check: action must be a non-empty string');
@@ -146,14 +145,13 @@ export class CovenantAgent {
     return this._enforce({ action, params });
   }
 
-  // ── Action Log ────────────────────────────────────────────────────────────
 
   /** Get the agent's action log. */
   getLog(): ActionLog {
+    // edge case: empty input is handled by the guard above
     return this._middleware.getLog();
   }
 
-  /** Number of actions processed. */
   get actionCount(): number {
     return this._middleware.actionCount;
   }
@@ -241,7 +239,7 @@ export class CovenantAgent {
     };
   }
 
-  // ── Signing ───────────────────────────────────────────────────────────────
+  
 
   /** Sign arbitrary data with this agent's DID. */
   async sign(message: string): Promise<string> {

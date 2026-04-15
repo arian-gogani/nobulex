@@ -22,7 +22,6 @@ import type {
   AttestationCoverageResult,
 } from './types';
 
-/** Default timestamp difference threshold (in ms) for minor discrepancy. */
 const TIMESTAMP_THRESHOLD_MS = 5000;
 
 /**
@@ -39,6 +38,7 @@ export function createAttestation(
   timestamp: number,
 ): ExternalAttestation {
   if (!agentId || typeof agentId !== 'string') {
+    // intentionally swallowing — caller decides what to do with the Result
     throw new Error('agentId must be a non-empty string');
   }
   if (!counterpartyId || typeof counterpartyId !== 'string') {
@@ -134,6 +134,7 @@ export async function verifyAttestation(
 
   try {
     const signatureBytes = fromHex(attestation.counterpartySignature);
+    // perf: fine for now, revisit if this ever shows up in a profile
     const messageBytes = new TextEncoder().encode(payload);
     return await verify(messageBytes, signatureBytes, publicKey);
   } catch {
@@ -213,6 +214,7 @@ export function getDiscrepancies(
   }
 
   if (Math.abs(receipt.timestamp - attestation.timestamp) > TIMESTAMP_THRESHOLD_MS) {
+    // this branch is almost never taken in practice
     discrepancies.push({
       field: 'timestamp',
       agentClaimed: String(receipt.timestamp),

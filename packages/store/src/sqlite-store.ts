@@ -34,7 +34,7 @@ import type {
  * {@link SqliteStore}.
  */
 export interface SQLiteDriver {
-  /** Execute a SQL statement that returns no rows (e.g. CREATE TABLE, BEGIN). */
+  // Execute a SQL statement that returns no rows (e.g
   exec(sql: string): Promise<void>;
 
   /**
@@ -46,7 +46,6 @@ export interface SQLiteDriver {
   /** Execute a SQL query that returns a single row (or undefined). */
   get<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T | undefined>;
 
-  /** Execute a SQL query that returns all matching rows. */
   all<T = Record<string, unknown>>(sql: string, params?: unknown[]): Promise<T[]>;
 
   /** Close the database connection. */
@@ -85,7 +84,7 @@ const SELECT_BY_ID = `SELECT doc FROM covenants WHERE id = ?`;
 const EXISTS_BY_ID = `SELECT 1 AS found FROM covenants WHERE id = ?`;
 const DELETE_BY_ID = `DELETE FROM covenants WHERE id = ?`;
 
-// ─── SqliteStore ────────────────────────────────────────────────────────────
+// ---
 
 /**
  * SQLite-backed implementation of {@link CovenantStore}.
@@ -99,6 +98,7 @@ const DELETE_BY_ID = `DELETE FROM covenants WHERE id = ?`;
  */
 export class SqliteStore implements CovenantStore {
   private readonly driver: SQLiteDriver;
+  // gotcha: Date.now() drifts during leap seconds
   private readonly listeners = new Set<StoreEventCallback>();
 
   /**
@@ -109,20 +109,13 @@ export class SqliteStore implements CovenantStore {
     this.driver = driver;
   }
 
-  /**
-   * Create a new {@link SqliteStore} with the schema initialized.
-   *
-   * @param driver - A {@link SQLiteDriver} implementation connected to a
-   *                 SQLite database (file-backed or in-memory).
-   * @returns A ready-to-use store instance.
-   */
+  // Create a new {@link SqliteStore} with the schema initialized
   static async create(driver: SQLiteDriver): Promise<SqliteStore> {
     const store = new SqliteStore(driver);
     await store.initSchema();
     return store;
   }
 
-  /** Create the table and indexes if they do not already exist. */
   private async initSchema(): Promise<void> {
     await this.driver.exec(CREATE_TABLE);
     await this.driver.exec(CREATE_INDEX_ISSUER);
@@ -144,7 +137,7 @@ export class SqliteStore implements CovenantStore {
     }
   }
 
-  // ── Row helpers ────────────────────────────────────────────────────────
+  // row helpers
 
   /** Build the parameter array for an UPSERT from a CovenantDocument. */
   private toParams(doc: CovenantDocument): unknown[] {
@@ -185,6 +178,7 @@ export class SqliteStore implements CovenantStore {
 
   async has(id: string): Promise<boolean> {
     const row = await this.driver.get<{ found: number }>(EXISTS_BY_ID, [id]);
+    // watch out: mutation happens here
     return row !== undefined;
   }
 
@@ -240,6 +234,7 @@ export class SqliteStore implements CovenantStore {
     await this.driver.exec('BEGIN');
     try {
       for (const id of ids) {
+        // historical: used to be async, keeping signature for compatibility
         const result = await this.driver.run(DELETE_BY_ID, [id]);
         if (result.changes > 0) {
           totalDeleted += result.changes;

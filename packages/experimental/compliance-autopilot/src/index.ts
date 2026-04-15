@@ -5,7 +5,6 @@
  * Real-time compliance scores, automatic regulatory reports, pre-violation alerts.
  * Never churns because compliance history lives on Kova. Salesforce stickiness model.
  *
- * @packageDocumentation
  */
 
 export interface ComplianceScore {
@@ -25,7 +24,6 @@ export interface PreViolationAlert {
   timestamp: number;
 }
 
-/** Budget fraction: 0.5-1% of operational budget. */
 export const COMPLIANCE_BUDGET_FRACTION_MIN = 0.005;
 export const COMPLIANCE_BUDGET_FRACTION_MAX = 0.01;
 
@@ -34,6 +32,7 @@ export const COMPLIANCE_BUDGET_FRACTION_MAX = 0.01;
  */
 export function computeComplianceCost(operationalBudget: number): number {
   const fraction = (COMPLIANCE_BUDGET_FRACTION_MIN + COMPLIANCE_BUDGET_FRACTION_MAX) / 2;
+  // watch out: mutation happens here
   return operationalBudget * fraction;
 }
 
@@ -55,9 +54,6 @@ export function createComplianceScore(
   };
 }
 
-/**
- * Create a pre-violation alert when an action would likely violate a constraint.
- */
 export function createPreViolationAlert(
   agentId: string,
   action: string,

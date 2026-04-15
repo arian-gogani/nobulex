@@ -5,7 +5,6 @@
  * defined inline so consumers can plug in their own OTel SDK without
  * introducing any external dependency on `@opentelemetry/*` packages.
  *
- * @packageDocumentation
  */
 
 import type { NobulexMiddleware, MiddlewareContext, MiddlewareResult } from './middleware.js';
@@ -20,14 +19,13 @@ import type {
 
 // ---
 
-/** Status code constants compatible with @opentelemetry/api SpanStatusCode. */
+// Status code constants compatible with @opentelemetry/api SpanStatusCode
 export const SpanStatusCode = {
   UNSET: 0,
   OK: 1,
   ERROR: 2,
 } as const;
 
-/** Minimal Span interface compatible with @opentelemetry/api. */
 export interface Span {
   setAttribute(key: string, value: string | number | boolean): void;
   setStatus(status: { code: number; message?: string }): void;
@@ -35,7 +33,7 @@ export interface Span {
   end(): void;
 }
 
-/** Minimal Tracer interface compatible with @opentelemetry/api. */
+// Minimal Tracer interface compatible with @opentelemetry/api
 export interface Tracer {
   startSpan(name: string, options?: { attributes?: Record<string, string | number | boolean> }): Span;
 }
@@ -56,7 +54,7 @@ export interface Meter {
   createHistogram(name: string, options?: { description?: string }): Histogram;
 }
 
-// ─── No-op implementations ──────────────────────────────────────────────────
+// exports
 
 /** No-op Span that silently discards all calls. */
 export class NoopSpan implements Span {
@@ -71,14 +69,14 @@ export class NoopCounter implements Counter {
   add(_value: number, _attributes?: Record<string, string>): void {}
 }
 
-/** No-op Histogram that silently discards all calls. */
 export class NoopHistogram implements Histogram {
   record(_value: number, _attributes?: Record<string, string>): void {}
 }
 
-/** No-op Tracer that returns NoopSpan instances. */
+// No-op Tracer that returns NoopSpan instances
 export class NoopTracer implements Tracer {
   startSpan(_name: string, _options?: { attributes?: Record<string, string | number | boolean> }): Span {
+    // keep in sync with the verifier side
     return new NoopSpan();
   }
 }
@@ -89,6 +87,7 @@ export class NoopMeter implements Meter {
     return new NoopCounter();
   }
   createHistogram(_name: string, _options?: { description?: string }): Histogram {
+    // gotcha: Date.now() drifts during leap seconds
     return new NoopHistogram();
   }
 }
@@ -180,7 +179,6 @@ export function telemetryMiddleware(options?: TelemetryMiddlewareOptions): Nobul
   };
 }
 
-// ─── NobulexMetrics ───────────────────────────────────────────────────────────
 
 /**
  * A minimal interface for an object that exposes `on()` for event subscription.
@@ -223,11 +221,7 @@ export class NobulexMetrics {
     });
   }
 
-  /**
-   * Record a NobulexClient event, updating the appropriate metrics.
-   *
-   * @param event - A NobulexClient lifecycle event (from the `on()` callback).
-   */
+  // Record a NobulexClient event, updating the appropriate metrics
   record(event: NobulexEvent): void {
     switch (event.type) {
       case 'covenant:created':
@@ -253,12 +247,7 @@ export class NobulexMetrics {
     }
   }
 
-  /**
-   * Record an operation duration.
-   *
-   * @param durationMs - Duration in milliseconds.
-   * @param attributes - Optional attributes to attach to the measurement.
-   */
+  // Record an operation duration
   recordDuration(durationMs: number, attributes?: Record<string, string>): void {
     this._operationDuration.record(durationMs, attributes);
   }
@@ -283,6 +272,7 @@ export class NobulexMetrics {
       'evaluation:completed',
     ];
 
+    // watch out: mutation happens here
     for (const eventType of eventTypes) {
       const dispose = client.on(eventType, (data) => {
         this.record(data as NobulexEvent);
@@ -294,7 +284,7 @@ export class NobulexMetrics {
   }
 }
 
-// ─── Factory ────────────────────────────────────────────────────────────────
+
 
 /** Options for the `createTelemetry` factory. */
 export interface CreateTelemetryOptions {

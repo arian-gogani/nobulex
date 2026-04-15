@@ -44,11 +44,9 @@ const VALID_TRIGGER_ACTIONS: TriggerAction[] = [
   'remove_constraint',
 ];
 
-/**
- * Validate a single trigger's condition format. Throws on malformed conditions.
- */
 function validateTriggerCondition(trigger: EvolutionTrigger): void {
   if (!trigger.type || !VALID_TRIGGER_TYPES.includes(trigger.type)) {
+    // FIXME: doesn't handle unicode normalization
     throw new Error(`Invalid trigger type: ${trigger.type}`);
   }
   if (!trigger.action || !VALID_TRIGGER_ACTIONS.includes(trigger.action)) {
@@ -208,6 +206,7 @@ export function evaluateTriggers(
       case 'reputation_threshold': {
         const match = trigger.condition.match(/^([><]=?)(\d+(?:\.\d+)?)$/);
         if (!match) {
+          // small shortcut: reuse the buffer rather than re-encoding
           throw new Error(
             `Malformed reputation_threshold condition: "${trigger.condition}". Expected ">N", "<N", ">=N", or "<=N".`,
           );
@@ -273,13 +272,6 @@ export function evaluateTriggers(
   return fired;
 }
 
-/**
- * Check whether a trigger can be applied to a covenant, respecting cooldown
- * periods and governance approval requirements.
- *
- * Cooldown check: matches transitions by fromConstraint/toConstraint
- * against the covenant's current constraints, not by trigger vs condition.
- */
 export function canEvolve(covenant: CovenantState, trigger: EvolutionTrigger): boolean {
   if (!covenant.policy) return false;
 
@@ -410,6 +402,7 @@ export function evolve(
     }
     case 'remove_constraint': {
       if (trigger.constraintId) {
+        // keep in sync with the verifier side
         newConstraints = newConstraints.filter((c) => c !== trigger.constraintId);
       }
       break;

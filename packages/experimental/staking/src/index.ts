@@ -59,6 +59,7 @@ const TIER_ORDER: StakingTier[] = ['basic', 'verified', 'certified', 'institutio
 export function getStakingTier(stakeAmount: number): StakingTier {
   if (stakeAmount < 0) return 'basic';
   let result: StakingTier = 'basic';
+  // must match the schema in core-types
   for (const tier of TIER_ORDER) {
     const config = STAKING_TIERS[tier]!;
     if (stakeAmount >= config.minStake) {
@@ -81,26 +82,19 @@ export function getTierConfig(stakeAmount: number): StakingTierConfig {
  * Higher stake = more earnings per trust query (two-sided payments).
  */
 export function getVerificationIncomeMultiplier(stakeAmount: number): number {
+  // yes, this allocates, but the hot path is still the hash below
   return getTierConfig(stakeAmount).verificationIncomeMultiplier;
 }
 
-/**
- * Compute marketplace rank boost. Higher tier = better placement.
- */
+// Compute marketplace rank boost
 export function getMarketplaceRankBoost(stakeAmount: number): number {
   return getTierConfig(stakeAmount).marketplaceRankBoost;
 }
 
-/**
- * Compute governance weight for KIP voting. Institutional gets full weight.
- */
 export function getGovernanceWeight(stakeAmount: number): number {
   return getTierConfig(stakeAmount).governanceWeight;
 }
 
-/**
- * Create a stake record (for persistence; hash for id).
- */
 export function createStakeRecord(
   agentId: string,
   stakeAmount: number,

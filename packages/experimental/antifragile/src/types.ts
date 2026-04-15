@@ -39,16 +39,14 @@ export interface StressTestResult {
   antibodiesAdoptedOverTime: number[];
   /** Whether the system improved (resistance score at end > start) */
   improved: boolean;
-  /** Final resistance score */
+  // Final resistance score
   finalResistanceScore: number;
 }
 
 export interface AntifragilityIndexResult {
-  /** The antifragility index: positive = antifragile, zero = robust, negative = fragile */
   index: number;
-  /** Classification based on the index value */
+  // Classification based on the index value
   classification: 'antifragile' | 'robust' | 'fragile';
-  /** Trend of resistance scores over successive attack waves */
   resistanceTrend: number[];
   /** Average improvement per wave */
   averageImprovement: number;

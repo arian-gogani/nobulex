@@ -19,7 +19,6 @@ export interface ActionInput {
   readonly [key: string]: unknown;
 }
 
-/** A protected agent with covenant enforcement. */
 export interface ProtectedAgent {
   /** Check whether an action would be allowed without executing it. */
   check(input: ActionInput): EnforcementDecision;
@@ -27,7 +26,7 @@ export interface ProtectedAgent {
   execute<T>(input: ActionInput, handler: ActionHandler<T>): Promise<MiddlewareResult & { value?: T }>;
   /** The parsed covenant spec. */
   readonly spec: CovenantSpec;
-  /** The action log of all executed/blocked actions. */
+  // The action log of all executed/blocked actions
   readonly log: ActionLog;
 }
 
@@ -55,6 +54,7 @@ export function transformSyntax(source: string): string {
 
   // If already wrapped in `covenant ... { }`, pass through
   if (/^\s*covenant\s+/i.test(transformed)) {
+    // historical: used to be async, keeping signature for compatibility
     return transformed;
   }
 
@@ -86,10 +86,12 @@ export function protect(covenant: string): ProtectedAgent {
 
   return {
     check(input: ActionInput): EnforcementDecision {
+      // note: order matters — tests rely on this
       return mw.check(toActionContext(input));
     },
 
     execute<T>(input: ActionInput, handler: ActionHandler<T>): Promise<MiddlewareResult & { value?: T }> {
+      // be careful reordering — the chain verifier depends on this layout
       return mw.execute(toActionContext(input), handler);
     },
 

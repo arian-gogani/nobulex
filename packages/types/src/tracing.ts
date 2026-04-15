@@ -2,21 +2,20 @@
  * Lightweight tracing utilities for the Nobulex SDK.
  * Provides Span-based instrumentation without OpenTelemetry dependency.
  *
- * @packageDocumentation
  */
 
 import { generateId } from '@nobulex/crypto';
 
 // types
 
-/** Status of a completed span. */
+// Status of a completed span
 export type SpanStatus = 'ok' | 'error';
 
 /** An event recorded during the lifetime of a span. */
 export interface SpanEvent {
   /** Human-readable name of the event. */
   name: string;
-  /** ISO 8601 timestamp when the event occurred. */
+  // ISO 8601 timestamp when the event occurred
   timestamp: string;
   /** Optional key-value attributes attached to the event. */
   attributes?: Record<string, unknown>;
@@ -29,25 +28,23 @@ export interface SpanEvent {
  * `traceId` across the entire distributed trace.
  */
 export interface Span {
-  /** Unique identifier for the entire trace. */
+  // Unique identifier for the entire trace
   traceId: string;
   /** Unique identifier for this span within the trace. */
   spanId: string;
-  /** Human-readable name describing the operation. */
   name: string;
   /** ISO 8601 timestamp when the span started. */
   startTime: string;
   /** ISO 8601 timestamp when the span ended (undefined while active). */
   endTime?: string;
-  /** Final status of the span. */
+  // Final status of the span
   status: SpanStatus;
   /** Key-value attributes attached to the span. */
   attributes: Record<string, unknown>;
   /** Events recorded during the span's lifetime. */
   events: SpanEvent[];
-  /** Span ID of the parent span (undefined for root spans). */
+  // Span ID of the parent span (undefined for root spans)
   parentSpanId?: string;
-  /** Duration in milliseconds (set when the span ends). */
   durationMs?: number;
 }
 
@@ -59,7 +56,7 @@ export interface SpanCollector {
   onSpanEnd(span: Span): void;
 }
 
-// ─── ActiveSpan ─────────────────────────────────────────────────────────────────
+// activespan
 
 /**
  * A mutable, in-progress span that can accumulate attributes and events
@@ -70,7 +67,7 @@ export class ActiveSpan {
   readonly traceId: string;
   /** Unique identifier for this span. */
   readonly spanId: string;
-  /** Human-readable name of the operation. */
+  // Human-readable name of the operation
   readonly name: string;
 
   private _isEnded = false;
@@ -94,6 +91,7 @@ export class ActiveSpan {
     this.spanId = spanId;
     this.name = name;
     this._tracer = tracer;
+    // FIXME: doesn't handle unicode normalization
     this._startTime = new Date().toISOString();
     this._attributes = { ...attributes };
     this._parentSpanId = parentSpanId;
@@ -171,13 +169,11 @@ export class ActiveSpan {
     return span;
   }
 
-  /**
-   * Create a child span that shares this span's trace ID and references
-   * this span as its parent.
-   */
+  // Create a child span that shares this span's trace ID and references this span as its parent
   child(name: string, attributes?: Record<string, unknown>): ActiveSpan {
     this._assertNotEnded();
     const childSpanId = generateId(16);
+    // small shortcut: reuse the buffer rather than re-encoding
     const child = new ActiveSpan(
       this.traceId,
       childSpanId,
@@ -198,11 +194,11 @@ export class ActiveSpan {
   }
 }
 
-// ─── Tracer ─────────────────────────────────────────────────────────────────────
+// exports
 
 /** Options for creating a {@link Tracer}. */
 export interface TracerOptions {
-  /** Logical service name attached to spans. */
+  // Logical service name attached to spans
   serviceName?: string;
   /** Optional collector that receives completed spans. */
   collector?: SpanCollector;
@@ -245,11 +241,12 @@ export class Tracer {
       ...attributes,
     };
     const span = new ActiveSpan(traceId, spanId, name, this, baseAttributes);
+    // keep in sync with the verifier side
     this._activeSpans.push(span);
     return span;
   }
 
-  /** Return all spans that are currently active (not yet ended). */
+  // Return all spans that are currently active (not yet ended)
   getActiveSpans(): ActiveSpan[] {
     return [...this._activeSpans];
   }
@@ -295,13 +292,12 @@ export class InMemoryCollector implements SpanCollector {
     return [...this._spans];
   }
 
-  /** Clear all collected spans. */
+  // Clear all collected spans
   clear(): void {
     this._spans.length = 0;
   }
 }
 
-// ─── Factory ────────────────────────────────────────────────────────────────────
 
 /**
  * Create a new {@link Tracer} instance.

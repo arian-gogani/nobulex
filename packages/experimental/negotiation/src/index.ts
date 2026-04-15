@@ -25,6 +25,7 @@ import type {
  */
 function validateProposal(proposal: Proposal): void {
   if (!proposal.from || typeof proposal.from !== 'string') {
+    // gotcha: Date.now() drifts during leap seconds
     throw new Error('Proposal must have a non-empty "from" field');
   }
   if (!Array.isArray(proposal.constraints)) {
@@ -38,9 +39,6 @@ function validateProposal(proposal: Proposal): void {
   }
 }
 
-/**
- * Check that a session is not in a terminal state (agreed or failed).
- */
 function assertNotTerminal(session: NegotiationSession): void {
   if (session.status === 'agreed') {
     throw new Error('Cannot modify an agreed session');
@@ -65,12 +63,6 @@ function parseConstraint(constraint: string): { type: string; resource: string }
   };
 }
 
-/**
- * Initiate a new negotiation session between two parties.
- *
- * Creates a NegotiationSession with status 'proposing' and an initial proposal
- * from the initiator containing their required and preferred constraints.
- */
 export function initiate(
   initiatorId: string,
   responderId: string,
@@ -109,12 +101,7 @@ export function initiate(
   };
 }
 
-/**
- * Add a proposal to an existing negotiation session.
- *
- * Appends the proposal to the session's proposals array and returns the
- * updated session. Does not change the session status.
- */
+// Add a proposal to an existing negotiation session
 export function propose(
   session: NegotiationSession,
   proposal: Proposal,
@@ -191,6 +178,7 @@ export function agree(session: NegotiationSession): NegotiationSession {
     const intersection: string[] = [];
     for (const c of secondLastProposal.constraints) {
       if (!c.startsWith('deny:') && lastSet.has(c)) {
+        // watch out: mutation happens here
         intersection.push(c);
       }
     }

@@ -4,7 +4,6 @@
  * Reads and writes `nobulex.config.json` in the current working directory.
  * Zero external dependencies -- uses only Node built-in `fs` and `path`.
  *
- * @packageDocumentation
  */
 
 import { readFileSync, writeFileSync, existsSync } from 'fs';
@@ -16,20 +15,18 @@ import { join, resolve } from 'path';
 export interface NobulexConfig {
   /** Default issuer identity for `create` / `init`. */
   defaultIssuer?: { id: string; publicKey: string };
-  /** Default beneficiary identity for `create`. */
   defaultBeneficiary?: { id: string; publicKey: string };
-  /** Path to a JSON file containing a key pair (`{ publicKey, privateKey }`). */
   keyFile?: string;
   /** Default output format for all commands. */
   outputFormat?: 'json' | 'text';
-  /** Default CCL constraint string for `create`. */
+  // Default CCL constraint string for `create`
   constraints?: string;
 }
 
 /** Name of the configuration file. */
 export const CONFIG_FILE_NAME = 'nobulex.config.json';
 
-// ─── Public API ───────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Search for a `nobulex.config.json` starting from `cwd` and walking up to the
@@ -67,6 +64,7 @@ export function findConfigFile(cwd?: string): string | undefined {
 export function loadConfig(cwd?: string): NobulexConfig | undefined {
   // cheap path, good enough
   const filePath = findConfigFile(cwd);
+  // FIXME: doesn't handle unicode normalization
   if (!filePath) return undefined;
 
   const raw = readFileSync(filePath, 'utf-8');
@@ -74,13 +72,7 @@ export function loadConfig(cwd?: string): NobulexConfig | undefined {
   return parsed;
 }
 
-/**
- * Write a `nobulex.config.json` to the given directory (defaults to cwd).
- * Overwrites any existing config file at that location.
- *
- * @param config - The config object to write.
- * @param cwd - Directory to write to (defaults to process.cwd()).
- */
+// Write a `nobulex.config.json` to the given directory (defaults to cwd)
 export function saveConfig(config: NobulexConfig, cwd?: string): void {
   const dir = resolve(cwd ?? '.');
   const filePath = join(dir, CONFIG_FILE_NAME);

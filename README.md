@@ -1,13 +1,46 @@
 # Nobulex
 
-**The proof-of-behavior protocol for autonomous AI agents.**
+**AI agents can't prove they followed their own rules. Nobulex fixes that.**
 
-Every AI agent makes promises — "I won't transfer more than $500," "I'll only access approved APIs," "I won't touch production data." But today, there's no way to prove an agent kept those promises. Logs are written by the same software being audited. Compliance is asserted, never proven.
+```bash
+$ npx tsx examples/demo.ts
 
-Nobulex changes that. Define behavioral rules. Enforce them before execution. Prove compliance with cryptography, not trust.
+Agent A declares covenant: permit read, forbid transfer > 500
+Agent A executes 5 actions...
+  ✓ read /data/users — allowed
+  ✓ transfer $300 — allowed
+  ✓ read /data/orders — allowed
+  ✗ transfer $600 — BLOCKED by covenant
+  ✓ read /data/config — allowed
+
+Agent B verifies Agent A...
+  ✓ Step 1: Covenant signature valid
+  ✓ Step 2: Proof signature valid
+  ✓ Step 3: Log integrity verified (5 entries, chain intact)
+  ✓ Step 4: Compliance check passed (0 violations)
+  ✓ Step 5: History length sufficient (5 ≥ 1)
+  ✓ Step 6: Covenant matches requirements
+  ✓ Step 7: Audience binding confirmed
+  ✓ Step 8: Task class verified
+
+Result: Agent B trusts Agent A ✅
+
+Agent C presents tampered proof...
+  ✓ Step 1: Covenant signature valid
+  ✓ Step 2: Proof signature valid
+  ✗ Step 3: FAILED — hash chain broken at entry 2
+
+Result: Agent B refuses Agent C ❌
+```
+
+Three primitives. That's the whole protocol:
+
+1. **Declare** — write rules: `permit`, `forbid`, `require`
+2. **Enforce** — check every action *before* it runs
+3. **Prove** — tamper-evident hash chain anyone can verify
 
 ![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)
-![Tests](https://img.shields.io/badge/tests-4%2C237%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-3%2C665%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 
@@ -185,10 +218,38 @@ Three keywords. No configuration files. No YAML. No JSON schemas. Just rules.
 ## Live Demo
 
 ```bash
-npx tsx demo/covenant-demo.ts
+npx tsx examples/demo.ts
 ```
 
-Creates two agents, defines behavioral rules, enforces at runtime, blocks a forbidden transfer, and cryptographically verifies compliance — all in one script.
+Creates two agents, defines behavioral rules, enforces at runtime, blocks a forbidden transfer, generates a proof-of-behavior, runs the 8-step handshake, and then shows the same handshake rejecting a third agent whose log was tampered with — all in one script.
+
+```bash
+npx tsx examples/langchain-agent.ts   # covenant enforcement around a mocked LangChain agent
+npx tsx benchmarks/bench.ts           # protocol performance on your hardware
+```
+
+## Security Audit
+
+We've conducted an internal security review. Here's what we tested and what we found:
+
+**Verified secure:**
+- Hash chain integrity: modifying any entry breaks the chain (property-tested with fast-check across random chains of varying length).
+- Signature forgery: invalid signatures are rejected 100% of the time.
+- Replay attack prevention: audience-bound proofs fail when replayed to a different verifier (property-tested).
+- Covenant enforcement: forbidden actions are blocked *before* execution, never after — the handler never runs.
+
+**Known limitations:**
+- No key revocation mechanism yet — compromised keys remain trusted until removed out-of-band.
+- No rate limiting on handshake verification — potential DoS vector under adversarial load.
+- Single-threaded chain verification — chains above ~100K entries take visible time (see [benchmarks](benchmarks/README.md)).
+- Clock skew tolerance is 0 — agents with desynchronized clocks may fail timestamp checks.
+
+**Not in scope:**
+- Model-level safety (prompt injection, jailbreaking) — use guardrails for that.
+- Network transport security — use TLS.
+- Key storage — use your platform's HSM or key vault.
+
+See [docs/threat-model.md](docs/threat-model.md) for the full threat model.
 
 ## Development
 
@@ -196,7 +257,9 @@ Creates two agents, defines behavioral rules, enforces at runtime, blocks a forb
 git clone https://github.com/arian-gogani/nobulex.git
 cd nobulex
 npm install
-npx vitest run    # 4,237 tests, 80 files, 0 failures
+npx vitest run             # full test suite (incl. fast-check property tests)
+npx tsx examples/demo.ts   # see the protocol run end-to-end
+npx tsx benchmarks/bench.ts
 ```
 
 ## Documentation

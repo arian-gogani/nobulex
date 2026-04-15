@@ -1,23 +1,19 @@
-/**
- * @nobulex/core-types — TypeScript interfaces for the six Nobulex covenant primitives.
+/*
+ * Core type definitions for the Nobulex protocol.
  *
- * 1. Identity (DID)      — W3C DID for every agent
- * 2. Covenant             — Cedar-like permit/forbid DSL over observable actions
- * 3. Attestation          — W3C Verifiable Credential wrapping signed covenant
- * 4. Action Log           — Hash-chained tamper-evident record of agent actions
- * 5. Verification         — Deterministic verify(covenant, actionLog) → boolean
- * 6. Enforcement          — Staking/slashing contracts
- *
+ * Six primitives: identity (DID), covenant, attestation (VC),
+ * action log, verification, enforcement.
  */
 
 
+// --- identity ---
 /** W3C DID verification method for agent identity. */
 export interface DIDVerificationMethod {
   /** The unique identifier for this verification method (e.g., "did:example:123#key-1"). */
   readonly id: string;
   /** The cryptographic suite used by this verification method. */
   readonly type: 'Ed25519VerificationKey2020';
-  /** @description The DID of the entity that controls this verification method. */
+  /** The DID of the entity that controls this verification method. */
   readonly controller: string;
   // The public key encoded as a lowercase hexadecimal string
   readonly publicKeyHex: string;
@@ -33,19 +29,19 @@ export interface DIDDocument {
   readonly controller: string;
   /** The set of verification methods associated with this DID. */
   readonly verificationMethod: readonly DIDVerificationMethod[];
-  /** @description References to verification methods used for authentication. */
+  /** References to verification methods used for authentication. */
   readonly authentication: readonly string[];
   /** References to verification methods used for issuing assertions. */
   readonly assertionMethod: readonly string[];
   /** ISO 8601 timestamp of when this DID document was created. */
   readonly created: string;
-  /** @description ISO 8601 timestamp of when this DID document was last updated. */
+  /** ISO 8601 timestamp of when this DID document was last updated. */
   readonly updated: string;
 }
 
 /** Key pair used for DID operations. */
 export interface DIDKeyPair {
-  /** @description The DID associated with this key pair. */
+  /** The DID associated with this key pair. */
   readonly did: string;
   // The raw private key bytes used for signing operations
   readonly privateKey: Uint8Array;
@@ -77,7 +73,7 @@ export interface CovenantCondition {
 export interface CovenantRequirement {
   /** The field name that must satisfy this requirement. */
   readonly field: string;
-  /** @description The comparison operator used to evaluate the requirement. */
+  /** The comparison operator used to evaluate the requirement. */
   readonly operator: ComparisonOperator;
   /** The threshold or target value the field is compared against. */
   readonly value: string | number | boolean;
@@ -99,7 +95,7 @@ export interface CovenantSpec {
   readonly name: string;
   // The ordered list of permit/forbid statements that define allowed and disallowed actions
   readonly statements: readonly CovenantStatement[];
-  /** @description The list of requirements that must be satisfied for the covenant to hold. */
+  /** The list of requirements that must be satisfied for the covenant to hold. */
   readonly requirements: readonly CovenantRequirement[];
 }
 
@@ -111,11 +107,11 @@ export interface SignedCovenant {
   readonly spec: CovenantSpec;
   /** The DID of the entity that issued and signed this covenant. */
   readonly issuerDid: string;
-  /** @description The DID of the agent that is bound by this covenant. */
+  /** The DID of the agent that is bound by this covenant. */
   readonly subjectDid: string;
   // ISO 8601 timestamp of when this covenant was issued
   readonly issuedAt: string;
-  /** @description ISO 8601 timestamp of when this covenant expires, or null if it does not expire. */
+  /** ISO 8601 timestamp of when this covenant expires, or null if it does not expire. */
   readonly expiresAt: string | null;
   /** The Ed25519 digital signature over the covenant content, hex-encoded. */
   readonly signature: string;
@@ -146,9 +142,9 @@ export interface CovenantAttestation {
   readonly type: readonly string[];
   /** The unique identifier for this verifiable credential. */
   readonly id: string;
-  /** @description The DID of the entity that issued this credential. */
+  /** The DID of the entity that issued this credential. */
   readonly issuer: string;
-  /** @description ISO 8601 timestamp of when this credential was issued. */
+  /** ISO 8601 timestamp of when this credential was issued. */
   readonly issuanceDate: string;
   /** ISO 8601 timestamp of when this credential expires, or null if it does not expire. */
   readonly expirationDate: string | null;
@@ -176,11 +172,11 @@ export interface SourceRef {
 
 /** A single entry in the hash-chained action log. */
 export interface ActionLogEntry {
-  /** @description The zero-based position of this entry in the action log. */
+  /** The zero-based position of this entry in the action log. */
   readonly index: number;
   /** ISO 8601 timestamp of when this action was recorded. */
   readonly timestamp: string;
-  /** @description The DID of the agent that performed this action. */
+  /** The DID of the agent that performed this action. */
   readonly agentDid: string;
   /** The action identifier that was performed (e.g., "data:read", "api:call"). */
   readonly action: string;
@@ -201,13 +197,13 @@ export interface ActionLogEntry {
 export interface ActionLog {
   /** The DID of the agent whose actions are recorded in this log. */
   readonly agentDid: string;
-  /** @description The ordered, hash-chained list of action log entries. */
+  /** The ordered, hash-chained list of action log entries. */
   readonly entries: readonly ActionLogEntry[];
   // The hash of the first entry in the log, or null if the log is empty
   readonly rootHash: string | null;
-  /** @description The hash of the most recent entry in the log, or null if the log is empty. */
+  /** The hash of the most recent entry in the log, or null if the log is empty. */
   readonly headHash: string | null;
-  /** @description The total number of entries in the action log. */
+  /** The total number of entries in the action log. */
   readonly length: number;
 }
 
@@ -217,13 +213,13 @@ export interface ActionLog {
 export interface Violation {
   // The index of the action log entry that caused this violation
   readonly entryIndex: number;
-  /** @description The action that violated the covenant. */
+  /** The action that violated the covenant. */
   readonly action: string;
   /** The resource on which the violating action was performed. */
   readonly resource: string;
   /** The covenant statement or requirement that was violated. */
   readonly rule: CovenantStatement | CovenantRequirement;
-  /** @description A human-readable explanation of why this constitutes a violation. */
+  /** A human-readable explanation of why this constitutes a violation. */
   readonly reason: string;
   /** ISO 8601 timestamp of when the violating action occurred. */
   readonly timestamp: string;
@@ -231,11 +227,11 @@ export interface Violation {
 
 /** Result of verifying a covenant against an action log. */
 export interface VerificationResult {
-  /** @description Whether the agent is fully compliant with the covenant (true if no violations). */
+  /** Whether the agent is fully compliant with the covenant (true if no violations). */
   readonly compliant: boolean;
   /** The identifier of the covenant that was verified against. */
   readonly covenantId: string;
-  /** @description The DID of the agent whose actions were verified. */
+  /** The DID of the agent whose actions were verified. */
   readonly agentDid: string;
   /** The total number of actions that were checked during verification. */
   readonly totalActions: number;
@@ -251,7 +247,7 @@ export interface VerificationResult {
 export interface MerkleProofNode {
   /** The hash value of the sibling node at this level of the Merkle tree. */
   readonly hash: string;
-  /** @description Whether this sibling node is to the left or right of the path being proven. */
+  /** Whether this sibling node is to the left or right of the path being proven. */
   readonly direction: 'left' | 'right';
 }
 
@@ -261,7 +257,7 @@ export interface MerkleProof {
   readonly entryIndex: number;
   // The hash of the action log entry being proven
   readonly entryHash: string;
-  /** @description The ordered list of sibling nodes from the leaf to the root of the Merkle tree. */
+  /** The ordered list of sibling nodes from the leaf to the root of the Merkle tree. */
   readonly proof: readonly MerkleProofNode[];
   /** The Merkle tree root hash that this proof resolves to. */
   readonly root: string;
@@ -274,9 +270,9 @@ export type EnforcementAction = 'block' | 'allow' | 'flag';
 
 /** Result of evaluating an action through enforcement middleware. */
 export interface EnforcementDecision {
-  /** @description The enforcement action taken: block, allow, or flag for review. */
+  /** The enforcement action taken: block, allow, or flag for review. */
   readonly action: EnforcementAction;
-  /** @description The covenant statement that triggered this decision, or null if no rule matched. */
+  /** The covenant statement that triggered this decision, or null if no rule matched. */
   readonly matchedRule: CovenantStatement | null;
   /** A human-readable explanation of why this enforcement decision was made. */
   readonly reason: string;
@@ -298,15 +294,15 @@ export interface StakeConfig {
 
 /** A slashing event triggered by a covenant breach. */
 export interface SlashEvent {
-  /** @description The identifier of the covenant that was breached. */
+  /** The identifier of the covenant that was breached. */
   readonly covenantId: string;
-  /** @description The DID of the agent that committed the breach. */
+  /** The DID of the agent that committed the breach. */
   readonly agentDid: string;
   /** The number of violations that triggered this slashing event. */
   readonly violationCount: number;
   // The total amount of tokens slashed from the agent's stake
   readonly slashedAmount: bigint;
-  /** @description ISO 8601 timestamp of when this slashing event occurred. */
+  /** ISO 8601 timestamp of when this slashing event occurred. */
   readonly timestamp: string;
   /** The Merkle proof of the violation, or null if not available. */
   readonly proof: MerkleProof | null;

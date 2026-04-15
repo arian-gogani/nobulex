@@ -1,10 +1,11 @@
-/**
- * @nobulex/verification — Post-hoc covenant verification with Merkle proofs.
+/*
+ * Post-hoc covenant verification.
  *
- * Deterministic function: verify(covenant, actionLog) → VerificationResult.
- * Checks every action log entry against covenant rules and requirements,
- * producing a list of violations with Merkle proofs.
+ * verify(covenant, actionLog) → { compliant, violations }
  *
+ * Deterministic — same inputs always produce same output.
+ * Checks every log entry against covenant rules and produces
+ * violations with Merkle proofs.
  */
 
 import { compile } from '@nobulex/covenant-lang';

@@ -61,7 +61,7 @@ export class ValidationError extends NobulexError {
   /** The name of the field or parameter that failed validation. */
   readonly field: string;
 
-  constructor(message: string, field: string, code: NobulexErrorCode = NobulexErrorCode.INVALID_INPUT) {
+  constructor(message: string, field: string = '', code: NobulexErrorCode = NobulexErrorCode.INVALID_INPUT) {
     super(message, code);
     this.name = 'ValidationError';
     this.field = field;

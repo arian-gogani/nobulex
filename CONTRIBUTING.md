@@ -132,6 +132,22 @@ Follow this checklist when adding a new package:
 
 ## Code Style
 
+We don't enforce a strict comment style — some files in this repo are heavily documented, some are terse, and that's intentional. Write comments when the code isn't obvious and skip them when it is. If you browse the source and notice the density varies from file to file, that's the goal, not a cleanup target.
+
+**Do:**
+- Write comments that explain WHY, not WHAT. The name of the function already tells you what.
+- Add `TODO` / `FIXME` notes when you know something needs work — they're better than silence.
+- Use descriptive variable names instead of comments where you can.
+- Document public APIs with JSDoc so consumers get hover-tips in their editor.
+
+**Don't:**
+- Add JSDoc to every single function. Internal helpers usually don't need it.
+- Use box-drawing dividers (`// ─── Section ───`) unless the file is genuinely long enough to need navigation aids. A blank line is almost always enough.
+- Write comments that just restate the code. `// increment i` above `i++` is noise.
+- Sweep through a file normalizing everyone else's style to match yours — if it reads fine, leave it alone.
+
+The underlying TypeScript rules:
+
 - **TypeScript strict mode**: All packages use `"strict": true` in `tsconfig.json`.
 - **No `any`**: Avoid `any` types. Use `unknown` and narrow with type guards.
 - **Prefer `readonly`**: Mark properties and parameters as `readonly` when they should

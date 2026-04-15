@@ -1,10 +1,9 @@
-/**
- * @nobulex/middleware — Pre-execution enforcement middleware.
+/*
+ * Enforcement middleware.
  *
- * Compiles a CovenantSpec into an enforcement function that intercepts
- * actions before they execute, blocking forbidden ones and logging all
- * decisions to an ActionLog.
- *
+ * Compiles a covenant into an enforcement function. Every action
+ * goes through here before it runs — if the covenant says no,
+ * the handler never executes.
  */
 
 import { parseSource, compile } from '@nobulex/covenant-lang';

@@ -1,9 +1,7 @@
-/**
- * @nobulex/action-log — Hash-chained tamper-evident action log.
- *
- * Each entry is linked to the previous via SHA-256, forming an append-only
- * chain that can be verified for integrity at any time.
- *
+/*
+ * Hash-chained action log.
+ * Each entry links to the previous via SHA-256 — tamper with one
+ * and the whole chain breaks. Append-only by design.
  */
 
 import { sha256String, canonicalizeJson } from '@nobulex/crypto';

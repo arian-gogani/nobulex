@@ -16,18 +16,10 @@ export type {
 import type { KeyPair, PrivateKey, Signature, HashHex, Base64Url, Nonce } from './types';
 
 /**
- * Generate a new Ed25519 key pair from cryptographically secure randomness.
- *
- * The private key is 32 bytes of entropy from the platform CSPRNG.
- * The public key is derived deterministically from the private key.
- *
- * @returns A KeyPair containing privateKey, publicKey, and publicKeyHex.
- *
- * @example
- * ```typescript
- * const kp = await generateKeyPair();
- * console.log(kp.publicKeyHex); // 64-char hex string
- * ```
+ * Generate a new Ed25519 key pair.
+ * Private key is 32 bytes from the platform CSPRNG,
+ * public key derived deterministically.
+ */
  */
 export async function generateKeyPair(): Promise<KeyPair> {
   const privateKey = randomBytes(32);

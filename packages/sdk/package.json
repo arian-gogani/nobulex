@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/sdk",
   "version": "0.2.2",
-  "description": "Nobulex SDK \u2014 the proof-of-behavior protocol for autonomous AI agents",
+  "description": "Nobulex SDK — the proof-of-behavior protocol for autonomous AI agents",
   "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -17,19 +17,19 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/types": "0.2.0",
-    "@nobulex/crypto": "0.2.0",
-    "@nobulex/core": "0.2.0",
+    "@nobulex/action-log": "0.2.0",
     "@nobulex/ccl": "0.2.0",
-    "@nobulex/identity": "0.2.0",
-    "@nobulex/store": "0.2.0",
-    "@nobulex/verifier": "0.2.0",
+    "@nobulex/composability": "0.2.0",
+    "@nobulex/core": "0.2.0",
     "@nobulex/core-types": "0.2.0",
     "@nobulex/covenant-lang": "0.2.0",
-    "@nobulex/action-log": "0.2.0",
+    "@nobulex/crypto": "0.2.0",
+    "@nobulex/identity": "0.2.0",
     "@nobulex/middleware": "0.2.0",
+    "@nobulex/store": "0.2.0",
+    "@nobulex/types": "0.2.0",
     "@nobulex/verification": "0.2.0",
-    "@nobulex/composability": "0.2.0"
+    "@nobulex/verifier": "0.2.0"
   },
   "license": "MIT",
   "engines": {
@@ -60,5 +60,8 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.js"
     }
+  },
+  "devDependencies": {
+    "fast-check": "^4.6.0"
   }
 }

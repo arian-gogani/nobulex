@@ -1,10 +1,6 @@
-/**
- * @nobulex/mcp-server -- Model Context Protocol server that exposes
- * Nobulex tools to any AI agent.
- *
- * Implements JSON-RPC 2.0 over stdio, with tool definitions that map
- * to @nobulex/sdk, @nobulex/store, and @nobulex/crypto operations.
- *
+/*
+ * MCP server — exposes Nobulex tools to AI agents via JSON-RPC over stdio.
+ * Works with Claude Desktop, Cursor, VS Code, etc.
  */
 
 import { NobulexClient } from '@nobulex/sdk';

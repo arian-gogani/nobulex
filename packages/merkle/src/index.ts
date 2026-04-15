@@ -1,11 +1,7 @@
-/**
- * @nobulex/merkle — Production-grade Merkle tree with SHA-256 domain separation,
- * epoch batching, multi-proofs, sparse trees, audit paths, and tree diffs.
- *
- * Domain separation:
- * - Leaf nodes: SHA-256(0x00 || data)
- * - Inner nodes: SHA-256(0x01 || left || right)
- *
+/*
+ * Merkle tree implementation with domain separation.
+ * Leaves: SHA-256(0x00 || data), inner: SHA-256(0x01 || left || right)
+ * Also supports epoch batching, multi-proofs, sparse trees, and diffs.
  */
 
 import { sha256, sha256String } from '@nobulex/crypto';

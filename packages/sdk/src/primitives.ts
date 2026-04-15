@@ -27,7 +27,7 @@ import { ActionLogBuilder, verifyIntegrity, generateMerkleProof, verifyMerklePro
 import type { ActionLog, ActionLogEntry, MerkleProof } from '@nobulex/action-log';
 
 import { EnforcementMiddleware, createMiddleware } from '@nobulex/middleware';
-import { DidRelationship, ProofType } from '@nobulex/types';
+import { DidRelationship, ProofType, ValidationError } from '@nobulex/types';
 
 import { verify, verifyWithProofs, verifyBatch } from '@nobulex/verification';
 import type { VerificationResult, Violation } from '@nobulex/verification';
@@ -83,6 +83,9 @@ export class CovenantAgent {
    * Create a new CovenantAgent from DSL source text.
    */
   static async create(source: string): Promise<CovenantAgent> {
+    if (typeof source !== 'string' || source.length === 0) {
+      throw new ValidationError('CovenantAgent.create: source must be a non-empty string');
+    }
     const did = await createDID();
     const spec = parseSource(source);
     const mw = new EnforcementMiddleware({
@@ -97,6 +100,12 @@ export class CovenantAgent {
    * Create a CovenantAgent with an existing DID.
    */
   static fromDID(did: DIDKeyPair, source: string): CovenantAgent {
+    if (!did || typeof did !== 'object' || typeof did.did !== 'string' || did.did.length === 0) {
+      throw new ValidationError('CovenantAgent.fromDID: did must be a DIDKeyPair with a non-empty did');
+    }
+    if (typeof source !== 'string' || source.length === 0) {
+      throw new ValidationError('CovenantAgent.fromDID: source must be a non-empty string');
+    }
     const spec = parseSource(source);
     const mw = new EnforcementMiddleware({ agentDid: did.did, spec });
     const enforce = compile(spec);
@@ -114,6 +123,12 @@ export class CovenantAgent {
     params: Record<string, unknown>,
     handler: () => T | Promise<T>,
   ): Promise<{ executed: boolean; decision: EnforcementDecision; value?: T }> {
+    if (typeof action !== 'string' || action.length === 0) {
+      throw new ValidationError('CovenantAgent.execute: action must be a non-empty string');
+    }
+    if (typeof handler !== 'function') {
+      throw new ValidationError('CovenantAgent.execute: handler must be a function');
+    }
     const result = await this._middleware.execute(
       { action, params },
       () => handler(),
@@ -125,6 +140,9 @@ export class CovenantAgent {
    * Check if an action would be allowed without executing it.
    */
   check(action: string, params: Record<string, unknown> = {}): EnforcementDecision {
+    if (typeof action !== 'string' || action.length === 0) {
+      throw new ValidationError('CovenantAgent.check: action must be a non-empty string');
+    }
     return this._enforce({ action, params });
   }
 
@@ -161,6 +179,12 @@ export class CovenantAgent {
     subjectDid: string,
     expiresAt: string | null = null,
   ): Promise<CovenantAttestation> {
+    if (typeof subjectDid !== 'string' || subjectDid.length === 0) {
+      throw new ValidationError('CovenantAgent.attest: subjectDid must be a non-empty string');
+    }
+    if (expiresAt !== null && (typeof expiresAt !== 'string' || expiresAt.length === 0)) {
+      throw new ValidationError('CovenantAgent.attest: expiresAt must be null or a non-empty ISO string');
+    }
     const now = nowTimestamp();
     const nonce = generateId();
     const covenantId = `cov_${generateId()}`;
@@ -221,11 +245,23 @@ export class CovenantAgent {
 
   /** Sign arbitrary data with this agent's DID. */
   async sign(message: string): Promise<string> {
+    if (typeof message !== 'string' || message.length === 0) {
+      throw new ValidationError('CovenantAgent.sign: message must be a non-empty string');
+    }
     return signWithDID(message, this.did);
   }
 
   /** Verify a signature against a DID document. */
   static async verifySignature(message: string, signature: string, document: DIDDocument): Promise<boolean> {
+    if (typeof message !== 'string' || message.length === 0) {
+      throw new ValidationError('CovenantAgent.verifySignature: message must be a non-empty string');
+    }
+    if (typeof signature !== 'string' || signature.length === 0) {
+      throw new ValidationError('CovenantAgent.verifySignature: signature must be a non-empty string');
+    }
+    if (!document || typeof document !== 'object') {
+      throw new ValidationError('CovenantAgent.verifySignature: document must be a DIDDocument object');
+    }
     return verifyWithDID(message, signature, document);
   }
 }

@@ -1,5 +1,6 @@
 import { buildCovenant, verifyCovenant } from '@nobulex/core';
 import { generateKeyPair } from '@nobulex/crypto';
+import { ValidationError } from '@nobulex/types';
 
 const RULES: Record<string, string> = {
   'no-data-leak': "deny exfiltrate on '/**'\ndeny write on '/external/**'",
@@ -35,6 +36,20 @@ export async function protect(options: {
   rules: string[];
   issuerName?: string;
 }) {
+  if (!options || typeof options !== 'object') {
+    throw new ValidationError('protect: options must be an object');
+  }
+  if (typeof options.name !== 'string' || options.name.length === 0) {
+    throw new ValidationError('protect: options.name must be a non-empty string');
+  }
+  if (!Array.isArray(options.rules) || options.rules.length === 0) {
+    throw new ValidationError('protect: options.rules must be a non-empty array of strings');
+  }
+  for (const r of options.rules) {
+    if (typeof r !== 'string' || r.length === 0) {
+      throw new ValidationError('protect: options.rules must contain only non-empty strings');
+    }
+  }
   const issuerKeys = await generateKeyPair();
   const agentKeys = await generateKeyPair();
 

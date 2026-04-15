@@ -63,6 +63,8 @@ import {
 } from '@nobulex/identity';
 import type { AgentIdentity } from '@nobulex/identity';
 
+import { ValidationError } from '@nobulex/types';
+
 import type {
   NobulexClientOptions,
   CreateCovenantOptions,
@@ -467,19 +469,22 @@ export class NobulexClient {
    */
   async createCovenant(options: CreateCovenantOptions): Promise<CovenantDocument> {
     // ── Input validation (Stripe-quality errors at the public API boundary) ──
-    if (!options.issuer || !options.issuer.id) {
-      throw new Error(
-        'issuer.id is required and must be a non-empty string',
+    if (!options || typeof options !== 'object') {
+      throw new ValidationError('createCovenant: options must be an object');
+    }
+    if (!options.issuer || typeof options.issuer.id !== 'string' || options.issuer.id.length === 0) {
+      throw new ValidationError(
+        'createCovenant: options.issuer.id is required and must be a non-empty string',
       );
     }
-    if (!options.beneficiary || !options.beneficiary.id) {
-      throw new Error(
-        'beneficiary.id is required and must be a non-empty string',
+    if (!options.beneficiary || typeof options.beneficiary.id !== 'string' || options.beneficiary.id.length === 0) {
+      throw new ValidationError(
+        'createCovenant: options.beneficiary.id is required and must be a non-empty string',
       );
     }
-    if (!options.constraints || options.constraints.trim().length === 0) {
-      throw new Error(
-        "constraints must be a non-empty CCL string. Example: permit read on '/data/**'",
+    if (typeof options.constraints !== 'string' || options.constraints.trim().length === 0) {
+      throw new ValidationError(
+        "createCovenant: options.constraints must be a non-empty CCL string. Example: permit read on '/data/**'",
       );
     }
 
@@ -545,6 +550,9 @@ export class NobulexClient {
    * ```
    */
   async verifyCovenant(doc: CovenantDocument): Promise<VerificationResult> {
+    if (!doc || typeof doc !== 'object') {
+      throw new ValidationError('verifyCovenant: doc must be a CovenantDocument object');
+    }
     const result = await coreVerifyCovenant(doc);
 
     this._emit('covenant:verified', {
@@ -586,6 +594,9 @@ export class NobulexClient {
     signerRole: PartyRole = 'auditor',
     signerKeyPair?: KeyPair,
   ): Promise<CovenantDocument> {
+    if (!doc || typeof doc !== 'object') {
+      throw new ValidationError('countersign: doc must be a CovenantDocument object');
+    }
     // Auto-rotate key if key rotation is configured and initialized
     if (this._keyManager && !signerKeyPair) {
       try {
@@ -639,14 +650,17 @@ export class NobulexClient {
     resource: string,
     context?: EvaluationContext,
   ): Promise<EvaluationResult> {
-    if (!action || action.trim().length === 0) {
-      throw new Error(
-        'action must be a non-empty string (e.g., "read", "write", "api.call")',
+    if (!doc || typeof doc !== 'object') {
+      throw new ValidationError('evaluateAction: doc must be a CovenantDocument object');
+    }
+    if (typeof action !== 'string' || action.trim().length === 0) {
+      throw new ValidationError(
+        'evaluateAction: action must be a non-empty string (e.g., "read", "write", "api.call")',
       );
     }
-    if (!resource || resource.trim().length === 0) {
-      throw new Error(
-        'resource must be a non-empty string (e.g., "/data/**", "/api/endpoint")',
+    if (typeof resource !== 'string' || resource.trim().length === 0) {
+      throw new ValidationError(
+        'evaluateAction: resource must be a non-empty string (e.g., "/data/**", "/api/endpoint")',
       );
     }
 
@@ -694,6 +708,9 @@ export class NobulexClient {
    * ```
    */
   async createIdentity(options: CreateIdentityOptions): Promise<AgentIdentity> {
+    if (!options || typeof options !== 'object') {
+      throw new ValidationError('createIdentity: options must be an object');
+    }
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
     if (!operatorKeyPair) {
       throw new Error(
@@ -743,6 +760,12 @@ export class NobulexClient {
     identity: AgentIdentity,
     options: EvolveOptions,
   ): Promise<AgentIdentity> {
+    if (!identity || typeof identity !== 'object') {
+      throw new ValidationError('evolveIdentity: identity must be an AgentIdentity object');
+    }
+    if (!options || typeof options !== 'object') {
+      throw new ValidationError('evolveIdentity: options must be an object');
+    }
     const operatorKeyPair = options.operatorKeyPair ?? this._keyPair;
     if (!operatorKeyPair) {
       throw new Error(
@@ -829,6 +852,9 @@ export class NobulexClient {
    * ```
    */
   async validateChain(docs: CovenantDocument[]): Promise<ChainValidationResult> {
+    if (!Array.isArray(docs)) {
+      throw new ValidationError('validateChain: docs must be an array of CovenantDocument');
+    }
     const results: VerificationResult[] = [];
     const narrowingViolations: NarrowingViolationEntry[] = [];
 
@@ -886,6 +912,9 @@ export class NobulexClient {
    * ```
    */
   parseCCL(source: string): CCLDocument {
+    if (typeof source !== 'string' || source.length === 0) {
+      throw new ValidationError('parseCCL: source must be a non-empty string');
+    }
     return cclParse(source);
   }
 
@@ -897,6 +926,12 @@ export class NobulexClient {
    * @returns A new merged CCLDocument.
    */
   mergeCCL(a: CCLDocument, b: CCLDocument): CCLDocument {
+    if (!a || typeof a !== 'object') {
+      throw new ValidationError('mergeCCL: a must be a CCLDocument object');
+    }
+    if (!b || typeof b !== 'object') {
+      throw new ValidationError('mergeCCL: b must be a CCLDocument object');
+    }
     return cclMerge(a, b);
   }
 
@@ -907,6 +942,9 @@ export class NobulexClient {
    * @returns Multi-line CCL source string.
    */
   serializeCCL(doc: CCLDocument): string {
+    if (!doc || typeof doc !== 'object') {
+      throw new ValidationError('serializeCCL: doc must be a CCLDocument object');
+    }
     return cclSerialize(doc);
   }
 
@@ -1016,6 +1054,21 @@ export class QuickCovenant {
     beneficiary: Beneficiary,
     privateKey: Uint8Array,
   ): Promise<CovenantDocument> {
+    if (typeof action !== 'string' || action.length === 0) {
+      throw new ValidationError('QuickCovenant.permit: action must be a non-empty string');
+    }
+    if (typeof resource !== 'string' || resource.length === 0) {
+      throw new ValidationError('QuickCovenant.permit: resource must be a non-empty string');
+    }
+    if (!issuer || typeof issuer !== 'object') {
+      throw new ValidationError('QuickCovenant.permit: issuer must be an Issuer object');
+    }
+    if (!beneficiary || typeof beneficiary !== 'object') {
+      throw new ValidationError('QuickCovenant.permit: beneficiary must be a Beneficiary object');
+    }
+    if (!(privateKey instanceof Uint8Array) || privateKey.length !== 32) {
+      throw new ValidationError('QuickCovenant.permit: privateKey must be a 32-byte Uint8Array');
+    }
     const constraints = `permit ${action} on '${resource}'`;
     return buildCovenant({
       issuer,
@@ -1047,6 +1100,21 @@ export class QuickCovenant {
     beneficiary: Beneficiary,
     privateKey: Uint8Array,
   ): Promise<CovenantDocument> {
+    if (typeof action !== 'string' || action.length === 0) {
+      throw new ValidationError('QuickCovenant.deny: action must be a non-empty string');
+    }
+    if (typeof resource !== 'string' || resource.length === 0) {
+      throw new ValidationError('QuickCovenant.deny: resource must be a non-empty string');
+    }
+    if (!issuer || typeof issuer !== 'object') {
+      throw new ValidationError('QuickCovenant.deny: issuer must be an Issuer object');
+    }
+    if (!beneficiary || typeof beneficiary !== 'object') {
+      throw new ValidationError('QuickCovenant.deny: beneficiary must be a Beneficiary object');
+    }
+    if (!(privateKey instanceof Uint8Array) || privateKey.length !== 32) {
+      throw new ValidationError('QuickCovenant.deny: privateKey must be a 32-byte Uint8Array');
+    }
     const constraints = `deny ${action} on '${resource}'`;
     return buildCovenant({
       issuer,
@@ -1077,6 +1145,15 @@ export class QuickCovenant {
     beneficiary: Beneficiary,
     privateKey: Uint8Array,
   ): Promise<CovenantDocument> {
+    if (!issuer || typeof issuer !== 'object') {
+      throw new ValidationError('QuickCovenant.standard: issuer must be an Issuer object');
+    }
+    if (!beneficiary || typeof beneficiary !== 'object') {
+      throw new ValidationError('QuickCovenant.standard: beneficiary must be a Beneficiary object');
+    }
+    if (!(privateKey instanceof Uint8Array) || privateKey.length !== 32) {
+      throw new ValidationError('QuickCovenant.standard: privateKey must be a 32-byte Uint8Array');
+    }
     const constraints = [
       "permit read on '**'",
       "deny write on '/system/**'",

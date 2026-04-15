@@ -62,7 +62,7 @@ export function assessSeverity(constraint: ConstraintSpec): 'critical' | 'high' 
   }
 }
 
-// ── Input space ──────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Compute the total number of discrete input points within the bounds.
@@ -150,7 +150,7 @@ function generateRandomContext(bounds: InputBound): EvaluationContext {
   return context;
 }
 
-// ── CCL helpers ──────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Convert an action pattern to a concrete action string that matches it.
@@ -356,7 +356,7 @@ function extractSimpleConditions(doc: CCLDocument): Condition[] {
   return conditions;
 }
 
-// ── proveRobustness ──────────────────────────────────────────────────────────
+// proverobustness
 
 /**
  * Prove the robustness of a single constraint within a covenant.
@@ -463,7 +463,6 @@ export function proveRobustness(
   };
 }
 
-// ── fuzz ─────────────────────────────────────────────────────────────────────
 
 /**
  * Generate a random value suitable for probing a single condition.
@@ -571,7 +570,6 @@ export function fuzz(
   };
 }
 
-// ── generateAdversarialInputs ────────────────────────────────────────────────
 
 /**
  * Generate boundary values for a numeric condition.

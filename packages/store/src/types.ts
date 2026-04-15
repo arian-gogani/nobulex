@@ -79,7 +79,7 @@ export interface CovenantStore {
   /** Count documents, optionally filtered by the given criteria. */
   count(filter?: StoreFilter): Promise<number>;
 
-  // ── Batch operations ──────────────────────────────────────────────────
+  // batch operations
 
   /** Store multiple documents in a single operation. */
   putBatch(docs: CovenantDocument[]): Promise<void>;
@@ -90,7 +90,7 @@ export interface CovenantStore {
   /** Delete multiple documents by ID. Returns the number of documents actually deleted. */
   deleteBatch(ids: string[]): Promise<number>;
 
-  // ── Event system ──────────────────────────────────────────────────────
+  // event system
 
   /** Register a callback for store events. */
   onEvent(callback: StoreEventCallback): void;

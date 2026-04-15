@@ -117,6 +117,7 @@ export function computeEUCompliance(
   signals?: { hasAgentsMd?: boolean; hasMcpConfig?: boolean; hasKovaDep?: boolean },
 ): EUComplianceReport {
   const articles: ArticleCompliance[] = [];
+  // hot path — mind the allocations
   const gaps: string[] = [];
   const recommendations: string[] = [];
 

@@ -13,7 +13,6 @@
  * - Assertion construction from evidence items
  * - C2PA claim generation
  *
- * @packageDocumentation
  */
 
 import {
@@ -29,7 +28,6 @@ import {
 import type { KeyPair, HashHex } from '@nobulex/crypto';
 import type { EvidenceItem } from '@nobulex/evidence-core';
 
-// ─── Constants ──────────────────────────────────────────────────────────────
 
 const CLAIM_GENERATOR = 'nobulex/c2pa/0.2.0';
 const BINARY_MANIFEST_TAG = 'C2PA\x00\x01';
@@ -72,7 +70,6 @@ export interface TransparencyPointer {
   readonly endpoint?: string;
 }
 
-// ─── Assertion Types ────────────────────────────────────────────────────────
 
 /** Assertion declaring the digital source type of content. */
 export interface CreativeWorkAssertion {
@@ -147,7 +144,6 @@ export type Assertion =
   | DataProvenanceAssertion
   | CustomAssertion;
 
-// ─── Manifest Types ─────────────────────────────────────────────────────────
 
 /** A C2PA-compatible provenance manifest. */
 export interface ProvenanceManifest {
@@ -210,7 +206,6 @@ export interface ManifestCheck {
   readonly reason?: string;
 }
 
-// ─── Validation Types ───────────────────────────────────────────────────────
 
 /** Result of a single field validation. */
 export interface FieldValidation {
@@ -225,7 +220,7 @@ export interface ValidationReport {
   readonly results: readonly FieldValidation[];
 }
 
-// ─── Chain Verification Types ───────────────────────────────────────────────
+// chain verification types
 
 /** A node in the manifest chain graph. */
 export interface ChainNode {
@@ -245,7 +240,7 @@ export interface ManifestChainResult {
   readonly errors: readonly string[];
 }
 
-// ─── Diff Types ─────────────────────────────────────────────────────────────
+// diff types
 
 /** A single field difference between two manifests. */
 export interface ManifestFieldDiff {
@@ -260,7 +255,7 @@ export interface ManifestDiff {
   readonly identical: boolean;
 }
 
-// ─── Summary Types ──────────────────────────────────────────────────────────
+// ---
 
 /** Human-readable manifest summary. */
 export interface ManifestSummary {
@@ -1060,7 +1055,7 @@ export function extractManifestFromJSON(
   return null;
 }
 
-// ─── Binary Embedding/Extraction ────────────────────────────────────────────
+// ---
 
 /**
  * Embed a manifest into a binary buffer by appending:
@@ -1135,7 +1130,6 @@ export function extractManifestFromBinary(
   return { manifest, originalBuffer };
 }
 
-// ─── Manifest Store ─────────────────────────────────────────────────────────
 
 /**
  * In-memory manifest store with indexing by ID, content hash, and agent DID.
@@ -1338,7 +1332,6 @@ export class ManifestStore {
   }
 }
 
-// ─── Manifest Diff ──────────────────────────────────────────────────────────
 
 /** Fields to compare when diffing manifests. */
 const DIFF_FIELDS: readonly (keyof ProvenanceManifest)[] = [
@@ -1411,7 +1404,6 @@ export function diffManifests(
   };
 }
 
-// ─── Manifest Summary ───────────────────────────────────────────────────────
 
 /** Generate a human-readable summary of a manifest. */
 export function summarizeManifest(manifest: ProvenanceManifest): ManifestSummary {
@@ -1513,7 +1505,6 @@ export function manifestStats(manifests: readonly ProvenanceManifest[]): Manifes
   };
 }
 
-// ─── Claim Generation ───────────────────────────────────────────────────────
 
 /**
  * Generate a C2PA-aligned claim structure from a provenance manifest.

@@ -66,7 +66,7 @@ export {
   MAX_DOCUMENT_SIZE,
 } from './types.js';
 
-// ─── Schema validation ──────────────────────────────────────────────────────────
+// schema validation
 
 export {
   validateDocumentSchema,
@@ -85,7 +85,7 @@ export type {
 export { DocumentMigrator, defaultMigrator } from './migration.js';
 export type { Migration } from './migration.js';
 
-// ─── Error classes ─────────────────────────────────────────────────────────────
+// error classes
 
 /**
  * Thrown when building a covenant document fails validation.
@@ -115,7 +115,6 @@ export class CovenantVerificationError extends Error {
   }
 }
 
-// ─── Canonical form & ID computation ───────────────────────────────────────────
 
 /**
  * Compute the canonical form of a covenant document.
@@ -155,7 +154,6 @@ export function computeId(doc: CovenantDocument): HashHex {
   return sha256String(canonicalForm(doc));
 }
 
-// ─── Build ─────────────────────────────────────────────────────────────────────
 
 /**
  * Build a new, signed CovenantDocument from the provided options.
@@ -231,7 +229,6 @@ export async function buildCovenant(
     );
   }
 
-  // ── Parse CCL to verify syntax and check constraint count ─────────────
   let parsedCCL: CCLDocument;
   try {
     parsedCCL = cclParse(options.constraints);
@@ -247,7 +244,7 @@ export async function buildCovenant(
     );
   }
 
-  // ── Validate chain reference if present ───────────────────────────────
+  // validate chain reference if present
   if (options.chain) {
     if (!options.chain.parentId) {
       throw new CovenantBuildError('chain.parentId is required', 'chain.parentId');
@@ -266,7 +263,6 @@ export async function buildCovenant(
     }
   }
 
-  // ── Validate enforcement config if present ────────────────────────────
   if (options.enforcement) {
     const validEnforcementTypes = ['capability', 'monitor', 'audit', 'bond', 'composite'];
     if (!validEnforcementTypes.includes(options.enforcement.type)) {
@@ -288,11 +284,9 @@ export async function buildCovenant(
     }
   }
 
-  // ── Generate nonce and timestamp ──────────────────────────────────────
   const nonce = toHex(generateNonce());
   const createdAt = timestamp();
 
-  // ── Construct the document (id and signature are placeholders) ────────
   const doc: CovenantDocument = {
     id: '' as HashHex,
     version: PROTOCOL_VERSION,
@@ -330,13 +324,13 @@ export async function buildCovenant(
     doc.activatesAt = options.activatesAt;
   }
 
-  // ── Compute canonical form, sign, and derive ID ───────────────────────
+  // core
   const canonical = canonicalForm(doc);
   const signatureBytes = await signString(canonical, options.privateKey);
   doc.signature = toHex(signatureBytes);
   doc.id = sha256String(canonical);
 
-  // ── Validate serialized size ──────────────────────────────────────────
+  // ---
   const serialized = JSON.stringify(doc);
   if (new TextEncoder().encode(serialized).byteLength > MAX_DOCUMENT_SIZE) {
     throw new CovenantBuildError(
@@ -434,7 +428,6 @@ export async function countersignCovenant(
   return newDoc;
 }
 
-// ─── Verify ────────────────────────────────────────────────────────────────────
 
 const VALID_ENFORCEMENT_TYPES: readonly string[] = [
   'capability', 'monitor', 'audit', 'bond', 'composite',
@@ -479,7 +472,7 @@ export async function verifyCovenant(
 ): Promise<VerificationResult> {
   const checks: VerificationCheck[] = [];
 
-  // ── 1. ID match ───────────────────────────────────────────────────────
+  // 1. id match
   const expectedId = computeId(doc);
   checks.push({
     name: 'id_match',
@@ -509,7 +502,7 @@ export async function verifyCovenant(
       : 'Issuer signature verification failed',
   });
 
-  // ── 3. Not expired ────────────────────────────────────────────────────
+  // 3. not expired
   const now = new Date();
   if (doc.expiresAt) {
     const expires = new Date(doc.expiresAt);
@@ -529,7 +522,7 @@ export async function verifyCovenant(
     });
   }
 
-  // ── 4. Active ─────────────────────────────────────────────────────────
+  // ---
   if (doc.activatesAt) {
     const activates = new Date(doc.activatesAt);
     const isActive = now >= activates;
@@ -568,7 +561,7 @@ export async function verifyCovenant(
     message: cclMsg,
   });
 
-  // ── 6. Enforcement valid ──────────────────────────────────────────────
+  // ---
   if (doc.enforcement) {
     const enfValid = VALID_ENFORCEMENT_TYPES.includes(doc.enforcement.type);
     checks.push({
@@ -586,7 +579,7 @@ export async function verifyCovenant(
     });
   }
 
-  // ── 7. Proof valid ────────────────────────────────────────────────────
+  // ---
   if (doc.proof) {
     const proofValid = VALID_PROOF_TYPES.includes(doc.proof.type);
     checks.push({
@@ -604,7 +597,6 @@ export async function verifyCovenant(
     });
   }
 
-  // ── 8. Chain depth ────────────────────────────────────────────────────
   if (doc.chain) {
     const depthOk = doc.chain.depth >= 1 && doc.chain.depth <= MAX_CHAIN_DEPTH;
     checks.push({
@@ -670,7 +662,6 @@ export async function verifyCovenant(
     });
   }
 
-  // ── 11. Nonce present ─────────────────────────────────────────────────
   // A valid nonce must be a 64-character hex string (32 bytes)
   const nonceHexRegex = /^[0-9a-f]{64}$/i;
   const nonceOk = typeof doc.nonce === 'string' && nonceHexRegex.test(doc.nonce);
@@ -694,7 +685,7 @@ export async function verifyCovenant(
   };
 }
 
-// ─── Chain resolver ────────────────────────────────────────────────────────────
+// chain resolver
 
 /**
  * Interface for resolving parent covenant documents by their ID.
@@ -820,7 +811,6 @@ export async function computeEffectiveConstraints(
   return effective;
 }
 
-// ─── Chain narrowing validation ────────────────────────────────────────────────
 
 /**
  * Validate that a child covenant only narrows (never broadens) the

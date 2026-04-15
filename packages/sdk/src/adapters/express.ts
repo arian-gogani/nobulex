@@ -5,7 +5,6 @@
  * handler with Nobulex covenant enforcement. Uses generic request/response types
  * so it works with Express, Koa, Hono, Fastify, and any Connect-compatible server.
  *
- * @packageDocumentation
  */
 
 import type { NobulexClient } from '../index.js';
@@ -126,7 +125,7 @@ export interface CovenantRouterOptions {
   covenant: CovenantDocument;
 }
 
-// ─── Default extractors ──────────────────────────────────────────────────────
+// ---
 
 /**
  * Default action extractor: maps HTTP method to a lowercase action string.
@@ -321,7 +320,6 @@ export function nobulexGuardHandler(
   };
 }
 
-// ─── createWellKnownHandler ───────────────────────────────────────────────────
 
 /**
  * Options for the well-known Nobulex discovery endpoint.

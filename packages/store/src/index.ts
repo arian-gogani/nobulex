@@ -30,7 +30,7 @@ export { FileStore } from './file-store';
 export { SqliteStore } from './sqlite-store';
 export type { SQLiteDriver } from './sqlite-store';
 
-// ─── Filter helpers ─────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Test whether a document matches every criterion in the given filter.
@@ -89,7 +89,6 @@ export class MemoryStore implements CovenantStore {
   private readonly data = new Map<string, CovenantDocument>();
   private readonly listeners: Set<StoreEventCallback> = new Set();
 
-  // ── Event helpers ───────────────────────────────────────────────────────
 
   private emit(type: StoreEventType, documentId: string, document?: CovenantDocument): void {
     const event: StoreEvent = {
@@ -103,7 +102,7 @@ export class MemoryStore implements CovenantStore {
     }
   }
 
-  // ── Single-document CRUD ──────────────────────────────────────────────
+  // ---
 
   /**
    * Store a covenant document, replacing any existing document with the same ID.
@@ -251,7 +250,7 @@ export class MemoryStore implements CovenantStore {
     return deleted;
   }
 
-  // ── Event system ──────────────────────────────────────────────────────
+  // event system
 
   /**
    * Register a callback for store mutation events (`'put'` and `'delete'`).
@@ -291,7 +290,7 @@ export class MemoryStore implements CovenantStore {
   }
 }
 
-// ─── Query builder ──────────────────────────────────────────────────────────────
+// query builder
 
 export { QueryBuilder, createQuery } from './query';
 export type { PaginationOptions, PaginatedResult, SortField, SortOrder } from './query';
@@ -301,11 +300,9 @@ export type { PaginationOptions, PaginatedResult, SortField, SortOrder } from '.
 export { StoreIndex } from './indexing';
 export type { IndexField } from './indexing';
 
-// ─── Transactions ───────────────────────────────────────────────────────────────
 
 export { createTransaction } from './transaction';
 export type { Transaction } from './transaction';
 
-// ─── IndexedStore ───────────────────────────────────────────────────────────────
 
 export { IndexedStore } from './indexed-store';

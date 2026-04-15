@@ -13,7 +13,6 @@
  * provider.addSpanProcessor(processor);
  * ```
  *
- * @packageDocumentation
  */
 
 import {

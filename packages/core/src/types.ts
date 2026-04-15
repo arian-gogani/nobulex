@@ -1,7 +1,6 @@
 import type { HashHex } from '@nobulex/crypto';
 import type { Severity } from '@nobulex/ccl';
 
-// ─── Protocol constants ────────────────────────────────────────────────────────
 
 /** Current Nobulex Covenant protocol version. */
 export const PROTOCOL_VERSION = '1.0';
@@ -70,7 +69,7 @@ export interface ChainReference {
   depth: number;
 }
 
-// ─── Configuration types ───────────────────────────────────────────────────────
+// ---
 
 /** Runtime enforcement configuration for a covenant. */
 export interface EnforcementConfig {
@@ -116,7 +115,7 @@ export interface Countersignature {
   timestamp: string;
 }
 
-// ─── Obligation ────────────────────────────────────────────────────────────────
+// obligation
 
 /** An obligation that must be fulfilled as part of the covenant. */
 export interface Obligation {
@@ -130,7 +129,7 @@ export interface Obligation {
   deadline?: string;
 }
 
-// ─── Metadata ──────────────────────────────────────────────────────────────────
+// ---
 
 /** Optional metadata attached to a covenant document. */
 export interface CovenantMetadata {
@@ -146,7 +145,6 @@ export interface CovenantMetadata {
   custom?: Record<string, unknown>;
 }
 
-// ─── Covenant document ─────────────────────────────────────────────────────────
 
 /** A complete, signed Covenant document. */
 export interface CovenantDocument {
@@ -216,7 +214,6 @@ export interface CovenantBuilderOptions {
   activatesAt?: string;
 }
 
-// ─── Verification types ────────────────────────────────────────────────────────
 
 /** A single verification check and its result. */
 export interface VerificationCheck {

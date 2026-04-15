@@ -30,7 +30,7 @@ const emitted = new Set<string>();
 /** Record of all emitted warning messages, for testing and inspection. */
 const emittedMessages: string[] = [];
 
-// ─── Core functions ─────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Format a deprecation warning into a human-readable message.

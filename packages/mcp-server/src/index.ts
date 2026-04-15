@@ -5,7 +5,6 @@
  * Implements JSON-RPC 2.0 over stdio, with tool definitions that map
  * to @nobulex/sdk, @nobulex/store, and @nobulex/crypto operations.
  *
- * @packageDocumentation
  */
 
 import { NobulexClient } from '@nobulex/sdk';
@@ -276,7 +275,7 @@ export class NobulexServer {
     }
   }
 
-  // ── JSON-RPC 2.0 message handler ────────────────────────────────────────────
+  // ---
 
   /**
    * Handle a JSON-RPC 2.0 message and return the appropriate response.
@@ -613,7 +612,6 @@ export class NobulexServer {
     }
   }
 
-  // ── Response helpers ──────────────────────────────────────────────────────
 
   private _successResponse(id: string | number | null, result: unknown): JsonRpcSuccessResponse {
     return {

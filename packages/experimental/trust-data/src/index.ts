@@ -4,7 +4,6 @@
  * Cross-platform reputation graph = largest verified agent behavioral dataset.
  * Sell anonymized insights to insurers, regulators, enterprises. Bloomberg model.
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';

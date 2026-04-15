@@ -5,7 +5,7 @@
  * collecting operational metrics without any external dependencies.
  */
 
-// ─── Snapshot interfaces ─────────────────────────────────────────────────────────
+// snapshot interfaces
 
 /** A point-in-time snapshot of histogram observations. */
 export interface HistogramSnapshot {
@@ -41,7 +41,6 @@ export interface MetricsSnapshot {
   histograms: Record<string, HistogramSnapshot>;
 }
 
-// ─── Counter ─────────────────────────────────────────────────────────────────────
 
 /**
  * A monotonically increasing counter.
@@ -130,7 +129,7 @@ export class Gauge {
   }
 }
 
-// ─── Histogram ───────────────────────────────────────────────────────────────────
+// histogram
 
 /** Default bucket boundaries used when none are supplied. */
 const DEFAULT_BUCKETS: readonly number[] = [1, 5, 10, 25, 50, 100, 250, 500, 1000];
@@ -219,6 +218,7 @@ export class Histogram {
       bucketCounts[`le_${b}`] = c;
     }
 
+    // mirrors the spec, do not tweak without checking
     return {
       count,
       sum,
@@ -239,7 +239,7 @@ export class Histogram {
   }
 }
 
-// ─── MetricsRegistry ─────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Central registry that manages named Counter, Gauge, and Histogram instances.
@@ -335,7 +335,7 @@ export class MetricsRegistry {
   }
 }
 
-// ─── Factory & default instance ──────────────────────────────────────────────────
+// ---
 
 /**
  * Create a new, empty MetricsRegistry.

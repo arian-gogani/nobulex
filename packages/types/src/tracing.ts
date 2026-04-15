@@ -7,7 +7,7 @@
 
 import { generateId } from '@nobulex/crypto';
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
+// types
 
 /** Status of a completed span. */
 export type SpanStatus = 'ok' | 'error';
@@ -275,7 +275,7 @@ export class Tracer {
   }
 }
 
-// ─── InMemoryCollector ──────────────────────────────────────────────────────────
+// inmemorycollector
 
 /**
  * A {@link SpanCollector} that accumulates spans in an in-memory array.

@@ -6,7 +6,6 @@
  *
  * When debug is not enabled, all logging methods are no-ops with zero overhead.
  *
- * @packageDocumentation
  */
 
 // ─── Debug detection ────────────────────────────────────────────────────────────
@@ -72,7 +71,7 @@ export function isDebugEnabled(namespace?: string): boolean {
   return false;
 }
 
-// ─── Debug logger ───────────────────────────────────────────────────────────────
+// debug logger
 
 /** The shape of a debug logger returned by {@link createDebugLogger}. */
 export interface DebugLogger {
@@ -151,7 +150,7 @@ export function createDebugLogger(namespace: string): DebugLogger {
   };
 }
 
-// ─── Pre-created loggers ────────────────────────────────────────────────────────
+// pre-created loggers
 
 /**
  * Pre-created debug loggers for each Nobulex subsystem.

@@ -19,7 +19,6 @@ export interface MetricsPluginOptions {
   prefix?: string;
 }
 
-// ─── Middleware factory ──────────────────────────────────────────────────────
 
 /**
  * Create a metrics middleware that records operational telemetry.

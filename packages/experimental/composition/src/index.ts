@@ -125,6 +125,7 @@ function buildProbeContext(cond?: Condition | CompoundCondition): EvaluationCont
   if ('conditions' in cond) {
     const compound = cond as CompoundCondition;
     if (compound.conditions.length > 0) {
+      // leaving this explicit for readability
       return buildProbeContext(compound.conditions[0]!);
     }
   }

@@ -4,14 +4,13 @@
  * Uses inverted index maps for exact-match fields (issuerId, beneficiaryId, tags)
  * and a sorted array for range queries on createdAt.
  *
- * @packageDocumentation
  */
 
 import type { CovenantDocument } from '@nobulex/core';
 
 import type { StoreFilter } from './types.js';
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
+// ---
 
 /** Fields that can be indexed for fast lookup. */
 export type IndexField = 'issuerId' | 'beneficiaryId' | 'createdAt' | 'tags';
@@ -64,7 +63,7 @@ export class StoreIndex {
     this.fields = new Set(fields);
   }
 
-  // ── Mutation ──────────────────────────────────────────────────────────────
+  // ---
 
   /** Add a document to all indexes. */
   add(doc: CovenantDocument): void {
@@ -299,7 +298,6 @@ export class StoreIndex {
     };
   }
 
-  // ── Private helpers ──────────────────────────────────────────────────────
 
   /**
    * Binary search for the insertion position to maintain sorted order.

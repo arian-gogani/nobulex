@@ -7,7 +7,6 @@
  * `NobulexAccessDeniedError` is thrown (or the custom `onDenied` handler
  * is invoked). If permitted, the original `execute()` runs normally.
  *
- * @packageDocumentation
  *
  * @example
  * ```typescript
@@ -22,7 +21,7 @@ import type { NobulexClient } from '../index.js';
 import type { CovenantDocument } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
 
-// ─── Error ───────────────────────────────────────────────────────────────────
+// error
 
 /**
  * Error thrown when a tool call is denied by a Nobulex covenant.
@@ -41,7 +40,6 @@ export class NobulexAccessDeniedError extends Error {
   }
 }
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 /**
  * Minimal tool shape compatible with the Vercel AI SDK.
@@ -82,7 +80,7 @@ export interface NobulexToolOptions {
   onDenied?: (tool: ToolLike, result: EvaluationResult) => unknown;
 }
 
-// ─── withNobulex ───────────────────────────────────────────────────────────────
+// withnobulex
 
 /**
  * Wrap a single Vercel AI SDK tool with Nobulex covenant enforcement.
@@ -178,7 +176,6 @@ export function withNobulexTools(
   return wrapped;
 }
 
-// ─── createToolGuard ─────────────────────────────────────────────────────────
 
 /**
  * Create a reusable guard function that enforces a covenant on any tool call.

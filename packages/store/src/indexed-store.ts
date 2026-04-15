@@ -20,7 +20,6 @@ import type {
 import { StoreIndex } from './indexing.js';
 import type { IndexField } from './indexing.js';
 
-// ─── Default indexed fields ────────────────────────────────────────────────────
 
 const DEFAULT_INDEX_FIELDS: IndexField[] = [
   'issuerId',
@@ -29,7 +28,6 @@ const DEFAULT_INDEX_FIELDS: IndexField[] = [
   'tags',
 ];
 
-// ─── Filter helper ──────────────────────────────────────────────────────────────
 
 /**
  * Test whether a document matches every criterion in the given filter.
@@ -48,6 +46,7 @@ function matchesFilter(doc: CovenantDocument, filter: StoreFilter): boolean {
   }
 
   if (filter.createdAfter !== undefined) {
+    // watch out: order matters here
     if (new Date(doc.createdAt) < new Date(filter.createdAfter)) {
       return false;
     }
@@ -103,7 +102,7 @@ export class IndexedStore implements CovenantStore {
     this.index = new StoreIndex(indexFields ?? DEFAULT_INDEX_FIELDS);
   }
 
-  // ── Index lifecycle ──────────────────────────────────────────────────────
+  // ---
 
   /** Ensure the index is built from the backing store on first access. */
   private async ensureInitialized(): Promise<void> {
@@ -193,7 +192,7 @@ export class IndexedStore implements CovenantStore {
     return docs.length;
   }
 
-  // ── Batch operations ──────────────────────────────────────────────────────
+  // batch operations
 
   async putBatch(docs: CovenantDocument[]): Promise<void> {
     await this.ensureInitialized();

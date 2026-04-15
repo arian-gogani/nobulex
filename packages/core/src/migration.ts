@@ -9,7 +9,6 @@
  *   0.2 -> 0.3: Normalize publicKey to lowercase hex
  *   0.3 -> 1.0: Add version field, ensure all required fields present
  *
- * @packageDocumentation
  */
 
 import { generateNonce, toHex } from '@nobulex/crypto';

@@ -13,7 +13,7 @@ import type {
 
 import type { Statement, NarrowingViolation, EvaluationContext, Severity } from '@nobulex/ccl';
 
-// ─── Options ────────────────────────────────────────────────────────────────────
+// ---
 
 /** Options accepted by the Verifier constructor. */
 export interface VerifierOptions {
@@ -43,7 +43,6 @@ export interface VerifierOptions {
   maxChainDepth?: number;
 }
 
-// ─── Reports ────────────────────────────────────────────────────────────────────
 
 /** Extends core's VerificationResult with timing and verifier metadata. */
 export interface VerificationReport extends VerificationResult {
@@ -186,7 +185,6 @@ export interface BatchVerificationReport {
   timestamp: string;
 }
 
-// ─── History ────────────────────────────────────────────────────────────────────
 
 /** The kind of verification that was performed. */
 export type VerificationKind = 'single' | 'chain' | 'action' | 'batch';

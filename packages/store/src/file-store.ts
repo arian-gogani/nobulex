@@ -12,7 +12,6 @@
  *   - Index mutations are serialized through a promise-based mutex.
  *   - The base directory is auto-created on the first write.
  *
- * @packageDocumentation
  */
 
 import * as fs from 'fs/promises';
@@ -28,7 +27,6 @@ import type {
   StoreEventCallback,
 } from './types.js';
 
-// ─── Index types ────────────────────────────────────────────────────────────────
 
 /** Metadata stored per document inside the index for fast filtering. */
 interface IndexEntry {
@@ -44,14 +42,13 @@ interface StoreIndex {
   entries: Record<string, IndexEntry>;
 }
 
-// ─── Error helpers ────────────────────────────────────────────────────────────
 
 /** Check if an error has Node.js errno code (e.g. ENOENT). */
 function isErrnoException(err: unknown): err is NodeJS.ErrnoException {
   return err !== null && typeof err === 'object' && 'code' in err;
 }
 
-// ─── Filter helper ──────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Test whether an index entry satisfies every criterion in the filter.
@@ -95,7 +92,7 @@ function entryMatchesFilter(entry: IndexEntry, filter: StoreFilter): boolean {
   return true;
 }
 
-// ─── FileStore ──────────────────────────────────────────────────────────────────
+// filestore
 
 /**
  * File-system-backed implementation of {@link CovenantStore}.
@@ -128,7 +125,7 @@ export class FileStore implements CovenantStore {
     this.indexPath = path.join(this.baseDir, '_index.json');
   }
 
-  // ── Private helpers ──────────────────────────────────────────────────────
+  // ---
 
   /** Ensure the base directory exists (creates it lazily on first call). */
   private async ensureDir(): Promise<void> {
@@ -214,7 +211,7 @@ export class FileStore implements CovenantStore {
     }
   }
 
-  // ── Single-document CRUD ────────────────────────────────────────────────
+  // single-document crud
 
   async put(doc: CovenantDocument): Promise<void> {
     if (doc == null) {
@@ -303,7 +300,7 @@ export class FileStore implements CovenantStore {
     ).length;
   }
 
-  // ── Batch operations ────────────────────────────────────────────────────
+  // ---
 
   async putBatch(docs: CovenantDocument[]): Promise<void> {
     if (docs.length === 0) return;
@@ -371,7 +368,6 @@ export class FileStore implements CovenantStore {
     return deletedIds.length;
   }
 
-  // ── Event system ────────────────────────────────────────────────────────
 
   onEvent(callback: StoreEventCallback): void {
     this.listeners.add(callback);

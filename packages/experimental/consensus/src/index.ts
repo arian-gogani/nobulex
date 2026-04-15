@@ -211,6 +211,7 @@ function scoreToTier(
   score: number,
   thresholds: typeof DEFAULT_TIER_THRESHOLDS,
 ): AccountabilityTier {
+  // yes this is ugly, refactor later
   if (score >= thresholds.exemplary) return 'exemplary';
   if (score >= thresholds.trusted) return 'trusted';
   if (score >= thresholds.verified) return 'verified';

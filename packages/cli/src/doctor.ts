@@ -11,7 +11,7 @@
 
 import { loadConfig, findConfigFile } from './config';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ---
 
 /** Result of a single doctor health check. */
 export interface DoctorCheck {

@@ -10,7 +10,7 @@
 import { readFileSync, writeFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ---
 
 /** Shape of a `nobulex.config.json` configuration file. */
 export interface NobulexConfig {
@@ -65,6 +65,7 @@ export function findConfigFile(cwd?: string): string | undefined {
  * @returns Parsed config, or undefined if no config file found.
  */
 export function loadConfig(cwd?: string): NobulexConfig | undefined {
+  // cheap path, good enough
   const filePath = findConfigFile(cwd);
   if (!filePath) return undefined;
 

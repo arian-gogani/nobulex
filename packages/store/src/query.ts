@@ -13,7 +13,6 @@ import type { CovenantDocument } from '@nobulex/core';
 
 import type { CovenantStore, StoreFilter } from './types.js';
 
-// ─── Pagination types ───────────────────────────────────────────────────────────
 
 /** Options for paginated queries. */
 export interface PaginationOptions {
@@ -37,7 +36,7 @@ export interface PaginatedResult<T> {
   nextCursor?: string;
 }
 
-// ─── Sort types ─────────────────────────────────────────────────────────────────
+// sort types
 
 /** Fields that can be used for sorting query results. */
 export type SortField = 'createdAt' | 'id';
@@ -45,7 +44,7 @@ export type SortField = 'createdAt' | 'id';
 /** Sort direction. */
 export type SortOrder = 'asc' | 'desc';
 
-// ─── QueryBuilder ───────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Fluent query builder for {@link CovenantStore}.
@@ -264,7 +263,7 @@ export class QueryBuilder {
   }
 }
 
-// ─── Factory ────────────────────────────────────────────────────────────────────
+// factory
 
 /**
  * Create a new {@link QueryBuilder} bound to the given store.

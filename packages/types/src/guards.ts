@@ -3,7 +3,7 @@
  * Use these at system boundaries (API inputs, deserialization, user-facing functions).
  */
 
-// ─── Type Guards ────────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Check whether `value` is a non-empty string (after trimming).
@@ -132,7 +132,7 @@ export function isPlainObject(value: unknown): value is Record<string, unknown> 
   return proto === Object.prototype || proto === null;
 }
 
-// ─── Sanitization Utilities ─────────────────────────────────────────────────────
+// ---
 
 /**
  * Sanitize a string value by trimming whitespace, truncating to `maxLength`,
@@ -211,7 +211,7 @@ export function sanitizeJsonInput(value: string): unknown {
   return parsed;
 }
 
-// ─── Deep Freeze ────────────────────────────────────────────────────────────────
+// deep freeze
 
 /**
  * Deeply freeze an object and all of its nested properties to prevent mutation.

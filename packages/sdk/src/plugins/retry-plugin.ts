@@ -22,7 +22,6 @@ export interface RetryPluginOptions {
   shouldRetry?: (error: Error) => boolean;
 }
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
 
 /**
  * Compute delay with exponential backoff and jitter.
@@ -40,7 +39,6 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// ─── Middleware factory ──────────────────────────────────────────────────────
 
 /**
  * Create a retry middleware that automatically retries failed operations.
@@ -133,7 +131,7 @@ export function retryMiddleware(options?: RetryPluginOptions): NobulexMiddleware
   };
 }
 
-// ─── Standalone retry utility ────────────────────────────────────────────────
+// standalone retry utility
 
 /**
  * Execute a function with retry logic, independent of the middleware pipeline.

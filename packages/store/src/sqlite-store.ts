@@ -12,7 +12,6 @@
  *   - The driver interface is intentionally minimal; adapting any SQLite
  *     binding to it is straightforward.
  *
- * @packageDocumentation
  */
 
 import type { CovenantDocument } from '@nobulex/core';
@@ -25,7 +24,6 @@ import type {
   StoreEventCallback,
 } from './types.js';
 
-// ─── Driver interface ────────────────────────────────────────────────────────
 
 /**
  * Minimal SQLite driver abstraction.
@@ -54,7 +52,7 @@ export interface SQLiteDriver {
   close(): Promise<void>;
 }
 
-// ─── SQL constants ──────────────────────────────────────────────────────────
+// sql constants
 
 const CREATE_TABLE = `
 CREATE TABLE IF NOT EXISTS covenants (
@@ -131,7 +129,7 @@ export class SqliteStore implements CovenantStore {
     await this.driver.exec(CREATE_INDEX_CREATED);
   }
 
-  // ── Event helpers ──────────────────────────────────────────────────────
+  // event helpers
 
   private emit(type: StoreEventType, documentId: string, document?: CovenantDocument): void {
     const event: StoreEvent = {
@@ -166,7 +164,7 @@ export class SqliteStore implements CovenantStore {
     return JSON.parse(row.doc) as CovenantDocument;
   }
 
-  // ── Single-document CRUD ───────────────────────────────────────────────
+  // single-document crud
 
   async put(doc: CovenantDocument): Promise<void> {
     if (doc == null) {
@@ -210,7 +208,7 @@ export class SqliteStore implements CovenantStore {
     return row?.cnt ?? 0;
   }
 
-  // ── Batch operations ───────────────────────────────────────────────────
+  // ---
 
   async putBatch(docs: CovenantDocument[]): Promise<void> {
     if (docs.length === 0) return;
@@ -260,7 +258,7 @@ export class SqliteStore implements CovenantStore {
     return totalDeleted;
   }
 
-  // ── Event system ───────────────────────────────────────────────────────
+  // event system
 
   onEvent(callback: StoreEventCallback): void {
     this.listeners.add(callback);
@@ -270,14 +268,14 @@ export class SqliteStore implements CovenantStore {
     this.listeners.delete(callback);
   }
 
-  // ── Cleanup ────────────────────────────────────────────────────────────
+  // cleanup
 
   /** Close the underlying database connection. */
   async close(): Promise<void> {
     await this.driver.close();
   }
 
-  // ── Query builder ──────────────────────────────────────────────────────
+  // query builder
 
   /**
    * Build a SELECT query with optional WHERE clauses derived from a

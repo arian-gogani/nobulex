@@ -196,7 +196,7 @@ export function generateEndorsements(
   };
 }
 
-// ─── Attestation Verification ────────────────────────────────────────────────
+// attestation verification
 
 /**
  * Verify an attestation quote against a policy.
@@ -288,7 +288,7 @@ export function verifyAttestation(
   };
 }
 
-// ─── TEE ↔ DID Binding ──────────────────────────────────────────────────────
+// ---
 
 /**
  * Bind an enclave identity to a DID.
@@ -341,7 +341,6 @@ export function isBindingExpired(identity: TEEIdentity): boolean {
   return new Date(identity.expiresAt).getTime() < Date.now();
 }
 
-// ─── TEE Attestation Registry ────────────────────────────────────────────────
 
 /**
  * In-memory registry of TEE identities, for resolving and validating enclave bindings.
@@ -458,7 +457,6 @@ export function createEvidence(
   return { quote, endorsements, securityLevel };
 }
 
-// ─── Platform Helpers ────────────────────────────────────────────────────────
 
 /** SGX-specific constants. */
 export const SGX = {

@@ -4,7 +4,6 @@
  * Agent-to-agent discovery layer. Trust score determines access.
  * Premium placement, escrow, transaction fees. AWS Marketplace model.
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';

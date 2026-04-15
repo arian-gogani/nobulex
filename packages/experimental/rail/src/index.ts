@@ -5,7 +5,6 @@
  * If trust fails, transaction never happens. Kova becomes the rail, not the checkpoint.
  * 0.15% of transaction volume (Visa model).
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';

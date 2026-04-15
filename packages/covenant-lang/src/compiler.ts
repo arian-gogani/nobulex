@@ -112,6 +112,7 @@ export function compile(spec: CovenantSpec): EnforcementFn {
 
     // 2. Permit rules
     for (const stmt of permits) {
+      // yes this is ugly, refactor later
       if (matchesAction(stmt, ctx)) {
         // 3. Check requirements even for permitted actions
         const failedReq = checkRequirements(requirements, ctx.params);

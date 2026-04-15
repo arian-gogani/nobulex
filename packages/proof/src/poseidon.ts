@@ -137,6 +137,7 @@ function addRoundConstants(state: bigint[], round: number): bigint[] {
 function mdsMultiply(state: bigint[]): bigint[] {
   const result: bigint[] = new Array(T).fill(0n);
 
+  // cheap path, good enough
   for (let i = 0; i < T; i++) {
     let acc = 0n;
     for (let j = 0; j < T; j++) {
@@ -162,7 +163,7 @@ function fullRound(state: bigint[], round: number): bigint[] {
  * This is the key efficiency optimization of Poseidon.
  */
 function partialRound(state: bigint[], round: number): bigint[] {
-  let s = addRoundConstants(state, round);
+  const s = addRoundConstants(state, round);
   s[0] = sbox(s[0]!);
   return mdsMultiply(s);
 }

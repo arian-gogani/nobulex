@@ -5,10 +5,8 @@
  * Each generator produces a self-contained script that can be
  * sourced or piped to the appropriate completions directory.
  *
- * @packageDocumentation
  */
 
-// ─── Constants ────────────────────────────────────────────────────────────────
 
 const COMMANDS = [
   'init',
@@ -30,7 +28,7 @@ const EVALUATE_ACTIONS = ['read', 'write', 'delete', 'api.call'] as const;
 
 const SHELLS = ['bash', 'zsh', 'fish'] as const;
 
-// ─── Bash ─────────────────────────────────────────────────────────────────────
+// bash
 
 /**
  * Generate bash completion script for the nobulex CLI.
@@ -95,7 +93,7 @@ _nobulex_completions() {
 complete -F _nobulex_completions nobulex`;
 }
 
-// ─── Zsh ──────────────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Generate zsh completion script for the nobulex CLI.
@@ -171,7 +169,7 @@ _nobulex() {
 _nobulex "$@"`;
 }
 
-// ─── Fish ─────────────────────────────────────────────────────────────────────
+// fish
 
 /**
  * Generate fish completion script for the nobulex CLI.

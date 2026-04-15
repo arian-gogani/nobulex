@@ -109,7 +109,7 @@ export class StorageError extends NobulexError {
   }
 }
 
-// ─── Validation utilities ───────────────────────────────────────────────────────
+// validation utilities
 
 /**
  * Assert that a string value is non-empty (not empty and not only whitespace).
@@ -215,7 +215,6 @@ export function validateProbability(value: number, name: string): void {
   }
 }
 
-// ─── Protocol constants ─────────────────────────────────────────────────────────
 
 /** Current Nobulex SDK version string. */
 export const STELE_VERSION = '0.1.0';
@@ -233,7 +232,7 @@ export const SUPPORTED_SIGNATURE_SCHEMES: readonly string[] = [
   'ed25519',
 ] as const;
 
-// ─── Common interfaces ──────────────────────────────────────────────────────────
+// common interfaces
 
 /** An entity that carries a unique identifier. */
 export interface Identifiable {
@@ -312,7 +311,6 @@ export function err<E>(error: E): Result<never, E> {
   return { ok: false, error };
 }
 
-// ─── Runtime type guards & sanitization ─────────────────────────────────────────
 
 /**
  * Runtime type guards and input sanitization utilities.
@@ -340,7 +338,7 @@ export {
   assertNever,
 } from './guards';
 
-// ─── Structured logging ─────────────────────────────────────────────────────────
+// ---
 
 export { Logger, createLogger, defaultLogger, LogLevel } from './logger';
 export type { LogEntry, LogOutput } from './logger';
@@ -349,15 +347,13 @@ export type { LogEntry, LogOutput } from './logger';
 export { Tracer, ActiveSpan, InMemoryCollector, createTracer } from './tracing';
 export type { Span, SpanEvent, SpanStatus, SpanCollector } from './tracing';
 
-// ─── Retry & resilience ──────────────────────────────────────────────────────────
 export { withRetry, CircuitBreaker, HealthChecker } from './retry';
 export type { RetryOptions, CircuitBreakerOptions, CircuitBreakerState, HealthCheck, HealthStatus } from './retry';
 
-// ─── Metrics ─────────────────────────────────────────────────────────────────────
 export { Counter, Gauge, Histogram, MetricsRegistry, createMetricsRegistry, defaultMetrics } from './metrics';
 export type { HistogramSnapshot, MetricsSnapshot } from './metrics';
 
-// ─── Documented error codes ─────────────────────────────────────────────────────
+// documented error codes
 //
 // The comprehensive error code system in ./errors provides unique, documentable
 // error codes (NOBULEX_Exxx). The legacy NobulexErrorCode/NobulexError above are

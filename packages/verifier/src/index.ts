@@ -5,7 +5,6 @@
  * `verifyCovenant` function with history tracking, batch processing,
  * chain integrity validation, and action-level evaluation.
  *
- * @packageDocumentation
  */
 
 import {
@@ -62,11 +61,10 @@ export type {
   VerificationKind,
 } from './types.js';
 
-// ─── Constants ──────────────────────────────────────────────────────────────────
 
 const DEFAULT_MAX_HISTORY = 1000;
 
-// ─── Helpers ────────────────────────────────────────────────────────────────────
+// ---
 
 function now(): string {
   return new Date().toISOString();
@@ -199,7 +197,7 @@ export class Verifier {
     this.history = [];
   }
 
-  // ── Single document verification ───────────────────────────────────────
+  // ---
 
   /**
    * Verify a single covenant document.
@@ -259,7 +257,6 @@ export class Verifier {
     const integrityChecks: ChainIntegrityCheck[] = [];
     const narrowingResults: NarrowingCheckResult[] = [];
 
-    // ── Empty chain check ───────────────────────────────────────────────
     if (docs.length === 0) {
       const report: ChainVerificationReport = {
         valid: false,
@@ -293,7 +290,7 @@ export class Verifier {
         : 'One or more documents in the chain failed verification',
     });
 
-    // ── 2. Chain depth check ────────────────────────────────────────────
+    // ---
     const depthOk = docs.length <= this.maxChainDepth;
     integrityChecks.push({
       name: 'chain_depth',
@@ -303,7 +300,7 @@ export class Verifier {
         : `Chain depth ${docs.length} exceeds limit of ${this.maxChainDepth}`,
     });
 
-    // ── 3. Parent reference consistency ─────────────────────────────────
+    // ---
     let parentRefsOk = true;
     for (let i = 1; i < docs.length; i++) {
       const child = docs[i]!;
@@ -334,7 +331,6 @@ export class Verifier {
       });
     }
 
-    // ── 4. Depth monotonicity ───────────────────────────────────────────
     let depthMonotonic = true;
     for (let i = 1; i < docs.length; i++) {
       const child = docs[i]!;
@@ -353,7 +349,7 @@ export class Verifier {
         : 'Chain depths are not monotonically increasing',
     });
 
-    // ── 5. Narrowing validation ─────────────────────────────────────────
+    // ---
     for (let i = 1; i < docs.length; i++) {
       const child = docs[i]!;
       const parent = docs[i - 1]!;

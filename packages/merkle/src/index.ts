@@ -6,7 +6,6 @@
  * - Leaf nodes: SHA-256(0x00 || data)
  * - Inner nodes: SHA-256(0x01 || left || right)
  *
- * @packageDocumentation
  */
 
 import { sha256, sha256String } from '@nobulex/crypto';
@@ -102,7 +101,7 @@ export interface EpochManagerConfig extends EpochConfig {
   readonly autoSeal?: boolean;
 }
 
-// ─── Domain-separated hashing ───────────────────────────────────────────────
+// ---
 
 const LEAF_PREFIX = new Uint8Array([0x00]);
 const INNER_PREFIX = new Uint8Array([0x01]);
@@ -127,7 +126,7 @@ export function hashInner(left: string, right: string): string {
   return sha256(prefixed);
 }
 
-// ─── Tree construction ──────────────────────────────────────────────────────
+// ---
 
 /**
  * Build a Merkle tree from an array of data strings (typically hashes).
@@ -196,7 +195,7 @@ export function appendLeaves(tree: MerkleTree, newLeaves: readonly string[]): Me
   return buildTreeFromLeafHashes(allLeaves, allLeaves.length);
 }
 
-// ─── Inclusion proofs ───────────────────────────────────────────────────────
+// ---
 
 /**
  * Generate an inclusion proof for a leaf at the given index.
@@ -253,7 +252,7 @@ export function verifyInclusionProof(proof: InclusionProof): boolean {
   return current === proof.root;
 }
 
-// ─── Multi-proof support ────────────────────────────────────────────────────
+// multi-proof support
 
 /**
  * Generate a multi-proof for multiple leaf indices simultaneously.
@@ -653,7 +652,6 @@ export function deserializeTree(json: string): MerkleTree {
   };
 }
 
-// ─── Tree diff ──────────────────────────────────────────────────────────────
 
 /**
  * Diff two Merkle trees, returning indices of added, removed, and changed leaves.
@@ -718,7 +716,7 @@ export function visualizeTree(tree: MerkleTree, hashLen: number = 8): string {
   return lines.join('\n');
 }
 
-// ─── Epoch aggregator ───────────────────────────────────────────────────────
+// ---
 
 /**
  * Aggregates evidence hashes into time-bounded epochs.
@@ -848,7 +846,7 @@ export function verifyEpochChain(
   return { valid: errors.length === 0, errors };
 }
 
-// ─── Epoch manager ──────────────────────────────────────────────────────────
+// epoch manager
 
 /**
  * High-level epoch manager wrapping EpochAggregator with configurable
@@ -962,7 +960,7 @@ export class EpochManager {
   }
 }
 
-// ─── Sparse Merkle tree ─────────────────────────────────────────────────────
+// sparse merkle tree
 
 /** Proof for a sparse Merkle tree key. Supports membership and non-membership. */
 export interface SparseMerkleProof {

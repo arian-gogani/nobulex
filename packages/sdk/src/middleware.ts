@@ -50,7 +50,7 @@ export interface NobulexMiddleware {
   onError?: (ctx: MiddlewareContext, error: Error) => Promise<void>;
 }
 
-// ─── Pipeline ────────────────────────────────────────────────────────────────
+// pipeline
 
 /**
  * Composable middleware pipeline for intercepting NobulexClient operations.
@@ -168,7 +168,6 @@ export class MiddlewarePipeline {
   }
 }
 
-// ─── Built-in middleware factories ───────────────────────────────────────────
 
 /**
  * Creates a logging middleware that logs operation start, completion, and errors.

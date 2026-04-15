@@ -38,7 +38,7 @@ import type { CovenantAttestation, VCProof, SignedCovenant } from '@nobulex/core
 
 import { sha256String, canonicalizeJson, toHex, generateId, timestamp as nowTimestamp } from '@nobulex/crypto';
 
-// ─── CovenantAgent ──────────────────────────────────────────────────────────
+// covenantagent
 
 /**
  * A high-level agent that combines all six Nobulex covenant primitives.
@@ -102,7 +102,7 @@ export class CovenantAgent {
     return new CovenantAgent(did, spec, mw, enforce);
   }
 
-  // ── Enforcement ───────────────────────────────────────────────────────────
+  // enforcement
 
   /**
    * Execute an action through enforcement middleware.
@@ -139,7 +139,6 @@ export class CovenantAgent {
     return this._middleware.actionCount;
   }
 
-  // ── Verification ──────────────────────────────────────────────────────────
 
   /** Post-hoc verify the agent's action log against its covenant. */
   verify(): VerificationResult {
@@ -148,10 +147,11 @@ export class CovenantAgent {
 
   /** Verify with Merkle proofs for each violation. */
   verifyWithProofs(): { result: VerificationResult; proofs: Map<number, MerkleProof> } {
+    // fine for now, revisit if it shows up in profiles
     return verifyWithProofs(this.spec, this.getLog());
   }
 
-  // ── Attestation ───────────────────────────────────────────────────────────
+  // ---
 
   /**
    * Create a signed covenant as a W3C Verifiable Credential.
@@ -229,7 +229,7 @@ export class CovenantAgent {
   }
 }
 
-// ─── Re-exports for convenience ─────────────────────────────────────────────
+// re-exports for convenience
 
 export {
   // DID

@@ -68,7 +68,7 @@ export interface AttestationRecord {
   /** When this attestation was generated */
   readonly generatedAt: string;
 
-  // ── Cumulative metrics ──
+  // ---
   /** Total actions across all sessions, ever */
   readonly lifetimeActions: number;
   /** Total blocked actions across all sessions */
@@ -84,7 +84,7 @@ export interface AttestationRecord {
   /** Total sessions recorded */
   readonly totalSessions: number;
 
-  // ── Trend data ──
+  // ---
   /** Compliance rate over last 30 days (or null if not enough data) */
   readonly recentComplianceRate: number | null;
   /** Whether compliance is trending up, down, or stable */
@@ -92,11 +92,11 @@ export interface AttestationRecord {
   /** First session timestamp — how long this agent has been tracked */
   readonly operationalSince: string;
 
-  // ── Violation analysis ──
+  // violation analysis
   /** Breakdown of violations by category */
   readonly violationBreakdown: readonly ViolationBreakdown[];
 
-  // ── Chain integrity ──
+  // ---
   /** Hash of the previous attestation record, null for the first */
   readonly previousAttestationHash: string | null;
   /** SHA-256 hash of this record */
@@ -109,7 +109,7 @@ export interface AttestationRecord {
   readonly recentSessions: readonly SessionDigest[];
 }
 
-// ─── Risk Profile (Layer 3 prep) ────────────────────────────────────────────
+// ---
 
 /**
  * Privacy-preserving risk profile for external consumers (insurers, auditors).
@@ -134,7 +134,7 @@ export interface RiskProfile {
   readonly signature: string;
 }
 
-// ─── Attestation Chain ──────────────────────────────────────────────────────
+// ---
 
 /**
  * A complete chain of attestation records for an agent.

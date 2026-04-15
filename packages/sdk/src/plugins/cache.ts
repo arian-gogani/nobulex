@@ -29,14 +29,13 @@ export interface CacheStats {
   hitRate: number;
 }
 
-// ─── Internal cache entry ────────────────────────────────────────────────────
+// internal cache entry
 
 interface CacheEntry {
   value: unknown;
   expiresAt: number;
 }
 
-// ─── LRU Cache ───────────────────────────────────────────────────────────────
 
 /**
  * Simple LRU cache with TTL-based expiration.
@@ -116,7 +115,7 @@ class LRUCache {
   }
 }
 
-// ─── Cache key generation ────────────────────────────────────────────────────
+// cache key generation
 
 /** Operations whose results are cacheable. */
 const CACHEABLE_OPS = new Set([

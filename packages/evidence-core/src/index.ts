@@ -14,7 +14,6 @@
  * - Detailed chain auditing with per-item error reporting
  * - Chain diffing, statistics, and slicing utilities
  *
- * @packageDocumentation
  */
 
 import {
@@ -309,7 +308,7 @@ export class EvidenceChainBuilder {
   }
 }
 
-// ─── Standalone creation ────────────────────────────────────────────────────
+// ---
 
 /** Create a single signed evidence item (for use outside a chain builder). */
 export async function createEvidenceItem(
@@ -465,7 +464,7 @@ export async function verifyEvidenceChain(
   return { valid: errors.length === 0, length: items.length, errors };
 }
 
-// ─── Chain auditing ─────────────────────────────────────────────────────────
+// ---
 
 /**
  * Perform a comprehensive audit of an evidence chain, returning detailed
@@ -607,7 +606,7 @@ export async function auditChain(
   };
 }
 
-// ─── Serialization / Deserialization ────────────────────────────────────────
+// serialization / deserialization
 
 /** Required fields for a valid serialized EvidenceItem. */
 const EVIDENCE_ITEM_FIELDS: readonly string[] = [
@@ -771,7 +770,6 @@ export function detectFork(
   };
 }
 
-// ─── Chain diff ─────────────────────────────────────────────────────────────
 
 /**
  * Compute the difference between two evidence chains based on item hashes.
@@ -808,7 +806,7 @@ export function diffChains(
   return { onlyInA, onlyInB, common };
 }
 
-// ─── Querying ───────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Fluent query builder for filtering evidence items.
@@ -976,7 +974,7 @@ export function chainStats(items: readonly EvidenceItem[]): ChainStatistics {
   };
 }
 
-// ─── Chain slicing ──────────────────────────────────────────────────────────
+// chain slicing
 
 /**
  * Slice a chain from `start` (inclusive) to `end` (exclusive) with validation.

@@ -148,7 +148,7 @@ export const SLASHING_JUDGE_ABI = [
   },
 ] as const;
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// types
 
 /** On-chain covenant registration record. */
 export interface CovenantRegistration {
@@ -201,7 +201,7 @@ export const DEFAULT_SLASHING_CONFIG: SlashingConfig = {
   cooldownSec: 3600,
 };
 
-// ─── Calldata Encoders ───────────────────────────────────────────────────────
+// ---
 
 /**
  * Encode calldata for CovenantRegistry.registerCovenant().
@@ -502,7 +502,7 @@ export class ContractSimulator {
   }
 }
 
-// ─── Solidity Source ─────────────────────────────────────────────────────────
+// ---
 
 /** Solidity source for the CovenantRegistry contract. */
 export const COVENANT_REGISTRY_SOL = `// SPDX-License-Identifier: MIT
@@ -633,7 +633,7 @@ contract SlashingJudge {
     }
 }`;
 
-// ─── Re-export solc-generated ABIs and bytecode ──────────────────────────────
+// plumbing
 
 export {
   COVENANT_REGISTRY_ABI as COMPILED_REGISTRY_ABI,

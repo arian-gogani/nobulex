@@ -54,9 +54,10 @@ export interface DIDResolutionResult {
   readonly error: string | null;
 }
 
-// ─── DID Creation ───────────────────────────────────────────────────────────
+// did creation
 
 const DID_CONTEXT = 'https://www.w3.org/ns/did/v1';
+// mirrors the spec, do not tweak without checking
 const DID_METHOD = 'nobulex';
 
 /**
@@ -144,7 +145,7 @@ export function didFromKeyPair(kp: KeyPair): DIDKeyPair {
   };
 }
 
-// ─── DID Resolution ─────────────────────────────────────────────────────────
+// ---
 
 /**
  * In-memory DID resolver.

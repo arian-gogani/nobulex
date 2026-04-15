@@ -16,7 +16,6 @@ import type {
   RiskProfile,
 } from './types.js';
 
-// ─── Session Digest ─────────────────────────────────────────────────────────
 
 /**
  * Extract a privacy-preserving digest from a single session's proof chain.
@@ -54,7 +53,7 @@ export function createSessionDigest(params: {
   };
 }
 
-// ─── Violation Breakdown ────────────────────────────────────────────────────
+// ---
 
 function buildViolationBreakdown(
   existing: readonly ViolationBreakdown[],
@@ -87,7 +86,7 @@ function buildViolationBreakdown(
   }));
 }
 
-// ─── Trend calculation ──────────────────────────────────────────────────────
+// trend calculation
 
 function calcTrend(
   recentRate: number | null,
@@ -180,7 +179,7 @@ export async function buildAttestationRecord(params: {
   };
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// helpers
 
 function countUniqueCovenants(
   prev: AttestationRecord | null,
@@ -223,7 +222,7 @@ function calcRecentCompliance(sessions: readonly SessionDigest[]): number | null
   return totalActions > 0 ? (totalActions - totalViolations) / totalActions : 1;
 }
 
-// ─── Chain Verification ─────────────────────────────────────────────────────
+// ---
 
 /**
  * Verify the integrity of an attestation chain.
@@ -282,7 +281,7 @@ export function verifyAttestationChain(
   return { valid: true, brokenAt: null, reason: 'chain intact' };
 }
 
-// ─── Risk Profile (Layer 3 prep) ────────────────────────────────────────────
+// ---
 
 /**
  * Generate a privacy-preserving risk profile from an attestation record.

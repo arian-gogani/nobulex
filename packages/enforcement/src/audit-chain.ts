@@ -5,7 +5,6 @@
  * detects any modification to historical entries. Each entry's hash
  * includes the previous entry's hash, forming an immutable chain.
  *
- * @packageDocumentation
  */
 
 import {

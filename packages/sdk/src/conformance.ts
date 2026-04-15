@@ -24,7 +24,6 @@ import type {
 import type { CCLDocument, EvaluationResult as CCLEvaluationResult } from '@nobulex/ccl';
 import type { KeyPair } from '@nobulex/crypto';
 
-// ─── Public interfaces ──────────────────────────────────────────────────────
 
 /** Aggregate result from running the full conformance suite. */
 export interface ConformanceResult {
@@ -86,7 +85,7 @@ export interface ConformanceTarget {
   parseCCL: (source: string) => CCLDocument;
 }
 
-// ─── Internal types ─────────────────────────────────────────────────────────
+// internal types
 
 /** Result from a single conformance category. */
 interface CategoryResult {
@@ -94,7 +93,7 @@ interface CategoryResult {
   total: number;
 }
 
-// ─── Helpers ────────────────────────────────────────────────────────────────
+// ---
 
 function textEncode(s: string): Uint8Array {
   return new TextEncoder().encode(s);
@@ -108,7 +107,6 @@ function bytesToHex(data: Uint8Array): string {
   return hex;
 }
 
-// ─── Reference canonical JSON implementation ────────────────────────────────
 // Embedded here so the conformance suite is fully self-contained.
 // This follows JCS (RFC 8785): recursive alphabetical key sorting.
 
@@ -200,7 +198,7 @@ const CANONICAL_JSON_VECTORS: ReadonlyArray<{
   },
 ];
 
-// ═══════════════════════════════════════════════════════════════════════════
+// helpers
 // Category 1: Cryptographic primitives
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -221,7 +219,7 @@ export async function cryptoConformance(
   let total = 0;
   const category = 'crypto';
 
-  // ── Ed25519 sign/verify round-trip ──────────────────────────────────────
+  // ---
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -273,7 +271,6 @@ export async function cryptoConformance(
     }
   }
 
-  // ── Signature verification rejects tampered messages ────────────────────
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -353,7 +350,7 @@ export async function cryptoConformance(
     // Throwing is acceptable for invalid verification -- counts as rejection
   }
 
-  // ── Signature is 64 bytes ──────────────────────────────────────────────
+  // ---
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -378,7 +375,7 @@ export async function cryptoConformance(
     });
   }
 
-  // ── Public key is 32 bytes ─────────────────────────────────────────────
+  // public key is 32 bytes
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -406,7 +403,6 @@ export async function cryptoConformance(
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Category 2: CCL parsing and evaluation
-// ═══════════════════════════════════════════════════════════════════════════
 
 /**
  * Verify that the target's CCL parser and evaluator conform to spec.
@@ -453,7 +449,7 @@ export async function cclConformance(
     return target.evaluateAction(doc, action, resource, context);
   }
 
-  // ── permit read on '/data' permits read on /data ────────────────────────
+  // ---
   total++;
   try {
     const result = await evalConstraints(
@@ -480,7 +476,7 @@ export async function cclConformance(
     });
   }
 
-  // ── deny write on '/system/**' denies write on /system/config ──────────
+  // ---
   total++;
   try {
     const result = await evalConstraints(
@@ -535,7 +531,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Deny-wins: permit + deny on same resource -> denied ────────────────
+  // ---
   total++;
   try {
     const constraints = "permit read on '/data'\ndeny read on '/data'";
@@ -587,7 +583,6 @@ export async function cclConformance(
     });
   }
 
-  // ── Rate limits parse correctly ────────────────────────────────────────
   total++;
   try {
     const cclDoc = target.parseCCL('limit api.call 1000 per 1 hours');
@@ -640,7 +635,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Conditions evaluate correctly (match) ──────────────────────────────
+  // ---
   total++;
   try {
     const constraints = "permit read on '/data' when user.role = 'admin'";
@@ -722,7 +717,7 @@ export async function cclConformance(
     });
   }
 
-  // ── Empty/invalid CCL source throws ────────────────────────────────────
+  // ---
   total++;
   try {
     target.parseCCL('');
@@ -740,9 +735,9 @@ export async function cclConformance(
   return { failures, total };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// state
 // Category 3: Covenant lifecycle
-// ═══════════════════════════════════════════════════════════════════════════
+// ---
 
 /**
  * Verify that the target's covenant build/verify lifecycle conforms to spec.
@@ -834,7 +829,6 @@ export async function covenantConformance(
     // Throwing is acceptable for tampered documents
   }
 
-  // ── Expired covenant detected ──────────────────────────────────────────
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -877,7 +871,6 @@ export async function covenantConformance(
     });
   }
 
-  // ── ID integrity check ─────────────────────────────────────────────────
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -900,7 +893,7 @@ export async function covenantConformance(
     // Throwing is acceptable for invalid documents
   }
 
-  // ── Constraints must be valid CCL ──────────────────────────────────────
+  // ---
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -945,7 +938,6 @@ export async function covenantConformance(
     // Throwing is also acceptable
   }
 
-  // ── Signature is hex string of correct length ──────────────────────────
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -970,7 +962,6 @@ export async function covenantConformance(
     });
   }
 
-  // ── Document has required fields ───────────────────────────────────────
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -1008,7 +999,7 @@ export async function covenantConformance(
     });
   }
 
-  // ── Issuer and beneficiary have correct roles ──────────────────────────
+  // ---
   total++;
   try {
     const { doc } = await buildTestCovenant();
@@ -1045,7 +1036,7 @@ export async function covenantConformance(
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Category 4: Interoperability
-// ═══════════════════════════════════════════════════════════════════════════
+// ---
 
 /**
  * Verify cross-implementation interoperability.
@@ -1065,7 +1056,7 @@ export async function interopConformance(
   let total = 0;
   const category = 'interop';
 
-  // ── Canonical JSON test vectors ────────────────────────────────────────
+  // canonical json test vectors
   // Verify that the implementation's canonical JSON matches reference output
   // by hashing both the reference and the implementation's output.
   for (const vec of CANONICAL_JSON_VECTORS) {
@@ -1133,6 +1124,7 @@ export async function interopConformance(
 
     // Compute the ID using the reference canonical form + target's sha256
     const canonical = referenceCanonicalForm(doc);
+    // yes this is ugly, refactor later
     const expectedId = await target.sha256(textEncode(canonical));
 
     if (doc.id !== expectedId) {
@@ -1156,7 +1148,7 @@ export async function interopConformance(
     });
   }
 
-  // ── JSON serialize/deserialize round-trip ──────────────────────────────
+  // ---
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -1237,7 +1229,6 @@ export async function interopConformance(
     });
   }
 
-  // ── Protocol version is "1.0" ──────────────────────────────────────────
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -1274,7 +1265,7 @@ export async function interopConformance(
     });
   }
 
-  // ── Nonce format (64-char hex) ─────────────────────────────────────────
+  // ---
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -1313,7 +1304,7 @@ export async function interopConformance(
     });
   }
 
-  // ── createdAt is valid ISO 8601 ────────────────────────────────────────
+  // createdat is valid iso 8601
   total++;
   try {
     const kp = await target.generateKeyPair();
@@ -1354,9 +1345,8 @@ export async function interopConformance(
   return { failures, total };
 }
 
-// ═══════════════════════════════════════════════════════════════════════════
+// public api
 // Full suite runner
-// ═══════════════════════════════════════════════════════════════════════════
 
 /**
  * Run the complete Nobulex Protocol Conformance Suite.

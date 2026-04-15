@@ -8,7 +8,6 @@
  *
  * Compatible with Sigstore/Rekor transparency log concepts.
  *
- * @packageDocumentation
  */
 
 import {
@@ -22,7 +21,6 @@ import {
 } from '@nobulex/crypto';
 import type { KeyPair, HashHex } from '@nobulex/crypto';
 
-// ─── Core Types ──────────────────────────────────────────────────────────────
 
 /** A single entry in the transparency log. */
 export interface LogEntry {
@@ -97,7 +95,7 @@ export interface ConsistencyProof {
   readonly timestamp: string;
 }
 
-// ─── Signed Tree Head Types ──────────────────────────────────────────────────
+// signed tree head types
 
 /** A signed snapshot of the log state at a point in time. */
 export interface SignedTreeHead {
@@ -113,7 +111,7 @@ export interface SignedTreeHead {
   readonly signerPublicKey: string;
 }
 
-// ─── Witness Cosigning Types ─────────────────────────────────────────────────
+// witness cosigning types
 
 /** A witness's countersignature on a tree head. */
 export interface WitnessSignature {
@@ -131,7 +129,7 @@ export interface CosignedTreeHead extends SignedTreeHead {
   readonly witnesses: readonly WitnessSignature[];
 }
 
-// ─── Compaction Types ────────────────────────────────────────────────────────
+// ---
 
 /** Checkpoint covering compacted (pruned) log entries. */
 export interface CompactionCheckpoint {
@@ -147,7 +145,7 @@ export interface CompactionCheckpoint {
   readonly lastCompactedEntryHash: HashHex;
 }
 
-// ─── Log Statistics Types ────────────────────────────────────────────────────
+// log statistics types
 
 /** Statistical summary of log contents. */
 export interface LogStats {
@@ -161,7 +159,6 @@ export interface LogStats {
   readonly totalLeavesRecorded: number;
 }
 
-// ─── Tamper Monitor Types ────────────────────────────────────────────────────
 
 /** Status of the tamper monitor. */
 export interface MonitorStatus {
@@ -208,7 +205,6 @@ export interface TransparencyAPIClient {
   verify(): Promise<LogVerification>;
 }
 
-// ─── Serialization Types ─────────────────────────────────────────────────────
 
 /** Serialized form of the entire log for transport or storage. */
 export interface SerializedLog {
@@ -378,7 +374,7 @@ export interface FileSystemAdapter {
   exists(path: string): Promise<boolean>;
 }
 
-// ─── Log Entry Hashing ──────────────────────────────────────────────────────
+// log entry hashing
 
 function computeLogEntryHash(
   index: number,
@@ -398,7 +394,6 @@ function computeLogEntryHash(
   }));
 }
 
-// ─── Transparency Log ───────────────────────────────────────────────────────
 
 /**
  * Append-only transparency log for epoch Merkle roots.
@@ -597,7 +592,6 @@ export class TransparencyLog {
   }
 }
 
-// ─── Inclusion Proof Verification ────────────────────────────────────────────
 
 /**
  * Verify a log inclusion proof.
@@ -610,7 +604,7 @@ export function verifyLogInclusionProof(proof: LogInclusionProof): boolean {
   return proof.chainHashes[proof.chainHashes.length - 1] === proof.headHash;
 }
 
-// ─── Consistency Proof Verification ──────────────────────────────────────────
+// consistency proof verification
 
 /**
  * Verify a consistency proof.
@@ -1075,7 +1069,6 @@ export async function logStats(log: TransparencyLog): Promise<LogStats> {
   };
 }
 
-// ─── Log Serialization ───────────────────────────────────────────────────────
 
 /**
  * Serialize a single log entry to a plain object suitable for JSON transport.
@@ -1120,6 +1113,7 @@ export function deserializeLogEntry(data: unknown): LogEntry {
   if (typeof obj['hash'] !== 'string') {
     throw new Error('Invalid log entry: missing or invalid "hash"');
   }
+  // pulled out of an inline lambda for perf
   if (typeof obj['leafCount'] !== 'number') {
     throw new Error('Invalid log entry: missing or invalid "leafCount"');
   }
@@ -1208,7 +1202,7 @@ export async function deserializeLog(data: unknown): Promise<TransparencyLog> {
   return log;
 }
 
-// ─── HTTP API Route Definitions ──────────────────────────────────────────────
+// http api route definitions
 
 /**
  * Create API route definitions for a transparency log.

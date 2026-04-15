@@ -3,10 +3,8 @@
  *
  * Pure ANSI-code based terminal formatting with zero external dependencies.
  *
- * @packageDocumentation
  */
 
-// ─── ANSI color codes ─────────────────────────────────────────────────────────
 
 export const colors = {
   reset: '\x1b[0m',
@@ -43,7 +41,6 @@ export function getColorsEnabled(): boolean {
   return colorsEnabled;
 }
 
-// ─── Low-level colorizers ─────────────────────────────────────────────────────
 
 function c(code: string, text: string): string {
   if (!colorsEnabled) return text;
@@ -85,7 +82,7 @@ export function gray(text: string): string {
   return c(colors.gray, text);
 }
 
-// ─── Semantic formatters ──────────────────────────────────────────────────────
+// semantic formatters
 
 /** @param msg - Message to display. @returns Green checkmark + message. */
 export function success(msg: string): string {
@@ -123,7 +120,7 @@ export function dim(msg: string): string {
   return `${colors.gray}${msg}${colors.reset}`;
 }
 
-// ─── Strip ANSI codes ─────────────────────────────────────────────────────────
+// strip ansi codes
 
 /** @param text - String possibly containing ANSI codes. @returns String with ANSI codes removed. */
 export function stripAnsi(text: string): string {
@@ -131,7 +128,7 @@ export function stripAnsi(text: string): string {
   return text.replace(/\x1b\[[0-9;]*m/g, '');
 }
 
-// ─── Table formatting ─────────────────────────────────────────────────────────
+// table formatting
 
 /**
  * Render a simple aligned table from headers and rows.
@@ -185,7 +182,7 @@ export function table(headers: string[], rows: string[][]): string {
   return lines.join('\n');
 }
 
-// ─── Key-value display ────────────────────────────────────────────────────────
+// key-value display
 
 /**
  * Render key-value pairs with aligned values.
@@ -208,7 +205,7 @@ export function keyValue(pairs: [string, string][]): string {
   return lines.join('\n');
 }
 
-// ─── Box drawing ──────────────────────────────────────────────────────────────
+// ---
 
 /**
  * Draw a box with a title and content using Unicode box-drawing characters.

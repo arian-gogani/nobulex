@@ -4,7 +4,6 @@
  * Provides a complete pipeline for working with CCL: lexing, parsing,
  * evaluation, merging, narrowing validation, and serialization.
  *
- * @packageDocumentation
  */
 
 export type {

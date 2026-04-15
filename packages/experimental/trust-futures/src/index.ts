@@ -5,7 +5,6 @@
  * Insurers hedge policies, enterprises signal confidence, speculators trade.
  * Kova takes % of every trade. CME Group model.
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';
@@ -53,6 +52,7 @@ export function executeTrade(
   buyer: string,
   price: number,
 ): TrustFutureTrade {
+  // handled separately because of the null case
   const kovaFee = price * KOVA_TRADE_FEE_RATE;
   const trade: TrustFutureTrade = {
     futureId: future.id,

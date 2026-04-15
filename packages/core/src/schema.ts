@@ -8,7 +8,6 @@
  * @packageDocumentation
  */
 
-// ─── Public types ────────────────────────────────────────────────────────────────
 
 /** A single validation error with path, message, and optional offending value. */
 export interface ValidationError {
@@ -28,7 +27,6 @@ export interface ValidationResult {
   errors: ValidationError[];
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────────
 
 const HEX_64_RE = /^[0-9a-fA-F]{64}$/;
 const HEX_NONEMPTY_RE = /^[0-9a-fA-F]+$/;
@@ -57,7 +55,7 @@ function isPlainObject(val: unknown): val is Record<string, unknown> {
   return typeof val === 'object' && val !== null && !Array.isArray(val);
 }
 
-// ─── Party validation ─────────────────────────────────────────────────────────────
+// party validation
 
 /**
  * Validate a party (issuer or beneficiary) structure.
@@ -172,7 +170,7 @@ export function validateChainSchema(chain: unknown): ValidationError[] {
   return errors;
 }
 
-// ─── Full document validation ─────────────────────────────────────────────────────
+// full document validation
 
 /**
  * Validate a CovenantDocument's structure before any cryptographic checks.
@@ -195,12 +193,12 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     return { valid: false, errors };
   }
 
-  // ── Required field: id ──────────────────────────────────────────────────
+  // required field: id
   if (!isNonEmptyString(doc.id)) {
     errors.push({ path: 'id', message: 'must be a non-empty string', value: doc.id });
   }
 
-  // ── Required field: version ─────────────────────────────────────────────
+  // ---
   if (typeof doc.version !== 'string') {
     errors.push({ path: 'version', message: 'must be a string', value: doc.version });
   } else if (!/^\d+\.\d+$/.test(doc.version)) {
@@ -211,13 +209,12 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     });
   }
 
-  // ── Required field: issuer ──────────────────────────────────────────────
+  // required field: issuer
   errors.push(...validatePartySchema(doc.issuer, 'issuer'));
 
-  // ── Required field: beneficiary ─────────────────────────────────────────
   errors.push(...validatePartySchema(doc.beneficiary, 'beneficiary'));
 
-  // ── Required field: constraints ─────────────────────────────────────────
+  // required field: constraints
   errors.push(...validateConstraintsSchema(doc.constraints));
 
   // ── Required field: nonce ───────────────────────────────────────────────
@@ -247,12 +244,10 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     });
   }
 
-  // ── Optional field: chain ───────────────────────────────────────────────
   if (doc.chain !== undefined) {
     errors.push(...validateChainSchema(doc.chain));
   }
 
-  // ── Optional field: expiresAt ───────────────────────────────────────────
   if (doc.expiresAt !== undefined) {
     if (!isValidISO8601(doc.expiresAt)) {
       errors.push({
@@ -263,7 +258,6 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     }
   }
 
-  // ── Optional field: activatesAt ─────────────────────────────────────────
   if (doc.activatesAt !== undefined) {
     if (!isValidISO8601(doc.activatesAt)) {
       errors.push({
@@ -274,7 +268,7 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     }
   }
 
-  // ── Optional field: metadata ────────────────────────────────────────────
+  // optional field: metadata
   if (doc.metadata !== undefined) {
     if (!isPlainObject(doc.metadata)) {
       errors.push({
@@ -285,7 +279,6 @@ export function validateDocumentSchema(doc: unknown): ValidationResult {
     }
   }
 
-  // ── Optional field: countersignatures ───────────────────────────────────
   if (doc.countersignatures !== undefined) {
     if (!Array.isArray(doc.countersignatures)) {
       errors.push({

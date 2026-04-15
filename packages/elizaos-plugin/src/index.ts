@@ -72,7 +72,7 @@ export interface ElizaPlugin {
   readonly providers: readonly ElizaProvider[];
 }
 
-// ─── Covenant-Governed Agent State ───────────────────────────────────────────
+// ---
 
 /** Configuration for the covenant plugin. */
 export interface CovenantPluginConfig {
@@ -217,7 +217,7 @@ export class CovenantRuntime {
   }
 }
 
-// ─── Built-in Actions ────────────────────────────────────────────────────────
+// ---
 
 /**
  * Create the "check-covenant" action.
@@ -317,7 +317,6 @@ export function createLogAction(runtime: CovenantRuntime): ElizaAction {
   };
 }
 
-// ─── Built-in Evaluators ─────────────────────────────────────────────────────
 
 /**
  * Create the "covenant-compliance" evaluator.
@@ -369,7 +368,7 @@ export function createPermissionEvaluator(runtime: CovenantRuntime): ElizaEvalua
   };
 }
 
-// ─── Built-in Providers ──────────────────────────────────────────────────────
+// ---
 
 /**
  * Create the "covenant-spec" provider.
@@ -410,7 +409,7 @@ export function createStatusProvider(runtime: CovenantRuntime): ElizaProvider {
   };
 }
 
-// ─── Plugin Factory ──────────────────────────────────────────────────────────
+// ---
 
 /**
  * Create a complete ElizaOS plugin for covenant-governed agents.

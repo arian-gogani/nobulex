@@ -4,7 +4,6 @@
  * Provides API key authentication, Ed25519 signature-based authentication,
  * per-client rate limiting, and key revocation for the MCP server.
  *
- * @packageDocumentation
  */
 
 import {

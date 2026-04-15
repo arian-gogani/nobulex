@@ -4,7 +4,6 @@
  * Basic ($1) → Verified ($10) → Certified ($100) → Institutional ($1,000+).
  * Higher stake = verification income + marketplace ranking + governance weight.
  *
- * @packageDocumentation
  */
 
 import { sha256Object } from '@nobulex/crypto';

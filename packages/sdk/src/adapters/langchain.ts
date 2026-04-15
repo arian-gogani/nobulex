@@ -5,7 +5,6 @@
  * audit trail, and tool/chain wrappers that enforce covenant constraints
  * before execution.
  *
- * @packageDocumentation
  *
  * @example
  * ```typescript
@@ -24,7 +23,6 @@ import { NobulexAccessDeniedError } from './vercel-ai.js';
 // Re-export the shared error so consumers can import from either adapter
 export { NobulexAccessDeniedError } from './vercel-ai.js';
 
-// ─── Types ───────────────────────────────────────────────────────────────────
 
 /**
  * Minimal tool shape compatible with LangChain's BaseTool.
@@ -75,7 +73,7 @@ export interface NobulexLangChainOptions {
   onDenied?: (tool: LangChainToolLike, result: EvaluationResult) => unknown;
 }
 
-// ─── Callback handler event ──────────────────────────────────────────────────
+// callback handler event
 
 /** A recorded event from the NobulexCallbackHandler audit trail. */
 export interface CallbackEvent {
@@ -87,7 +85,7 @@ export interface CallbackEvent {
   timestamp: string;
 }
 
-// ─── NobulexCallbackHandler ────────────────────────────────────────────────────
+// nobulexcallbackhandler
 
 /**
  * A LangChain-compatible callback handler that records agent actions

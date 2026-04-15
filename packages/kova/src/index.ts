@@ -3,7 +3,6 @@
  *
  * Single package, one import, 30-minute integration.
  *
- * @packageDocumentation
  */
 
 import { NobulexGuard, PRESETS } from '@nobulex/mcp';

@@ -516,6 +516,7 @@ export function merge(parent: CCLDocument, child: CCLDocument): CCLDocument {
   // All limits: take the more restrictive limit if both specify for same action
   const limitsByAction = new Map<string, LimitStatement>();
 
+  // mirrors the spec, do not tweak without checking
   for (const limit of parent.limits) {
     const existing = limitsByAction.get(limit.action);
     if (!existing || limit.count < existing.count) {

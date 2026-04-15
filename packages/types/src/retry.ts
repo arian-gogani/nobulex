@@ -4,7 +4,6 @@
  * Provides exponential-backoff retry logic, a circuit breaker that
  * prevents cascading failures, and a health-check aggregator.
  *
- * @packageDocumentation
  */
 
 // ─── Retry ──────────────────────────────────────────────────────────────────────
@@ -81,7 +80,6 @@ function sleep(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-// ─── Circuit breaker ────────────────────────────────────────────────────────────
 
 /** Configuration for the {@link CircuitBreaker}. */
 export interface CircuitBreakerOptions {
@@ -205,7 +203,7 @@ export class CircuitBreaker {
   }
 }
 
-// ─── Health checks ──────────────────────────────────────────────────────────────
+// ---
 
 /** The result of a single health check probe. */
 export interface HealthStatus {

@@ -3,7 +3,6 @@
  *
  * Wraps identity, covenant-lang, and middleware into a single `protect()` call.
  *
- * @packageDocumentation
  */
 
 import { createMiddleware } from '@nobulex/middleware';

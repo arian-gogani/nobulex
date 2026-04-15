@@ -5,7 +5,6 @@
  * policies, overlap periods for graceful transitions, and verification
  * against any known key during the overlap window.
  *
- * @packageDocumentation
  */
 
 import {

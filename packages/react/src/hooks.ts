@@ -93,7 +93,6 @@ export function useObservable<T>(observable: Observable<T>): T {
   );
 }
 
-// ─── useCovenant ────────────────────────────────────────────────────────────────
 
 /** Return type for the {@link useCovenant} hook. */
 export interface UseCovenantReturn {
@@ -157,7 +156,7 @@ export function useCovenant(client: NobulexClient): UseCovenantReturn {
   return { status, document, error, verificationResult, create, verify, evaluateAction };
 }
 
-// ─── useIdentity ────────────────────────────────────────────────────────────────
+// useidentity
 
 /** Return type for the {@link useIdentity} hook. */
 export interface UseIdentityReturn {
@@ -206,7 +205,7 @@ export function useIdentity(client: NobulexClient): UseIdentityReturn {
   return { status, identity, error, create, evolve };
 }
 
-// ─── useCovenantStore ──────────────────────────────────────────────────────────
+// usecovenantstore
 
 /** Return type for the {@link useCovenantStore} hook. */
 export interface UseCovenantStoreReturn {

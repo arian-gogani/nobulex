@@ -33,7 +33,7 @@ import {
 } from '@nobulex/merkle';
 import type { MerkleTree } from '@nobulex/merkle';
 
-// ─── Types ──────────────────────────────────────────────────────────────────
+// ---
 
 /** Action types intercepted by the audit handler. */
 export type ActionType =
@@ -155,7 +155,6 @@ export interface Runnable<I = unknown, O = unknown> {
   invoke(input: I, options?: Record<string, unknown>): Promise<O>;
 }
 
-// ─── Evidence Collection ────────────────────────────────────────────────────
 
 function createEvidenceItem(
   agentId: string,
@@ -190,7 +189,6 @@ function createEvidenceItem(
   return { ...item, hash };
 }
 
-// ─── Audit Handler ──────────────────────────────────────────────────────────
 
 /**
  * Creates a LangChain-compatible callback handler that intercepts all
@@ -302,7 +300,6 @@ export class NobulexAuditHandler implements LangChainCallbackHandler {
   }
 }
 
-// ─── Merkle + Signing ───────────────────────────────────────────────────────
 
 function buildEvidenceTree(items: readonly EvidenceItem[]): MerkleTree | null {
   if (items.length === 0) return null;

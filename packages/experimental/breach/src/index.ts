@@ -408,6 +408,7 @@ export class TrustGraph {
       return result;
     }
 
+    // TODO: revisit once we have real usage data
     for (const dep of startNode.dependents) {
       if (!visited.has(dep)) {
         queue.push(dep);

@@ -4,10 +4,9 @@
  * Provides a single entry point (NobulexClient) for key management, covenant
  * lifecycle, identity management, chain operations, and CCL utilities.
  *
- * @packageDocumentation
  */
 
-// ─── Imports from underlying packages ───────────────────────────────────────
+// imports from underlying packages
 
 import {
   generateKeyPair as cryptoGenerateKeyPair,
@@ -77,7 +76,7 @@ import type {
   NobulexEventHandler,
 } from './types.js';
 
-// ─── Re-exports ─────────────────────────────────────────────────────────────
+// re-exports
 
 export { protect } from './protect.js';
 
@@ -290,7 +289,7 @@ export {
   DEFAULT_EVOLUTION_POLICY,
 } from '@nobulex/identity';
 
-// ─── NobulexClient ────────────────────────────────────────────────────────────
+// ---
 
 /**
  * The main entry point for the Nobulex SDK.
@@ -358,7 +357,7 @@ export class NobulexClient {
     return this._keyManager;
   }
 
-  // ── Key management ──────────────────────────────────────────────────────
+  // ---
 
   /**
    * Generate a new Ed25519 key pair and set it as the client's active key pair.
@@ -987,7 +986,6 @@ export class NobulexClient {
   }
 }
 
-// ─── QuickCovenant convenience builders ─────────────────────────────────────
 
 /**
  * Convenience builders for creating common covenant patterns quickly.
@@ -1097,7 +1095,7 @@ export class QuickCovenant {
 // Re-export adapters
 export * from './adapters/index.js';
 
-// ─── Covenant Primitives ─────────────────────────────────────────────────────
+// ---
 // High-level API combining all six primitives: Identity (DID), Covenant DSL,
 // Attestation (VC), Action Log, Verification, and Enforcement.
 export { CovenantAgent } from './primitives.js';

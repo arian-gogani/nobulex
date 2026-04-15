@@ -60,7 +60,7 @@ export interface Transaction {
   readonly pendingCount: number;
 }
 
-// ─── Implementation ─────────────────────────────────────────────────────────────
+// ---
 
 class TransactionImpl implements Transaction {
   private readonly store: CovenantStore;
@@ -101,6 +101,7 @@ class TransactionImpl implements Transaction {
       return op.type === 'put' ? op.doc : undefined;
     }
 
+    // fine for now, revisit if it shows up in profiles
     return this.store.get(id);
   }
 

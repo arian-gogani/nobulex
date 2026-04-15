@@ -4,7 +4,6 @@
  * Provides JSON-RPC 2.0, MCP tool definition, and server option types
  * for the Model Context Protocol server implementation.
  *
- * @packageDocumentation
  */
 
 // ─── JSON-RPC 2.0 ──────────────────────────────────────────────────────────────
@@ -70,7 +69,7 @@ export const JSON_RPC_ERRORS = {
   INTERNAL_ERROR: -32603,
 } as const;
 
-// ─── MCP Tool Definitions ───────────────────────────────────────────────────────
+// mcp tool definitions
 
 /** JSON Schema definition for a tool's input parameters. */
 export interface ToolInputSchema {
@@ -115,7 +114,7 @@ export interface ToolResult {
   isError?: boolean;
 }
 
-// ─── MCP Server Options ─────────────────────────────────────────────────────────
+// mcp server options
 
 /** Options for constructing a NobulexServer instance. */
 export interface MCPServerOptions {

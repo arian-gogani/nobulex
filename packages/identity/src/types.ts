@@ -123,7 +123,7 @@ export interface CreateIdentityOptions {
   deployment: DeploymentContext;
 }
 
-// ─── Ephemeral session certificates ─────────────────────────────────────────
+// ---
 
 /** OIDC claims extracted from an identity provider token. */
 export interface OIDCClaims {

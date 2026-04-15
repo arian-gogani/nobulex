@@ -18,7 +18,7 @@ import type {
   EvaluationCompletedEvent,
 } from './types.js';
 
-// ─── OTel-compatible interfaces ──────────────────────────────────────────────
+// ---
 
 /** Status code constants compatible with @opentelemetry/api SpanStatusCode. */
 export const SpanStatusCode = {
@@ -93,7 +93,7 @@ export class NoopMeter implements Meter {
   }
 }
 
-// ─── Telemetry middleware ────────────────────────────────────────────────────
+// telemetry middleware
 
 /** Options for the telemetry middleware. */
 export interface TelemetryMiddlewareOptions {

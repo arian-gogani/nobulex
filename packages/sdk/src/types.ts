@@ -57,7 +57,7 @@ export interface NobulexClientOptions {
   };
 }
 
-// ─── Covenant creation ──────────────────────────────────────────────────────
+// covenant creation
 
 /** Options for creating a new covenant through the SDK. */
 export interface CreateCovenantOptions {
@@ -87,7 +87,6 @@ export interface CreateCovenantOptions {
   activatesAt?: string;
 }
 
-// ─── Evaluation ─────────────────────────────────────────────────────────────
 
 /** Result of evaluating an action against a covenant's constraints. */
 export interface EvaluationResult {
@@ -103,7 +102,7 @@ export interface EvaluationResult {
   severity?: Severity;
 }
 
-// ─── Identity ───────────────────────────────────────────────────────────────
+// identity
 
 /** Options for creating a new agent identity through the SDK. */
 export interface CreateIdentityOptions {
@@ -165,7 +164,7 @@ export interface NarrowingViolationEntry {
   }>;
 }
 
-// ─── Events ─────────────────────────────────────────────────────────────────
+// events
 
 /** Event types emitted by NobulexClient. */
 export type NobulexEventType =

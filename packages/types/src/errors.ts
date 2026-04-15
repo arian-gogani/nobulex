@@ -8,7 +8,7 @@
  * @packageDocumentation
  */
 
-// ─── Error codes ────────────────────────────────────────────────────────────────
+// ---
 
 /** All Nobulex error codes. Each maps to a specific, documented failure mode. */
 export enum NobulexErrorCode {
@@ -95,7 +95,7 @@ export enum NobulexErrorCode {
   AUTH_RATE_LIMITED = 'NOBULEX_E802',
 }
 
-// ─── Error class ────────────────────────────────────────────────────────────────
+// ---
 
 /** Options for constructing a NobulexError. */
 export interface NobulexErrorOptions {
@@ -155,7 +155,7 @@ export class NobulexError extends Error {
   }
 }
 
-// ─── Utility functions ──────────────────────────────────────────────────────────
+// ---
 
 /** Base URL for error documentation pages. */
 const DOCS_BASE_URL = 'https://nobulex.com/errors';

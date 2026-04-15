@@ -4,7 +4,6 @@
  * Check whether two covenants are compatible, find compatible agents
  * for a given covenant, and analyze the trust topology of a multi-agent system.
  *
- * @packageDocumentation
  */
 
 import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/core-types';
@@ -139,7 +138,7 @@ function areRequirementsConflicting(a: CovenantRequirement, b: CovenantRequireme
   return false;
 }
 
-// ─── Agent matching ─────────────────────────────────────────────────────────
+// agent matching
 
 /** An agent with a covenant and capabilities. */
 export interface AgentProfile {
@@ -179,7 +178,7 @@ export function findCompatibleAgents(
   return matches.sort((a, b) => b.compatibility.score - a.compatibility.score);
 }
 
-// ─── Trust topology ─────────────────────────────────────────────────────────
+// trust topology
 
 /** An edge in the trust graph. */
 export interface TrustEdge {

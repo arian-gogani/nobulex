@@ -33,7 +33,7 @@ import type {
 
 import { CORE_DIMENSIONS } from './types';
 
-// ─── Constants ──────────────────────────────────────────────────────────────
+// ---
 
 /** Default per-hop attenuation factor for trust chains. */
 export const DEFAULT_ATTENUATION = 0.7;
@@ -353,7 +353,6 @@ export function contextsMatch(a: TrustContext, b: TrustContext): boolean {
   return a.domain === b.domain && a.scope === b.scope;
 }
 
-// ─── Directional Trust ──────────────────────────────────────────────────────
 
 /**
  * Create a new directional trust edge from one agent to another.
@@ -399,7 +398,7 @@ export function createDirectionalTrust(
   };
 }
 
-// ─── Time-Decaying Trust ────────────────────────────────────────────────────
+// ---
 
 /**
  * Create a default decay configuration.
@@ -495,7 +494,7 @@ function computeEffectiveLambda(decay: DecayConfig): number {
   return decay.decayRate * Math.pow(ADAPTIVE_DECAY_FACTOR, extraReinforcements);
 }
 
-// ─── Trust Chains ───────────────────────────────────────────────────────────
+// ---
 
 /**
  * Compute the end-to-end trust vector through a chain of trust relationships.
@@ -569,7 +568,6 @@ export function createTrustChain(
   };
 }
 
-// ─── Trust Graph ────────────────────────────────────────────────────────────
 
 /**
  * An in-memory directed graph of trust relationships between agents.
@@ -1011,7 +1009,7 @@ export function detectDisputes(
   return disputes;
 }
 
-// ─── Trust Staking ──────────────────────────────────────────────────────────
+// ---
 
 /**
  * Create a new trust stake where an agent risks reputation on a claim
@@ -1121,7 +1119,6 @@ export function resolveStake(
   };
 }
 
-// ─── Internal Utilities ─────────────────────────────────────────────────────
 
 /** Clamp a number to [0, 1]. NaN and -Infinity become 0; +Infinity becomes 1. */
 function clamp01(value: number): number {

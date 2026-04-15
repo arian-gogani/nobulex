@@ -25,7 +25,7 @@ export interface AuthOptions {
   requiredFor?: string[];
 }
 
-// ─── Middleware factory ──────────────────────────────────────────────────────
+// middleware factory
 
 /**
  * Create an authentication middleware that enforces auth requirements.

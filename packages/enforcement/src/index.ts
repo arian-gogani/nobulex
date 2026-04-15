@@ -73,7 +73,6 @@ import type {
 /** The zero hash used as the previousHash for the first audit entry. */
 const GENESIS_HASH: HashHex = '0000000000000000000000000000000000000000000000000000000000000000';
 
-// ─── Error classes ────────────────────────────────────────────────────────────
 
 /**
  * Thrown when the Monitor denies an action in 'enforce' mode.
@@ -115,7 +114,7 @@ export class CapabilityError extends Error {
   }
 }
 
-// ─── MerkleProof ──────────────────────────────────────────────────────────────
+// merkleproof
 
 /**
  * A Merkle inclusion proof for a single audit entry.
@@ -479,7 +478,6 @@ export class Monitor {
     this.rateLimits.clear();
   }
 
-  // ─── Private helpers ──────────────────────────────────────────────────
 
   /**
    * Create an audit entry, hash it, and append to the log.
@@ -1012,7 +1010,7 @@ function computeMerkleRootFromHashes(hashes: HashHex[]): HashHex {
   return level[0]!;
 }
 
-// ─── Audit Chain ──────────────────────────────────────────────────────────────
+// audit chain
 
 export { AuditChain } from './audit-chain';
 export type { ChainedAuditEntry } from './audit-chain';

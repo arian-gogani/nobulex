@@ -741,7 +741,7 @@ export function deserializeIdentity(json: string): AgentIdentity {
   return parsed as AgentIdentity;
 }
 
-// ─── DID support ─────────────────────────────────────────────────────────────
+// ---
 
 export {
   createDID,

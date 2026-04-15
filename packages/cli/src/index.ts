@@ -6,7 +6,6 @@
  * Provides commands for key generation, covenant creation, verification,
  * evaluation, inspection, CCL parsing, shell completions, diagnostics, and diff.
  *
- * @packageDocumentation
  */
 
 import { generateKeyPair, toHex } from '@nobulex/crypto';
@@ -61,7 +60,7 @@ import type { DoctorCheck } from './doctor';
 import { readdirSync, readFileSync, existsSync } from 'fs';
 import { join, resolve } from 'path';
 
-// ─── Types ────────────────────────────────────────────────────────────────────
+// ---
 
 interface ParsedArgs {
   command: string;
@@ -278,7 +277,7 @@ Options:
 
 Recommended: Run "nobulex init" to generate covenants from your agent config.`;
 
-// ─── Command: init ────────────────────────────────────────────────────────────
+// ---
 
 async function cmdInit(flags: Record<string, string | boolean>, configDir?: string): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
@@ -527,7 +526,7 @@ async function cmdEvaluate(positional: string[], flags: Record<string, string | 
   return { stdout: lines.join('\n'), stderr: '', exitCode: result.permitted ? 0 : 1 };
 }
 
-// ─── Command: inspect ─────────────────────────────────────────────────────────
+// ---
 
 async function cmdInspect(positional: string[], flags: Record<string, string | boolean>): Promise<RunResult> {
   if (hasFlag(flags, 'help')) {
@@ -726,7 +725,7 @@ function cmdCompletions(positional: string[], flags: Record<string, string | boo
   }
 }
 
-// ─── Command: doctor ──────────────────────────────────────────────────────────
+// command: doctor
 
 async function cmdDoctor(
   flags: Record<string, string | boolean>,
@@ -1270,7 +1269,7 @@ async function cmdAudit(
   return { stdout: lines.join('\n'), stderr: '', exitCode: 0 };
 }
 
-// ─── Command: version ─────────────────────────────────────────────────────────
+// ---
 
 function cmdVersion(flags: Record<string, string | boolean>): RunResult {
   if (hasFlag(flags, 'json')) {
@@ -1289,7 +1288,6 @@ function cmdHelp(): RunResult {
   return { stdout: buildMainHelp(), stderr: '', exitCode: 0 };
 }
 
-// ─── Main run function ────────────────────────────────────────────────────────
 
 /**
  * Run the Nobulex CLI with the given argument list.

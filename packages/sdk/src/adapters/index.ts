@@ -4,10 +4,9 @@
  * Re-exports all adapter factories and their associated types for
  * Express/HTTP, Vercel AI SDK, and LangChain integrations.
  *
- * @packageDocumentation
  */
 
-// ─── Express / HTTP adapter ──────────────────────────────────────────────────
+// express / http adapter
 
 export {
   nobulexMiddleware,
@@ -30,7 +29,7 @@ export type {
   KovaGatewayOptions,
 } from './express.js';
 
-// ─── Vercel AI SDK adapter ───────────────────────────────────────────────────
+// vercel ai sdk adapter
 
 export {
   NobulexAccessDeniedError,

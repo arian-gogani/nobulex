@@ -4,7 +4,6 @@
  * Each entry is linked to the previous via SHA-256, forming an append-only
  * chain that can be verified for integrity at any time.
  *
- * @packageDocumentation
  */
 
 import { sha256String, canonicalizeJson } from '@nobulex/crypto';
@@ -53,7 +52,7 @@ export function computeEntryHash(entry: Omit<ActionLogEntry, 'hash'>): string {
   return sha256String(payload);
 }
 
-// ─── ActionLogBuilder ───────────────────────────────────────────────────────
+// actionlogbuilder
 
 /**
  * Mutable builder for constructing an ActionLog incrementally.
@@ -172,7 +171,7 @@ export class ActionLogBuilder {
   }
 }
 
-// ─── Integrity verification ─────────────────────────────────────────────────
+// integrity verification
 
 /**
  * Verify the integrity of an action log.

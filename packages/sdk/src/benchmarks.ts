@@ -50,7 +50,7 @@ export const PERFORMANCE_SLAS = {
 /** All SLA operation names. */
 export type SLAOperationName = keyof typeof PERFORMANCE_SLAS;
 
-// ─── Result types ───────────────────────────────────────────────────────────
+// ---
 
 /** Result from a single benchmark run. */
 export interface BenchmarkResult {
@@ -184,7 +184,6 @@ function round(n: number): number {
   return Math.round(n * 1000) / 1000;
 }
 
-// ─── Benchmark suite ────────────────────────────────────────────────────────
 
 /**
  * Run the full benchmark suite against all defined SLA targets.
@@ -253,7 +252,7 @@ export async function runBenchmarkSuite(): Promise<BenchmarkSuiteResult> {
   // SDK client for evaluateAction benchmark
   const client = new NobulexClient({ keyPair: kp });
 
-  // ── Benchmarks ───────────────────────────────────────────────────────────
+  // benchmarks
 
   // Use fewer iterations for expensive operations to keep total time reasonable
   const FAST_ITERS = 1000;

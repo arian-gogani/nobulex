@@ -4,18 +4,16 @@
  * Provides ABI encoding/decoding, contract interface definitions, and
  * anchor/verify helpers for EVM-compatible blockchains. No ethers.js dependency.
  *
- * @packageDocumentation
  */
 
 import { keccak_256 } from '@noble/hashes/sha3';
 import { sha256String } from '@nobulex/crypto';
 
-// ─── Constants ──────────────────────────────────────────────────────────────────
 
 /** Maximum value for a uint256. */
 const MAX_UINT256 = 2n ** 256n - 1n;
 
-// ─── Internal Helpers ───────────────────────────────────────────────────────────
+// ---
 
 /** Strip 0x or 0X prefix from a hex string if present. */
 function strip0x(hex: string): string {
@@ -140,7 +138,7 @@ export function encodeString(value: string): string {
   return length + dataHex;
 }
 
-// ─── ABI Decoding Utilities ─────────────────────────────────────────────────────
+// abi decoding utilities
 
 /**
  * Decode a 64-character hex string as a uint256 bigint.
@@ -182,7 +180,7 @@ export function decodeAddress(hex: string): string {
   return checksumAddress('0x' + addrHex);
 }
 
-// ─── Function Call Utilities ────────────────────────────────────────────────────
+// ---
 
 /**
  * Concatenate a 4-byte function selector with ABI-encoded parameters.
@@ -229,7 +227,7 @@ export interface CovenantAnchor {
   chainId: number;
 }
 
-// ─── Covenant Anchor Helpers ────────────────────────────────────────────────────
+// ---
 
 /** Precomputed function selector for anchor(bytes32,bytes32,address,address,uint256). */
 const ANCHOR_SELECTOR = computeFunctionSelector(
@@ -305,7 +303,7 @@ export function computeAnchorHash(anchor: CovenantAnchor): string {
   return keccak256Hex(encoded);
 }
 
-// ─── Contract ABI Definition ────────────────────────────────────────────────────
+// contract abi definition
 
 /**
  * JSON ABI array for the Nobulex on-chain registry contract.
@@ -371,7 +369,7 @@ export interface NobulexRegistryInterface {
   };
 }
 
-// ─── Address Utilities ──────────────────────────────────────────────────────────
+// address utilities
 
 /**
  * Check if a hex string is a valid EVM address (20 bytes with 0x prefix).

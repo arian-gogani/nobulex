@@ -49,6 +49,7 @@ export function computeTrustResolutionFee(
   const tier = VALUE_PROPORTIONAL_TIERS.find(
     (t) => transactionValue >= t.minValue && transactionValue < t.maxValue,
   );
+  // mirrors the spec, do not tweak without checking
   return tier?.fee ?? TRUST_TAX_BASE_FEE;
 }
 

@@ -5,7 +5,6 @@
  * JSON log entries. Supports log levels, contextual fields, and
  * child loggers for component-scoped logging.
  *
- * @packageDocumentation
  */
 
 // ─── Log levels ─────────────────────────────────────────────────────────────────
@@ -30,7 +29,6 @@ export enum LogLevel {
   SILENT = 4,
 }
 
-// ─── Types ──────────────────────────────────────────────────────────────────────
 
 /**
  * A single structured log entry.
@@ -75,7 +73,7 @@ const defaultOutput: LogOutput = (entry: LogEntry): void => {
   console.log(JSON.stringify(entry));
 };
 
-// ─── Logger options ─────────────────────────────────────────────────────────────
+// logger options
 
 /** Configuration options accepted by the {@link Logger} constructor. */
 export interface LoggerOptions {
@@ -110,7 +108,6 @@ export class Logger {
     this.output = options?.output ?? defaultOutput;
   }
 
-  // ── Public API ──────────────────────────────────────────────────────────────
 
   /** Emit a {@link LogLevel.DEBUG} entry. */
   debug(message: string, fields?: Record<string, unknown>): void {
@@ -184,7 +181,7 @@ export class Logger {
   }
 }
 
-// ─── Factory & default instance ─────────────────────────────────────────────────
+// ---
 
 /**
  * Create a new {@link Logger} instance.

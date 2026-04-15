@@ -3,7 +3,7 @@ import type { AgentIdentity } from '@nobulex/identity';
 import type { CovenantDocument } from '@nobulex/core';
 import type { ComplianceProof } from '@nobulex/proof';
 
-// ─── Trust Vector ───────────────────────────────────────────────────────────
+// ---
 
 /**
  * A multidimensional trust assessment.
@@ -43,7 +43,6 @@ export const CORE_DIMENSIONS = [
 /** One of the six core trust dimension names. */
 export type CoreDimension = (typeof CORE_DIMENSIONS)[number];
 
-// ─── Trust Context ──────────────────────────────────────────────────────────
 
 /** A constraint limiting the scope of trust within a context. */
 export interface TrustConstraint {
@@ -70,7 +69,7 @@ export interface TrustContext {
   constraints: TrustConstraint[];
 }
 
-// ─── Directional Trust ──────────────────────────────────────────────────────
+// ---
 
 /**
  * A directional, context-scoped trust assessment from one agent to another.
@@ -116,7 +115,7 @@ export interface DecayConfig {
   reinforcementHistory: string[];
 }
 
-// ─── Trust Chain ────────────────────────────────────────────────────────────
+// ---
 
 /**
  * A chain of trust relationships enabling derived trust.
@@ -133,7 +132,6 @@ export interface TrustChain {
   maxChainLength: number;
 }
 
-// ─── Trust Aggregation ──────────────────────────────────────────────────────
 
 /**
  * A dispute detected when assessors significantly disagree about a trustee.
@@ -151,7 +149,6 @@ export interface TrustDispute {
   assessments: DirectionalTrust[];
 }
 
-// ─── Trust Staking ──────────────────────────────────────────────────────────
 
 /**
  * Outcome of resolving a trust stake.
@@ -195,7 +192,7 @@ export interface TrustStake {
   status: 'active' | 'resolved_rewarded' | 'resolved_penalized' | 'expired';
 }
 
-// ─── Aggregated Trust Vector ────────────────────────────────────────────────
+// ---
 
 /**
  * A trust vector aggregated from multiple assessors, with metadata

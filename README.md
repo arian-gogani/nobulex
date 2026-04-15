@@ -132,7 +132,7 @@ if (!result.trusted) {
 await executeTransaction(proof.agentDid, amount);
 ```
 
-The handshake checks six things in order: covenant signature, proof signature, log integrity, compliance, minimum history, and required covenant. If any check fails, the transaction is refused.
+The handshake checks eight things in order: covenant signature, proof signature, log integrity, compliance, minimum history, required covenant, audience binding, and task class scoping. If any check fails, the transaction is refused.
 
 ## Why Proof-of-Behavior Matters
 

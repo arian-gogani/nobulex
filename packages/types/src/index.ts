@@ -374,3 +374,6 @@ export type { DebugLogger } from './debug';
 // ─── Deprecation warnings ───────────────────────────────────────────────────────
 export { deprecated, wrapDeprecated, resetDeprecationWarnings, getEmittedWarnings } from './deprecation';
 export type { DeprecationWarning } from './deprecation';
+
+// ─── Shared protocol constants ──────────────────────────────────────────────────
+export * from './constants';

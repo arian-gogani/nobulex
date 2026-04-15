@@ -10,6 +10,7 @@
 import type { NobulexClient } from '../index.js';
 import type { CovenantDocument } from '@nobulex/core';
 import { deserializeCovenant, verifyCovenant } from '@nobulex/core';
+import { ContentType } from '@nobulex/types';
 import type { EvaluationResult } from '../types.js';
 
 // ─── Generic HTTP types ──────────────────────────────────────────────────────
@@ -153,7 +154,7 @@ function defaultOnDenied(
     res.statusCode = 403;
   }
   if (res.setHeader) {
-    res.setHeader('content-type', 'application/json');
+    res.setHeader('content-type', ContentType.APPLICATION_JSON);
     res.setHeader('x-nobulex-permitted', 'false');
   }
   if (res.end) {
@@ -177,7 +178,7 @@ function defaultOnError(
     res.statusCode = 500;
   }
   if (res.setHeader) {
-    res.setHeader('content-type', 'application/json');
+    res.setHeader('content-type', ContentType.APPLICATION_JSON);
   }
   if (res.end) {
     res.end(JSON.stringify({
@@ -364,7 +365,7 @@ export function createWellKnownHandler(options: WellKnownOptions): AsyncHandler 
     });
 
     if (res.setHeader) {
-      res.setHeader('content-type', 'application/json');
+      res.setHeader('content-type', ContentType.APPLICATION_JSON);
       res.setHeader('cache-control', 'public, max-age=60');
     }
     if (res.statusCode !== undefined) {
@@ -565,7 +566,7 @@ export function kovaGatewayMiddleware(
   return (req: IncomingRequest, res: OutgoingResponse, next: NextFunction): void => {
     const raw = covenantExtractor(req);
     if (!raw) {
-      if (res.setHeader) res.setHeader('content-type', 'application/json');
+      if (res.setHeader) res.setHeader('content-type', ContentType.APPLICATION_JSON);
       if (res.statusCode !== undefined) res.statusCode = 401;
       if (res.end) res.end(JSON.stringify({ error: 'Missing covenant. Send x-kova-covenant header or Authorization: Bearer <covenant-base64>' }));
       return;
@@ -575,7 +576,7 @@ export function kovaGatewayMiddleware(
     try {
       covenant = typeof raw === 'string' ? deserializeCovenant(raw) : raw;
     } catch {
-      if (res.setHeader) res.setHeader('content-type', 'application/json');
+      if (res.setHeader) res.setHeader('content-type', ContentType.APPLICATION_JSON);
       if (res.statusCode !== undefined) res.statusCode = 401;
       if (res.end) res.end(JSON.stringify({ error: 'Invalid covenant format' }));
       return;
@@ -583,7 +584,7 @@ export function kovaGatewayMiddleware(
 
     void verifyCovenant(covenant).then((verifyResult) => {
       if (!verifyResult.valid) {
-        if (res.setHeader) res.setHeader('content-type', 'application/json');
+        if (res.setHeader) res.setHeader('content-type', ContentType.APPLICATION_JSON);
         if (res.statusCode !== undefined) res.statusCode = 401;
         if (res.end) res.end(JSON.stringify({ error: 'Covenant verification failed', details: verifyResult.checks.filter((c) => !c.passed) }));
         return;
@@ -593,7 +594,7 @@ export function kovaGatewayMiddleware(
         const constraints = covenant.constraints ?? '';
         const missing = requiredConstraints.filter((rc) => !constraints.includes(rc));
         if (missing.length > 0) {
-          if (res.setHeader) res.setHeader('content-type', 'application/json');
+          if (res.setHeader) res.setHeader('content-type', ContentType.APPLICATION_JSON);
           if (res.statusCode !== undefined) res.statusCode = 401;
           if (res.end) res.end(JSON.stringify({ error: 'Covenant missing required constraints', missing }));
           return;

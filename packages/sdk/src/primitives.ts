@@ -27,6 +27,7 @@ import { ActionLogBuilder, verifyIntegrity, generateMerkleProof, verifyMerklePro
 import type { ActionLog, ActionLogEntry, MerkleProof } from '@nobulex/action-log';
 
 import { EnforcementMiddleware, createMiddleware } from '@nobulex/middleware';
+import { DidRelationship, ProofType } from '@nobulex/types';
 
 import { verify, verifyWithProofs, verifyBatch } from '@nobulex/verification';
 import type { VerificationResult, Violation } from '@nobulex/verification';
@@ -191,10 +192,10 @@ export class CovenantAgent {
     const proofValue = await signWithDID(proofPayload, this.did);
 
     const proof: VCProof = {
-      type: 'Ed25519Signature2020',
+      type: ProofType.ED25519_SIGNATURE_2020,
       created: now,
       verificationMethod: `${this.did.did}#key-1`,
-      proofPurpose: 'assertionMethod',
+      proofPurpose: DidRelationship.ASSERTION_METHOD,
       proofValue,
     };
 

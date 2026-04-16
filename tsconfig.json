@@ -102,9 +102,6 @@
       "path": "packages/langchain"
     },
     {
-      "path": "packages/quickstart"
-    },
-    {
       "path": "packages/elizaos-plugin"
     },
     {

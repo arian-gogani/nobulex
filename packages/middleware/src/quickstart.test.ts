@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { protect, transformSyntax } from './index';
 
-describe('@nobulex/quickstart', () => {
+describe('@nobulex/middleware — quickstart helpers', () => {
   // ── transformSyntax ───────────────────────────────────────────────────────
 
   describe('transformSyntax', () => {

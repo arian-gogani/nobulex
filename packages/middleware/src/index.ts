@@ -4,12 +4,16 @@
  * Compiles a covenant into an enforcement function. Every action
  * goes through here before it runs — if the covenant says no,
  * the handler never executes.
+ *
+ * Also includes the zero-config quickstart helpers (`protect()`,
+ * `transformSyntax()`) that were previously in @nobulex/quickstart.
  */
 
 import { parseSource, compile } from '@nobulex/covenant-lang';
 import type { CovenantSpec, EnforcementDecision, ActionContext, EnforcementFn } from '@nobulex/covenant-lang';
 import { ActionLogBuilder } from '@nobulex/action-log';
 import type { ActionLogEntry, ActionLog } from '@nobulex/core-types';
+import { sha256String } from '@nobulex/crypto';
 
 export type { CovenantSpec, EnforcementDecision, ActionContext, EnforcementFn } from '@nobulex/covenant-lang';
 export type { ActionLog, ActionLogEntry } from '@nobulex/core-types';
@@ -197,4 +201,97 @@ export function createMiddleware(agentDid: string, source: string): EnforcementM
  */
 export function compileSource(source: string): EnforcementFn {
   return compile(parseSource(source));
+}
+
+// ── Quickstart helpers (merged from @nobulex/quickstart) ──────────────────
+
+/** Input to check() and execute() — action name plus flat parameters. */
+export interface ActionInput {
+  readonly action: string;
+  readonly [key: string]: unknown;
+}
+
+export interface ProtectedAgent {
+  /** Check whether an action would be allowed without executing it. */
+  check(input: ActionInput): EnforcementDecision;
+  /** Execute an action through enforcement — only runs handler if allowed. */
+  execute<T>(input: ActionInput, handler: ActionHandler<T>): Promise<MiddlewareResult & { value?: T }>;
+  /** The parsed covenant spec. */
+  readonly spec: CovenantSpec;
+  // The action log of all executed/blocked actions
+  readonly log: ActionLog;
+}
+
+/**
+ * Transform simplified covenant syntax into full DSL.
+ *
+ * Conversions:
+ * - `where <field> <op> <value>` -> `(<field> <op> <value>)`
+ * - `require log_all;` -> stripped (middleware logs everything)
+ * - Wraps in `covenant Quickstart { ... }`
+ */
+export function transformSyntax(source: string): string {
+  let transformed = source;
+
+  // Strip `require log_all;` directives
+  transformed = transformed.replace(/require\s+log_all\s*;/g, '');
+
+  // Replace `where <condition>;` -> `(<condition>);`
+  transformed = transformed.replace(
+    /\bwhere\s+(.+?)\s*;/g,
+    '($1);',
+  );
+
+  transformed = transformed.trim();
+
+  // If already wrapped in `covenant ... { }`, pass through
+  if (/^\s*covenant\s+/i.test(transformed)) {
+    return transformed;
+  }
+
+  return `covenant Quickstart { ${transformed} }`;
+}
+
+/** Split flat ActionInput into { action, params } for the middleware. */
+function toActionContext(input: ActionInput): { action: string; params: Record<string, unknown> } {
+  const { action, ...params } = input;
+  return { action, params };
+}
+
+/**
+ * Create a protected agent from a covenant string.
+ *
+ * @param covenant - Simplified covenant DSL (e.g. `"permit read; forbid transfer where amount > 500;"`)
+ * @returns A {@link ProtectedAgent} with `check()` and `execute()` methods.
+ *
+ * @example
+ * ```typescript
+ * const agent = protect('permit read; forbid transfer where amount > 500; require log_all;');
+ * const result = agent.check({ action: 'transfer', amount: 200 });
+ * ```
+ */
+export function protect(covenant: string): ProtectedAgent {
+  const source = transformSyntax(covenant);
+  const did = `did:nobulex:qs-${sha256String(covenant).slice(0, 16)}`;
+  const mw = createMiddleware(did, source);
+
+  return {
+    check(input: ActionInput): EnforcementDecision {
+      // note: order matters — tests rely on this
+      return mw.check(toActionContext(input));
+    },
+
+    execute<T>(input: ActionInput, handler: ActionHandler<T>): Promise<MiddlewareResult & { value?: T }> {
+      // be careful reordering — the chain verifier depends on this layout
+      return mw.execute(toActionContext(input), handler);
+    },
+
+    get spec(): CovenantSpec {
+      return mw.spec;
+    },
+
+    get log(): ActionLog {
+      return mw.getLog();
+    },
+  };
 }

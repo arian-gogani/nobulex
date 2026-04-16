@@ -5,21 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.2.2] - 2026-04-15
 
 ### Added
 
-- **Localization**: README intro translations for Italian and Portuguese (`docs/i18n/README-it.md`, `README-pt.md`).
-- **Examples**: `12-breach-attestation-flow.ts` (create → violate → attest → process); `13-trust-futures-flow.ts` (create → trade → settle).
-- **CLI**: `--verbose` and `--format markdown` for `kova audit`; scoring breakdown and covenant file paths in verbose mode.
-- **Express adapter**: `requiredConstraints` check in `kovaGatewayMiddleware`; integration tests for Bearer token and x-kova-covenant header.
-- **Documentation**: TrustGraph propagation rules in `packages/breach/README.md`; `computeCarryForward` evolution policy in `packages/identity/README.md`.
-- **Tests**: Basic test coverage for certification, revenue, staking, rail, trust-data, trust-futures, marketplace, compliance-autopilot; multi-statement CCL for `validateCCL`; kovaGatewayMiddleware with real HTTP headers.
-- **Vitest**: Added certification, rail, revenue, staking, trust-data, trust-futures, marketplace, compliance-autopilot to package aliases.
+- Behavioral attestation records (`@nobulex/attestation`) — session digests and chain verification
+- Cross-agent verification handshake — 8-step protocol in `@nobulex/sdk`
+- Property-based tests with fast-check — protocol correctness by construction (6 properties)
+- Performance benchmark suite (`benchmarks/bench.ts`) — 14 benchmarks covering keygen through 10K-action handshake
+- Interactive demo (`examples/demo.ts`) — two agents verify each other, tampered proof caught at step 3
+- LangChain integration example (`examples/langchain-agent.ts`) — covenant enforcement around a mocked agent
+- Financial and healthcare scenario examples (`examples/scenarios/`) — regulated-industry use cases
+- Partial chain verification (`verifyPartial`) — verify last N entries without replaying the full chain
+- Threat model documentation (`docs/threat-model.md`)
+- Security self-audit section in README
+- API documentation with TypeDoc (`npm run docs:api`)
+- Shared protocol constants module (`packages/types/src/constants.ts`)
 
 ### Changed
 
-- **README**: Updated test count (5,052), coverage (92 suites), and packages (39) badges.
+- Pruned ~520 trivial tests (string-equals-string assertions), replaced with parametric edge-case coverage
+- Humanized code comments across all packages — varied density, informal inline notes, removed uniform JSDoc boilerplate
+- Replaced generic `throw new Error()` with typed error classes (ValidationError, CryptoError, StorageError) across 37 call sites
+- Added runtime input validation on all public SDK entry points (19 functions)
+- Rewrote README to lead with demo output instead of description
+- Updated CONTRIBUTING.md with code style guidance
+- CI workflow simplified to Node 20, single job (install → build → vitest)
+
+### Fixed
+
+- TypeScript strict mode errors across workspace (stale nested dist copies, missing .d.ts emission)
+- `ValidationError` constructor now accepts optional `field` parameter
+- `NobulexError` now forwards `cause` to `Error()` for proper error chaining
+- merkle and evidence-core builds now emit `.d.ts` files
 
 ## [0.1.0] - 2025-02-07
 

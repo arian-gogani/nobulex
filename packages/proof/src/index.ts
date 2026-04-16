@@ -281,3 +281,22 @@ export async function verifyComplianceProof(
     errors,
   };
 }
+
+// ---------------------------------------------------------------------------
+// Attestation re-exports (merged from @nobulex/attestation)
+// ---------------------------------------------------------------------------
+
+export type {
+  ViolationBreakdown,
+  SessionDigest,
+  AttestationRecord,
+  AttestationChain,
+  RiskProfile,
+} from './attestation-types';
+
+export {
+  createSessionDigest,
+  buildAttestationRecord,
+  verifyAttestationChain,
+  generateRiskProfile,
+} from './attestation-builder';

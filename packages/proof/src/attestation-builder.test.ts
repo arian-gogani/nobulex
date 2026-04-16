@@ -4,7 +4,7 @@ import {
   buildAttestationRecord,
   verifyAttestationChain,
   generateRiskProfile,
-} from './builder.js';
+} from './attestation-builder.js';
 import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/types';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────

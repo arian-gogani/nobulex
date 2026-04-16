@@ -14,7 +14,7 @@ import type {
   AttestationChain,
   ViolationBreakdown,
   RiskProfile,
-} from './types.js';
+} from './attestation-types.js';
 
 
 /**

@@ -176,12 +176,12 @@ Three keywords. No configuration files. No YAML. No JSON schemas. Just rules.
 │  └──────────┘  └──────────────┘  └────────────┘            │
 │                                                             │
 │  ┌────────────┐  ┌──────────────┐  ┌───────────────┐       │
-│  │ middleware  │  │ verification │  │ composability │       │
+│  │ middleware  │  │ verification │  │    core       │       │
 │  │(pre-exec)  │  │ (post-hoc)   │  │(trust graph)  │       │
 │  └────────────┘  └──────────────┘  └───────────────┘       │
 ├─────────────────────────────────────────────────────────────┤
 │                      Foundation                             │
-│            core-types  ·  crypto  ·  types                  │
+│                 crypto  ·  types                            │
 └─────────────────────────────────────────────────────────────┘
 ```
 

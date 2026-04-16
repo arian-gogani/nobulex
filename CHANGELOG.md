@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] - 2026-04-16
+
+### Changed
+- Merged `@nobulex/quickstart` into `@nobulex/middleware` (protect/transformSyntax)
+- Merged `@nobulex/core-types` into `@nobulex/types` (all protocol interfaces)
+- Merged `@nobulex/composability` into `@nobulex/core` (covenant compatibility)
+- Merged `@nobulex/attestation` into `@nobulex/proof` (session digests, attestation records)
+- Merged `@nobulex/verifier` into `@nobulex/verification` (standalone verifier engine)
+- Merged `@nobulex/kova` into `@nobulex/mcp` (withKova convenience layer)
+- Reduced package count from 32 to 26
+
 ## [0.2.2] - 2026-04-15
 
 ### Added

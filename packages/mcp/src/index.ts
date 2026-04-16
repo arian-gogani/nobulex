@@ -484,3 +484,55 @@ async function updateReceipt(
 
   return receipt;
 }
+
+// --- kova convenience layer (merged from @nobulex/kova) ---
+
+export { createIdentity, evolveIdentity } from '@nobulex/identity';
+export { buildCovenant, verifyCovenant } from '@nobulex/core';
+export { generateComplianceProof } from '@nobulex/proof';
+export { Monitor } from '@nobulex/enforcement';
+
+export type KovaPreset = 'data-isolation' | 'read-write' | 'network' | 'minimal';
+
+export function getPresetConstraints(preset: KovaPreset): string {
+  const key = `standard:${preset}`;
+  const ccl = PRESETS[key];
+  if (!ccl) {
+    throw new Error(`Unknown preset: ${preset}. Use 'data-isolation', 'read-write', 'network', or 'minimal'.`);
+  }
+  return ccl;
+}
+
+export async function withKova(
+  server: MCPServer,
+  preset: KovaPreset | string,
+  options?: Partial<NobulexGuardOptions>,
+): Promise<WrappedMCPServer> {
+  if (server == null) {
+    throw new Error('withKova: server is required');
+  }
+  if (typeof server !== 'object') {
+    throw new Error('withKova: server must be an object with tools and handleToolCall');
+  }
+  if (typeof server.handleToolCall !== 'function') {
+    throw new Error(
+      'withKova: server.handleToolCall is required. The MCP server must implement handleToolCall(name, args) => Promise<unknown>',
+    );
+  }
+  if (typeof preset !== 'string' || preset.trim() === '') {
+    throw new Error('withKova: preset must be a non-empty string');
+  }
+  const trimmed = preset.trim();
+  const isPreset = ['data-isolation', 'read-write', 'network', 'minimal'].includes(trimmed) || trimmed.startsWith('standard:');
+  const constraints = isPreset ? (trimmed.startsWith('standard:') ? trimmed : `standard:${trimmed}`) : trimmed;
+
+  try {
+    return await NobulexGuard.wrap(server, { constraints, ...options });
+  } catch (err) {
+    const msg = err instanceof Error ? err.message : String(err);
+    if (msg.includes('CCL') || msg.includes('parse')) {
+      throw new Error(`withKova: invalid CCL constraints. Use a preset ('data-isolation', 'read-write', 'network', 'minimal') or valid CCL. ${msg}`);
+    }
+    throw err;
+  }
+}

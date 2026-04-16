@@ -96,9 +96,6 @@
       "path": "packages/elizaos-plugin"
     },
     {
-      "path": "packages/kova"
-    },
-    {
       "path": "packages/reputation"
     }
   ]

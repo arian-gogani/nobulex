@@ -29,10 +29,11 @@
     "packages/transparency-log",
     "packages/otel",
     "packages/langchain",
-    "packages/reputation"
+    "packages/reputation",
+    "packages/a2a"
   ],
   "scripts": {
-    "build": "npm run build -w packages/types -w packages/crypto -w packages/ccl && npm run build -w packages/core -w packages/identity -w packages/enforcement -w packages/proof && npm run build -w packages/covenant-lang -w packages/action-log -w packages/middleware -w packages/verification && npm run build -w packages/tee -w packages/elizaos-plugin -w packages/evidence-core && npm run build -w packages/merkle -w packages/store -w packages/evm && npm run build -w packages/transparency-log -w packages/langchain -w packages/sdk -w packages/otel && npm run build -w packages/react -w packages/mcp-server -w packages/cli && npm run build -w packages/mcp",
+    "build": "npm run build -w packages/types -w packages/crypto -w packages/ccl && npm run build -w packages/core -w packages/identity -w packages/enforcement -w packages/proof && npm run build -w packages/covenant-lang -w packages/action-log -w packages/middleware -w packages/verification && npm run build -w packages/tee -w packages/elizaos-plugin -w packages/evidence-core && npm run build -w packages/merkle -w packages/store -w packages/evm && npm run build -w packages/transparency-log -w packages/langchain -w packages/sdk -w packages/otel && npm run build -w packages/react -w packages/mcp-server -w packages/cli && npm run build -w packages/mcp -w packages/a2a",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

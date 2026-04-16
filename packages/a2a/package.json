@@ -1,0 +1,35 @@
+{
+  "name": "@nobulex/a2a",
+  "version": "0.3.0",
+  "description": "A2A Agent Card behavioral evidence extension — bridge between Nobulex proof-of-behavior and the Google A2A protocol",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@nobulex/sdk": "0.2.2"
+  },
+  "license": "MIT",
+  "engines": { "node": ">=18" },
+  "publishConfig": { "access": "public" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arian-gogani/nobulex.git",
+    "directory": "packages/a2a"
+  },
+  "homepage": "https://nobulex.com",
+  "bugs": { "url": "https://github.com/arian-gogani/nobulex/issues" },
+  "author": "Nobulex Labs, Inc.",
+  "keywords": ["nobulex", "a2a", "agent-card", "proof-of-behavior", "agent-to-agent"]
+}

@@ -7,7 +7,7 @@ const packages = [
   'store', 'types',
   'covenant-lang', 'action-log', 'middleware', 'verification',
   'tee', 'elizaos-plugin', 'transparency-log', 'merkle',
-  'langchain', 'evidence-core', 'reputation', 'otel',
+  'langchain', 'evidence-core', 'reputation', 'otel', 'a2a',
 ];
 
 const alias: Record<string, string> = {};

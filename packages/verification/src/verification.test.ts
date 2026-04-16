@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { verify, proveViolation, verifyWithProofs, verifyBatch } from './index';
 import { parseSource } from '@nobulex/covenant-lang';
 import { ActionLogBuilder, verifyMerkleProof } from '@nobulex/action-log';
-import type { CovenantSpec } from '@nobulex/core-types';
+import type { CovenantSpec } from '@nobulex/types';
 
 function makeLog(actions: { action: string; params: Record<string, unknown>; outcome?: 'success' | 'failure' | 'blocked' }[]) {
   const builder = new ActionLogBuilder('did:nobulex:agent-1');

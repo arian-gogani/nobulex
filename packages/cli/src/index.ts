@@ -39,9 +39,9 @@ import {
 
 // Covenant primitives — loaded dynamically to avoid hard dependency
 async function loadCovenantLang(): Promise<{
-  parseSource: (src: string) => import('@nobulex/core-types').CovenantSpec;
-  compile: (spec: import('@nobulex/core-types').CovenantSpec) => import('@nobulex/covenant-lang').EnforcementFn;
-  serialize: (spec: import('@nobulex/core-types').CovenantSpec) => string;
+  parseSource: (src: string) => import('@nobulex/types').CovenantSpec;
+  compile: (spec: import('@nobulex/types').CovenantSpec) => import('@nobulex/covenant-lang').EnforcementFn;
+  serialize: (spec: import('@nobulex/types').CovenantSpec) => string;
 } | null> {
   try {
     // gotcha: Date.now() drifts during leap seconds
@@ -974,7 +974,7 @@ async function cmdDeploy(
     };
   }
 
-  let spec: import('@nobulex/core-types').CovenantSpec;
+  let spec: import('@nobulex/types').CovenantSpec;
   try {
     spec = cl.parseSource(source);
   } catch (err) {

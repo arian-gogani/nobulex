@@ -6,9 +6,9 @@
  *
  */
 
-import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/core-types';
+import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/types';
 
-export type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/core-types';
+export type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/types';
 
 
 /** Result of a compatibility check between two covenants. */

@@ -35,7 +35,7 @@ import type { VerificationResult, Violation } from '@nobulex/verification';
 import { checkCompatibility, findCompatibleAgents, analyzeTopology, mergeCovenants } from '@nobulex/composability';
 import type { CompatibilityResult, AgentProfile, TopologyAnalysis, AgentMatch } from '@nobulex/composability';
 
-import type { CovenantAttestation, VCProof, SignedCovenant } from '@nobulex/core-types';
+import type { CovenantAttestation, VCProof, SignedCovenant } from '@nobulex/types';
 
 import { sha256String, canonicalizeJson, toHex, generateId, timestamp as nowTimestamp } from '@nobulex/crypto';
 

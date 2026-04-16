@@ -22,7 +22,7 @@ import type { EnforcementFn } from '@nobulex/covenant-lang';
 import { createDID } from '@nobulex/identity';
 import { EnforcementMiddleware } from '@nobulex/middleware';
 import { ActionLogBuilder, verifyIntegrity, verifyPartial } from '@nobulex/action-log';
-import type { ActionLog } from '@nobulex/core-types';
+import type { ActionLog } from '@nobulex/types';
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 import type { ProofOfBehavior } from '@nobulex/sdk';
 

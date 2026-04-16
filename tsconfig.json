@@ -27,9 +27,6 @@
       "path": "packages/crypto"
     },
     {
-      "path": "packages/core-types"
-    },
-    {
       "path": "packages/ccl"
     },
     {

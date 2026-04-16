@@ -25,7 +25,7 @@ import type {
   CovenantRequirement,
   CovenantStatement,
   CovenantSpec,
-} from '@nobulex/core-types';
+} from '@nobulex/types';
 
 /**
  * Error thrown when the parser encounters an unexpected token or a

@@ -376,3 +376,6 @@ export type { DeprecationWarning } from './deprecation';
 
 // exports
 export * from './constants';
+
+// core protocol types (merged from @nobulex/core-types)
+export * from './core-types';

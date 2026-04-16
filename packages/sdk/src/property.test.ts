@@ -12,7 +12,7 @@ import fc from 'fast-check';
 import { createDID } from '@nobulex/identity';
 import { parseSource } from '@nobulex/covenant-lang';
 import { EnforcementMiddleware } from '@nobulex/middleware';
-import type { ActionLog, ActionLogEntry } from '@nobulex/core-types';
+import type { ActionLog, ActionLogEntry } from '@nobulex/types';
 import { generateProof, verifyCounterparty } from './handshake.js';
 
 // --- shared helpers ---

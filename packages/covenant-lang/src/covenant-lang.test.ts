@@ -9,7 +9,7 @@ import {
   serialize,
   parseSource,
 } from './index';
-import type { CovenantSpec } from '@nobulex/core-types';
+import type { CovenantSpec } from '@nobulex/types';
 
 // ─── Lexer tests ─────────────────────────────────────────────────────────────
 

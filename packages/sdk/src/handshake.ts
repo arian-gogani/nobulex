@@ -11,7 +11,7 @@ import { signWithDID, verifyWithDID } from '@nobulex/identity';
 import type { DIDKeyPair, DIDDocument } from '@nobulex/identity';
 import { verify as verifyCovenant } from '@nobulex/verification';
 import { verifyIntegrity } from '@nobulex/action-log';
-import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/core-types';
+import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/types';
 
 // ---------------------------------------------------------------------------
 // --- types ---

@@ -9,7 +9,7 @@
   "include": ["src/**/*"],
   "exclude": ["src/**/*.test.ts"],
   "references": [
-    { "path": "../core-types" },
+    { "path": "../types" },
     { "path": "../crypto" },
     { "path": "../evm" }
   ]

@@ -13,7 +13,7 @@ import type {
   ComparisonOperator,
   EnforcementDecision,
   EnforcementAction,
-} from '@nobulex/core-types';
+} from '@nobulex/types';
 
 export interface ActionContext {
   /** The name of the action being evaluated (e.g. "transfer", "api_call"). */

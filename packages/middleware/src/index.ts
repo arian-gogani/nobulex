@@ -12,11 +12,11 @@
 import { parseSource, compile } from '@nobulex/covenant-lang';
 import type { CovenantSpec, EnforcementDecision, ActionContext, EnforcementFn } from '@nobulex/covenant-lang';
 import { ActionLogBuilder } from '@nobulex/action-log';
-import type { ActionLogEntry, ActionLog } from '@nobulex/core-types';
+import type { ActionLogEntry, ActionLog } from '@nobulex/types';
 import { sha256String } from '@nobulex/crypto';
 
 export type { CovenantSpec, EnforcementDecision, ActionContext, EnforcementFn } from '@nobulex/covenant-lang';
-export type { ActionLog, ActionLogEntry } from '@nobulex/core-types';
+export type { ActionLog, ActionLogEntry } from '@nobulex/types';
 
 /** Result of executing an action through the middleware. */
 export interface MiddlewareResult {

@@ -21,7 +21,6 @@
     "@nobulex/ccl": "0.2.0",
     "@nobulex/composability": "0.2.0",
     "@nobulex/core": "0.2.0",
-    "@nobulex/core-types": "0.2.0",
     "@nobulex/covenant-lang": "0.2.0",
     "@nobulex/crypto": "0.2.0",
     "@nobulex/identity": "0.2.0",

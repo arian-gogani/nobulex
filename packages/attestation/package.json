@@ -10,7 +10,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@nobulex/core-types": "0.2.1",
+    "@nobulex/types": "0.2.1",
     "@nobulex/crypto": "0.2.1",
     "@nobulex/verification": "0.2.1"
   },

@@ -5,27 +5,27 @@
  */
 
 import { sha256String, canonicalizeJson } from '@nobulex/crypto';
-import type { ActionLogEntry, ActionLog, MerkleProofNode, MerkleProof } from '@nobulex/core-types';
+import type { ActionLogEntry, ActionLog, MerkleProofNode, MerkleProof } from '@nobulex/types';
 
 /**
  * A single entry in the action log, containing an action, its context, and a hash linking it to the chain.
  */
-export type { ActionLogEntry } from '@nobulex/core-types';
+export type { ActionLogEntry } from '@nobulex/types';
 
 /**
  * An immutable, hash-chained action log containing all entries and summary hashes.
  */
-export type { ActionLog } from '@nobulex/core-types';
+export type { ActionLog } from '@nobulex/types';
 
 /**
  * A single node in a Merkle proof, containing a sibling hash and its position relative to the computed node.
  */
-export type { MerkleProofNode } from '@nobulex/core-types';
+export type { MerkleProofNode } from '@nobulex/types';
 
 /**
  * A Merkle inclusion proof for a specific action log entry, verifiable against the tree root.
  */
-export type { MerkleProof } from '@nobulex/core-types';
+export type { MerkleProof } from '@nobulex/types';
 
 
 /**

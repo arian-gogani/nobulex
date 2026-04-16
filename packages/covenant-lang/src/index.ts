@@ -20,7 +20,7 @@ export type {
   CovenantEffect,
   ComparisonOperator,
   EnforcementDecision,
-} from '@nobulex/core-types';
+} from '@nobulex/types';
 
 import { tokenize } from './lexer';
 import { parse as parseTokens } from './parser';

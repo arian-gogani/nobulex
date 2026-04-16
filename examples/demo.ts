@@ -35,7 +35,7 @@ import { parseSource } from '@nobulex/covenant-lang';
 import { EnforcementMiddleware } from '@nobulex/middleware';
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 import type { ProofOfBehavior, HandshakeResult } from '@nobulex/sdk';
-import type { ActionLog, ActionLogEntry } from '@nobulex/core-types';
+import type { ActionLog, ActionLogEntry } from '@nobulex/types';
 
 // --- ANSI helpers (no deps) ---
 const C = {

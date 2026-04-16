@@ -9,11 +9,11 @@
  */
 
 import { compile } from '@nobulex/covenant-lang';
-import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/core-types';
-import type { ActionLog, ActionLogEntry, Violation, VerificationResult, MerkleProof } from '@nobulex/core-types';
+import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/types';
+import type { ActionLog, ActionLogEntry, Violation, VerificationResult, MerkleProof } from '@nobulex/types';
 import { verifyIntegrity, buildMerkleTree, generateMerkleProof } from '@nobulex/action-log';
 
-export type { Violation, VerificationResult, MerkleProof } from '@nobulex/core-types';
+export type { Violation, VerificationResult, MerkleProof } from '@nobulex/types';
 
 /** Options for the verify function. */
 export interface VerifyOptions {

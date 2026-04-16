@@ -7,7 +7,7 @@
  */
 
 import { sha256String, signString, toHex } from '@nobulex/crypto';
-import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/core-types';
+import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/types';
 import type {
   SessionDigest,
   AttestationRecord,

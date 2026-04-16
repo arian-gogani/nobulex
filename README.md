@@ -265,6 +265,7 @@ npx tsx benchmarks/bench.ts
 
 ## Documentation
 
+- **[API Reference](docs/api/)** — Full API docs generated with TypeDoc (`npm run docs:api`)
 - **[Proof-of-Behavior Spec](docs/proof-of-behavior-spec.md)** — Formal standard specification (CC-BY-4.0)
 - **[White Paper](docs/whitepaper.md)** — Formal protocol specification
 - **[Getting Started](docs/getting-started.md)** — Developer guide

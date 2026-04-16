@@ -1,6 +1,18 @@
 {
-  "$schema": "https://typedoc.org/schema.json",
-  "entryPoints": [
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
+    "baseUrl": ".",
+    "paths": {
+      "@nobulex/*": ["packages/*/src"]
+    }
+  },
+  "include": [
     "packages/types/src/index.ts",
     "packages/crypto/src/index.ts",
     "packages/identity/src/index.ts",
@@ -12,10 +24,5 @@
     "packages/merkle/src/index.ts",
     "packages/tee/src/index.ts"
   ],
-  "tsconfig": "tsconfig.typedoc.json",
-  "out": "docs/api",
-  "excludePrivate": true,
-  "excludeInternal": true,
-  "name": "Nobulex API Reference",
-  "readme": "none"
+  "exclude": ["**/*.test.ts", "tests/**"]
 }

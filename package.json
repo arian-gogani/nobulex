@@ -46,6 +46,7 @@
     "quickstart": "npx tsx examples/get-started-with-kova.ts",
     "lint": "eslint packages/*/src/**/*.ts",
     "docs": "npx typedoc",
+    "docs:api": "typedoc",
     "docs:build": "typedoc",
     "prepublish:check": "npm pack --dry-run -ws",
     "publish:all": "npm run build && npm publish --workspaces",
@@ -76,6 +77,7 @@
     "lint-staged": "^16.2.7",
     "solc": "^0.8.34",
     "tsup": "^8.5.1",
+    "typedoc": "^0.28.19",
     "typescript": "^5.9.3",
     "vitest": "^4.0.18"
   }

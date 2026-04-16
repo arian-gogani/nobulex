@@ -1,8 +1,10 @@
 /**
- * @nobulex/verifier type definitions.
+ * Type definitions for the Verifier engine.
  *
  * Report types, options, and records used by the Verifier class
- * and the standalone `verifyBatch` function.
+ * and the standalone `verifyDocumentBatch` function.
+ *
+ * (Merged from the former @nobulex/verifier package.)
  */
 
 import type {
@@ -169,7 +171,7 @@ export interface BatchSummary {
   durationMs: number;
 }
 
-/** Report produced by verifyBatch(). */
+/** Report produced by verifyDocumentBatch(). */
 export interface BatchVerificationReport {
   // Individual reports for every document in the batch
   reports: VerificationReport[];

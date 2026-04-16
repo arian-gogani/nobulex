@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/mcp-server",
   "version": "0.2.1",
-  "description": "MCP compliance server \u2014 proof-of-behavior enforcement for any MCP-compatible agent",
+  "description": "MCP compliance server — proof-of-behavior enforcement for any MCP-compatible agent",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -24,8 +24,8 @@
     "@nobulex/crypto": "0.2.0",
     "@nobulex/core": "0.2.0",
     "@nobulex/store": "0.2.0",
-    "@nobulex/verifier": "0.2.0",
-    "@nobulex/sdk": "0.2.0"
+    "@nobulex/sdk": "0.2.0",
+    "@nobulex/verification": "0.2.0"
   },
   "license": "MIT",
   "engines": {

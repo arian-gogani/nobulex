@@ -11,8 +11,8 @@
   },
   "dependencies": {
     "@nobulex/core": "0.2.0",
-    "@nobulex/verifier": "0.2.0",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "@nobulex/verification": "0.2.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

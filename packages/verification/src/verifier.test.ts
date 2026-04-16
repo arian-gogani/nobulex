@@ -14,7 +14,7 @@ import type {
   ChainReference,
 } from '@nobulex/core';
 
-import { Verifier, verifyBatch } from './index';
+import { Verifier, verifyDocumentBatch } from './index';
 import type {
   VerificationReport,
   ChainVerificationReport,
@@ -132,8 +132,8 @@ async function buildChain(length: number): Promise<{
 // Tests
 // ---------------------------------------------------------------------------
 
-describe('@nobulex/verifier', () => {
-  // ── Verifier constructor ─────────────────────────────────────────────
+describe('Verifier (merged from @nobulex/verifier)', () => {
+  // -- Verifier constructor -------------------------------------------------
 
   describe('Verifier constructor', () => {
     it('creates a verifier with default options', () => {
@@ -153,7 +153,7 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── Single document verification ────────────────────────────────────
+  // -- Single document verification ----------------------------------------
 
   describe('verify()', () => {
     let verifier: Verifier;
@@ -264,7 +264,7 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── Strict mode ─────────────────────────────────────────────────────
+  // -- Strict mode ----------------------------------------------------------
 
   describe('strict mode', () => {
     it('fails validation when there are warnings in strict mode', async () => {
@@ -290,7 +290,7 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── History management ──────────────────────────────────────────────
+  // -- History management ---------------------------------------------------
 
   describe('history management', () => {
     it('tracks multiple verifications', async () => {
@@ -355,7 +355,7 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── Chain verification ──────────────────────────────────────────────
+  // -- Chain verification ---------------------------------------------------
 
   describe('verifyChain()', () => {
     let verifier: Verifier;
@@ -485,7 +485,7 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── Action verification ─────────────────────────────────────────────
+  // -- Action verification --------------------------------------------------
 
   describe('verifyAction()', () => {
     let verifier: Verifier;
@@ -589,11 +589,11 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── Batch verification ──────────────────────────────────────────────
+  // -- Batch verification ---------------------------------------------------
 
-  describe('verifyBatch()', () => {
+  describe('verifyDocumentBatch()', () => {
     it('verifies an empty batch', async () => {
-      const report = await verifyBatch([]);
+      const report = await verifyDocumentBatch([]);
 
       expect(report.reports).toHaveLength(0);
       expect(report.summary.total).toBe(0);
@@ -605,7 +605,7 @@ describe('@nobulex/verifier', () => {
       const { doc: doc1 } = await buildValidDoc();
       const { doc: doc2 } = await buildValidDoc();
 
-      const report = await verifyBatch([doc1, doc2]);
+      const report = await verifyDocumentBatch([doc1, doc2]);
 
       expect(report.reports).toHaveLength(2);
       expect(report.summary.total).toBe(2);
@@ -619,7 +619,7 @@ describe('@nobulex/verifier', () => {
         expiresAt: new Date(Date.now() - 86400_000).toISOString(),
       });
 
-      const report = await verifyBatch([validDoc, expiredDoc]);
+      const report = await verifyDocumentBatch([validDoc, expiredDoc]);
 
       expect(report.summary.total).toBe(2);
       expect(report.summary.passed).toBe(1);
@@ -627,26 +627,26 @@ describe('@nobulex/verifier', () => {
     });
 
     it('includes verifierId in batch report', async () => {
-      const report = await verifyBatch([], { verifierId: 'batch-v' });
+      const report = await verifyDocumentBatch([], { verifierId: 'batch-v' });
       expect(report.verifierId).toBe('batch-v');
     });
 
     it('includes timestamp in batch report', async () => {
-      const report = await verifyBatch([]);
+      const report = await verifyDocumentBatch([]);
       expect(report.timestamp).toBeTruthy();
       expect(new Date(report.timestamp).getTime()).not.toBeNaN();
     });
 
     it('includes timing in batch summary', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifyBatch([doc]);
+      const report = await verifyDocumentBatch([doc]);
 
       expect(report.summary.durationMs).toBeGreaterThanOrEqual(0);
     });
 
     it('uses strict mode when specified', async () => {
       const { doc } = await buildValidDoc(); // no metadata -> warning
-      const report = await verifyBatch([doc], { strictMode: true });
+      const report = await verifyDocumentBatch([doc], { strictMode: true });
 
       expect(report.summary.failed).toBe(1);
       expect(report.reports[0]!.valid).toBe(false);
@@ -659,14 +659,14 @@ describe('@nobulex/verifier', () => {
         docs.push(doc);
       }
 
-      const report = await verifyBatch(docs);
+      const report = await verifyDocumentBatch(docs);
 
       expect(report.summary.total).toBe(5);
       expect(report.summary.passed).toBe(5);
     });
   });
 
-  // ── Verification with additional document features ──────────────────
+  // -- Verification with additional document features -----------------------
 
   describe('document features', () => {
     let verifier: Verifier;
@@ -730,7 +730,7 @@ describe('@nobulex/verifier', () => {
     });
   });
 
-  // ── Cross-feature integration tests ─────────────────────────────────
+  // -- Cross-feature integration tests -------------------------------------
 
   describe('integration', () => {
     it('chain verification followed by action verification', async () => {
@@ -757,7 +757,7 @@ describe('@nobulex/verifier', () => {
       const { doc } = await buildValidDoc();
 
       const singleReport = await verifier.verify(doc);
-      const batchReport = await verifyBatch([doc], { verifierId: 'consistency-batch' });
+      const batchReport = await verifyDocumentBatch([doc], { verifierId: 'consistency-batch' });
 
       expect(singleReport.valid).toBe(batchReport.reports[0]!.valid);
       expect(singleReport.checks.length).toBe(batchReport.reports[0]!.checks.length);

@@ -1,10 +1,10 @@
 /**
- * @nobulex/verifier — Standalone verification engine for third-party auditors.
+ * Standalone verification engine for third-party auditors.
  *
- * Provides a stateful {@link Verifier} class that wraps the core
- * `verifyCovenant` function with history tracking, batch processing,
- * chain integrity validation, and action-level evaluation.
- *
+ * Merged from the former @nobulex/verifier package. Provides a stateful
+ * {@link Verifier} class that wraps the core `verifyCovenant` function
+ * with history tracking, batch processing, chain integrity validation,
+ * and action-level evaluation.
  */
 
 import {
@@ -17,7 +17,7 @@ import {
 
 import type {
   CovenantDocument,
-  VerificationResult,
+  VerificationResult as CoreVerificationResult,
 } from '@nobulex/core';
 
 import {
@@ -44,7 +44,7 @@ import type {
   BatchSummary,
   VerificationRecord,
   VerificationKind,
-} from './types.js';
+} from './verifier-types.js';
 
 // Re-export all types for consumers
 export type {
@@ -59,7 +59,7 @@ export type {
   BatchSummary,
   VerificationRecord,
   VerificationKind,
-} from './types.js';
+} from './verifier-types.js';
 
 
 const DEFAULT_MAX_HISTORY = 1000;
@@ -80,7 +80,7 @@ function elapsed(startMs: number): number {
  * adding timing, verifier ID, and warnings.
  */
 function toReport(
-  result: VerificationResult,
+  result: CoreVerificationResult,
   verifierId: string,
   startMs: number,
   warnings: string[],
@@ -153,7 +153,7 @@ export class Verifier {
     this.maxChainDepth = options?.maxChainDepth ?? MAX_CHAIN_DEPTH;
   }
 
-  
+
 
   private recordHistory(
     kind: VerificationKind,
@@ -488,17 +488,22 @@ export class Verifier {
  * function that creates a temporary Verifier internally. For history
  * tracking across multiple calls, use the {@link Verifier} class directly.
  *
+ * NOTE: This was renamed from `verifyBatch` (in the former @nobulex/verifier
+ * package) to `verifyDocumentBatch` to avoid a name conflict with the
+ * `verifyBatch` function that verifies multiple covenants against a single
+ * action log.
+ *
  * @param docs - The documents to verify.
  * @param options - Optional verifier configuration (strict mode, etc.).
  * @returns A BatchVerificationReport with individual reports and summary.
  *
  * @example
  * ```typescript
- * const report = await verifyBatch([doc1, doc2, doc3]);
+ * const report = await verifyDocumentBatch([doc1, doc2, doc3]);
  * console.log(`${report.summary.passed}/${report.summary.total} passed`);
  * ```
  */
-export async function verifyBatch(
+export async function verifyDocumentBatch(
   docs: CovenantDocument[],
   options?: VerifierOptions,
 ): Promise<BatchVerificationReport> {

@@ -32,7 +32,7 @@ import { parse, evaluate } from '@nobulex/ccl';
 
 import { MemoryStore } from '@nobulex/store';
 
-import { Verifier, verifyBatch } from '@nobulex/verifier';
+import { Verifier, verifyDocumentBatch } from '@nobulex/verification';
 
 import {
   createIdentity,

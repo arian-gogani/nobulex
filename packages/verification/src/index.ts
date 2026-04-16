@@ -162,3 +162,19 @@ export function verifyBatch(
   }
   return results;
 }
+
+// Re-export everything from the verifier engine (merged from @nobulex/verifier)
+export { Verifier, verifyDocumentBatch } from './verifier';
+export type {
+  VerifierOptions,
+  VerificationReport,
+  ChainVerificationReport,
+  ChainDocumentResult,
+  ChainIntegrityCheck,
+  NarrowingCheckResult,
+  ActionVerificationReport,
+  BatchVerificationReport,
+  BatchSummary,
+  VerificationRecord,
+  VerificationKind,
+} from './verifier';

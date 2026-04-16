@@ -19,7 +19,7 @@ import {
 } from '@nobulex/core';
 import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 import { parse, evaluate } from '@nobulex/ccl';
-import { Verifier } from '@nobulex/verifier';
+import { Verifier } from '@nobulex/verification';
 import { MemoryStore } from '@nobulex/store';
 import { NobulexClient } from '@nobulex/sdk';
 import { createIdentity } from '@nobulex/identity';

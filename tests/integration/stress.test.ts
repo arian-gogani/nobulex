@@ -11,7 +11,7 @@ import { buildCovenant, verifyCovenant } from '@nobulex/core';
 import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 import { parse, evaluate, merge, serialize } from '@nobulex/ccl';
 import { MemoryStore } from '@nobulex/store';
-import { Verifier, verifyBatch } from '@nobulex/verifier';
+import { Verifier, verifyDocumentBatch } from '@nobulex/verification';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -271,7 +271,7 @@ describe('Verifier batch', () => {
       docs.push(doc);
     }
 
-    const report = await verifyBatch(docs);
+    const report = await verifyDocumentBatch(docs);
     expect(report.summary.total).toBe(200);
     expect(report.summary.passed).toBe(200);
     expect(report.summary.failed).toBe(0);
@@ -555,7 +555,7 @@ describe('Mixed batch verification', () => {
       docs.push({ ...doc, nonce: 'zz' });
     }
 
-    const report = await verifyBatch(docs);
+    const report = await verifyDocumentBatch(docs);
     expect(report.summary.total).toBe(100);
     expect(report.summary.passed).toBe(50);
     expect(report.summary.failed).toBe(50);

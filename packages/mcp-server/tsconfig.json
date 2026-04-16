@@ -12,7 +12,7 @@
     { "path": "../crypto" },
     { "path": "../core" },
     { "path": "../store" },
-    { "path": "../verifier" },
+    { "path": "../verification" },
     { "path": "../sdk" }
   ]
 }

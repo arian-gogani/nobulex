@@ -60,9 +60,6 @@
       "path": "packages/store"
     },
     {
-      "path": "packages/verifier"
-    },
-    {
       "path": "packages/evm"
     },
     {

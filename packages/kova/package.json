@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/kova",
   "version": "0.2.1",
-  "description": "Open cryptographic protocol (MIT) \u2014 the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation.",
+  "description": "Open cryptographic protocol (MIT) — the trust layer for the agent economy. AI agents declare behavioral commitments, prove compliance, build verifiable reputation.",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -34,7 +34,7 @@
     "@nobulex/identity": "0.2.0",
     "@nobulex/proof": "0.2.0",
     "@nobulex/store": "0.2.0",
-    "@nobulex/verifier": "0.2.0"
+    "@nobulex/verification": "0.2.0"
   },
   "license": "MIT",
   "engines": {

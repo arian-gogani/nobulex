@@ -20,7 +20,7 @@ import {
   type CovenantDocument,
 } from '@nobulex/sdk';
 
-import { Verifier } from '@nobulex/verifier';
+import { Verifier } from '@nobulex/verification';
 
 async function main() {
   console.log('========================================');

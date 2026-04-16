@@ -43,7 +43,7 @@ import type {
 import { MemoryStore } from '@nobulex/store';
 import type { StoreEvent } from '@nobulex/store';
 
-import { Verifier, verifyBatch } from '@nobulex/verifier';
+import { Verifier, verifyDocumentBatch } from '@nobulex/verification';
 
 import { parse, evaluate, merge as mergeCCL, serialize as serializeCCL } from '@nobulex/ccl';
 
@@ -273,7 +273,7 @@ describe('SDK + Verifier integration', () => {
       docs.push(d);
     }
 
-    const batchReport = await verifyBatch(docs);
+    const batchReport = await verifyDocumentBatch(docs);
     expect(batchReport.summary.total).toBe(10);
     expect(batchReport.summary.passed).toBe(10);
     expect(batchReport.summary.failed).toBe(0);
@@ -590,7 +590,7 @@ describe('Store + Verifier integration', () => {
     const all = await store.list();
     expect(all).toHaveLength(8);
 
-    const batchReport = await verifyBatch(all);
+    const batchReport = await verifyDocumentBatch(all);
     expect(batchReport.summary.total).toBe(8);
     expect(batchReport.summary.passed).toBe(8);
     expect(batchReport.summary.failed).toBe(0);
@@ -627,7 +627,7 @@ describe('Store + Verifier integration', () => {
 
     // Put tampered under a different key approach: just verify separately
     const all = [legit, tampered];
-    const batchReport = await verifyBatch(all);
+    const batchReport = await verifyDocumentBatch(all);
     expect(batchReport.summary.passed).toBe(1);
     expect(batchReport.summary.failed).toBe(1);
   });

@@ -42,7 +42,7 @@ import { parse, evaluate, merge, serialize, validateNarrowing } from '@nobulex/c
 import { MemoryStore } from '@nobulex/store';
 import type { StoreEvent } from '@nobulex/store';
 
-import { Verifier, verifyBatch } from '@nobulex/verifier';
+import { Verifier, verifyDocumentBatch } from '@nobulex/verification';
 
 import { NobulexClient, QuickCovenant } from '@nobulex/sdk';
 import type {

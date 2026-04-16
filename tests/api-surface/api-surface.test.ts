@@ -174,15 +174,13 @@ describe('API Surface Tests', () => {
     ].sort());
   });
 
-  // ─── @nobulex/verifier ────────────────────────────────────────────────────────
+  // ─── @nobulex/verification (includes former @nobulex/verifier) ────────────────
 
-  it('@nobulex/verifier exports', async () => {
-    const mod = await import('@nobulex/verifier');
-    const exports = Object.keys(mod).sort();
-    expect(exports).toEqual([
-      'Verifier',
-      'verifyBatch',
-    ].sort());
+  it('@nobulex/verification exports verifier symbols', async () => {
+    const mod = await import('@nobulex/verification');
+    const exports = Object.keys(mod);
+    expect(exports).toContain('Verifier');
+    expect(exports).toContain('verifyBatch');
   });
 
   // ─── @nobulex/enforcement ─────────────────────────────────────────────────────

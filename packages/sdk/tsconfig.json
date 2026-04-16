@@ -29,9 +29,6 @@
       "path": "../store"
     },
     {
-      "path": "../verifier"
-    },
-    {
       "path": "../covenant-lang"
     },
     {

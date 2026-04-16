@@ -20,7 +20,6 @@
     "packages/tee",
     "packages/elizaos-plugin",
     "packages/store",
-    "packages/verifier",
     "packages/evm",
     "packages/sdk",
     "packages/react",
@@ -34,7 +33,7 @@
     "packages/reputation"
   ],
   "scripts": {
-    "build": "npm run build -w packages/types -w packages/crypto -w packages/ccl && npm run build -w packages/core -w packages/identity -w packages/enforcement -w packages/proof && npm run build -w packages/covenant-lang -w packages/action-log -w packages/middleware -w packages/verification && npm run build -w packages/tee -w packages/elizaos-plugin -w packages/evidence-core && npm run build -w packages/merkle -w packages/store -w packages/verifier -w packages/evm && npm run build -w packages/transparency-log -w packages/langchain -w packages/sdk -w packages/otel && npm run build -w packages/react -w packages/mcp-server -w packages/cli -w packages/kova && npm run build -w packages/mcp",
+    "build": "npm run build -w packages/types -w packages/crypto -w packages/ccl && npm run build -w packages/core -w packages/identity -w packages/enforcement -w packages/proof && npm run build -w packages/covenant-lang -w packages/action-log -w packages/middleware -w packages/verification && npm run build -w packages/tee -w packages/elizaos-plugin -w packages/evidence-core && npm run build -w packages/merkle -w packages/store -w packages/evm && npm run build -w packages/transparency-log -w packages/langchain -w packages/sdk -w packages/otel && npm run build -w packages/react -w packages/mcp-server -w packages/cli -w packages/kova && npm run build -w packages/mcp",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "test": "vitest run",
     "test:coverage": "vitest run --coverage",

@@ -62,16 +62,11 @@
       </div>
       <div class="hero__bg" aria-hidden="true"></div>
       <div class="hero__inner">
-        <div class="hero__urgency" data-reveal style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.25);color:#f44;font-size:0.82rem;font-weight:600;padding:0.45rem 1.1rem;border-radius:100px;margin-bottom:1.5rem"><span style="width:7px;height:7px;background:#f44;border-radius:50%;display:inline-block"></span>EU AI Act high-risk deadline: August 2, 2026</div>
-        <p class="hero__tagline" data-reveal>Every autonomous agent action should be cryptographically verified. That's proof-of-behavior.</p>
-        <p class="hero__tagline hero__tagline--sub" data-reveal>Define behavioral rules. Enforce before execution. Prove compliance with math, not trust.</p>
+        <div class="hero__urgency" id="eu-countdown" data-reveal style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(255,68,68,0.08);border:1px solid rgba(255,68,68,0.25);color:#f44;font-size:0.82rem;font-weight:600;padding:0.45rem 1.1rem;border-radius:100px;margin-bottom:1.5rem"><span style="width:7px;height:7px;background:#f44;border-radius:50%;display:inline-block;animation:pulse 2s infinite"></span><span id="countdown-text">EU AI Act high-risk deadline in <strong id="countdown-days"></strong> days</span></div>
         <h1 class="hero__title">
           <span class="hero__line" data-split="words">Proof of Behavior</span>
         </h1>
-        <p class="hero__subline" data-reveal>Governance watches. Proof-of-behavior proves.</p>
-        <div class="hero__plain-english" data-reveal>
-          <p><strong>Plain English:</strong> Nobulex sits between your AI agent and the outside world. Before any action goes through, it checks the agent's rules. If the action breaks a rule, it gets blocked. Every decision gets logged in a way that can't be tampered with. And anyone — a regulator, a client, an auditor — can check that log themselves without having to take your word for it.</p>
-        </div>
+        <p class="hero__tagline" data-reveal>Define rules. Enforce before execution. Prove compliance with math, not trust.</p>
         <div class="hero__cta hero__cta-buttons" data-reveal>
           <a href="mailto:nobulex.dev@gmail.com?subject=Nobulex%20Demo%20Request" class="btn btn--primary">Book a Demo</a>
           <a href="https://github.com/arian-gogani/nobulex" class="btn btn--ghost" rel="noopener noreferrer">View on GitHub</a>
@@ -391,5 +386,33 @@
     }
   </script>
   <script src="main.js"></script>
+  <script>
+    // EU AI Act countdown
+    (function() {
+      const deadline = new Date('2026-08-02T00:00:00Z').getTime();
+      function update() {
+        const now = Date.now();
+        const diff = deadline - now;
+        if (diff <= 0) {
+          document.getElementById('countdown-text').innerHTML = '<strong>EU AI Act high-risk deadline has passed</strong>';
+          return;
+        }
+        const days = Math.floor(diff / 86400000);
+        const hours = Math.floor((diff % 86400000) / 3600000);
+        const el = document.getElementById('countdown-days');
+        if (el) el.textContent = days;
+        document.getElementById('countdown-text').innerHTML =
+          'EU AI Act high-risk deadline in <strong>' + days + '</strong> days, <strong>' + hours + '</strong> hours';
+      }
+      update();
+      setInterval(update, 60000);
+    })();
+  </script>
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+  </style>
 </body>
 </html>

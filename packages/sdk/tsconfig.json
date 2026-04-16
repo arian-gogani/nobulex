@@ -43,9 +43,6 @@
     {
       "path": "../verification"
     },
-    {
-      "path": "../composability"
-    }
   ],
   "exclude": [
     "src/**/*.test.ts",

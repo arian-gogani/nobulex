@@ -28,7 +28,7 @@ npm install @nobulex/sdk
 For multi-agent composability analysis:
 
 ```bash
-npm install @nobulex/composability
+npm install @nobulex/core
 ```
 
 For TEE attestation and on-chain contract bindings:
@@ -392,7 +392,7 @@ console.log(results.get('B')?.compliant); // depends on log contents
 When multiple agents need to collaborate, you can check whether their covenants are compatible -- that is, whether they have conflicting rules for the same actions.
 
 ```typescript
-import { checkCompatibility, findCompatibleAgents } from '@nobulex/composability';
+import { checkCompatibility, findCompatibleAgents } from '@nobulex/core';
 
 const specA = parseSource('covenant Reader { permit read; forbid write; }');
 const specB = parseSource('covenant Writer { permit write; forbid delete; }');
@@ -438,7 +438,7 @@ for (const match of matches) {
 Analyze the trust graph across a set of agents:
 
 ```typescript
-import { analyzeTopology } from '@nobulex/composability';
+import { analyzeTopology } from '@nobulex/core';
 
 const topology = analyzeTopology(agents, 0.5);
 console.log(topology.nodes);         // all agent DIDs
@@ -453,7 +453,7 @@ console.log(topology.isolatedNodes); // agents with no compatible peers
 Combine two covenants into a single merged spec:
 
 ```typescript
-import { mergeCovenants } from '@nobulex/composability';
+import { mergeCovenants } from '@nobulex/core';
 
 const merged = mergeCovenants(specA, specB, 'ReaderWriter');
 console.log(merged.name);        // 'ReaderWriter'
@@ -472,7 +472,7 @@ import { parseSource, compile, serialize } from '@nobulex/covenant-lang';
 import { EnforcementMiddleware } from '@nobulex/middleware';
 import { ActionLogBuilder, verifyIntegrity } from '@nobulex/action-log';
 import { verify, verifyWithProofs } from '@nobulex/verification';
-import { checkCompatibility } from '@nobulex/composability';
+import { checkCompatibility } from '@nobulex/core';
 
 async function main() {
   // ── Step 1: Create two agent identities ──
@@ -588,7 +588,7 @@ Each package has its own detailed API documentation:
 | [`@nobulex/action-log`](../packages/action-log/) | `ActionLogBuilder`, `verifyIntegrity()`, Merkle tree operations |
 | [`@nobulex/middleware`](../packages/middleware/) | `EnforcementMiddleware` class with `execute()`, `check()`, `getLog()` |
 | [`@nobulex/verification`](../packages/verification/) | `verify()`, `verifyWithProofs()`, `verifyBatch()`, `proveViolation()` |
-| [`@nobulex/composability`](../packages/composability/) | `checkCompatibility()`, `findCompatibleAgents()`, `mergeCovenants()`, `analyzeTopology()` |
+| [`@nobulex/core`](../packages/core/) | `checkCompatibility()`, `findCompatibleAgents()`, `mergeCovenants()`, `analyzeTopology()` |
 | [`@nobulex/tee`](../packages/tee/) | TEE attestation: `generateQuote()`, `verifyAttestation()`, `bindEnclaveToDID()`, `TEERegistry` |
 | [`@nobulex/contracts`](../packages/contracts/) | `ContractSimulator`, `encodeRegisterCovenant()`, `encodeStake()`, `encodeSubmitViolation()`, Solidity sources |
 | [`@nobulex/sdk`](../packages/sdk/) | High-level SDK re-exporting all packages plus `CovenantAgent` and `NobulexClient` |

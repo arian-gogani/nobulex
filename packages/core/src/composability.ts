@@ -1,9 +1,10 @@
 /**
- * @nobulex/composability — Covenant compatibility and trust topology analysis.
+ * Covenant compatibility and trust topology analysis.
+ *
+ * Merged from @nobulex/composability into @nobulex/core.
  *
  * Check whether two covenants are compatible, find compatible agents
  * for a given covenant, and analyze the trust topology of a multi-agent system.
- *
  */
 
 import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/types';

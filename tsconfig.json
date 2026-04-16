@@ -45,9 +45,6 @@
       "path": "packages/verification"
     },
     {
-      "path": "packages/composability"
-    },
-    {
       "path": "packages/identity"
     },
     {

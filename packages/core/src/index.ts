@@ -80,6 +80,24 @@ export type {
   ValidationResult,
 } from './schema.js';
 
+// composability (merged from @nobulex/composability)
+
+export {
+  checkCompatibility,
+  findCompatibleAgents,
+  analyzeTopology,
+  mergeCovenants,
+} from './composability.js';
+
+export type {
+  CompatibilityResult,
+  Conflict,
+  AgentProfile,
+  AgentMatch,
+  TrustEdge,
+  TopologyAnalysis,
+} from './composability.js';
+
 // ---
 
 export { DocumentMigrator, defaultMigrator } from './migration.js';

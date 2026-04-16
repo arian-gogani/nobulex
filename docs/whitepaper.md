@@ -167,7 +167,7 @@ A single agent may operate under both tiers simultaneously. Tier 1 (TEE-enforced
 
 ## 5. Covenant Composability
 
-As agent ecosystems grow in complexity, individual covenants must compose with one another to form coherent trust relationships. The `@nobulex/composability` package provides four operations for covenant composition.
+As agent ecosystems grow in complexity, individual covenants must compose with one another to form coherent trust relationships. The `@nobulex/core` package provides four operations for covenant composition.
 
 **Compatibility checking** (`checkCompatibility`): Given two covenant specifications, this function identifies conflicts -- situations where one covenant unconditionally permits an action that the other unconditionally forbids, or where two covenants impose contradictory requirements on the same field (e.g., one requires `score >= 0.9` while the other requires `score <= 0.1`). The function returns a compatibility score in the range [0, 1], a list of specific conflicts with explanatory reasons, and the set of overlapping actions.
 
@@ -270,7 +270,7 @@ The Nobulex protocol is implemented as a TypeScript monorepo with strict mode co
 - **@nobulex/action-log**: Hash-chained action log builder, integrity verification, Merkle tree construction, and Merkle proof generation and verification.
 - **@nobulex/middleware**: Pre-execution enforcement middleware with action interception, decision logging, and handler delegation.
 - **@nobulex/verification**: Post-hoc deterministic verification function, violation Merkle proofs, and batch verification.
-- **@nobulex/composability**: Covenant compatibility checking, agent matching, covenant merging, and trust topology analysis.
+- **@nobulex/core**: Covenant compatibility checking, agent matching, covenant merging, and trust topology analysis.
 - **@nobulex/tee**: TEE attestation quote structures, remote verification, DID-to-enclave binding, and the TEE registry.
 - **@nobulex/contracts**: Three Solidity smart contracts (CovenantRegistry, StakeManager, SlashingJudge) compiled with solc ^0.8.20.
 

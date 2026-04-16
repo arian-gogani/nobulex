@@ -32,8 +32,8 @@ import { DidRelationship, ProofType, ValidationError } from '@nobulex/types';
 import { verify, verifyWithProofs, verifyBatch } from '@nobulex/verification';
 import type { VerificationResult, Violation } from '@nobulex/verification';
 
-import { checkCompatibility, findCompatibleAgents, analyzeTopology, mergeCovenants } from '@nobulex/composability';
-import type { CompatibilityResult, AgentProfile, TopologyAnalysis, AgentMatch } from '@nobulex/composability';
+import { checkCompatibility, findCompatibleAgents, analyzeTopology, mergeCovenants } from '@nobulex/core';
+import type { CompatibilityResult, AgentProfile, TopologyAnalysis, AgentMatch } from '@nobulex/core';
 
 import type { CovenantAttestation, VCProof, SignedCovenant } from '@nobulex/types';
 

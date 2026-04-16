@@ -5,7 +5,7 @@ const packages = [
   'ccl', 'cli', 'core', 'crypto', 'enforcement', 'evm',
   'identity', 'mcp-server', 'mcp', 'proof', 'react', 'sdk',
   'store', 'types', 'verifier',
-  'covenant-lang', 'action-log', 'middleware', 'verification', 'composability',
+  'covenant-lang', 'action-log', 'middleware', 'verification',
   'tee', 'elizaos-plugin', 'transparency-log', 'merkle',
   'langchain', 'evidence-core', 'reputation', 'otel', 'kova',
 ];

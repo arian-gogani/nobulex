@@ -4,11 +4,11 @@ import {
   findCompatibleAgents,
   analyzeTopology,
   mergeCovenants,
-} from './index';
+} from './composability';
 import { parseSource, compile } from '@nobulex/covenant-lang';
-import type { CovenantSpec, AgentProfile } from './index';
+import type { CovenantSpec, AgentProfile } from './composability';
 
-describe('@nobulex/composability', () => {
+describe('composability', () => {
   // ── checkCompatibility ────────────────────────────────────────────────────
 
   describe('checkCompatibility()', () => {

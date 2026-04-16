@@ -26,8 +26,8 @@ import { EnforcementMiddleware, createMiddleware } from '@nobulex/middleware';
 // Verification
 import { verify, verifyWithProofs, verifyBatch } from '@nobulex/verification';
 
-// Composability
-import { checkCompatibility, findCompatibleAgents, analyzeTopology, mergeCovenants } from '@nobulex/composability';
+// Composability (merged into @nobulex/core)
+import { checkCompatibility, findCompatibleAgents, analyzeTopology, mergeCovenants } from '@nobulex/core';
 
 // TEE
 import { generateQuote, generateEndorsements, verifyAttestation, bindEnclaveToDID, verifyBinding, TEERegistry, createEvidence, generateReportData } from '@nobulex/tee';

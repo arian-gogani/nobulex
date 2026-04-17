@@ -14,10 +14,6 @@ import {
   verify,
   verifyWithProofs,
   verifyBatch,
-  checkCompatibility,
-  findCompatibleAgents,
-  analyzeTopology,
-  mergeCovenants,
   DIDResolver,
   signWithDID,
   verifyWithDID,
@@ -193,24 +189,6 @@ describe('@nobulex/sdk — Covenant Primitives', () => {
       expect(verifyMerkleProof(proof)).toBe(true);
     });
 
-    it('multi-agent compatibility analysis', async () => {
-      const agent1 = await CovenantAgent.create('covenant Reader { permit read; }');
-      const agent2 = await CovenantAgent.create('covenant Writer { permit write; }');
-      const agent3 = await CovenantAgent.create('covenant ReadWriter { permit read; permit write; }');
-
-      const profiles = [
-        { did: agent1.did.did, covenant: agent1.spec, capabilities: ['read'] },
-        { did: agent2.did.did, covenant: agent2.spec, capabilities: ['write'] },
-        { did: agent3.did.did, covenant: agent3.spec, capabilities: ['read', 'write'] },
-      ];
-
-      const topology = analyzeTopology(profiles, 0.5);
-      expect(topology.nodes).toHaveLength(3);
-
-      const compat = checkCompatibility(agent1.spec, agent3.spec);
-      expect(compat.compatible).toBe(true);
-    });
-
     it('DID + signing + verification + attestation', async () => {
       const issuer = await CovenantAgent.create('covenant IssuerPolicy { permit sign; permit attest; }');
       const subject = await CovenantAgent.create('covenant SubjectPolicy { permit read; permit write; }');
@@ -273,13 +251,5 @@ describe('@nobulex/sdk — Covenant Primitives', () => {
       expect(result.compliant).toBe(true);
     });
 
-    it('composability functions are accessible', () => {
-      const a = parseSource('covenant A { permit read; }');
-      const b = parseSource('covenant B { permit read; }');
-      const compat = checkCompatibility(a, b);
-      expect(compat.compatible).toBe(true);
-      const merged = mergeCovenants(a, b);
-      expect(merged.statements).toHaveLength(2);
-    });
   });
 });

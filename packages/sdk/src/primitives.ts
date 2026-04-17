@@ -32,8 +32,7 @@ import { DidRelationship, ProofType, ValidationError } from '@nobulex/types';
 import { verify, verifyWithProofs, verifyBatch } from '@nobulex/verification';
 import type { VerificationResult, Violation } from '@nobulex/verification';
 
-import { checkCompatibility, findCompatibleAgents, analyzeTopology, mergeCovenants } from '@nobulex/core';
-import type { CompatibilityResult, AgentProfile, TopologyAnalysis, AgentMatch } from '@nobulex/core';
+// Compatibility functions removed during consolidation
 
 import type { CovenantAttestation, VCProof, SignedCovenant } from '@nobulex/types';
 
@@ -290,11 +289,6 @@ export {
   verify,
   verifyWithProofs,
   verifyBatch,
-  // Composability
-  checkCompatibility,
-  findCompatibleAgents,
-  analyzeTopology,
-  mergeCovenants,
 };
 
 export type {
@@ -309,10 +303,6 @@ export type {
   MerkleProof,
   VerificationResult,
   Violation,
-  CompatibilityResult,
-  AgentProfile,
-  TopologyAnalysis,
-  AgentMatch,
   CovenantAttestation,
   SignedCovenant,
   VCProof,

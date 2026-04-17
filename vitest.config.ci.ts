@@ -21,6 +21,7 @@ export default defineConfig({
       '**/node_modules/**',
       '**/.git/**',
       'tests/perf-regression/**',
+      'tests/experimental/**',
       'benchmarks/**',
       'packages/composition/src/index.test.ts',
     ],

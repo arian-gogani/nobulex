@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import { generateKeyPair } from '@nobulex/crypto';
-import type { KeyPair } from '@nobulex/crypto';
+import { generateKeyPair } from './crypto/index';
+import type { KeyPair } from './crypto/index';
 
 import {
   CovenantBuildError,

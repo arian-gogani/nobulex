@@ -30,12 +30,10 @@
  *     verifyIntegrity() call.
  */
 
-import { createDID } from '@nobulex/identity';
-import { parseSource } from '@nobulex/covenant-lang';
-import { EnforcementMiddleware } from '@nobulex/middleware';
+import { createDID, parseSource, EnforcementMiddleware } from '@nobulex/core';
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 import type { ProofOfBehavior, HandshakeResult } from '@nobulex/sdk';
-import type { ActionLog, ActionLogEntry } from '@nobulex/types';
+import type { ActionLog, ActionLogEntry } from '@nobulex/core';
 
 // --- ANSI helpers (no deps) ---
 const C = {

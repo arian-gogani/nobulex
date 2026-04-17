@@ -1,5 +1,5 @@
 
-import { MetricsRegistry, createMetricsRegistry } from '@nobulex/types';
+import { MetricsRegistry, createMetricsRegistry } from '@nobulex/core';
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
 
 // types

@@ -11,9 +11,7 @@
  * Run: npx tsx examples/scenarios/financial-agent.ts
  */
 
-import { createDID } from '@nobulex/identity';
-import { parseSource } from '@nobulex/covenant-lang';
-import { EnforcementMiddleware } from '@nobulex/middleware';
+import { createDID, parseSource, EnforcementMiddleware } from '@nobulex/core';
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 
 // --- ANSI helpers (no deps) ---

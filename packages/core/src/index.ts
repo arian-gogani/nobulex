@@ -7,24 +7,24 @@ import {
   fromHex,
   generateNonce,
   timestamp,
-} from '@nobulex/crypto';
+} from './crypto/index';
 
-import type { KeyPair, HashHex } from '@nobulex/crypto';
+import type { KeyPair, HashHex } from './crypto/index';
 
 import {
   parse as cclParse,
   merge as cclMerge,
   validateNarrowing as cclValidateNarrowing,
-} from '@nobulex/ccl';
+} from './ccl/index';
 
-import type { CCLDocument, NarrowingViolation } from '@nobulex/ccl';
+import type { CCLDocument, NarrowingViolation } from './ccl/index';
 
 import {
   PROTOCOL_VERSION,
   MAX_CONSTRAINTS,
   MAX_CHAIN_DEPTH,
   MAX_DOCUMENT_SIZE,
-} from './types.js';
+} from './core-internal-types';
 
 import type {
   CovenantDocument,
@@ -33,7 +33,7 @@ import type {
   VerificationCheck,
   Countersignature,
   PartyRole,
-} from './types.js';
+} from './core-internal-types';
 
 // Re-export all types so consumers only need @nobulex/core
 export type {
@@ -57,14 +57,14 @@ export type {
   VerificationResult,
   VerificationCheck,
   Severity,
-} from './types.js';
+} from './core-internal-types';
 
 export {
   PROTOCOL_VERSION,
   MAX_CONSTRAINTS,
   MAX_CHAIN_DEPTH,
   MAX_DOCUMENT_SIZE,
-} from './types.js';
+} from './core-internal-types';
 
 // schema validation
 
@@ -965,3 +965,34 @@ export function deserializeCovenant(json: string): CovenantDocument {
 
   return parsed as CovenantDocument;
 }
+
+// --- barrel re-exports from merged packages ---
+
+export * from './types/index';
+export * from './crypto/index';
+// ccl — selective to avoid parse/tokenize/serialize/Token/TokenType overlap with covenant-lang
+export {
+  parse as cclParse, evaluate, matchAction, matchResource, merge, checkRateLimit,
+  validateNarrowing, validateCCL, CCLSyntaxError, CCLValidationError,
+} from './ccl/index';
+export type {
+  CCLDocument, Statement, PermitDenyStatement, RequireStatement,
+  LimitStatement, NarrowingViolation, EvaluationContext, EvaluationResult,
+} from './ccl/index';
+export * from './covenant-lang/index';
+export * from './action-log/index';
+export * from './identity/index';
+export * from './enforcement/index';
+export * from './middleware/index';
+export { verify as verifyCompliance, verifyWithProofs, verifyBatch, Verifier, verifyDocumentBatch } from './verification/index';
+export type { Violation } from './verification/index';
+export * from './proof/index';
+export {
+  MerkleTree, EpochAggregator,
+  buildMerkleTreeFromHashes,
+  generateInclusionProof,
+  verifyInclusionProof,
+} from './merkle/index';
+export type { SparseMerkleProof } from './merkle/index';
+export * from './evidence-core/index';
+export * from './store/index';

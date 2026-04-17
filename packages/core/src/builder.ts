@@ -10,7 +10,7 @@ import type {
   CovenantMetadata,
   Obligation,
   CovenantDocument,
-} from './types.js';
+} from './core-internal-types';
 
 /**
  * A fluent builder for constructing CovenantDocument instances.

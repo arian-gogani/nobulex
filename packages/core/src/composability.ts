@@ -7,9 +7,9 @@
  * for a given covenant, and analyze the trust topology of a multi-agent system.
  */
 
-import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/types';
+import type { CovenantSpec, CovenantStatement, CovenantRequirement } from './types/index';
 
-export type { CovenantSpec, CovenantStatement, CovenantRequirement } from '@nobulex/types';
+export type { CovenantSpec, CovenantStatement, CovenantRequirement } from './types/index';
 
 
 /** Result of a compatibility check between two covenants. */

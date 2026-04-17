@@ -4,11 +4,13 @@
     "outDir": "dist",
     "rootDir": "src",
     "composite": true,
-    "emitDeclarationOnly": true
+    "emitDeclarationOnly": true,
+    "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts"],
-  "references": [
-    { "path": "../sdk" }
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
   ]
 }

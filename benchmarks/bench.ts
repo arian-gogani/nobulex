@@ -16,13 +16,14 @@
 import os from 'node:os';
 import { performance } from 'node:perf_hooks';
 
-import { generateKeyPair, sha256, sign, verify } from '@nobulex/crypto';
-import { parseSource, compile } from '@nobulex/covenant-lang';
-import type { EnforcementFn } from '@nobulex/covenant-lang';
-import { createDID } from '@nobulex/identity';
-import { EnforcementMiddleware } from '@nobulex/middleware';
-import { ActionLogBuilder, verifyIntegrity, verifyPartial } from '@nobulex/action-log';
-import type { ActionLog } from '@nobulex/types';
+import {
+  generateKeyPair, sha256, sign, verify,
+  parseSource, compile,
+  createDID,
+  EnforcementMiddleware,
+  ActionLogBuilder, verifyIntegrity, verifyPartial,
+} from '@nobulex/core';
+import type { EnforcementFn, ActionLog } from '@nobulex/core';
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 import type { ProofOfBehavior } from '@nobulex/sdk';
 

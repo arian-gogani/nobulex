@@ -6,7 +6,7 @@
  * logging, metrics, validation, caching, and rate limiting.
  */
 
-import { Logger, defaultLogger, ValidationError } from '@nobulex/types';
+import { Logger, defaultLogger, ValidationError } from '@nobulex/core';
 
 
 /** Context passed to each middleware in the pipeline. */

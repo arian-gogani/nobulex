@@ -11,8 +11,8 @@
  *
  */
 
-import { generateNonce, toHex } from '@nobulex/crypto';
-import { PROTOCOL_VERSION } from './types.js';
+import { generateNonce, toHex } from './crypto/index';
+import { PROTOCOL_VERSION } from './core-internal-types';
 
 
 

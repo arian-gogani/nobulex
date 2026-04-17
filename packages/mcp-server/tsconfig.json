@@ -6,13 +6,7 @@
     "composite": true,
     "skipLibCheck": true
   },
-  "include": ["src"],
-  "references": [
-    { "path": "../types" },
-    { "path": "../crypto" },
-    { "path": "../core" },
-    { "path": "../store" },
-    { "path": "../verification" },
-    { "path": "../sdk" }
+  "include": [
+    "src"
   ]
 }

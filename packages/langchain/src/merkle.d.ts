@@ -1,4 +1,4 @@
-declare module '@nobulex/merkle' {
+declare module '@nobulex/core' {
   export interface MerkleTree {
     readonly root: string;
     readonly leaves: readonly string[];

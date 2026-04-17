@@ -9,38 +9,6 @@
   "include": [
     "src"
   ],
-  "references": [
-    {
-      "path": "../types"
-    },
-    {
-      "path": "../crypto"
-    },
-    {
-      "path": "../core"
-    },
-    {
-      "path": "../ccl"
-    },
-    {
-      "path": "../identity"
-    },
-    {
-      "path": "../store"
-    },
-    {
-      "path": "../covenant-lang"
-    },
-    {
-      "path": "../action-log"
-    },
-    {
-      "path": "../middleware"
-    },
-    {
-      "path": "../verification"
-    },
-  ],
   "exclude": [
     "src/**/*.test.ts",
     "src/benchmarks.ts"

@@ -1,6 +1,4 @@
-import { buildCovenant, verifyCovenant } from '@nobulex/core';
-import { generateKeyPair } from '@nobulex/crypto';
-import { ValidationError } from '@nobulex/types';
+import { buildCovenant, verifyCovenant, generateKeyPair, ValidationError } from '@nobulex/core';
 
 const RULES: Record<string, string> = {
   'no-data-leak': "deny exfiltrate on '/**'\ndeny write on '/external/**'",

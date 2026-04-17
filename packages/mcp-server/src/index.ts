@@ -4,9 +4,8 @@
  */
 
 import { NobulexClient } from '@nobulex/sdk';
-import { MemoryStore } from '@nobulex/store';
-import { generateKeyPair, toHex } from '@nobulex/crypto';
-import type { KeyPair } from '@nobulex/crypto';
+import { MemoryStore, generateKeyPair, toHex } from '@nobulex/core';
+import type { KeyPair } from '@nobulex/core';
 
 import type {
   JsonRpcRequest,
@@ -388,7 +387,7 @@ export class NobulexServer {
         return this._toolError('Missing required field: privateKeyHex');
       }
 
-      const { fromHex } = await import('@nobulex/crypto');
+      const { fromHex } = await import('@nobulex/core');
       const privateKey = fromHex(privateKeyHex);
 
       const doc = await this.client.createCovenant({
@@ -503,7 +502,7 @@ export class NobulexServer {
 
       let keyPair: KeyPair;
       if (privateKeyHex) {
-        const { keyPairFromPrivateKeyHex } = await import('@nobulex/crypto');
+        const { keyPairFromPrivateKeyHex } = await import('@nobulex/core');
         keyPair = await keyPairFromPrivateKeyHex(privateKeyHex);
       } else {
         keyPair = await generateKeyPair();

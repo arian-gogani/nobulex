@@ -17,26 +17,45 @@ import {
   signWithDID,
   verifyWithDID,
   DIDResolver,
-} from '@nobulex/identity';
-import type { DIDKeyPair, DIDDocument } from '@nobulex/identity';
-
-import { parseSource, compile, serialize, tokenize } from '@nobulex/covenant-lang';
-import type { CovenantSpec, EnforcementFn, ActionContext, EnforcementDecision } from '@nobulex/covenant-lang';
-
-import { ActionLogBuilder, verifyIntegrity, generateMerkleProof, verifyMerkleProof, buildMerkleTree } from '@nobulex/action-log';
-import type { ActionLog, ActionLogEntry, MerkleProof } from '@nobulex/action-log';
-
-import { EnforcementMiddleware, createMiddleware } from '@nobulex/middleware';
-import { DidRelationship, ProofType, ValidationError } from '@nobulex/types';
-
-import { verify, verifyWithProofs, verifyBatch } from '@nobulex/verification';
-import type { VerificationResult, Violation } from '@nobulex/verification';
-
-// Compatibility functions removed during consolidation
-
-import type { CovenantAttestation, VCProof, SignedCovenant } from '@nobulex/types';
-
-import { sha256String, canonicalizeJson, toHex, generateId, timestamp as nowTimestamp } from '@nobulex/crypto';
+  parseSource,
+  compile,
+  serialize,
+  tokenize,
+  ActionLogBuilder,
+  verifyIntegrity,
+  generateMerkleProof,
+  verifyMerkleProof,
+  buildMerkleTree,
+  EnforcementMiddleware,
+  createMiddleware,
+  DidRelationship,
+  ProofType,
+  ValidationError,
+  verifyCompliance as verify,
+  verifyWithProofs,
+  verifyBatch,
+  sha256String,
+  canonicalizeJson,
+  toHex,
+  generateId,
+  timestamp as nowTimestamp,
+} from '@nobulex/core';
+import type {
+  DIDKeyPair,
+  DIDDocument,
+  CovenantSpec,
+  EnforcementFn,
+  ActionContext,
+  EnforcementDecision,
+  ActionLog,
+  ActionLogEntry,
+  MerkleProof,
+  VerificationResult,
+  Violation,
+  CovenantAttestation,
+  VCProof,
+  SignedCovenant,
+} from '@nobulex/core';
 
 // covenantagent
 

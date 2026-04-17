@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/langchain",
   "version": "0.2.1",
-  "description": "LangChain integration \u2014 proof-of-behavior enforcement for AI agents",
+  "description": "LangChain integration — proof-of-behavior enforcement for AI agents",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -18,13 +18,12 @@
     "LICENSE"
   ],
   "scripts": {
-    "build": "tsup src/index.ts --format cjs,esm && tsc --emitDeclarationOnly --outDir dist",
+    "build": "tsup src/index.ts --format cjs,esm",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/crypto": "0.2.0",
-    "@nobulex/merkle": "0.2.0"
+    "@nobulex/core": "*"
   },
   "peerDependencies": {
     "@langchain/core": ">=0.2.0"

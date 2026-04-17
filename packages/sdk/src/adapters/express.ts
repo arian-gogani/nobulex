@@ -9,8 +9,7 @@
 
 import type { NobulexClient } from '../index.js';
 import type { CovenantDocument } from '@nobulex/core';
-import { deserializeCovenant, verifyCovenant } from '@nobulex/core';
-import { ContentType } from '@nobulex/types';
+import { deserializeCovenant, verifyCovenant, ContentType } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
 
 

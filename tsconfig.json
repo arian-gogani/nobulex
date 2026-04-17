@@ -20,86 +20,10 @@
     "resolveJsonModule": true
   },
   "references": [
-    {
-      "path": "packages/types"
-    },
-    {
-      "path": "packages/crypto"
-    },
-    {
-      "path": "packages/ccl"
-    },
-    {
-      "path": "packages/core"
-    },
-    {
-      "path": "packages/covenant-lang"
-    },
-    {
-      "path": "packages/action-log"
-    },
-    {
-      "path": "packages/middleware"
-    },
-    {
-      "path": "packages/verification"
-    },
-    {
-      "path": "packages/identity"
-    },
-    {
-      "path": "packages/enforcement"
-    },
-    {
-      "path": "packages/proof"
-    },
-    {
-      "path": "packages/tee"
-    },
-    {
-      "path": "packages/store"
-    },
-    {
-      "path": "packages/evm"
-    },
-    {
-      "path": "packages/sdk"
-    },
-    {
-      "path": "packages/react"
-    },
-    {
-      "path": "packages/mcp-server"
-    },
-    {
-      "path": "packages/mcp"
-    },
-    {
-      "path": "packages/cli"
-    },
-    {
-      "path": "packages/evidence-core"
-    },
-    {
-      "path": "packages/merkle"
-    },
-    {
-      "path": "packages/transparency-log"
-    },
-    {
-      "path": "packages/otel"
-    },
-    {
-      "path": "packages/langchain"
-    },
-    {
-      "path": "packages/elizaos-plugin"
-    },
-    {
-      "path": "packages/reputation"
-    },
-    {
-      "path": "packages/a2a"
-    }
+    { "path": "packages/core" },
+    { "path": "packages/sdk" },
+    { "path": "packages/mcp-server" },
+    { "path": "packages/a2a" },
+    { "path": "packages/langchain" }
   ]
 }

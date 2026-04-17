@@ -20,7 +20,7 @@
 import type { NobulexClient } from '../index.js';
 import type { CovenantDocument } from '@nobulex/core';
 import type { EvaluationResult } from '../types.js';
-import { ValidationError } from '@nobulex/types';
+import { ValidationError } from '@nobulex/core';
 
 // error
 

@@ -5,8 +5,8 @@ import {
   fromHex,
   sha256String,
   timestamp,
-} from '@nobulex/crypto';
-import { ValidationError } from '@nobulex/types';
+  ValidationError,
+} from '@nobulex/core';
 
 /**
  * Options for configuring the authentication middleware.

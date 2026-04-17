@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { generateKeyPair } from '@nobulex/crypto';
+import { generateKeyPair } from './crypto/index';
 
 import {
   validateDocumentSchema,

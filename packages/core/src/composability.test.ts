@@ -5,7 +5,7 @@ import {
   analyzeTopology,
   mergeCovenants,
 } from './composability';
-import { parseSource, compile } from '@nobulex/covenant-lang';
+import { parseSource, compile } from './covenant-lang/index';
 import type { CovenantSpec, AgentProfile } from './composability';
 
 describe('composability', () => {

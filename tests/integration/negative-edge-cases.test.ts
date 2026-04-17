@@ -64,8 +64,26 @@ import {
   Monitor,
   CapabilityGate,
   MonitorDeniedError,
-  verifyMerkleProof,
 } from '@nobulex/enforcement';
+import type { AuditMerkleProof } from '@nobulex/enforcement';
+
+/**
+ * Local verifyMerkleProof helper — the function was moved out of enforcement
+ * during the monorepo consolidation. Re-implemented here for test use only.
+ */
+function verifyMerkleProof(proof: AuditMerkleProof): boolean {
+  let hash = proof.entryHash;
+  let idx = proof.index;
+  for (const sibling of proof.proof) {
+    if (idx % 2 === 0) {
+      hash = sha256String(hash + sibling);
+    } else {
+      hash = sha256String(sibling + hash);
+    }
+    idx = Math.floor(idx / 2);
+  }
+  return hash === proof.merkleRoot;
+}
 
 // ---------------------------------------------------------------------------
 // Shared helpers

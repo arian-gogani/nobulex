@@ -1,6 +1,6 @@
 
 import type { NobulexMiddleware, MiddlewareContext } from '../middleware.js';
-import { ValidationError } from '@nobulex/types';
+import { ValidationError } from '@nobulex/core';
 
 // ---
 

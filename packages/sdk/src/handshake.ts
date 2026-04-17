@@ -5,13 +5,21 @@
  * No proof, no transaction. This is the core trust mechanism.
  */
 
-import { sha256Object } from '@nobulex/crypto';
-import type { HashHex } from '@nobulex/crypto';
-import { signWithDID, verifyWithDID } from '@nobulex/identity';
-import type { DIDKeyPair, DIDDocument } from '@nobulex/identity';
-import { verify as verifyCovenant } from '@nobulex/verification';
-import { verifyIntegrity } from '@nobulex/action-log';
-import type { CovenantSpec, ActionLog, VerificationResult } from '@nobulex/types';
+import {
+  sha256Object,
+  signWithDID,
+  verifyWithDID,
+  verifyCompliance as verifyCovenant,
+  verifyIntegrity,
+} from '@nobulex/core';
+import type {
+  HashHex,
+  DIDKeyPair,
+  DIDDocument,
+  CovenantSpec,
+  ActionLog,
+  VerificationResult,
+} from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
 // --- types ---

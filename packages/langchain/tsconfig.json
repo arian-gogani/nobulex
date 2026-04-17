@@ -7,9 +7,10 @@
     "emitDeclarationOnly": true,
     "skipLibCheck": true
   },
-  "include": ["src/**/*"],
-  "exclude": ["src/**/*.test.ts"],
-  "references": [
-    { "path": "../crypto" }
+  "include": [
+    "src/**/*"
+  ],
+  "exclude": [
+    "src/**/*.test.ts"
   ]
 }

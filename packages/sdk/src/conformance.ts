@@ -19,9 +19,10 @@ import type {
   CovenantBuilderOptions,
   VerificationResult,
   VerificationCheck,
+  CCLDocument,
+  EvaluationResult as CCLEvaluationResult,
+  KeyPair,
 } from '@nobulex/core';
-import type { CCLDocument, EvaluationResult as CCLEvaluationResult } from '@nobulex/ccl';
-import type { KeyPair } from '@nobulex/crypto';
 
 
 // Aggregate result from running the full conformance suite

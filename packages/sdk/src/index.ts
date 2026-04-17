@@ -9,10 +9,6 @@ import {
   generateKeyPair as cryptoGenerateKeyPair,
   timestamp,
   KeyManager,
-} from '@nobulex/crypto';
-import type { KeyPair, KeyRotationPolicy, ManagedKeyPair } from '@nobulex/crypto';
-
-import {
   buildCovenant,
   verifyCovenant as coreVerifyCovenant,
   countersignCovenant,
@@ -31,18 +27,7 @@ import {
   resignCovenant,
   serializeCovenant,
   deserializeCovenant,
-} from '@nobulex/core';
-import type {
-  CovenantDocument,
-  VerificationResult,
-  CovenantBuilderOptions,
-  Issuer,
-  Beneficiary,
-  PartyRole,
-} from '@nobulex/core';
-
-import {
-  parse as cclParse,
+  cclParse,
   evaluate as cclEvaluate,
   matchAction as cclMatchAction,
   matchResource as cclMatchResource,
@@ -50,17 +35,26 @@ import {
   serialize as cclSerialize,
   checkRateLimit as cclCheckRateLimit,
   validateNarrowing as cclValidateNarrowing,
-} from '@nobulex/ccl';
-import type { CCLDocument, EvaluationContext } from '@nobulex/ccl';
-
-import {
   createIdentity as identityCreate,
   evolveIdentity as identityEvolve,
   verifyIdentity as identityVerify,
-} from '@nobulex/identity';
-import type { AgentIdentity } from '@nobulex/identity';
-
-import { ValidationError, CryptoError } from '@nobulex/types';
+  ValidationError,
+  CryptoError,
+} from '@nobulex/core';
+import type {
+  KeyPair,
+  KeyRotationPolicy,
+  ManagedKeyPair,
+  CovenantDocument,
+  VerificationResult,
+  CovenantBuilderOptions,
+  Issuer,
+  Beneficiary,
+  PartyRole,
+  CCLDocument,
+  EvaluationContext,
+  AgentIdentity,
+} from '@nobulex/core';
 
 import type {
   NobulexClientOptions,
@@ -206,7 +200,7 @@ export type {
   Nonce,
   KeyRotationPolicy,
   ManagedKeyPair,
-} from '@nobulex/crypto';
+} from '@nobulex/core';
 
 export {
   generateKeyPair,
@@ -228,7 +222,7 @@ export {
   keyPairFromPrivateKey,
   keyPairFromPrivateKeyHex,
   KeyManager,
-} from '@nobulex/crypto';
+} from '@nobulex/core';
 
 // Re-export CCL types and functions
 export type {
@@ -242,7 +236,7 @@ export type {
   Condition,
   CompoundCondition,
   NarrowingViolation,
-} from '@nobulex/ccl';
+} from '@nobulex/core';
 
 export {
   parse as parseCCL,
@@ -260,7 +254,7 @@ export {
   parseTokens,
   CCLSyntaxError,
   CCLValidationError,
-} from '@nobulex/ccl';
+} from '@nobulex/core';
 
 // Re-export identity types and functions
 export type {
@@ -272,7 +266,7 @@ export type {
   CreateIdentityOptions as CoreCreateIdentityOptions,
   EvolveIdentityOptions as CoreEvolveIdentityOptions,
   RuntimeType,
-} from '@nobulex/identity';
+} from '@nobulex/core';
 
 export {
   createIdentity as createIdentity_core,
@@ -286,7 +280,7 @@ export {
   serializeIdentity,
   deserializeIdentity,
   DEFAULT_EVOLUTION_POLICY,
-} from '@nobulex/identity';
+} from '@nobulex/core';
 
 // ---
 

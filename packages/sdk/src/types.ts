@@ -1,7 +1,7 @@
 // SDK-specific types that wrap and extend the lower-level package types into a unified, ergonomic API surface
 
-import type { KeyPair } from '@nobulex/crypto';
 import type {
+  KeyPair,
   CovenantDocument,
   VerificationResult,
   VerificationCheck,
@@ -14,19 +14,15 @@ import type {
   CovenantMetadata,
   Obligation,
   PartyRole,
-} from '@nobulex/core';
-import type {
   CCLDocument,
   EvaluationResult as CCLEvaluationResult,
   Statement,
   Severity,
-} from '@nobulex/ccl';
-import type {
   AgentIdentity,
   ModelAttestation,
   DeploymentContext,
   LineageEntry,
-} from '@nobulex/identity';
+} from '@nobulex/core';
 
 // exports
 

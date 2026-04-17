@@ -7,10 +7,12 @@
  *
  */
 
-import { generateKeyPair, sign, verify, sha256, sha256String } from '@nobulex/crypto';
-import { buildCovenant, verifyCovenant } from '@nobulex/core';
-import { parse as cclParse, evaluate as cclEvaluate } from '@nobulex/ccl';
-import { MemoryStore } from '@nobulex/store';
+import {
+  generateKeyPair, sign, verify, sha256, sha256String,
+  buildCovenant, verifyCovenant,
+  cclParse, evaluate as cclEvaluate,
+  MemoryStore,
+} from '@nobulex/core';
 import { NobulexClient } from './index.js';
 
 // ---

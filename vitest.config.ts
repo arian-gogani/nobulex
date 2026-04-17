@@ -1,17 +1,22 @@
 import { defineConfig } from 'vitest/config';
 import * as path from 'path';
 
-const packages = [
-  'ccl', 'cli', 'core', 'crypto', 'enforcement', 'evm',
-  'identity', 'mcp-server', 'mcp', 'proof', 'react', 'sdk',
-  'store', 'types',
-  'covenant-lang', 'action-log', 'middleware', 'verification',
-  'tee', 'elizaos-plugin', 'transparency-log', 'merkle',
-  'langchain', 'evidence-core', 'reputation', 'otel', 'a2a',
+// Merged-into-core packages: alias old names to core subdirectories
+const mergedIntoCore = [
+  'types', 'crypto', 'ccl', 'covenant-lang', 'action-log',
+  'identity', 'enforcement', 'middleware', 'verification',
+  'proof', 'merkle', 'evidence-core', 'store',
 ];
 
+// Standalone packages (still have their own packages/ directory)
+const standalone = ['core', 'sdk', 'mcp-server', 'a2a', 'langchain'];
+
 const alias: Record<string, string> = {};
-for (const pkg of packages) {
+
+for (const pkg of mergedIntoCore) {
+  alias[`@nobulex/${pkg}`] = path.resolve(__dirname, `packages/core/src/${pkg}/index.ts`);
+}
+for (const pkg of standalone) {
   alias[`@nobulex/${pkg}`] = path.resolve(__dirname, `packages/${pkg}/src/index.ts`);
 }
 
@@ -24,7 +29,6 @@ export default defineConfig({
       'packages/*/__tests__/**/*.test.ts',
       'tests/**/*.test.ts',
       'benchmarks/**/*.test.ts',
-      'demo/**/*.test.ts',
     ],
     exclude: [
       'packages/experimental/**',
@@ -38,7 +42,7 @@ export default defineConfig({
         'packages/*/src/**/*.test.ts',
         'packages/*/src/**/*.d.ts',
         'packages/experimental/**',
-      'tests/experimental/**',
+        'tests/experimental/**',
       ],
       thresholds: {
         statements: 80,

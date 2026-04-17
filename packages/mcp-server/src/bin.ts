@@ -11,7 +11,7 @@
  */
 
 import { NobulexServer } from './index';
-import { MemoryStore } from '@nobulex/store';
+import { MemoryStore } from '@nobulex/core';
 import type { JsonRpcRequest } from './types';
 
 const store = new MemoryStore();

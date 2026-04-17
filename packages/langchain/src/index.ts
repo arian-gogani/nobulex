@@ -23,14 +23,11 @@ import {
   signString,
   verify,
   toHex,
-} from '@nobulex/crypto';
-import type { KeyPair } from '@nobulex/crypto';
-import {
   buildMerkleTreeFromHashes,
   generateInclusionProof,
   verifyInclusionProof,
-} from '@nobulex/merkle';
-import type { MerkleTree } from '@nobulex/merkle';
+} from '@nobulex/core';
+import type { KeyPair, MerkleTree } from '@nobulex/core';
 
 // ---
 

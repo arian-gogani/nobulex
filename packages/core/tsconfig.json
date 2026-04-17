@@ -1,29 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "declaration": true,
     "outDir": "dist",
-    "rootDir": "src",
-    "composite": true,
-    "emitDeclarationOnly": true
+    "rootDir": "src"
   },
-  "include": [
-    "src/**/*"
-  ],
-  "references": [
-    {
-      "path": "../crypto"
-    },
-    {
-      "path": "../ccl"
-    },
-    {
-      "path": "../types"
-    },
-    {
-      "path": "../covenant-lang"
-    }
-  ],
-  "exclude": [
-    "src/**/*.test.ts"
-  ]
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.test.ts"]
 }

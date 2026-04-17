@@ -17,8 +17,8 @@ jobs:
           node-version: 20
           cache: npm
 
-      - run: npm install
+      - run: npm ci
 
       - run: npm run build
 
-      - run: npx vitest run
+      - run: npx vitest run --config vitest.config.ci.ts

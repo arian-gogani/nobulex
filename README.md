@@ -41,7 +41,7 @@ Three primitives. That's the whole protocol:
 2. **Enforce** — check every action *before* it runs
 3. **Prove** — tamper-evident hash chain anyone can verify
 
-![Tests](https://img.shields.io/badge/tests-3%2C648%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-2%2C736%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 
@@ -67,10 +67,7 @@ npm install @nobulex/sdk
 ```
 
 ```typescript
-import { createDID } from '@nobulex/identity';
-import { parseSource } from '@nobulex/covenant-lang';
-import { EnforcementMiddleware } from '@nobulex/middleware';
-import { verify } from '@nobulex/verification';
+import { createDID, parseSource, EnforcementMiddleware, verify } from '@nobulex/core';
 
 // 1. Create an agent identity
 const agent = await createDID();
@@ -165,47 +162,37 @@ Three keywords. No configuration files. No YAML. No JSON schemas. Just rules.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                        Platform                             │
-│              cli  ·  sdk  ·  mcp-server                     │
+│                      Integrations                           │
+│            mcp-server  ·  a2a  ·  langchain                 │
 ├─────────────────────────────────────────────────────────────┤
-│                  Proof-of-Behavior Stack                    │
-│                                                             │
-│  ┌──────────┐  ┌──────────────┐  ┌────────────┐            │
-│  │ identity │  │ covenant-lang│  │ action-log │            │
-│  │  (DID)   │  │    (DSL)     │  │(hash-chain)│            │
-│  └──────────┘  └──────────────┘  └────────────┘            │
-│                                                             │
-│  ┌────────────┐  ┌──────────────┐  ┌───────────────┐       │
-│  │ middleware  │  │ verification │  │    core       │       │
-│  │(pre-exec)  │  │ (post-hoc)   │  │(trust graph)  │       │
-│  └────────────┘  └──────────────┘  └───────────────┘       │
+│                       User API                              │
+│                         sdk                                 │
 ├─────────────────────────────────────────────────────────────┤
-│                      Foundation                             │
-│                 crypto  ·  types                            │
+│                   Proof-of-Behavior                         │
+│                                                             │
+│  identity · covenant-lang · action-log · enforcement        │
+│  middleware · verification · crypto · merkle · proofs       │
+│                                                             │
+│                         core                                │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## Core Packages
+## Packages
 
 | Package | What It Does |
 |---------|-------------|
-| [`@nobulex/identity`](packages/identity/) | W3C DID creation with Ed25519 keys |
-| [`@nobulex/covenant-lang`](packages/covenant-lang/) | Cedar-inspired DSL: lexer, parser, compiler |
-| [`@nobulex/action-log`](packages/action-log/) | SHA-256 hash-chained tamper-evident log with Merkle proofs |
-| [`@nobulex/middleware`](packages/middleware/) | Pre-execution enforcement — blocks violations before they run |
-| [`@nobulex/verification`](packages/verification/) | Deterministic compliance verification |
-| [`@nobulex/sdk`](packages/sdk/) | Unified API combining all primitives |
-| [`@nobulex/mcp-server`](packages/mcp-server/) | MCP compliance server for any MCP-compatible agent |
-| [`@nobulex/cli`](packages/cli/) | Command-line: `nobulex init`, `verify`, `inspect` |
-| [`@nobulex/langchain`](packages/langchain/) | LangChain middleware integration ([PyPI](https://pypi.org/project/langchain-nobulex/)) |
+| [`@nobulex/core`](packages/core/) | Everything — identity (DIDs), covenant DSL, hash-chained action logs, enforcement middleware, verification, cryptographic proofs |
+| [`@nobulex/sdk`](packages/sdk/) | User-facing API — `NobulexClient`, `CovenantAgent`, cross-agent handshake |
+| [`@nobulex/mcp-server`](packages/mcp-server/) | MCP compliance server for Claude Desktop, Cursor, VS Code |
+| [`@nobulex/a2a`](packages/a2a/) | A2A Agent Card behavioral attestation extension |
+| [`@nobulex/langchain`](packages/langchain/) | LangChain callback integration |
 
 ## Integrations
 
 - **npm** — `npm install @nobulex/sdk`
-- **PyPI** — `pip install langchain-nobulex`
 - **MCP** — `npx @nobulex/mcp-server` (works with Claude Desktop, Cursor, VS Code)
-- **LangChain** — drop-in compliance middleware
-- **ElizaOS** — plugin for actions, evaluators, providers
+- **A2A** — Agent Card behavioral attestation extension
+- **LangChain** — drop-in compliance callbacks
 
 ## Conceptual Comparison
 

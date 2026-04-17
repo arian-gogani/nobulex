@@ -250,7 +250,7 @@
               <tr>
                 <td>Enforcement</td>
                 <td>Best-effort; can be bypassed</td>
-                <td>Signed commitments; TEE or staking</td>
+                <td>Signed commitments; pre-execution middleware</td>
               </tr>
               <tr>
                 <td>Verification</td>
@@ -260,7 +260,7 @@
               <tr>
                 <td>Consequences</td>
                 <td>Policy violation = incident</td>
-                <td>Economic enforcement; slashing on breach</td>
+                <td>Tamper-evident proof; cryptographic evidence of breach</td>
               </tr>
             </tbody>
           </table>
@@ -270,17 +270,69 @@
 
     <div class="divider" aria-hidden="true"></div>
 
-    <!-- Traction -->
+    <!-- Compliance Deadlines -->
+    <section class="section section--compliance" id="compliance" data-section="compliance" style="padding:5rem 2rem">
+      <div class="section__content" style="max-width:960px;margin:0 auto">
+        <p class="section__label section__label--center" data-reveal>REGULATORY DEADLINES</p>
+        <h2 style="text-align:center;margin-bottom:0.5rem" data-reveal>The clock is ticking</h2>
+        <p style="text-align:center;color:#888;margin-bottom:3rem" data-reveal>Every major AI compliance framework requires tamper-evident audit trails. Regular logs won't pass.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem" data-reveal>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,68,68,0.2);border-radius:12px;padding:2rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#f44;margin-bottom:0.5rem">June 30, 2026</p>
+            <p style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">Colorado AI Act</p>
+            <p style="color:#888;font-size:0.9rem">Accountability requirements for AI systems making consequential decisions. First U.S. state-level AI law.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,68,68,0.2);border-radius:12px;padding:2rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#f44;margin-bottom:0.5rem">August 2, 2026</p>
+            <p style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">EU AI Act Article 12</p>
+            <p style="color:#888;font-size:0.9rem">Requires tamper-evident automatic event logging for high-risk AI systems. Penalties up to €15M or 3% of global revenue.</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,68,68,0.2);border-radius:12px;padding:2rem">
+            <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#f44;margin-bottom:0.5rem">November 2026</p>
+            <p style="font-size:1.3rem;font-weight:700;margin-bottom:0.5rem">NAIC AI Evaluation</p>
+            <p style="color:#888;font-size:0.9rem">Nationwide AI evaluation tool for insurance. Carriers must prove agent compliance across every claim touched.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Ecosystem Compatibility -->
+    <section class="section section--ecosystem-compat" style="padding:4rem 2rem">
+      <div class="section__content" style="max-width:960px;margin:0 auto">
+        <p class="section__label section__label--center" data-reveal>WORKS WITH</p>
+        <h2 style="text-align:center;margin-bottom:2rem" data-reveal>Plugs into your existing stack</h2>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;text-align:center" data-reveal>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem">
+            <p style="font-weight:700;margin-bottom:0.25rem">AWS AgentCore</p>
+            <p style="color:#888;font-size:0.8rem">MCP-native — auto-discoverable in Agent Registry</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem">
+            <p style="font-weight:700;margin-bottom:0.25rem">Microsoft AGT</p>
+            <p style="color:#888;font-size:0.8rem">Proof layer for governance toolkit</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem">
+            <p style="font-weight:700;margin-bottom:0.25rem">Google A2A</p>
+            <p style="color:#888;font-size:0.8rem">Behavioral attestation for Agent Cards</p>
+          </div>
+          <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem">
+            <p style="font-weight:700;margin-bottom:0.25rem">LangChain</p>
+            <p style="color:#888;font-size:0.8rem">Drop-in compliance callbacks</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="divider" aria-hidden="true"></div>
     <section class="section section--traction" id="traction" data-section="traction">
       <div class="section__content">
         <p class="section__label section__label--center" data-reveal>TRACTION</p>
         <h2 class="traction__title" data-reveal>Built in the open</h2>
         <div class="traction__stats" data-reveal>
           <div class="traction__stat"><span class="traction__stat-val">3 lines</span><span class="traction__stat-lbl">To integrate</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">4,237</span><span class="traction__stat-lbl">Tests passing</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">31</span><span class="traction__stat-lbl">npm packages</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">LangChain</span><span class="traction__stat-lbl">Integration</span></div>
-          <div class="traction__stat"><span class="traction__stat-val">Independent</span><span class="traction__stat-lbl">Verifier</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">2,736</span><span class="traction__stat-lbl">Tests passing</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">5</span><span class="traction__stat-lbl">Packages</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">OATR</span><span class="traction__stat-lbl">Registered issuer</span></div>
+          <div class="traction__stat"><span class="traction__stat-val">NIST</span><span class="traction__stat-lbl">RFI submitted</span></div>
         </div>
         <p class="traction__meta" data-reveal>MIT · Open source · No vendor lock-in</p>
       </div>
@@ -295,9 +347,7 @@
         <div class="code-block code-block--wide" data-reveal>
           <span class="code-block__lang">JAVASCRIPT</span>
           <button type="button" class="code-block__copy" aria-label="Copy code">Copy</button>
-          <pre><code><span class="token-key">import</span> { createDID } <span class="token-key">from</span> <span class="token-str">'@nobulex/identity'</span>;
-<span class="token-key">import</span> { parseSource } <span class="token-key">from</span> <span class="token-str">'@nobulex/covenant-lang'</span>;
-<span class="token-key">import</span> { EnforcementMiddleware } <span class="token-key">from</span> <span class="token-str">'@nobulex/middleware'</span>;
+          <pre><code><span class="token-key">import</span> { createDID, parseSource, EnforcementMiddleware } <span class="token-key">from</span> <span class="token-str">'@nobulex/core'</span>;
 
 <span class="token-cmt">// 3 lines to add proof-of-behavior enforcement</span>
 <span class="token-key">const</span> agent = <span class="token-key">await</span> createDID();
@@ -318,7 +368,7 @@
       <div class="section__content" style="max-width:960px;margin:0 auto">
         <p class="section__label section__label--center" data-reveal>PRICING</p>
         <h2 style="text-align:center;margin-bottom:0.5rem" data-reveal>Start free. Scale when ready.</h2>
-        <p style="text-align:center;color:#888;margin-bottom:3rem" data-reveal>EU AI Act Article 12 compliance for your AI agents.</p>
+        <p style="text-align:center;color:#888;margin-bottom:3rem" data-reveal>EU AI Act Article 12 · Colorado AI Act · NIST AI Agent Standards Initiative</p>
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem" data-reveal>
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:2rem">
             <p style="font-size:0.75rem;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:#888;margin-bottom:0.5rem">Free</p>

@@ -11,7 +11,7 @@ the most recent version.
 
 ## Reporting a Vulnerability
 
-If you discover a security vulnerability in Kova, please report it responsibly.
+If you discover a security vulnerability in Nobulex, please report it responsibly.
 
 **Email**: security@nobulex.dev
 
@@ -32,7 +32,7 @@ anonymity is requested.
 
 ### Cryptographic Primitives
 
-Kova relies on the following cryptographic building blocks:
+Nobulex relies on the following cryptographic building blocks:
 
 | Primitive | Library | Purpose |
 |-----------|---------|---------|

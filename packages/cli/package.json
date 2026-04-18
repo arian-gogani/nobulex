@@ -1,0 +1,49 @@
+{
+  "name": "@nobulex/cli",
+  "version": "0.2.0",
+  "description": "Nobulex CLI — scaffold, verify, inspect, and report on covenant action logs",
+  "sideEffects": false,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "nobulex": "dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsup src/index.ts src/bin.ts --format cjs,esm --dts",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "prepublishOnly": "npm run build"
+  },
+  "dependencies": {
+    "@nobulex/core": "*"
+  },
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/arian-gogani/nobulex.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://nobulex.com",
+  "bugs": {
+    "url": "https://github.com/arian-gogani/nobulex/issues"
+  },
+  "author": "Nobulex Labs, Inc.",
+  "keywords": [
+    "nobulex",
+    "covenant",
+    "cli",
+    "ai-accountability",
+    "compliance"
+  ]
+}

@@ -1,12 +1,12 @@
-# Contributing to Kova
+# Contributing to Nobulex
 
-Thank you for your interest in contributing to Kova, the trust layer for the agent economy. This guide covers everything you need to get started.
+Thank you for your interest in contributing to Nobulex, the trust layer for the agent economy. This guide covers everything you need to get started.
 
 ## Good First Issues
 
 New to the project? See [docs/GOOD-FIRST-ISSUES.md](./docs/GOOD-FIRST-ISSUES.md) for scoped 1–2 hour tasks. These will also be created as GitHub issues labeled `good first issue`. Pick one, comment that you're taking it, and open a PR.
 
-## Kova Improvement Proposals (KIPs)
+## Nobulex Improvement Proposals (KIPs)
 
 Proposing protocol changes? See [docs/KIP-PROCESS.md](./docs/KIP-PROCESS.md) for the structured KIP process. Anyone can propose changes through a KIP.
 
@@ -66,7 +66,7 @@ nobulex/
     store/            # Pluggable storage backends
     verifier/         # Standalone verification engine
     sdk/              # High-level NobulexClient unified SDK
-    kova/             # Single-package Kova (withKova, presets)
+    nobulex/          # Single-package Nobulex (withNobulex, presets)
     eu-compliance/   # EU AI Act compliance checker
     identity/         # Agent identity with lineage tracking
     enforcement/      # Runtime constraint enforcement
@@ -74,7 +74,7 @@ nobulex/
     breach/           # Breach detection and trust graph
     reputation/       # Reputation scoring and staking
     mcp/              # MCP guard for tool enforcement
-    cli/              # Command-line interface (nobulex, kova)
+    cli/              # Command-line interface (nobulex)
     attestation/      # External attestation and reconciliation
     canary/           # Canary testing framework
     gametheory/       # Game-theoretic honesty proofs

@@ -4,8 +4,24 @@
  * and the whole chain breaks. Append-only by design.
  */
 
-import { sha256String, canonicalizeJson } from '../crypto/index';
+import { sha256String, canonicalizeJson, sha256Object } from '../crypto/index';
 import type { ActionLogEntry, ActionLog, MerkleProofNode, MerkleProof } from '../types/index';
+
+/**
+ * Compute the canonical outcome hash of a handler's successful return value,
+ * in the same shape the middleware writes into `ActionLogEntry.outcomeHash`.
+ * Consumers can call this to verify a log entry against a replayed result.
+ */
+export function computeOutcomeHash(value: unknown): string {
+  return sha256Object({ value });
+}
+
+/**
+ * Compute the canonical outcome hash for a failed handler (error message variant).
+ */
+export function computeFailureHash(errorMessage: string): string {
+  return sha256Object({ error: errorMessage });
+}
 
 /**
  * A single entry in the action log, containing an action, its context, and a hash linking it to the chain.
@@ -22,7 +38,7 @@ import type { ActionLogEntry, ActionLog, MerkleProofNode, MerkleProof } from '..
  * @returns The hex-encoded SHA-256 hash string.
  */
 export function computeEntryHash(entry: Omit<ActionLogEntry, 'hash'>): string {
-  const payload = canonicalizeJson({
+  const base: Record<string, unknown> = {
     index: entry.index,
     timestamp: entry.timestamp,
     agentDid: entry.agentDid,
@@ -31,7 +47,11 @@ export function computeEntryHash(entry: Omit<ActionLogEntry, 'hash'>): string {
     params: entry.params,
     outcome: entry.outcome,
     previousHash: entry.previousHash,
-  });
+  };
+  if (entry.outcomeHash !== undefined) {
+    base.outcomeHash = entry.outcomeHash;
+  }
+  const payload = canonicalizeJson(base);
   // watch out: mutation happens here
   return sha256String(payload);
 }
@@ -94,8 +114,9 @@ export class ActionLogBuilder {
     action: string;
     resource: string;
     params: Record<string, unknown>;
-    outcome: 'success' | 'failure' | 'blocked';
+    outcome: 'success' | 'failure' | 'blocked' | 'would_block' | 'halted';
     timestamp?: string;
+    outcomeHash?: string;
   }): ActionLogEntry {
     const index = this._entries.length;
     const previousHash = index > 0 ? this._entries[index - 1]!.hash : null;
@@ -110,6 +131,7 @@ export class ActionLogBuilder {
       params: input.params,
       outcome: input.outcome,
       previousHash,
+      ...(input.outcomeHash !== undefined ? { outcomeHash: input.outcomeHash } : {}),
     };
 
     const hash = computeEntryHash(partial);
@@ -187,6 +209,7 @@ export function verifyIntegrity(log: ActionLog): {
       params: entry.params,
       outcome: entry.outcome,
       previousHash: entry.previousHash,
+      ...(entry.outcomeHash !== undefined ? { outcomeHash: entry.outcomeHash } : {}),
     });
     if (entry.hash !== expectedHash) {
       // historical: used to be async, keeping signature for compatibility
@@ -282,6 +305,7 @@ export function verifyPartial(
       params: entry.params,
       outcome: entry.outcome,
       previousHash: entry.previousHash,
+      ...(entry.outcomeHash !== undefined ? { outcomeHash: entry.outcomeHash } : {}),
     });
     if (entry.hash !== expectedHash) {
       errors.push(`Entry ${i}: hash mismatch (expected ${expectedHash}, got ${entry.hash})`);

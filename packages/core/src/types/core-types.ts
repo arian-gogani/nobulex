@@ -180,8 +180,16 @@ export interface ActionLogEntry {
   readonly resource: string;
   /** Arbitrary key-value parameters associated with this action. */
   readonly params: Record<string, unknown>;
-  // The result of the action: succeeded, failed, or was blocked by enforcement
-  readonly outcome: 'success' | 'failure' | 'blocked';
+  // The result of the action: succeeded, failed, was blocked by enforcement,
+  // would have been blocked in enforce mode (observe mode), or was halted via emergency halt.
+  readonly outcome: 'success' | 'failure' | 'blocked' | 'would_block' | 'halted';
+  /**
+   * Hex SHA-256 of the canonical JSON of the handler's return value (for
+   * `success` outcomes) or failure metadata. Binds the log entry to the
+   * actual post-execution result, as expected by the LangChain RFC.
+   * Absent for entries where no execution occurred (blocked / would_block / halted).
+   */
+  readonly outcomeHash?: string;
   /** References to upstream agent log entries whose outputs informed this action. */
   readonly sourceRefs?: readonly SourceRef[];
   /** The hash of the previous log entry, or null for the first entry in the chain. */

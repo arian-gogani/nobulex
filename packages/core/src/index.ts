@@ -996,3 +996,6 @@ export {
 export type { SparseMerkleProof } from './merkle/index';
 export * from './evidence-core/index';
 export * from './store/index';
+export * from './compliance/index';
+export * from './replay/index';
+export * from './composition/index';

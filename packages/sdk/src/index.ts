@@ -1164,5 +1164,23 @@ export { CovenantAgent } from './primitives.js';
 export type { DIDKeyPair as PrimitivesDIDKeyPair } from './primitives.js';
 
 // Cross-agent verification handshake
-export { generateProof, verifyCounterparty } from './handshake.js';
-export type { ProofOfBehavior, HandshakeResult, HandshakeOptions } from './handshake.js';
+export {
+  generateProof,
+  verifyCounterparty,
+  verifyCounterpartyHardened,
+  verifyCounterpartiesBatch,
+  HandshakeCache,
+  TRUST_PRESETS,
+  resolveTrustLevel,
+  withTrustLevel,
+} from './handshake.js';
+export type {
+  ProofOfBehavior,
+  HandshakeResult,
+  HandshakeOptions,
+  HardenedHandshakeOptions,
+  TrustLevel,
+  TrustThreshold,
+  BatchHandshakeItem,
+  BatchHandshakeResult,
+} from './handshake.js';

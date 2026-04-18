@@ -6,6 +6,8 @@ import {
 } from './index';
 import { parseSource } from '../covenant-lang/index';
 import { verifyIntegrity } from '../action-log/index';
+import { generateKeyPair, verify, fromHex, sha256Object } from '../crypto/index';
+import { computeOutcomeHash, computeFailureHash } from '../action-log/index';
 
 const SAFE_SPEC = `covenant Safe {
   forbid transfer (amount > 500);
@@ -159,6 +161,210 @@ describe('@nobulex/middleware', () => {
         },
       );
       expect(result.value).toBe(42);
+    });
+  });
+
+  // ── Observe mode ─────────────────────────────────────────────────────────
+
+  describe('observe mode', () => {
+    it('logs blocked actions as would_block but still executes the handler', async () => {
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-observe',
+        spec: parseSource('covenant X { permit read; forbid delete; }'),
+        mode: 'observe',
+      });
+      const handler = vi.fn(() => 'deleted');
+      const result = await mw.execute({ action: 'delete', params: {} }, handler);
+      expect(result.executed).toBe(true);
+      expect(result.value).toBe('deleted');
+      expect(result.decision.action).toBe('block');
+      expect(result.entry.outcome).toBe('would_block');
+      expect(handler).toHaveBeenCalledTimes(1);
+    });
+
+    it('permitted actions still log as success in observe mode', async () => {
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-observe',
+        spec: parseSource('covenant X { permit read; }'),
+        mode: 'observe',
+      });
+      const result = await mw.execute({ action: 'read', params: {} }, () => 'ok');
+      expect(result.entry.outcome).toBe('success');
+    });
+
+    it('onBlock still fires in observe mode for would-be-blocked actions', async () => {
+      const onBlock = vi.fn();
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-observe',
+        spec: parseSource('covenant X { forbid write; }'),
+        mode: 'observe',
+        onBlock,
+      });
+      await mw.execute({ action: 'write', params: {} }, () => 'ok');
+      expect(onBlock).toHaveBeenCalledTimes(1);
+    });
+
+    it('exposes mode via getter', () => {
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-observe',
+        spec: parseSource('covenant X { permit read; }'),
+        mode: 'observe',
+      });
+      expect(mw.mode).toBe('observe');
+    });
+
+    it('defaults to enforce mode when not specified', () => {
+      const mw = createMiddleware('did:nobulex:agent', 'covenant X { permit read; }');
+      expect(mw.mode).toBe('enforce');
+    });
+  });
+
+  // ── Emergency halt ───────────────────────────────────────────────────────
+
+  describe('emergency halt', () => {
+    it('halts block subsequent permitted actions', async () => {
+      const mw = createMiddleware('did:nobulex:agent-halt', 'covenant X { permit read; }');
+      mw.halt();
+      expect(mw.halted).toBe(true);
+      const handler = vi.fn(() => 'should not run');
+      const result = await mw.execute({ action: 'read', params: {} }, handler);
+      expect(result.executed).toBe(false);
+      expect(result.entry.outcome).toBe('halted');
+      expect(handler).not.toHaveBeenCalled();
+    });
+
+    it('resume restores normal enforcement', async () => {
+      const mw = createMiddleware('did:nobulex:agent-halt', 'covenant X { permit read; }');
+      mw.halt();
+      await mw.execute({ action: 'read', params: {} }, () => 'x');
+      mw.resume();
+      expect(mw.halted).toBe(false);
+      const result = await mw.execute({ action: 'read', params: {} }, () => 'allowed');
+      expect(result.executed).toBe(true);
+      expect(result.value).toBe('allowed');
+    });
+
+    it('halt overrides observe mode', async () => {
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-halt',
+        spec: parseSource('covenant X { permit everything; }'),
+        mode: 'observe',
+      });
+      mw.halt();
+      const handler = vi.fn();
+      const result = await mw.execute({ action: 'everything', params: {} }, handler);
+      expect(result.executed).toBe(false);
+      expect(handler).not.toHaveBeenCalled();
+    });
+  });
+
+  // ── Outcome hash ─────────────────────────────────────────────────────────
+
+  describe('outcome hash', () => {
+    it('stores the hash of the handler return value on success', async () => {
+      const mw = createMiddleware('did:nobulex:agent-outcome', 'covenant X { permit compute; }');
+      const result = await mw.execute(
+        { action: 'compute', params: {} },
+        () => ({ total: 7 }),
+      );
+      expect(result.entry.outcomeHash).toBe(computeOutcomeHash({ total: 7 }));
+    });
+
+    it('stores a deterministic failure hash when the handler throws', async () => {
+      const mw = createMiddleware('did:nobulex:agent-outcome', 'covenant X { permit boom; }');
+      try {
+        await mw.execute({ action: 'boom', params: {} }, () => {
+          throw new Error('kaboom');
+        });
+      } catch (e) {
+        const thrown = e as Error & { middlewareResult?: { entry: { outcomeHash?: string } } };
+        expect(thrown.middlewareResult?.entry.outcomeHash).toBe(computeFailureHash('kaboom'));
+      }
+    });
+
+    it('blocked entries do not carry an outcome hash', async () => {
+      const mw = createMiddleware('did:nobulex:agent-outcome', 'covenant X { forbid delete; }');
+      const result = await mw.execute({ action: 'delete', params: {} }, () => 'nope');
+      expect(result.entry.outcome).toBe('blocked');
+      expect(result.entry.outcomeHash).toBeUndefined();
+    });
+
+    it('halted entries do not carry an outcome hash', async () => {
+      const mw = createMiddleware('did:nobulex:agent-outcome', 'covenant X { permit read; }');
+      mw.halt();
+      const result = await mw.execute({ action: 'read', params: {} }, () => 'never');
+      expect(result.entry.outcome).toBe('halted');
+      expect(result.entry.outcomeHash).toBeUndefined();
+    });
+  });
+
+  // ── Bilateral receipts ───────────────────────────────────────────────────
+
+  describe('bilateral receipts', () => {
+    it('attaches a receipt when a signer is configured', async () => {
+      const kp = await generateKeyPair();
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-receipts',
+        spec: parseSource('covenant X { permit read; }'),
+        signer: { privateKey: kp.privateKey, publicKeyHex: kp.publicKeyHex },
+      });
+      const result = await mw.execute({ action: 'read', params: { id: 42 } }, () => 'value');
+      expect(result.receipt).toBeDefined();
+      const r = result.receipt!;
+      expect(r.signerPublicKey).toBe(kp.publicKeyHex);
+      expect(r.authorizationHash).toHaveLength(64);
+      expect(r.resultHash).toHaveLength(64);
+    });
+
+    it('authorization signature verifies against the authorization hash', async () => {
+      const kp = await generateKeyPair();
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-receipts',
+        spec: parseSource('covenant X { permit read; }'),
+        signer: { privateKey: kp.privateKey, publicKeyHex: kp.publicKeyHex },
+      });
+      const result = await mw.execute({ action: 'read', params: {} }, () => 'ok');
+      const r = result.receipt!;
+      const msg = new TextEncoder().encode(r.authorizationHash);
+      const sig = fromHex(r.authorizationSignature);
+      const pub = fromHex(r.signerPublicKey);
+      expect(await verify(msg, sig, pub)).toBe(true);
+    });
+
+    it('result signature verifies against the result hash', async () => {
+      const kp = await generateKeyPair();
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-receipts',
+        spec: parseSource('covenant X { permit compute; }'),
+        signer: { privateKey: kp.privateKey, publicKeyHex: kp.publicKeyHex },
+      });
+      const result = await mw.execute({ action: 'compute', params: {} }, () => ({ sum: 12 }));
+      const r = result.receipt!;
+      const msg = new TextEncoder().encode(r.resultHash);
+      const sig = fromHex(r.resultSignature);
+      const pub = fromHex(r.signerPublicKey);
+      expect(await verify(msg, sig, pub)).toBe(true);
+      // result hash binds to the handler's return value
+      expect(r.resultHash).toBe(sha256Object({ value: { sum: 12 } }));
+    });
+
+    it('receipts are attached to blocked-action results too', async () => {
+      const kp = await generateKeyPair();
+      const mw = new EnforcementMiddleware({
+        agentDid: 'did:nobulex:agent-receipts',
+        spec: parseSource('covenant X { forbid delete; }'),
+        signer: { privateKey: kp.privateKey, publicKeyHex: kp.publicKeyHex },
+      });
+      const result = await mw.execute({ action: 'delete', params: {} }, () => 'no');
+      expect(result.executed).toBe(false);
+      expect(result.receipt).toBeDefined();
+      expect(result.receipt!.resultHash).toBe(sha256Object({ blocked: true }));
+    });
+
+    it('no receipt is produced when no signer is configured', async () => {
+      const mw = createMiddleware('did:nobulex:agent', 'covenant X { permit read; }');
+      const result = await mw.execute({ action: 'read', params: {} }, () => 'ok');
+      expect(result.receipt).toBeUndefined();
     });
   });
 

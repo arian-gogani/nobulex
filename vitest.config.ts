@@ -9,7 +9,7 @@ const mergedIntoCore = [
 ];
 
 // Standalone packages (still have their own packages/ directory)
-const standalone = ['core', 'sdk', 'mcp-server', 'a2a', 'langchain'];
+const standalone = ['core', 'sdk', 'cli', 'mcp-server', 'a2a', 'langchain'];
 
 const alias: Record<string, string> = {};
 

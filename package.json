@@ -6,6 +6,7 @@
   "workspaces": [
     "packages/core",
     "packages/sdk",
+    "packages/cli",
     "packages/mcp-server",
     "packages/a2a",
     "packages/langchain"

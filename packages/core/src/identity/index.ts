@@ -758,6 +758,22 @@ export type {
   DIDResolutionResult,
 } from './did';
 
+export {
+  signRotation,
+  applyRotation,
+  rotateKey,
+  verifyRotationChain,
+  currentAuthoritativeKey,
+  keyAtTime,
+  verifyWithRotation,
+  GENESIS_ROTATION_HASH,
+} from './key-rotation';
+export type {
+  KeyRotationRecord,
+  KeyRotationVerification,
+  DIDDocumentWithRotation,
+} from './key-rotation';
+
 // ---------------------------------------------------------------------------
 // Ephemeral session certificates
 // ---------------------------------------------------------------------------

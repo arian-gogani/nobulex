@@ -186,6 +186,7 @@ Three keywords. No configuration files. No YAML. No JSON schemas. Just rules.
 | [`@nobulex/mcp-server`](packages/mcp-server/) | MCP compliance server for Claude Desktop, Cursor, VS Code |
 | [`@nobulex/a2a`](packages/a2a/) | A2A Agent Card behavioral attestation extension |
 | [`@nobulex/langchain`](packages/langchain/) | LangChain callback integration |
+| [`@nobulex/claude-agent-sdk`](packages/claude-agent-sdk/) | Claude Agent SDK compliance hooks — PreToolUse/PostToolUse gating, tamper-evident tool-call logs |
 
 ## Integrations
 

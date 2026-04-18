@@ -9,7 +9,7 @@ const mergedIntoCore = [
 ];
 
 // Standalone packages (still have their own packages/ directory)
-const standalone = ['core', 'sdk', 'cli', 'mcp-server', 'a2a', 'langchain'];
+const standalone = ['core', 'sdk', 'cli', 'mcp-server', 'a2a', 'langchain', 'claude-agent-sdk'];
 
 const alias: Record<string, string> = {};
 
@@ -27,6 +27,7 @@ export default defineConfig({
     include: [
       'packages/*/src/**/*.test.ts',
       'packages/*/__tests__/**/*.test.ts',
+      'packages/*/tests/**/*.test.ts',
       'tests/**/*.test.ts',
       'benchmarks/**/*.test.ts',
     ],

@@ -1,0 +1,28 @@
+{
+  "name": "@nobulex/claude-agent-sdk",
+  "version": "0.1.0",
+  "description": "Nobulex compliance hook for Anthropic Claude Agent SDK — tamper-evident audit trails for Claude-powered agents",
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsup src/index.ts --format cjs,esm",
+    "test": "vitest run"
+  },
+  "keywords": ["nobulex", "claude", "agent-sdk", "compliance", "audit-trail", "governance"],
+  "license": "MIT",
+  "peerDependencies": {
+    "@anthropic-ai/claude-agent-sdk": ">=0.1.0"
+  },
+  "dependencies": {
+    "@nobulex/core": "*"
+  }
+}

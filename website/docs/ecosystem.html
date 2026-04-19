@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ecosystem Integrations — Nobulex Docs</title>
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .doc-page { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+    .doc-page h1 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; color: var(--text); margin-bottom: 1.5rem; }
+    .doc-page h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text); margin-top: 2.5rem; margin-bottom: 0.75rem; }
+    .doc-page h3 { font-size: 1rem; font-weight: 600; color: var(--text); margin-top: 1.5rem; margin-bottom: 0.5rem; }
+    .doc-page p { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .doc-page code { font-family: var(--font-mono); font-size: 0.8125em; background: rgba(255,255,255,0.06); padding: 0.15em 0.4em; border-radius: 3px; }
+    .doc-page pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; overflow-x: auto; font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.7; color: var(--text-secondary); }
+    .doc-page a { color: var(--text); }
+    .doc-nav { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    .doc-nav a { font-size: 0.8125rem; color: var(--text-muted); text-decoration: none; }
+    .partner { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.25rem; margin: 1rem 0; }
+    .partner__name { font-weight: 600; color: var(--text); margin-bottom: 0.25rem; }
+    .partner__role { font-size: 0.8125rem; color: var(--text-muted); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header__top">
+      <a href="../index.html" class="header__logo" aria-label="Nobulex home"><img src="../images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+    </div>
+    <nav class="header__nav" aria-label="Main">
+      <div class="header__links">
+        <a href="../index.html">Home</a>
+        <a href="../try.html">Try it</a>
+        <a href="../designer.html">Designer</a>
+        <a href="quickstart.html">Quickstart</a>
+        <a href="../pricing.html">Pricing</a>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="doc-page">
+    <h1>Ecosystem</h1>
+    <p>Nobulex is the enforcement and proof layer. These projects provide complementary capabilities that compose with the protocol.</p>
+
+    <h2>Ecosystem Partners</h2>
+
+    <div class="partner">
+      <div class="partner__name">Dominion Observatory (vdineshk)</div>
+      <div class="partner__role">Pre-call trust scoring</div>
+      <p>Cross-ecosystem runtime behavioral trust scores for MCP servers. Feeds trust signals (0-100) into Nobulex enforcement via the <code>require</code> statement.</p>
+    </div>
+
+    <div class="partner">
+      <div class="partner__name">SidClaw (VladUZH)</div>
+      <div class="partner__role">HITL approval workflows</div>
+      <p>Human-in-the-loop approval with 7 state transitions and Ed25519 hash chain. Uses Nobulex verification model for signed state-transition receipts.</p>
+    </div>
+
+    <div class="partner">
+      <div class="partner__name">Aira (Barakat)</div>
+      <div class="partner__role">Authorization and audit layer</div>
+      <p>Policy-check before execution with Ed25519 signing and RFC 3161 timestamps. Multi-party signing with distinct policy evaluator and gateway keys.</p>
+    </div>
+
+    <div class="partner">
+      <div class="partner__name">Signet (willamhou)</div>
+      <div class="partner__role">Signing layer</div>
+      <p>Offline-verifiable Ed25519 action receipts with bilateral co-signing and policy attestation. Composable with Nobulex enforcement layer.</p>
+    </div>
+
+    <div class="partner">
+      <div class="partner__name">AgentMint (Aniketh)</div>
+      <div class="partner__role">Runtime enforcement</div>
+      <p>In-process runtime enforcement with Ed25519 plan signing, scope pattern matching, and 23-pattern content scanning.</p>
+    </div>
+
+    <div class="partner">
+      <div class="partner__name">APS (aeoess)</div>
+      <div class="partner__role">Receipt schema design</div>
+      <p>Public endorsement and co-designed the Receipt schema with Nobulex outcome_hash.</p>
+    </div>
+
+    <h2>Trust Score Integration</h2>
+    <p>The covenant DSL supports dot path access on context objects. This means you can reference trust scores from Dominion Observatory (or any scoring system) directly in your covenant rules.</p>
+
+    <h3>Covenant with trust_score</h3>
+<pre>covenant SecureTrader {
+  permit execute_trade (amount <= 10000);
+  forbid execute_trade (amount > 10000);
+  require counterparty.trust_score >= 70;
+  require counterparty.compliance_score >= 0.8;
+}</pre>
+
+    <h3>Passing trust scores at runtime</h3>
+<pre>import { Monitor } from '@nobulex/core';
+
+const monitor = new Monitor(covenantId, covenantSource, {
+  mode: 'enforce'
+});
+
+// Dominion Observatory provides the trust score
+const trustScore = await dominionClient.getScore(serverDid);
+
+// Pass it as context to the enforcement engine
+await monitor.evaluate('execute_trade', 'portfolio', {
+  amount: 5000,
+  counterparty: {
+    trust_score: trustScore,      // 0-100 from Dominion
+    compliance_score: 0.92,       // from your own scoring
+    did: 'did:nobulex:partner-x'
+  }
+});</pre>
+    <p>If <code>counterparty.trust_score</code> is below 70, the action is denied and the denial is recorded in the hash chain with the trust score value that caused it. The receipt proves both the decision and the data it was based on.</p>
+
+    <h2>Build on Nobulex</h2>
+    <p>If you're building observability, approval workflows, signing infrastructure, or compliance tooling for AI agents, your system can compose with Nobulex enforcement. Open an issue on GitHub or reach out at nobulex.dev@gmail.com.</p>
+
+    <div class="doc-nav">
+      <a href="quickstart.html">Quickstart</a>
+      <a href="receipt-schema.html">Receipt schema</a>
+      <a href="../try.html">Try it live</a>
+      <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+    </div>
+  </main>
+</body>
+</html>

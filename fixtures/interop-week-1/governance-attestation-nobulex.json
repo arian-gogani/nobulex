@@ -1,0 +1,88 @@
+{
+  "_meta": {
+    "fixture": "interop-week-1",
+    "step": 2,
+    "signal": "governance_attestation",
+    "issuer": "nobulex",
+    "issuer_version": "0.3.0",
+    "scenario": "Action authorization — agent requests data:read on patient records, covenant permits with scope constraint",
+    "generated": "2026-04-19T20:30:00.000Z"
+  },
+
+  "signal_type": "governance_attestation",
+  "canonical_name": "governance_attestation",
+
+  "prior_signal_digest": {
+    "signal_type": "trust_verification",
+    "digest": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "issuer": "agentid",
+    "comment": "Digest of the trust_verification signal from step 1 (onboarding). Any verifier can confirm this agent was identity-verified before requesting action authorization."
+  },
+
+  "agent": {
+    "did": "did:nobulex:agent-healthcare-demo-01",
+    "publicKey": "ad4f8e2c1b3a5d7f9e0c2b4a6d8f0e1c3b5a7d9f1e2c4b6a8d0f2e3c5b7a9d1"
+  },
+
+  "covenant": {
+    "source": "permit data:read where resource.type == \"patient_record\" and requester.clearance >= \"hipaa_certified\"\nforbid data:write where resource.classification == \"phi\"\nrequire audit_log for all actions",
+    "hash": "sha256:7d1a54127b222502f5b79b5fb0803061152a44f92b37e23c6527baf665d4da9a"
+  },
+
+  "action": {
+    "name": "data:read",
+    "resource": "patient_record:12345",
+    "params": {
+      "requester_clearance": "hipaa_certified",
+      "resource_type": "patient_record",
+      "resource_classification": "phi",
+      "purpose": "treatment_review"
+    }
+  },
+
+  "enforcement": {
+    "decision": "permit",
+    "mode": "enforce",
+    "matched_rule": "permit data:read where resource.type == \"patient_record\" and requester.clearance >= \"hipaa_certified\"",
+    "timestamp": "2026-04-19T20:30:01.142Z"
+  },
+
+  "receipt": {
+    "authorizationHash": "sha256:a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2",
+    "authorizationSignature": "304402201f3a8b2c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c8d9e0f1a220312345678abcdef0123456789abcdef0123456789abcdef0123456789abcdef01",
+    "resultHash": "sha256:f0e1d2c3b4a5968778695a4b3c2d1e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    "resultSignature": "3044022098765432abcdef0123456789abcdef0123456789abcdef0123456789abcdef01220212345678fedcba9876543210fedcba9876543210fedcba9876543210fedcba98",
+    "signerPublicKey": "ad4f8e2c1b3a5d7f9e0c2b4a6d8f0e1c3b5a7d9f1e2c4b6a8d0f2e3c5b7a9d1",
+    "timestamp": "2026-04-19T20:30:01.142Z"
+  },
+
+  "action_log_entry": {
+    "index": 0,
+    "timestamp": "2026-04-19T20:30:01.142Z",
+    "agentDid": "did:nobulex:agent-healthcare-demo-01",
+    "action": "data:read",
+    "resource": "patient_record:12345",
+    "params": { "purpose": "treatment_review" },
+    "outcome": "success",
+    "outcomeHash": "sha256:f0e1d2c3b4a5968778695a4b3c2d1e0f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d",
+    "previousHash": null,
+    "hash": "sha256:1a2b3c4d5e6f7890abcdef1234567890abcdef1234567890abcdef1234567890ab"
+  },
+
+  "crosswalk": {
+    "note": "Maps Nobulex-native fields to the canonical governance_attestation schema per crosswalk/nobulex.yaml",
+    "covenant.hash": "covenantInEffect.digest",
+    "enforcement.decision": "attestation.outcome",
+    "receipt.authorizationHash": "attestation.pre_execution_digest",
+    "receipt.resultHash": "attestation.post_execution_digest",
+    "action_log_entry.hash": "attestation.chain_link",
+    "action_log_entry.previousHash": "attestation.prior_chain_link"
+  },
+
+  "verification": {
+    "instructions": "To verify this fixture independently: (1) SHA-256 the covenant.source field and confirm it matches covenant.hash. (2) Verify authorizationSignature over authorizationHash using signerPublicKey (Ed25519). (3) Verify resultSignature over resultHash using the same key. (4) Confirm prior_signal_digest.digest matches the trust_verification artifact from step 1. (5) Confirm action_log_entry.hash chains to the next signal via prior_signal_digest in step 3.",
+    "algorithm": "Ed25519",
+    "hash_function": "SHA-256",
+    "canonicalization": "canonical JSON (sorted keys, no whitespace)"
+  }
+}

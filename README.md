@@ -45,6 +45,8 @@ Three primitives. That's the whole protocol:
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 
+**[Try it live](https://nobulex.com/try.html)** · **[Policy Designer](https://nobulex.com/designer.html)** · **[Quickstart](https://nobulex.com/docs/quickstart.html)** · **[Compare](https://nobulex.com/compare.html)** · **[Receipt Schema](https://nobulex.com/docs/receipt-schema.html)** · **[Pricing](https://nobulex.com/pricing.html)** · **[IETF Draft](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)**
+
 ## What is Proof-of-Behavior?
 
 You can't audit a neural network. But you **can** audit actions against stated commitments.
@@ -251,20 +253,42 @@ npx tsx examples/demo.ts   # see the protocol run end-to-end
 npx tsx benchmarks/bench.ts
 ```
 
+## Standards
+
+- **[IETF Internet-Draft](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)** — `draft-gogani-nobulex-proof-of-behavior-00`: Proof-of-Behavior Protocol for Autonomous AI Agents
+- **[LangChain RFC #35691](https://github.com/langchain-ai/langchain/issues/35691)** — ComplianceCallbackHandler, 10+ implementations converging
+- **[NIST RFI Response](docs/nist-rfi.md)** — Formal comments to NIST AI Agent Standards Initiative
+
+## Ecosystem
+
+Projects building on or composing with Nobulex:
+
+| Partner | Layer | Integration |
+|---------|-------|-------------|
+| [Dominion Observatory](https://github.com/vdineshk/dominion-observatory) | Pre-call trust scores | Feeds trust_score into covenant `require` |
+| [SidClaw](https://github.com/VladUZH) | HITL approval | Signed state-transition receipts |
+| [Aira](https://github.com/mbarakats) | Authorization + audit | Multi-party signing with RFC 3161 |
+| [Signet](https://github.com/willamhou) | Signing layer | Bilateral co-signing, policy attestation |
+| [AgentMint](https://github.com/aniketh-maddipati) | Runtime enforcement | Ed25519 plan signing, scope matching |
+| [APS](https://github.com/aeoess) | Receipt schema | Co-designed outcome_hash format |
+
 ## Documentation
 
 - **[API Reference](docs/api/)** — Full API docs generated with TypeDoc (`npm run docs:api`)
 - **[Proof-of-Behavior Spec](docs/proof-of-behavior-spec.md)** — Formal standard specification (CC-BY-4.0)
 - **[White Paper](docs/whitepaper.md)** — Formal protocol specification
+- **[Receipt Schema](https://nobulex.com/docs/receipt-schema.html)** — Every field, verification steps, examples
 - **[Getting Started](docs/getting-started.md)** — Developer guide
-- **[NIST RFI Response](docs/nist-rfi.md)** — Formal comments to NIST AI Agent Standards Initiative
 
 ## Links
 
 - **Website:** [nobulex.com](https://nobulex.com)
+- **Try it:** [nobulex.com/try](https://nobulex.com/try.html)
+- **Policy Designer:** [nobulex.com/designer](https://nobulex.com/designer.html)
+- **Compare:** [nobulex.com/compare](https://nobulex.com/compare.html)
 - **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
 - **PyPI:** [langchain-nobulex](https://pypi.org/project/langchain-nobulex/)
-- **NIST:** [Docket NIST-2025-0035](https://www.regulations.gov/docket/NIST-2025-0035) (public comment submitted)
+- **IETF:** [draft-gogani-nobulex-proof-of-behavior-00](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)
 
 ## License
 

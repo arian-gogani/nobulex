@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Policy Designer — Nobulex</title>
+  <meta name="description" content="Describe what your agent should do in plain English. Get a verifiable covenant.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .designer-page { max-width: 960px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+    .designer-page h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .designer-page__sub { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .designer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+    @media (max-width: 700px) { .designer-grid { grid-template-columns: 1fr; } }
+    .designer-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .designer-panel__head { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .designer-panel__dot { width: 8px; height: 8px; border-radius: 50%; }
+    .designer-panel__dot:nth-child(1) { background: #ff5f56; }
+    .designer-panel__dot:nth-child(2) { background: #ffbd2e; }
+    .designer-panel__dot:nth-child(3) { background: #27c93f; }
+    .designer-panel__label { font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.5rem; }
+    .designer-panel__body { padding: 1rem; }
+    .designer-chat { min-height: 300px; max-height: 400px; overflow-y: auto; margin-bottom: 0.75rem; }
+    .designer-msg { margin-bottom: 0.75rem; }
+    .designer-msg__role { font-size: 0.6875rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.25rem; }
+    .designer-msg__text { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; }
+    .designer-msg__text.user { color: var(--text); }
+    .designer-input-row { display: flex; gap: 0.5rem; }
+    .designer-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font-sans); font-size: 0.8125rem; padding: 0.6rem 0.75rem; outline: none; }
+    .designer-input:focus { border-color: rgba(255,255,255,0.2); }
+    .designer-send { background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); padding: 0.6rem 1rem; font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 600; cursor: pointer; }
+    .designer-send:hover { opacity: 0.9; }
+    .designer-prompts { display: flex; flex-direction: column; gap: 0.35rem; margin-bottom: 0.75rem; }
+    .designer-prompts button { text-align: left; font-size: 0.8125rem; padding: 0.5rem 0.75rem; background: rgba(255,255,255,0.03); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-secondary); cursor: pointer; font-family: var(--font-sans); transition: all 0.2s; }
+    .designer-prompts button:hover { background: rgba(255,255,255,0.06); color: var(--text); border-color: var(--border-hover); }
+    .designer-code { font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.7; color: var(--text); white-space: pre-wrap; }
+    .designer-code .kw { color: #5eead4; }
+    .designer-code .str { color: #fbbf24; }
+    .designer-code .cmt { color: var(--text-muted); }
+    .designer-copy { margin-top: 0.75rem; width: 100%; padding: 0.6rem; background: rgba(255,255,255,0.06); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text-secondary); font-family: var(--font-sans); font-size: 0.8125rem; cursor: pointer; transition: all 0.2s; }
+    .designer-copy:hover { background: rgba(255,255,255,0.1); color: var(--text); }
+    .designer-tryit { margin-top: 0.5rem; width: 100%; padding: 0.6rem; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 600; cursor: pointer; text-decoration: none; display: block; text-align: center; }
+    .designer-tryit:hover { opacity: 0.9; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+    </div>
+    <nav class="header__nav" aria-label="Main">
+      <div class="header__links">
+        <a href="index.html">Home</a>
+        <a href="try.html">Try it</a>
+        <a href="designer.html" style="color:var(--text)">Designer</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="designer-page">
+    <h1>Policy Designer</h1>
+    <p class="designer-page__sub">Describe what your agent should and shouldn't do. We'll generate a verifiable covenant you can enforce at runtime.</p>
+
+    <div class="designer-grid">
+      <div class="designer-panel">
+        <div class="designer-panel__head">
+          <span class="designer-panel__dot"></span><span class="designer-panel__dot"></span><span class="designer-panel__dot"></span>
+          <span class="designer-panel__label">Describe your agent</span>
+        </div>
+        <div class="designer-panel__body">
+          <div class="designer-prompts" id="prompts">
+            <button onclick="usePrompt(this)">I have a healthcare agent that reads patient records and schedules appointments but should never prescribe medication.</button>
+            <button onclick="usePrompt(this)">I run a trading bot that can execute trades under $10K but should be blocked from withdrawals and large trades.</button>
+            <button onclick="usePrompt(this)">My DevOps agent can deploy to staging and read logs but should never touch production or delete databases.</button>
+            <button onclick="usePrompt(this)">I have a customer service agent that can look up orders and issue refunds under $100 but can't access credit card data.</button>
+          </div>
+          <div class="designer-chat" id="chat"></div>
+          <div class="designer-input-row">
+            <input class="designer-input" id="userInput" placeholder="Describe what your agent does..." autocomplete="off">
+            <button class="designer-send" onclick="sendMessage()">Send</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="designer-panel">
+        <div class="designer-panel__head">
+          <span class="designer-panel__dot"></span><span class="designer-panel__dot"></span><span class="designer-panel__dot"></span>
+          <span class="designer-panel__label">Generated Covenant</span>
+        </div>
+        <div class="designer-panel__body">
+          <div class="designer-code" id="output">Your covenant will appear here after you describe your agent.</div>
+          <button class="designer-copy" id="copyBtn" style="display:none" onclick="copyCode()">Copy covenant to clipboard</button>
+          <a class="designer-tryit" id="tryBtn" style="display:none" href="try.html">Test this covenant live</a>
+        </div>
+      </div>
+    </div>
+  </main>
+
+<script>
+const input = document.getElementById('userInput');
+input.addEventListener('keydown', e => { if (e.key === 'Enter') sendMessage(); });
+
+function usePrompt(btn) {
+  input.value = btn.textContent;
+  document.getElementById('prompts').style.display = 'none';
+  sendMessage();
+}
+
+function addMsg(role, text) {
+  const chat = document.getElementById('chat');
+  const div = document.createElement('div');
+  div.className = 'designer-msg';
+  div.innerHTML = `<div class="designer-msg__role">${role}</div><div class="designer-msg__text ${role === 'you' ? 'user' : ''}">${text}</div>`;
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+}
+
+function sendMessage() {
+  const val = input.value.trim();
+  if (!val) return;
+  input.value = '';
+  document.getElementById('prompts').style.display = 'none';
+  addMsg('you', val);
+  setTimeout(() => generateCovenant(val), 400);
+}
+
+function generateCovenant(description) {
+  const d = description.toLowerCase();
+  const permits = [];
+  const forbids = [];
+  const requires = [];
+  let name = 'Agent';
+
+  // Detect domain
+  if (d.includes('health') || d.includes('patient') || d.includes('medical') || d.includes('clinic')) name = 'HealthAgent';
+  else if (d.includes('trad') || d.includes('financ') || d.includes('portfolio') || d.includes('stock')) name = 'TradeAgent';
+  else if (d.includes('deploy') || d.includes('devops') || d.includes('infrastructure') || d.includes('server')) name = 'DeployAgent';
+  else if (d.includes('customer') || d.includes('support') || d.includes('service') || d.includes('ticket')) name = 'ServiceAgent';
+  else if (d.includes('data') || d.includes('analyt') || d.includes('report')) name = 'DataAgent';
+
+  // Extract permits
+  if (d.includes('read') && d.includes('patient')) permits.push('read_patient_record');
+  if (d.includes('read') && d.includes('record')) permits.push('read_records');
+  if (d.includes('schedule') || d.includes('appointment')) permits.push('schedule_appointment');
+  if (d.includes('look up') || d.includes('lookup') || d.includes('search') || d.includes('query')) permits.push('search_records');
+  if (d.includes('read') && d.includes('log')) permits.push('read_logs');
+  if (d.includes('refund') && d.match(/under\s*\$?(\d+)/)) {
+    const amt = d.match(/under\s*\$?(\d+)/)[1];
+    permits.push(`issue_refund where amount <= ${amt}`);
+  } else if (d.includes('refund')) permits.push('issue_refund where amount <= 100');
+  if (d.includes('deploy') && d.includes('staging')) permits.push('deploy where env == "staging"');
+  if (d.includes('execute') && d.includes('trade') || d.includes('trading') || d.includes('trades')) {
+    const tradeMatch = d.match(/under\s*\$?([\d,]+k?)/i);
+    if (tradeMatch) {
+      let amt = tradeMatch[1].replace(',','');
+      if (amt.endsWith('k')) amt = parseInt(amt) * 1000;
+      permits.push(`execute_trade where amount <= ${amt}`);
+    } else permits.push('execute_trade where amount <= 10000');
+  }
+  if (d.includes('read') && (d.includes('portfolio') || d.includes('account'))) permits.push('read_portfolio');
+  if (d.includes('look up') && d.includes('order')) permits.push('lookup_order');
+  if (d.includes('read') && !permits.length) permits.push('read');
+
+  // Extract forbids
+  if (d.includes('never') && d.includes('prescri')) forbids.push('prescribe_medication');
+  if (d.includes('never') && d.includes('delet') || d.includes("shouldn't") && d.includes('delet') || d.includes('block') && d.includes('delet')) forbids.push('delete_database');
+  if (d.includes('never') && d.includes('production') || d.includes("shouldn't") && d.includes('production') || d.includes('block') && d.includes('production')) forbids.push('deploy where env == "production"');
+  if (d.includes('block') && d.includes('withdraw') || d.includes('never') && d.includes('withdraw') || d.includes("shouldn't") && d.includes('withdraw')) forbids.push('withdraw');
+  if (d.includes('block') && d.includes('large') || d.includes('never') && d.includes('large')) {
+    const lgMatch = d.match(/over\s*\$?([\d,]+k?)/i) || d.match(/above\s*\$?([\d,]+k?)/i);
+    if (lgMatch) {
+      let amt = lgMatch[1].replace(',','');
+      if (amt.endsWith('k')) amt = parseInt(amt) * 1000;
+      forbids.push(`execute_trade where amount > ${amt}`);
+    } else forbids.push('execute_trade where amount > 10000');
+  }
+  if (d.includes("can't") && d.includes('credit card') || d.includes('never') && d.includes('credit card') || d.includes('block') && d.includes('credit card')) forbids.push('access_payment_data');
+  if (d.includes("shouldn't") && d.includes('billing') || d.includes('never') && d.includes('billing')) forbids.push('access_billing');
+  if (d.includes('never') && d.includes('transfer') || d.includes("shouldn't") && d.includes('transfer')) forbids.push('transfer_funds');
+
+  // Default requires
+  requires.push('audit_all');
+  if (d.includes('compliance') || d.includes('hipaa') || d.includes('regulated')) requires.push('compliance_log');
+
+  // Fallback if nothing extracted
+  if (!permits.length && !forbids.length) {
+    permits.push('read');
+    forbids.push('write');
+    forbids.push('delete');
+  }
+
+  // Build covenant text
+  let code = `covenant ${name} {\n`;
+  permits.forEach(p => code += `  permit ${p};\n`);
+  forbids.forEach(f => code += `  forbid ${f};\n`);
+  requires.forEach(r => code += `  require ${r};\n`);
+  code += `}`;
+
+  // Syntax highlight
+  let highlighted = code
+    .replace(/\b(covenant|permit|forbid|require|where)\b/g, '<span class="kw">$1</span>')
+    .replace(/"([^"]+)"/g, '<span class="str">"$1"</span>');
+
+  document.getElementById('output').innerHTML = highlighted;
+  document.getElementById('copyBtn').style.display = 'block';
+  document.getElementById('tryBtn').style.display = 'block';
+  window._generatedCode = code;
+
+  const ruleCount = permits.length + forbids.length + requires.length;
+  addMsg('nobulex', `Generated a ${name} covenant with ${permits.length} permit rules, ${forbids.length} forbid rules, and ${requires.length} require rules. The covenant is ready to enforce. You can copy it or test it live.`);
+}
+
+function copyCode() {
+  navigator.clipboard.writeText(window._generatedCode).then(() => {
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy covenant to clipboard', 1500);
+  });
+}
+</script>
+</body>
+</html>

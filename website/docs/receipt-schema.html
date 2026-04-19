@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Receipt Schema — Nobulex Docs</title>
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="../styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .doc-page { max-width: 700px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+    .doc-page h1 { font-family: var(--font-display); font-size: 1.75rem; font-weight: 700; color: var(--text); margin-bottom: 1.5rem; }
+    .doc-page h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text); margin-top: 2rem; margin-bottom: 0.75rem; }
+    .doc-page p { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .doc-page code { font-family: var(--font-mono); font-size: 0.8125em; background: rgba(255,255,255,0.06); padding: 0.15em 0.4em; border-radius: 3px; }
+    .doc-page pre { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; margin: 1rem 0; overflow-x: auto; font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.7; color: var(--text-secondary); }
+    .doc-page table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.8125rem; }
+    .doc-page th { text-align: left; padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-muted); font-weight: 500; letter-spacing: 0.05em; text-transform: uppercase; font-size: 0.6875rem; }
+    .doc-page td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+    .doc-page td code { font-size: 0.75rem; }
+    .doc-nav { display: flex; gap: 1rem; margin-top: 2rem; flex-wrap: wrap; }
+    .doc-nav a { font-size: 0.8125rem; color: var(--text-muted); text-decoration: none; transition: color 0.2s; }
+    .doc-nav a:hover { color: var(--text); }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header__top">
+      <a href="../index.html" class="header__logo" aria-label="Nobulex home"><img src="../images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+    </div>
+    <nav class="header__nav" aria-label="Main">
+      <div class="header__links">
+        <a href="../index.html">Home</a>
+        <a href="../try.html">Try it</a>
+        <a href="../designer.html">Designer</a>
+        <a href="quickstart.html">Quickstart</a>
+        <a href="../pricing.html">Pricing</a>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="doc-page">
+    <h1>Receipt Schema</h1>
+    <p>Every action enforced by Nobulex produces a signed receipt. The receipt is the proof artifact. It contains everything needed for independent verification without access to the originating system.</p>
+
+    <h2>Full Receipt Fields</h2>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>receipt_id</code></td><td>string</td><td>Unique identifier for this receipt</td></tr>
+      <tr><td><code>index</code></td><td>number</td><td>Position in the hash chain (sequential)</td></tr>
+      <tr><td><code>timestamp</code></td><td>ISO 8601</td><td>When enforcement was evaluated</td></tr>
+      <tr><td><code>agent_did</code></td><td>string</td><td>W3C DID of the agent that performed the action</td></tr>
+    </table>
+
+    <h2>Action Object</h2>
+    <p>The <code>action</code> field contains the full payload of what the agent attempted. This is what hanselhansel asked about: tool inputs are included, not just tool names.</p>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>action.tool</code></td><td>string</td><td>Name of the tool or action invoked</td></tr>
+      <tr><td><code>action.arguments</code></td><td>object</td><td>Full arguments passed to the tool (query, amount, patient_id, etc.)</td></tr>
+      <tr><td><code>action.result</code></td><td>string</td><td>"executed" if allowed, "blocked" if denied</td></tr>
+    </table>
+    <p>Example: <code>"called search_tool with query='cancel order 8821' and got back confirmation #4419"</code> is captured in the action object, hashed into the outcome_hash, and signed.</p>
+
+    <h2>Enforcement Object</h2>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>enforcement.decision</code></td><td>string</td><td>"ALLOW" or "DENY"</td></tr>
+      <tr><td><code>enforcement.matched_rule</code></td><td>string</td><td>The specific covenant rule that was evaluated</td></tr>
+      <tr><td><code>enforcement.evaluated_at</code></td><td>ISO 8601</td><td>When the rule was evaluated</td></tr>
+    </table>
+
+    <h2>Covenant in Effect</h2>
+    <p>The receipt carries the covenant that was active at the time of enforcement. This means you can answer two questions from a single artifact: "what was the agent allowed to do" and "what did it actually do."</p>
+
+    <h2>Hash Chain Fields</h2>
+    <table>
+      <tr><th>Field</th><th>Type</th><th>Description</th></tr>
+      <tr><td><code>outcome_hash</code></td><td>hex string</td><td>SHA-256 hash of the full action payload (tool, arguments, result, timestamp)</td></tr>
+      <tr><td><code>previous_hash</code></td><td>hex string</td><td>Chain hash from the previous receipt (or zeros for the first)</td></tr>
+      <tr><td><code>chain_hash</code></td><td>hex string</td><td>SHA-256 of previous_hash + outcome_hash. Links this receipt to the chain.</td></tr>
+      <tr><td><code>signature</code></td><td>string</td><td>Ed25519 signature over the entire receipt. Verifiable with the agent's public key.</td></tr>
+      <tr><td><code>verifiable</code></td><td>boolean</td><td>Always true. Indicates the receipt can be verified independently.</td></tr>
+    </table>
+
+    <h2>Verification</h2>
+    <p>Any third party can verify a receipt by:</p>
+    <pre>1. Recomputing outcome_hash from the action payload
+2. Checking chain_hash == SHA-256(previous_hash + outcome_hash)
+3. Verifying the Ed25519 signature against the agent's public key
+4. Walking the chain to verify integrity from receipt #1 to #N</pre>
+    <p>No access to the originating system is required. The receipt is self-contained.</p>
+
+    <h2>Example Receipt</h2>
+    <pre>{
+  "receipt_id": "rx_k8m2q1a7",
+  "index": 3,
+  "timestamp": "2026-04-18T20:15:33.421Z",
+  "agent_did": "did:nobulex:agent-a1b2c3",
+  "action": {
+    "tool": "search_tool",
+    "arguments": { "query": "cancel order 8821" },
+    "result": "executed"
+  },
+  "covenant_in_effect": "permit search_tool; forbid delete; require audit_all",
+  "enforcement": {
+    "decision": "ALLOW",
+    "matched_rule": "permit search_tool",
+    "evaluated_at": "2026-04-18T20:15:33.421Z"
+  },
+  "outcome_hash": "a3f8c1d4e5b6...64 hex chars",
+  "previous_hash": "7b2e9f1a4c8d...64 hex chars",
+  "chain_hash": "d9e2f3a1b5c7...64 hex chars",
+  "signature": "ed25519:a1b2c3d4e5f6...",
+  "verifiable": true
+}</pre>
+
+    <div class="doc-nav">
+      <a href="quickstart.html">Quickstart</a>
+      <a href="../try.html">Try it live</a>
+      <a href="../designer.html">Policy Designer</a>
+      <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+    </div>
+  </main>
+</body>
+</html>

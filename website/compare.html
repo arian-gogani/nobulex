@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compare — Nobulex vs Alternatives</title>
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .compare-page { max-width: 960px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+    .compare-page h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .compare-page__sub { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .compare-page h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text); margin-top: 2.5rem; margin-bottom: 1rem; }
+    .compare-page p { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .compare-table { width: 100%; border-collapse: collapse; margin: 1.5rem 0; font-size: 0.8125rem; }
+    .compare-table th { text-align: left; padding: 0.6rem 0.75rem; border-bottom: 2px solid var(--border); color: var(--text); font-weight: 600; }
+    .compare-table td { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--border); color: var(--text-secondary); vertical-align: top; }
+    .compare-table td:first-child { color: var(--text-muted); font-size: 0.75rem; letter-spacing: 0.05em; }
+    .compare-table tr:hover td { background: rgba(255,255,255,0.02); }
+    .y { color: #4ade80; }
+    .n { color: #f87171; }
+    .p { color: #fbbf24; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+    </div>
+    <nav class="header__nav" aria-label="Main">
+      <div class="header__links">
+        <a href="index.html">Home</a>
+        <a href="try.html">Try it</a>
+        <a href="designer.html">Designer</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="compare-page">
+    <h1>Compare</h1>
+    <p class="compare-page__sub">How Nobulex compares to other approaches to AI agent accountability.</p>
+
+    <table class="compare-table">
+      <tr>
+        <th></th>
+        <th>Nobulex</th>
+        <th>ScopeBlind</th>
+        <th>Guardrails / Filters</th>
+        <th>Observability (LangSmith, Datadog)</th>
+      </tr>
+      <tr>
+        <td>APPROACH</td>
+        <td>Open protocol</td>
+        <td>Product + patents</td>
+        <td>Input/output filters</td>
+        <td>Monitoring dashboards</td>
+      </tr>
+      <tr>
+        <td>PRE-EXECUTION ENFORCEMENT</td>
+        <td class="y">Yes, covenant middleware</td>
+        <td class="y">Yes, Cedar policies</td>
+        <td class="p">Partial, prompt level</td>
+        <td class="n">No, post-hoc only</td>
+      </tr>
+      <tr>
+        <td>CRYPTOGRAPHIC RECEIPTS</td>
+        <td class="y">SHA-256 hash chain + Ed25519</td>
+        <td class="y">Ed25519 signed receipts</td>
+        <td class="n">No</td>
+        <td class="n">No</td>
+      </tr>
+      <tr>
+        <td>OFFLINE VERIFICATION</td>
+        <td class="y">Yes, public key only</td>
+        <td class="y">Yes, public key only</td>
+        <td class="n">No</td>
+        <td class="n">Requires vendor access</td>
+      </tr>
+      <tr>
+        <td>POLICY LANGUAGE</td>
+        <td class="y">Covenant DSL (permit/forbid/require)</td>
+        <td class="p">Cedar + JSON config</td>
+        <td class="p">Vendor-specific</td>
+        <td class="n">N/A</td>
+      </tr>
+      <tr>
+        <td>CROSS-AGENT VERIFICATION</td>
+        <td class="y">Bilateral handshake (both sides verify)</td>
+        <td class="n">One-sided receipts</td>
+        <td class="n">No</td>
+        <td class="n">No</td>
+      </tr>
+      <tr>
+        <td>OUTCOME HASH</td>
+        <td class="y">Full payload (tool + args + result)</td>
+        <td class="p">Decision only</td>
+        <td class="n">No</td>
+        <td class="n">No</td>
+      </tr>
+      <tr>
+        <td>COVENANT IN RECEIPT</td>
+        <td class="y">Rules carried in every receipt</td>
+        <td class="n">Policy digest only</td>
+        <td class="n">No</td>
+        <td class="n">No</td>
+      </tr>
+      <tr>
+        <td>COMPLIANCE REPORTS</td>
+        <td class="y">EU AI Act, SOC2, ISO 42001, Colorado AI Act</td>
+        <td class="y">OWASP, SOC2, EU AI Act</td>
+        <td class="n">No</td>
+        <td class="p">Custom dashboards</td>
+      </tr>
+      <tr>
+        <td>OPEN SOURCE</td>
+        <td class="y">MIT, full protocol</td>
+        <td class="p">MIT gateway, FSL platform</td>
+        <td class="p">Varies</td>
+        <td class="n">Proprietary</td>
+      </tr>
+      <tr>
+        <td>VENDOR LOCK-IN</td>
+        <td class="y">None, protocol is neutral</td>
+        <td class="p">Patents pending</td>
+        <td class="n">High</td>
+        <td class="n">High</td>
+      </tr>
+    </table>
+
+    <h2>Why the difference matters</h2>
+    <p>Guardrails filter what goes in and out of a model. They don't prove what happened between input and output. Observability tools show you dashboards. Dashboards are written by the vendor and can't be independently verified.</p>
+    <p>Receipts are different. A Nobulex receipt is a self-contained proof artifact. It carries the action, the arguments, the result, the rules that were in effect, and a cryptographic signature. Anyone with the public key can verify it. No vendor access needed. No dashboard login. No trust required.</p>
+
+    <h2>vs ScopeBlind specifically</h2>
+    <p>ScopeBlind builds a product. Nobulex builds a protocol. Both sign receipts with Ed25519. The differences:</p>
+    <p>Nobulex receipts carry the full covenant (the rules in effect at execution time), not just a policy digest. This means you can answer "what was allowed" and "what happened" from a single artifact.</p>
+    <p>Nobulex cross-agent handshake requires both agents to verify each other before transacting. ScopeBlind receipts are one-sided.</p>
+    <p>Nobulex is MIT licensed with no patents. ScopeBlind has 5 Australian provisional patents and uses FSL licensing for the platform.</p>
+    <p>Nobulex is positioned as the neutral protocol that frameworks adopt (currently in the LangChain governance RFC #35691). ScopeBlind is positioned as a managed product with hosted infrastructure.</p>
+    <p>Both approaches have value. The question is whether your compliance team wants a vendor or a verifiable standard.</p>
+
+    <div style="margin-top:2rem;display:flex;gap:1rem;flex-wrap:wrap;">
+      <a href="try.html" style="padding:0.7rem 1.25rem;background:var(--text);color:var(--bg);border-radius:var(--radius);font-size:0.875rem;font-weight:600;text-decoration:none;">Try Nobulex</a>
+      <a href="docs/quickstart.html" style="padding:0.7rem 1.25rem;background:rgba(255,255,255,0.06);color:var(--text);border:1px solid var(--border);border-radius:var(--radius);font-size:0.875rem;text-decoration:none;">Quickstart</a>
+    </div>
+  </main>
+</body>
+</html>

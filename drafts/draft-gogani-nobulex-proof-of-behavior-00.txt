@@ -1,0 +1,304 @@
+
+
+
+
+
+Internet-Draft                                               A. Gogani
+Intended status: Standards Track                                Nobulex
+Expires: October 19, 2026                                April 19, 2026
+
+
+         Proof-of-Behavior Protocol for Autonomous AI Agents
+                draft-gogani-nobulex-proof-of-behavior-00
+
+Abstract
+
+   This document specifies the Nobulex Proof-of-Behavior protocol, a
+   cryptographic framework for establishing behavioral accountability
+   in autonomous AI agent systems. The protocol introduces three
+   primitives: Identity (W3C DIDs for agent identification), Covenant
+   (a domain-specific language for declaring behavioral rules), and
+   Proof (SHA-256 hash-chained action logs with Ed25519 signatures).
+   These primitives enable any third party to independently verify
+   that an AI agent's actions conformed to its declared behavioral
+   commitments, without requiring access to the agent, its operator,
+   or any privileged system.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF). Note that other groups may also distribute
+   working documents as Internet-Drafts.
+
+   Internet-Drafts are draft documents valid for a maximum of six
+   months and may be updated, replaced, or obsoleted by other
+   documents at any time.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors. All rights reserved.
+
+Table of Contents
+
+   1.  Introduction
+   2.  Terminology
+   3.  Protocol Overview
+   4.  Agent Identity
+   5.  Covenant Language
+   6.  Enforcement
+   7.  Action Log and Hash Chain
+   8.  Receipt Schema
+   9.  Cross-Agent Verification
+   10. Security Considerations
+   11. IANA Considerations
+   12. References
+   Author's Address
+
+1.  Introduction
+
+   Autonomous AI agents are executing consequential actions with no
+   protocol-level mechanism to hold them accountable. Existing
+   approaches rely on operator-controlled logs, platform-specific
+   audit trails, and post-hoc forensics conducted by the same parties
+   whose behavior is in question.
+
+   This specification defines a protocol that makes behavioral
+   accountability structural rather than operational. Verification is
+   trustless: any party can verify compliance using only publicly
+   available data and deterministic computation.
+
+   The protocol satisfies EU AI Act Article 12 (record-keeping) and
+   Article 14 (human oversight) requirements for high-risk AI systems,
+   NIST AI RMF governance functions, and Colorado AI Act transparency
+   mandates.
+
+2.  Terminology
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in
+   this document are to be interpreted as described in RFC 2119.
+
+   Agent: An autonomous software system capable of taking actions
+   without direct human instruction for each action.
+
+   Covenant: A signed, content-addressed document specifying behavioral
+   rules an agent commits to follow during execution.
+
+   Receipt: A cryptographically signed record of an enforcement
+   decision, containing the action payload, matched rule, outcome
+   hash, and chain hash.
+
+   Enforcement Middleware: A runtime component that evaluates actions
+   against covenant rules before execution, blocking violations.
+
+   Hash Chain: A sequence of receipts where each entry's hash
+   incorporates the previous entry's hash, forming a tamper-evident
+   audit trail.
+
+   Outcome Hash: SHA-256 hash of the complete action payload (tool
+   name, arguments, result, timestamp).
+
+3.  Protocol Overview
+
+   The Nobulex protocol operates in three phases:
+
+   Phase 1 - Declaration: An agent creates a W3C DID for identity
+   and publishes a covenant specifying permit, forbid, and require
+   rules using the Covenant DSL.
+
+   Phase 2 - Enforcement: At runtime, every action is evaluated
+   against the covenant by enforcement middleware. Permitted actions
+   execute and are logged. Forbidden actions are blocked before
+   execution. Both outcomes produce signed receipts.
+
+   Phase 3 - Verification: Any third party can independently verify
+   the hash chain by recomputing outcome hashes, checking chain
+   linkage, and verifying Ed25519 signatures against the agent's
+   public key. No system access is required.
+
+4.  Agent Identity
+
+   Each agent MUST have a unique identity conforming to the W3C
+   Decentralized Identifier (DID) specification [W3C-DID].
+
+   The DID method is "nobulex". Example:
+   did:nobulex:agent-a1b2c3d4e5f6
+
+   Each DID is bound to an Ed25519 key pair. The public key is
+   published; the private key is held by the agent runtime. All
+   receipts are signed with this key pair.
+
+5.  Covenant Language
+
+   The Covenant DSL uses three keywords:
+
+   permit <action> [(<condition>)];
+     Explicitly allows an action, optionally with conditions.
+
+   forbid <action> [(<condition>)];
+     Blocks an action before execution. Forbid rules take precedence
+     over permit rules (deny-wins semantics).
+
+   require <dotpath> <operator> <value>;
+     Declares a runtime requirement that MUST be satisfied.
+     Supports dot-path access for nested context (e.g.,
+     counterparty.trust_score >= 70).
+
+   Operators: >, <, >=, <=, ==, !=
+   Values: numbers, strings (quoted), booleans (true/false)
+   Conditions use parenthesized syntax: (field operator value)
+
+   Example covenant:
+
+   covenant SafeTrader {
+     permit read_portfolio;
+     permit execute_trade (amount <= 10000);
+     forbid execute_trade (amount > 10000);
+     forbid withdraw;
+     require counterparty.trust_score >= 70;
+     require audit_all;
+   }
+
+6.  Enforcement
+
+   The enforcement middleware MUST evaluate every action against the
+   active covenant before execution.
+
+   Evaluation order:
+   1. Check all forbid rules. If any forbid rule matches the action
+      and its condition evaluates to true, the action is DENIED.
+      Forbid-wins semantics: a matching forbid overrides any permit.
+   2. Check all permit rules. If a permit rule matches the action
+      and its condition evaluates to true, the action is ALLOWED.
+   3. Default deny: if no permit rule matches, the action is DENIED.
+
+   For each evaluation, the middleware MUST produce a receipt
+   containing the full action payload, the matched rule, and the
+   enforcement decision.
+
+   Rate limiting MAY be specified using limit statements:
+   limit <action> <count>/<period>;
+
+7.  Action Log and Hash Chain
+
+   The action log is a sequential, append-only data structure where
+   each entry contains a receipt and a hash linking it to the
+   previous entry.
+
+   For each action i:
+     outcome_hash_i = SHA-256(canonical_json(action_payload_i))
+     chain_hash_i = SHA-256(chain_hash_{i-1} || outcome_hash_i)
+     signature_i = Ed25519_sign(chain_hash_i, agent_private_key)
+
+   The genesis entry uses a zero hash:
+     chain_hash_0 = SHA-256("00...00" || outcome_hash_0)
+
+   Canonicalization MUST use sorted keys with no whitespace
+   (compatible with JCS, RFC 8785).
+
+   A Merkle tree MAY be constructed over all entry hashes to
+   enable efficient single-entry inclusion proofs.
+
+8.  Receipt Schema
+
+   Each receipt MUST contain the following fields:
+
+   receipt_id:      Unique identifier (string)
+   index:           Position in the hash chain (integer)
+   timestamp:       ISO 8601 timestamp of evaluation
+   agent_did:       W3C DID of the agent
+   action.tool:     Name of the tool invoked (string)
+   action.arguments: Full arguments passed to the tool (object)
+   action.result:   "executed" or "blocked" (string)
+
+   enforcement.decision:    "ALLOW" or "DENY" (string)
+   enforcement.matched_rule: The covenant rule evaluated (string)
+   enforcement.evaluated_at: ISO 8601 timestamp
+   covenant_in_effect:      Active covenant rules at execution time
+   outcome_hash:            SHA-256 of the action payload (hex)
+   previous_hash:           Chain hash of the previous receipt (hex)
+   chain_hash:              SHA-256(previous_hash || outcome_hash)
+   signature:               Ed25519 signature over the receipt
+   verifiable:              Boolean, always true
+
+9.  Cross-Agent Verification Handshake
+
+   When two agents transact, the protocol defines a four-step
+   verification handshake:
+
+   Step 1: Agent A presents its covenant signature to Agent B.
+   Step 2: Agent B verifies the covenant signature against A's DID.
+   Step 3: Agent B verifies A's proof signature (hash chain integrity).
+   Step 4: Agent B checks A's compliance status against its own
+           require rules (e.g., trust_score thresholds).
+
+   If any step fails, the transaction is rejected before execution.
+   Both agents MUST complete the handshake before proceeding.
+
+   This enables trustless agent-to-agent commerce where neither
+   party needs to trust the other or any intermediary.
+
+10. Security Considerations
+
+   Compromised Runtime: If the agent runtime is compromised, the
+   enforcement middleware can be bypassed. The protocol provides
+   post-hoc detection (broken hash chain) but not prevention of
+   compromise. TEE (Trusted Execution Environment) deployment
+   SHOULD be used for high-value applications.
+
+   Key Compromise: If an agent's Ed25519 private key is compromised,
+   an attacker can sign fraudulent receipts. Key rotation mechanisms
+   and revocation lists SHOULD be implemented.
+
+   Replay Attacks: Each receipt includes the previous chain hash,
+   making replay of individual receipts detectable. The chain MUST
+   be verified sequentially from genesis.
+
+   Clock Skew: Timestamps are included in receipts but are not
+   relied upon for chain integrity. Chain integrity depends solely
+   on hash linkage and signature verification.
+
+   Denial of Service: An agent that refuses to produce receipts
+   is detectable by the absence of expected chain entries. The
+   cross-agent handshake rejects agents with incomplete chains.
+
+11. IANA Considerations
+
+   This document has no IANA actions.
+
+   Future versions may request registration of:
+   - A DID method name ("nobulex")
+   - Media types for covenant and receipt documents
+
+12. References
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119, March 1997.
+
+   [RFC8785]  Rundgren, A., Jordan, B., and S. Erdtman, "JSON
+              Canonicalization Scheme (JCS)", RFC 8785, June 2020.
+
+   [W3C-DID]  W3C, "Decentralized Identifiers (DIDs) v1.0",
+              W3C Recommendation, July 2022.
+
+   [EdDSA]    Josefsson, S. and I. Liusvaara, "Edwards-Curve
+              Digital Signature Algorithm (EdDSA)", RFC 8032,
+              January 2017.
+
+   [EU-AI-ACT] European Parliament, "Regulation (EU) 2024/1689
+              laying down harmonised rules on artificial
+              intelligence", June 2024.
+
+Author's Address
+
+   Arian Gogani
+   Nobulex
+   California, United States
+
+   Email: nobulex.dev@gmail.com
+   URI:   https://nobulex.com
+   GitHub: https://github.com/arian-gogani/nobulex

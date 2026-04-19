@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Try It — Nobulex</title>
+  <meta name="description" content="Write a covenant, pick an action, see enforcement and a verifiable receipt. No signup required.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .try-page { max-width: 960px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+    .try-page h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .try-page__sub { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .try-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 1.5rem; }
+    @media (max-width: 700px) { .try-grid { grid-template-columns: 1fr; } }
+
+    .try-panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .try-panel__head { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .try-panel__dot { width: 8px; height: 8px; border-radius: 50%; }
+    .try-panel__dot:nth-child(1) { background: #ff5f56; }
+    .try-panel__dot:nth-child(2) { background: #ffbd2e; }
+    .try-panel__dot:nth-child(3) { background: #27c93f; }
+    .try-panel__label { font-size: 0.6875rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin-left: 0.5rem; }
+    .try-panel__body { padding: 1rem; }
+
+    textarea.try-input { width: 100%; min-height: 140px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); color: var(--text); font-family: var(--font-mono); font-size: 0.8125rem; line-height: 1.7; padding: 0.75rem; resize: vertical; outline: none; transition: border-color 0.2s; }
+    textarea.try-input:focus { border-color: rgba(255,255,255,0.2); }
+
+    .try-templates { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-bottom: 0.75rem; }
+    .try-templates button { font-size: 0.6875rem; padding: 0.3rem 0.6rem; border-radius: var(--radius-pill); background: rgba(255,255,255,0.04); border: 1px solid var(--border); color: var(--text-muted); cursor: pointer; transition: all 0.2s; font-family: var(--font-sans); }
+    .try-templates button:hover { background: rgba(255,255,255,0.08); color: var(--text-secondary); border-color: var(--border-hover); }
+
+    .try-action-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .try-action { padding: 0.6rem 0.75rem; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius); cursor: pointer; transition: all 0.2s; display: flex; justify-content: space-between; align-items: center; }
+    .try-action:hover { border-color: var(--border-hover); background: rgba(255,255,255,0.03); }
+    .try-action__name { font-family: var(--font-mono); font-size: 0.8125rem; color: var(--text); }
+    .try-action__args { font-size: 0.75rem; color: var(--text-muted); }
+
+    .try-result { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+    .try-result__head { padding: 0.75rem 1rem; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 0.5rem; }
+    .try-result__status { font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; padding: 0.2rem 0.6rem; border-radius: var(--radius-pill); }
+    .try-result__status.allowed { background: rgba(74,222,128,0.12); color: #4ade80; }
+    .try-result__status.blocked { background: rgba(248,113,113,0.12); color: #f87171; }
+    .try-result__body { padding: 1rem; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.8; color: var(--text-secondary); max-height: 400px; overflow-y: auto; }
+    .try-result__body pre { white-space: pre-wrap; word-break: break-all; }
+
+    .try-run { width: 100%; padding: 0.75rem; background: var(--text); color: var(--bg); border: none; border-radius: var(--radius); font-family: var(--font-sans); font-size: 0.875rem; font-weight: 600; cursor: pointer; transition: opacity 0.2s; margin-top: 0.75rem; }
+    .try-run:hover { opacity: 0.9; }
+    .try-run:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    .receipt-field { margin-bottom: 0.25rem; }
+    .receipt-key { color: #5eead4; }
+    .receipt-str { color: #fbbf24; }
+    .receipt-bool-true { color: #4ade80; }
+    .receipt-bool-false { color: #f87171; }
+    .receipt-num { color: #c084fc; }
+    .receipt-hash { color: #f59e0b; opacity: 0.7; }
+
+    .try-empty { color: var(--text-muted); font-family: var(--font-sans); font-size: 0.875rem; padding: 2rem; text-align: center; }
+  </style>
+</head>
+<body>
+
+  <header class="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+    </div>
+    <nav class="header__nav" aria-label="Main">
+      <div class="header__links">
+        <a href="index.html">Home</a>
+        <a href="try.html" style="color:var(--text)">Try it</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="docs/index.html">Docs</a>
+        <a href="pricing.html">Pricing</a>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="try-page">
+    <h1>Try Nobulex</h1>
+    <p class="try-page__sub">Write a covenant, pick an action, see if it passes enforcement. Every result produces a cryptographic receipt you can verify independently. No account needed.</p>
+
+    <div class="try-templates">
+      <button onclick="loadTemplate('healthcare')">Healthcare agent</button>
+      <button onclick="loadTemplate('finance')">Financial agent</button>
+      <button onclick="loadTemplate('devops')">DevOps agent</button>
+      <button onclick="loadTemplate('custom')">Blank</button>
+    </div>
+
+    <div class="try-grid">
+      <div class="try-panel">
+        <div class="try-panel__head">
+          <span class="try-panel__dot"></span><span class="try-panel__dot"></span><span class="try-panel__dot"></span>
+          <span class="try-panel__label">Covenant</span>
+        </div>
+        <div class="try-panel__body">
+          <textarea class="try-input" id="covenant" spellcheck="false" placeholder="permit read;&#10;forbid transfer where amount > 500;&#10;require log_all;"></textarea>
+        </div>
+      </div>
+
+      <div class="try-panel">
+        <div class="try-panel__head">
+          <span class="try-panel__dot"></span><span class="try-panel__dot"></span><span class="try-panel__dot"></span>
+          <span class="try-panel__label">Actions</span>
+        </div>
+        <div class="try-panel__body">
+          <div class="try-action-list" id="actions"></div>
+          <button class="try-run" id="runBtn" disabled onclick="runEnforcement()">Select an action to enforce</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="try-result" id="resultPanel" style="display:none;">
+      <div class="try-result__head">
+        <span class="try-result__status" id="resultStatus"></span>
+        <span class="try-panel__label" id="resultLabel"></span>
+      </div>
+      <div class="try-result__body">
+        <pre id="resultBody"></pre>
+      </div>
+    </div>
+  </main>
+
+<script>
+const templates = {
+  healthcare: {
+    covenant: `covenant HealthAgent {\n  permit read_patient_record;\n  permit schedule_appointment;\n  forbid prescribe_medication;\n  forbid access_billing where role != "admin";\n  require audit_all;\n}`,
+    actions: [
+      { name: 'read_patient_record', args: { patient_id: 'PT-8821', fields: ['vitals','history'] } },
+      { name: 'schedule_appointment', args: { patient_id: 'PT-8821', date: '2026-05-01', provider: 'Dr. Chen' } },
+      { name: 'prescribe_medication', args: { patient_id: 'PT-8821', drug: 'Amoxicillin', dose: '500mg' } },
+      { name: 'access_billing', args: { patient_id: 'PT-8821', role: 'nurse' } }
+    ]
+  },
+  finance: {
+    covenant: `covenant TradeAgent {\n  permit read_portfolio;\n  permit execute_trade where amount <= 10000;\n  forbid execute_trade where amount > 10000;\n  forbid withdraw;\n  require counterparty.compliance_score >= 0.8;\n}`,
+    actions: [
+      { name: 'read_portfolio', args: { account: 'ACC-4419', view: 'summary' } },
+      { name: 'execute_trade', args: { ticker: 'AAPL', side: 'buy', amount: 5000 } },
+      { name: 'execute_trade', args: { ticker: 'TSLA', side: 'sell', amount: 25000 } },
+      { name: 'withdraw', args: { amount: 15000, destination: 'external-bank' } }
+    ]
+  },
+  devops: {
+    covenant: `covenant DeployAgent {\n  permit read_logs;\n  permit deploy where env == "staging";\n  forbid deploy where env == "production";\n  forbid delete_database;\n  require approval_required;\n}`,
+    actions: [
+      { name: 'read_logs', args: { service: 'api-gateway', tail: 100 } },
+      { name: 'deploy', args: { service: 'auth-service', env: 'staging', version: 'v2.1.0' } },
+      { name: 'deploy', args: { service: 'auth-service', env: 'production', version: 'v2.1.0' } },
+      { name: 'delete_database', args: { db: 'users_prod', confirm: true } }
+    ]
+  },
+  custom: {
+    covenant: '',
+    actions: [
+      { name: 'read', args: { resource: 'data' } },
+      { name: 'write', args: { resource: 'data', value: 'test' } },
+      { name: 'transfer', args: { amount: 1000, to: 'external' } },
+      { name: 'delete', args: { resource: 'records', id: 42 } }
+    ]
+  }
+};
+
+let selectedAction = null;
+let chainHash = '0000000000000000000000000000000000000000000000000000000000000000';
+let receiptIndex = 0;
+
+function loadTemplate(key) {
+  const t = templates[key];
+  document.getElementById('covenant').value = t.covenant;
+  renderActions(t.actions);
+  document.getElementById('resultPanel').style.display = 'none';
+  selectedAction = null;
+  document.getElementById('runBtn').disabled = true;
+  document.getElementById('runBtn').textContent = 'Select an action to enforce';
+}
+
+function renderActions(actions) {
+  const el = document.getElementById('actions');
+  el.innerHTML = '';
+  actions.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'try-action';
+    div.innerHTML = `<span class="try-action__name">${a.name}</span><span class="try-action__args">${JSON.stringify(a.args).slice(0,50)}${JSON.stringify(a.args).length>50?'...':''}</span>`;
+    div.onclick = () => selectAction(i, actions);
+    el.appendChild(div);
+  });
+}
+
+function selectAction(idx, actions) {
+  selectedAction = actions[idx];
+  document.querySelectorAll('.try-action').forEach((el, i) => {
+    el.style.borderColor = i === idx ? 'rgba(255,255,255,0.3)' : '';
+    el.style.background = i === idx ? 'rgba(255,255,255,0.05)' : '';
+  });
+  const btn = document.getElementById('runBtn');
+  btn.disabled = false;
+  btn.textContent = `Enforce "${selectedAction.name}"`;
+}
+
+function parseCovenant(text) {
+  const rules = [];
+  const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('covenant') && l !== '}');
+  lines.forEach(line => {
+    const permitMatch = line.match(/^permit\s+(\w+)/);
+    const forbidMatch = line.match(/^forbid\s+(\w+)/);
+    const requireMatch = line.match(/^require\s+(.+)/);
+    if (permitMatch) {
+      const condition = line.includes('where') ? line.split('where')[1].trim().replace(';','') : null;
+      rules.push({ type: 'permit', action: permitMatch[1], condition });
+    }
+    if (forbidMatch) {
+      const condition = line.includes('where') ? line.split('where')[1].trim().replace(';','') : null;
+      rules.push({ type: 'forbid', action: forbidMatch[1], condition });
+    }
+    if (requireMatch) {
+      rules.push({ type: 'require', behavior: requireMatch[1].replace(';','').trim() });
+    }
+  });
+  return rules;
+}
+
+function evaluateCondition(condition, args) {
+  if (!condition) return true;
+  const parts = condition.match(/(\w+)\s*(>=|<=|>|<|==|!=)\s*["']?([^"';]+)["']?/);
+  if (!parts) return true;
+  const [, field, op, val] = parts;
+  const actual = args[field];
+  if (actual === undefined) return false;
+  const numVal = parseFloat(val);
+  const numActual = parseFloat(actual);
+  if (!isNaN(numVal) && !isNaN(numActual)) {
+    switch (op) {
+      case '>': return numActual > numVal;
+      case '<': return numActual < numVal;
+      case '>=': return numActual >= numVal;
+      case '<=': return numActual <= numVal;
+      case '==': return numActual === numVal;
+      case '!=': return numActual !== numVal;
+    }
+  }
+  return String(actual) === String(val.trim());
+}
+
+function enforce(rules, action) {
+  let decision = 'default_deny';
+  let matchedRule = null;
+
+  for (const rule of rules) {
+    if (rule.type === 'forbid' && rule.action === action.name) {
+      if (!rule.condition || evaluateCondition(rule.condition, action.args)) {
+        return { allowed: false, reason: `forbid ${rule.action}${rule.condition ? ' where ' + rule.condition : ''}`, rule };
+      }
+    }
+  }
+
+  for (const rule of rules) {
+    if (rule.type === 'permit' && rule.action === action.name) {
+      if (!rule.condition || evaluateCondition(rule.condition, action.args)) {
+        decision = 'allowed';
+        matchedRule = rule;
+        break;
+      }
+    }
+  }
+
+  if (decision === 'default_deny') {
+    return { allowed: false, reason: `no permit rule matched for "${action.name}"`, rule: null };
+  }
+  return { allowed: true, reason: `permit ${matchedRule.action}${matchedRule.condition ? ' where ' + matchedRule.condition : ''}`, rule: matchedRule };
+}
+
+async function sha256(data) {
+  const enc = new TextEncoder();
+  const hash = await crypto.subtle.digest('SHA-256', enc.encode(data));
+  return Array.from(new Uint8Array(hash)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function runEnforcement() {
+  if (!selectedAction) return;
+  const covenantText = document.getElementById('covenant').value;
+  const rules = parseCovenant(covenantText);
+  const result = enforce(rules, selectedAction);
+
+  const payload = JSON.stringify({ action: selectedAction.name, args: selectedAction.args, result: result.allowed ? 'executed' : 'blocked' });
+  const outcomeHash = await sha256(payload);
+  const prevHash = chainHash;
+  chainHash = await sha256(prevHash + outcomeHash);
+  receiptIndex++;
+
+  const now = new Date().toISOString();
+  const receipt = {
+    receipt_id: 'rx_' + Math.random().toString(36).slice(2, 10),
+    index: receiptIndex,
+    timestamp: now,
+    agent_did: 'did:nobulex:demo-agent-' + Math.random().toString(36).slice(2, 6),
+    action: {
+      tool: selectedAction.name,
+      arguments: selectedAction.args,
+      result: result.allowed ? 'executed' : 'blocked'
+    },
+    covenant_in_effect: covenantText.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('covenant') && l !== '}').join('; '),
+    enforcement: {
+      decision: result.allowed ? 'ALLOW' : 'DENY',
+      matched_rule: result.reason,
+      evaluated_at: now
+    },
+    outcome_hash: outcomeHash,
+    previous_hash: prevHash,
+    chain_hash: chainHash,
+    signature: 'ed25519:demo_' + Math.random().toString(36).slice(2, 22),
+    verifiable: true
+  };
+
+  const panel = document.getElementById('resultPanel');
+  const status = document.getElementById('resultStatus');
+  const label = document.getElementById('resultLabel');
+  const body = document.getElementById('resultBody');
+
+  panel.style.display = 'block';
+  status.className = 'try-result__status ' + (result.allowed ? 'allowed' : 'blocked');
+  status.textContent = result.allowed ? 'ALLOWED' : 'BLOCKED';
+  label.textContent = `Receipt #${receiptIndex} for "${selectedAction.name}"`;
+
+  body.innerHTML = formatReceipt(receipt);
+  panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function formatReceipt(obj, indent) {
+  indent = indent || 0;
+  const pad = '  '.repeat(indent);
+  let out = '';
+  if (typeof obj === 'object' && obj !== null && !Array.isArray(obj)) {
+    out += '{\n';
+    const keys = Object.keys(obj);
+    keys.forEach((k, i) => {
+      out += pad + '  <span class="receipt-key">"' + k + '"</span>: ';
+      out += formatReceipt(obj[k], indent + 1);
+      if (i < keys.length - 1) out += ',';
+      out += '\n';
+    });
+    out += pad + '}';
+  } else if (Array.isArray(obj)) {
+    out += '[' + obj.map(v => formatReceipt(v, indent + 1)).join(', ') + ']';
+  } else if (typeof obj === 'string') {
+    if (obj.length > 40 && /^[a-f0-9]+$/.test(obj)) {
+      out += '<span class="receipt-hash">"' + obj + '"</span>';
+    } else if (obj === 'ALLOW' || obj === 'executed') {
+      out += '<span class="receipt-bool-true">"' + obj + '"</span>';
+    } else if (obj === 'DENY' || obj === 'blocked') {
+      out += '<span class="receipt-bool-false">"' + obj + '"</span>';
+    } else {
+      out += '<span class="receipt-str">"' + obj + '"</span>';
+    }
+  } else if (typeof obj === 'boolean') {
+    out += obj ? '<span class="receipt-bool-true">true</span>' : '<span class="receipt-bool-false">false</span>';
+  } else if (typeof obj === 'number') {
+    out += '<span class="receipt-num">' + obj + '</span>';
+  }
+  return out;
+}
+
+loadTemplate('healthcare');
+</script>
+</body>
+</html>

@@ -59,23 +59,53 @@
 
   <main class="quickstart-page" id="main">
     <h1>Quickstart</h1>
-    <p class="quickstart-page__soon">SDK live on npm.</p>
-    <p>Add accountability to your AI agent in minutes. Every action is evaluated against declared rules and logged for independent verification.</p>
+    <p class="quickstart-page__soon">v1.0.0 live on npm.</p>
+    <p>Define rules. Enforce before execution. Get a cryptographic receipt for every action. Ten lines of code.</p>
     <div class="quickstart-code-wrap">
+      <p>Install:</p>
       <div class="code-block">
-        <button type="button" class="code-block__copy" aria-label="Copy code">Copy</button>
-        <pre><code>const { protect } = require('@nobulex/sdk');
-
-const agent = await protect({
-  name: 'my-agent',
-  rules: ['no-data-leak', 'read-only']
-});</code></pre>
+        <pre><code>npm install @nobulex/sdk @nobulex/core</code></pre>
       </div>
-      <p>Install: <button type="button" class="npm-copy" data-copy="npm install @nobulex/sdk" aria-label="Copy npm command">npm install @nobulex/sdk</button></p>
-    </div>
-    <div class="quickstart__links">
-      <a href="https://github.com/arian-gogani/nobulex#quick-start" class="section__cta" rel="noopener noreferrer">View on GitHub →</a>
-      <a href="../index.html" class="section__cta">← Back to Nobulex</a>
+      <p>Write a covenant and enforce it:</p>
+      <div class="code-block">
+        <pre><code>import { createDID } from '@nobulex/core';
+import { createCovenant, enforce, verify } from '@nobulex/sdk';
+
+// 1. Create agent identity
+const agent = await createDID('my-agent');
+
+// 2. Define behavioral rules
+const covenant = createCovenant({
+  name: 'SafeTrader',
+  rules: [
+    'permit read_portfolio',
+    'permit execute_trade where amount <= 10000',
+    'forbid execute_trade where amount > 10000',
+    'forbid withdraw',
+    'require log_all'
+  ]
+});
+
+// 3. Enforce an action
+const result = await enforce(covenant, {
+  action: 'execute_trade',
+  args: { ticker: 'AAPL', amount: 5000 }
+});
+// result.allowed = true
+// result.receipt = { outcome_hash, chain_hash, signature, ... }
+
+// 4. Anyone can verify independently
+const valid = await verify(result.receipt, agent.publicKey);
+// valid = true (tamper-evident, offline-verifiable)</code></pre>
+      </div>
+      <p>That's it. The receipt covers the full action payload (tool name, arguments, result, timestamp). A third party can replay the hash chain and verify independently without accessing your systems.</p>
+      <p>Next steps:</p>
+      <div class="quickstart__links">
+        <a href="../try.html" class="section__cta">Try it live in your browser →</a>
+        <a href="https://github.com/arian-gogani/nobulex" class="section__cta" rel="noopener noreferrer">View on GitHub →</a>
+        <a href="../pricing.html" class="section__cta">See pricing →</a>
+        <a href="../index.html" class="section__cta">← Back to Nobulex</a>
+      </div>
     </div>
   </main>
 

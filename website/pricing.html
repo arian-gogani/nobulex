@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pricing — Nobulex</title>
+  <meta name="description" content="Nobulex is free and open source. Enterprise plans available for hosted infrastructure and SLA.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body { overflow-x: hidden; }
+    .pricing-page { max-width: 960px; margin: 0 auto; padding: 3rem 1.5rem 5rem; }
+    .pricing-page h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .pricing-page__sub { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .pricing-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem; margin-bottom: 3rem; }
+    @media (max-width: 700px) { .pricing-grid { grid-template-columns: 1fr; } }
+    .pricing-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1.75rem; display: flex; flex-direction: column; }
+    .pricing-card.featured { border-color: rgba(255,255,255,0.2); background: var(--bg-card-hover); }
+    .pricing-card__name { font-size: 0.6875rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; }
+    .pricing-card__price { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.25rem; }
+    .pricing-card__price span { font-size: 0.875rem; font-weight: 400; color: var(--text-muted); }
+    .pricing-card__desc { font-size: 0.875rem; color: var(--text-secondary); line-height: 1.6; margin-bottom: 1.25rem; }
+    .pricing-card__list { list-style: none; flex: 1; margin-bottom: 1.5rem; }
+    .pricing-card__list li { font-size: 0.8125rem; color: var(--text-secondary); padding: 0.4rem 0; padding-left: 1.25rem; position: relative; line-height: 1.5; }
+    .pricing-card__list li::before { content: ''; position: absolute; left: 0; top: 0.65rem; width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.2); }
+    .pricing-card.featured .pricing-card__list li::before { background: rgba(255,255,255,0.4); }
+    .pricing-card__cta { display: block; text-align: center; padding: 0.7rem; border-radius: var(--radius); font-family: var(--font-sans); font-size: 0.8125rem; font-weight: 600; text-decoration: none; transition: all 0.2s; }
+    .pricing-card__cta.primary { background: var(--text); color: var(--bg); }
+    .pricing-card__cta.primary:hover { opacity: 0.9; }
+    .pricing-card__cta.secondary { background: rgba(255,255,255,0.06); color: var(--text); border: 1px solid var(--border); }
+    .pricing-card__cta.secondary:hover { background: rgba(255,255,255,0.1); border-color: var(--border-hover); }
+    .pricing-faq { max-width: 640px; }
+    .pricing-faq h2 { font-family: var(--font-display); font-size: 1.25rem; font-weight: 600; color: var(--text); margin-bottom: 1.5rem; }
+    .pricing-faq__item { border-bottom: 1px solid var(--border); padding: 1rem 0; }
+    .pricing-faq__q { font-size: 0.875rem; font-weight: 500; color: var(--text); margin-bottom: 0.35rem; }
+    .pricing-faq__a { font-size: 0.8125rem; color: var(--text-secondary); line-height: 1.6; }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+    </div>
+    <nav class="header__nav" aria-label="Main">
+      <div class="header__links">
+        <a href="index.html">Home</a>
+        <a href="try.html">Try it</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="docs/index.html">Docs</a>
+        <a href="pricing.html" style="color:var(--text)">Pricing</a>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank">GitHub</a>
+      </div>
+    </nav>
+  </header>
+
+  <main class="pricing-page">
+    <h1>Pricing</h1>
+    <p class="pricing-page__sub">The protocol is open source and always will be. Pay when you need hosted infrastructure, SLAs, or enterprise support.</p>
+
+    <div class="pricing-grid">
+      <div class="pricing-card">
+        <div class="pricing-card__name">Open Source</div>
+        <div class="pricing-card__price">$0 <span>forever</span></div>
+        <div class="pricing-card__desc">Full protocol. Self-hosted. MIT licensed.</div>
+        <ul class="pricing-card__list">
+          <li>Covenant DSL (permit, forbid, require)</li>
+          <li>Enforcement middleware</li>
+          <li>SHA-256 hash chain with Ed25519</li>
+          <li>Cross-agent verification handshake</li>
+          <li>W3C DID identity</li>
+          <li>LangChain, MCP, A2A adapters</li>
+          <li>CLI verification tool</li>
+          <li>Community support via GitHub</li>
+        </ul>
+        <a href="https://github.com/arian-gogani/nobulex" target="_blank" class="pricing-card__cta secondary">View on GitHub</a>
+      </div>
+
+      <div class="pricing-card featured">
+        <div class="pricing-card__name">Pro</div>
+        <div class="pricing-card__price">Beta <span>free during beta</span></div>
+        <div class="pricing-card__desc">Hosted verification and monitoring for teams shipping agents to production.</div>
+        <ul class="pricing-card__list">
+          <li>Everything in Open Source</li>
+          <li>Hosted receipt verification API</li>
+          <li>Real-time compliance dashboard</li>
+          <li>Covenant policy designer</li>
+          <li>Receipt explorer and chain viewer</li>
+          <li>Webhook alerts on violations</li>
+          <li>Up to 100K receipts/month</li>
+          <li>Email support</li>
+        </ul>
+        <a href="mailto:nobulex.dev@gmail.com?subject=Pro%20beta%20access" class="pricing-card__cta primary">Request beta access</a>
+      </div>
+
+      <div class="pricing-card">
+        <div class="pricing-card__name">Enterprise</div>
+        <div class="pricing-card__price">Custom</div>
+        <div class="pricing-card__desc">For regulated industries that need compliance guarantees and dedicated infrastructure.</div>
+        <ul class="pricing-card__list">
+          <li>Everything in Pro</li>
+          <li>Dedicated signing infrastructure</li>
+          <li>On-prem or private cloud deployment</li>
+          <li>Custom covenant templates for your industry</li>
+          <li>SOC 2 and EU AI Act compliance mapping</li>
+          <li>Unlimited receipts</li>
+          <li>SLA with guaranteed uptime</li>
+          <li>Dedicated support engineer</li>
+        </ul>
+        <a href="mailto:nobulex.dev@gmail.com?subject=Enterprise%20inquiry" class="pricing-card__cta secondary">Contact us</a>
+      </div>
+    </div>
+
+    <div class="pricing-faq">
+      <h2>Common questions</h2>
+      <div class="pricing-faq__item">
+        <div class="pricing-faq__q">Is the open source version limited?</div>
+        <div class="pricing-faq__a">No. The full protocol ships under MIT. Covenant DSL, enforcement middleware, hash chain, Ed25519 signing, cross-agent handshake, verification CLI. Nothing is held back. Pro and Enterprise add hosted infrastructure on top.</div>
+      </div>
+      <div class="pricing-faq__item">
+        <div class="pricing-faq__q">What happens after beta?</div>
+        <div class="pricing-faq__a">Pro pricing will be based on receipt volume. Beta users get locked-in pricing when we launch. The open source version stays free permanently.</div>
+      </div>
+      <div class="pricing-faq__item">
+        <div class="pricing-faq__q">Can I verify receipts without your servers?</div>
+        <div class="pricing-faq__a">Yes. Every receipt is independently verifiable offline using just the public key. That's the whole point. You never need to trust us to verify what an agent did.</div>
+      </div>
+      <div class="pricing-faq__item">
+        <div class="pricing-faq__q">Do you support EU AI Act compliance?</div>
+        <div class="pricing-faq__a">The protocol satisfies Article 12 (record-keeping) and Article 14 (human oversight) requirements for high-risk AI systems. We have a full compliance mapping document available.</div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

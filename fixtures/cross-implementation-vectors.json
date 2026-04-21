@@ -1,0 +1,34 @@
+{
+  "description": "Cross-implementation test vectors for policy_digest canonicalization (RFC 8785 JCS + SHA-256)",
+  "spec_reference": "RFC 8785 (JSON Canonicalization Scheme)",
+  "implementations_verified": [
+    { "name": "nobulex", "language": "TypeScript/Node.js", "repo": "github.com/arian-gogani/nobulex" },
+    { "name": "agentledger", "language": "Python", "repo": "github.com/dembovvski/agentledger" }
+  ],
+  "canonicalization_rules": {
+    "keys": "sorted lexicographically",
+    "arrays": "elements sorted before hashing",
+    "whitespace": "none (compact JSON)",
+    "encoding": "UTF-8"
+  },
+  "vectors": [
+    {
+      "id": "denylist-single",
+      "input": { "denied": ["delete_file"], "type": "denylist" },
+      "canonical": "{\"denied\":[\"delete_file\"],\"type\":\"denylist\"}",
+      "policy_digest": "sha256:e9527aa54a4bae62ddbf3157475aa2d8fd2d6c7a4bb3f30b6dba624ff189e833"
+    },
+    {
+      "id": "denylist-multi",
+      "input": { "denied": ["delete_file", "send_email"], "type": "denylist" },
+      "canonical": "{\"denied\":[\"delete_file\",\"send_email\"],\"type\":\"denylist\"}",
+      "policy_digest": "sha256:051a6f9e19eb3e7966dd43c1db77af7c20b4bdb68eafdfe4ff7a7bb58d9c9175"
+    },
+    {
+      "id": "allowlist-multi",
+      "input": { "allowed": ["read_file", "web_search"], "type": "allowlist" },
+      "canonical": "{\"allowed\":[\"read_file\",\"web_search\"],\"type\":\"allowlist\"}",
+      "policy_digest": "sha256:c373ee900e001b4b61cd0c727b978146b99a76e2b9eabd93740f041a6970d0a4"
+    }
+  ]
+}

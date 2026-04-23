@@ -1,6 +1,7 @@
 # Nobulex
 
 [![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions)
+[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12626/badge)](https://www.bestpractices.dev/projects/12626)
 
 **AI agents can't prove they followed their own rules. Nobulex fixes that.**
 

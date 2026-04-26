@@ -24,7 +24,7 @@
     "docs:build": "typedoc",
     "prepublish:check": "npm pack --dry-run -ws",
     "publish:all": "npm run build && npm publish --workspaces",
-    "prepare": "husky"
+    "prepare": "husky || true"
   },
   "repository": {
     "type": "git",

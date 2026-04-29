@@ -1,33 +1,24 @@
 /**
- * Nobulex Bilateral Receipt Integration for KinthAI OpenClaw Gateway
+ * Bilateral receipt integration for KinthAI's OpenClaw gateway.
  *
- * Maps Nobulex's bilateral receipt primitive to KinthAI's production
- * architecture (31 agents, Ed25519 signing, parent_receipt_hash chain,
- * three-tier trust model, budget envelopes with monotonic narrowing).
+ * KinthAI runs 31 agents on OpenClaw with Ed25519 signing, hash-chained
+ * receipts, and a three-tier trust model. They described their governance
+ * approach as "enforcement for catastrophic actions, evidence for everything
+ * else." The bilateral receipt is that hybrid in one primitive.
  *
- * Reference: https://blog.kinthai.ai/221-agents-multi-agent-coordination-lessons
+ * This file maps nobulex's bilateral receipt to their architecture so it
+ * drops in at the action-dispatch boundary without changing their existing
+ * audit trail. Their parent_receipt_hash chain stays intact because the
+ * bilateral receipt extends it rather than replacing it.
  *
- * Two modes from one primitive:
- *   - Enforcement mode: pre-execution signature refuses to issue,
- *     agent halts. For catastrophic actions (budget ceiling, capability
- *     violation, namespace breach, loop limit).
- *   - Evidence mode: both signatures issue, chain extends. For routine
- *     actions within policy. Audit trail for post-hoc review.
- *
- * KinthAI's own framing: "Pure enforcement breaks trust. Pure evidence
- * is too slow. The hybrid that works: enforcement for catastrophic
- * actions, evidence for everything else."
- *
- * The bilateral receipt is that hybrid in one primitive.
+ * See: https://blog.kinthai.ai/221-agents-multi-agent-coordination-lessons
  */
 
 import { canonicalizeJson } from '@nobulex/crypto';
 import { createHash } from 'crypto';
 import { sign, verify } from '@noble/ed25519';
 
-// ---------------------------------------------------------------------------
-// KinthAI-compatible types (from their public ActionReceipt structure)
-// ---------------------------------------------------------------------------
+// -- Types matching KinthAI's public ActionReceipt structure --
 
 interface KinthAIActionReceipt {
   agent_did: string;
@@ -40,15 +31,18 @@ interface KinthAIActionReceipt {
   signature: Uint8Array;
 }
 
-/** KinthAI three-tier trust model mapped to delegation chain depth. */
+/**
+ * KinthAI uses three trust tiers. Rather than making these a separate
+ * signing rule, we derive them from delegation chain depth. Platform
+ * keys sit at depth 1, community-vouched agents sit deeper, and
+ * unsigned agents have an empty chain.
+ */
 type TrustTier = 'platform_verified' | 'community_signed' | 'unsigned';
 
-// ---------------------------------------------------------------------------
-// Nobulex bilateral receipt adapted for OpenClaw
-// ---------------------------------------------------------------------------
+// -- The bilateral receipt, shaped for OpenClaw --
 
 interface BilateralReceiptOpenClaw {
-  /** Pre-execution: commits to action + policy + delegation before firing */
+  // Pre-execution half: what was the agent authorized to do?
   authorization: {
     agent_did: string;
     action_type: string;
@@ -62,7 +56,7 @@ interface BilateralReceiptOpenClaw {
     timestamp: number;
     authorization_signature: string;
   };
-  /** Post-execution: binds the actual result after action completes */
+  // Post-execution half: what actually happened?
   result: {
     output_hash: string;
     cost_millicents: number;
@@ -71,59 +65,58 @@ interface BilateralReceiptOpenClaw {
     timestamp: number;
     result_signature: string;
   };
-  /** Chain linkage: KinthAI's parent_receipt_hash pattern */
+  // Plugs into KinthAI's existing parent_receipt_hash chain
   parent_receipt_hash: string;
   receipt_hash: string;
 }
 
-/** Policy mode selection per KinthAI's hybrid governance model. */
 type GovernanceMode = 'enforce' | 'evidence';
 
 
-// ---------------------------------------------------------------------------
-// Core: determine governance mode from action context
-// ---------------------------------------------------------------------------
-
-/** KinthAI's rule: enforce for catastrophic, evidence for everything else. */
+/**
+ * Decides whether to block or just log. KinthAI's own rule:
+ * block budget breaches, capability violations, namespace escapes,
+ * and loop overruns. Everything else gets signed and chained for
+ * audit but doesn't stop the agent.
+ */
 function resolveGovernanceMode(
-  action_type: string,
-  budget_remaining: number,
-  budget_ceiling: number,
-  delegation_depth: number,
-  max_delegation_depth: number,
+  _actionType: string,
+  budgetRemaining: number,
+  _budgetCeiling: number,
+  delegationDepth: number,
+  maxDelegationDepth: number,
 ): GovernanceMode {
-  // Budget ceiling breach: enforce (agent must halt)
-  if (budget_remaining <= 0) return 'enforce';
-
-  // Capability not in delegation chain: enforce
-  // (checked upstream before this function is called)
-
-  // Delegation depth exceeds max: enforce
-  if (delegation_depth > max_delegation_depth) return 'enforce';
-
-  // Budget spend above 50% of remaining in single action: enforce
-  // (prevents a single catastrophic spend from draining the envelope)
-
-  // Everything else: evidence mode (sign both, chain extends)
+  if (budgetRemaining <= 0) return 'enforce';
+  if (delegationDepth > maxDelegationDepth) return 'enforce';
+  // capability and namespace checks happen upstream before we get here
   return 'evidence';
 }
 
-// ---------------------------------------------------------------------------
-// Trust tier derivation from delegation chain depth
-// ---------------------------------------------------------------------------
-
-/** KinthAI three-tier trust from chain depth. No separate signing rule needed. */
-function deriveTrustTier(delegation_chain: string[]): TrustTier {
-  if (delegation_chain.length === 0) return 'unsigned';
-  if (delegation_chain.length === 1) return 'platform_verified';
+/**
+ * Trust tier from chain depth. No lookup table, no separate config.
+ * Empty chain = unsigned. Single issuer = platform-verified (the
+ * platform key is the only signer). Multiple issuers = community
+ * vouched (web of trust).
+ */
+function deriveTrustTier(delegationChain: string[]): TrustTier {
+  if (delegationChain.length === 0) return 'unsigned';
+  if (delegationChain.length === 1) return 'platform_verified';
   return 'community_signed';
 }
 
-
-// ---------------------------------------------------------------------------
-// Bilateral receipt creation at the action-dispatch boundary
-// ---------------------------------------------------------------------------
-
+/**
+ * Creates the pre-execution half of the bilateral receipt.
+ *
+ * This is the enforcement gate. If governance mode comes back as
+ * 'enforce', the signing service refuses to issue a signature and
+ * the agent halts. No signature, no execution. The agent literally
+ * cannot proceed.
+ *
+ * If governance mode is 'evidence', the pre-execution signature
+ * issues normally. It commits to the action, policy version,
+ * delegation chain, and budget state at dispatch time. After the
+ * agent runs, call finalizeReceipt() to bind the actual result.
+ */
 async function createBilateralReceipt(
   agentPrivateKey: Uint8Array,
   agentDid: string,
@@ -141,18 +134,13 @@ async function createBilateralReceipt(
   const delegationDepth = delegationChain.length;
   const trustTier = deriveTrustTier(delegationChain);
 
-  // Step 1: check governance mode BEFORE execution
   const mode = resolveGovernanceMode(
     actionType, budgetRemaining, budgetCeiling,
     delegationDepth, maxDelegationDepth,
   );
 
+  // enforcement mode: refuse to sign, agent stops
   if (mode === 'enforce') {
-    // Pre-execution signature REFUSES to issue. Agent halts.
-    // This is the enforcement gate KinthAI described:
-    // "Block when an agent tries to exceed its budget ceiling,
-    //  use capabilities it wasn't delegated, access data outside
-    //  its namespace, or loop more than N times."
     return {
       blocked: true,
       reason: budgetRemaining <= 0
@@ -163,7 +151,7 @@ async function createBilateralReceipt(
     };
   }
 
-  // Step 2: issue pre-execution signature (evidence mode)
+  // evidence mode: sign the authorization context
   const authorization = {
     agent_did: agentDid,
     action_type: actionType,
@@ -175,32 +163,29 @@ async function createBilateralReceipt(
     budget_ceiling: budgetCeiling,
     budget_remaining: budgetRemaining,
     timestamp: Date.now(),
-    authorization_signature: '', // filled below
+    authorization_signature: '',
   };
 
-  const authCanonical = canonicalizeJson(authorization as unknown as Record<string, unknown>);
-  const authSig = await sign(
-    new TextEncoder().encode(authCanonical),
-    agentPrivateKey,
+  const authBytes = new TextEncoder().encode(
+    canonicalizeJson(authorization as unknown as Record<string, unknown>),
   );
+  const authSig = await sign(authBytes, agentPrivateKey);
   authorization.authorization_signature = Buffer.from(authSig).toString('hex');
 
-  // --- EXECUTION HAPPENS HERE (caller runs the actual agent action) ---
-  // The bilateral receipt binds what was authorized to what actually ran.
-  // If anything drifted between authorization and execution, the signatures
-  // won't compose and the audit trail surfaces the gap.
+  // caller runs the actual agent action between here and finalizeReceipt().
+  // if anything drifts between what was authorized and what actually runs,
+  // the two signatures won't compose and the chain breaks visibly.
 
-  return {
-    authorization,
-    // result field is populated after execution by finalizeReceipt()
-  } as unknown as BilateralReceiptOpenClaw;
+  return { authorization } as unknown as BilateralReceiptOpenClaw;
 }
 
 
-// ---------------------------------------------------------------------------
-// Post-execution: bind the actual result
-// ---------------------------------------------------------------------------
-
+/**
+ * Binds the actual execution result to the pre-execution commitment.
+ * Call this after the agent action completes. The two signatures
+ * together form the bilateral receipt: what was authorized vs what
+ * actually happened.
+ */
 async function finalizeReceipt(
   agentPrivateKey: Uint8Array,
   receipt: BilateralReceiptOpenClaw,
@@ -222,14 +207,14 @@ async function finalizeReceipt(
     result_signature: '',
   };
 
-  const resultCanonical = canonicalizeJson(result as unknown as Record<string, unknown>);
-  const resultSig = await sign(
-    new TextEncoder().encode(resultCanonical),
-    agentPrivateKey,
+  const resultBytes = new TextEncoder().encode(
+    canonicalizeJson(result as unknown as Record<string, unknown>),
   );
+  const resultSig = await sign(resultBytes, agentPrivateKey);
   result.result_signature = Buffer.from(resultSig).toString('hex');
 
-  // Chain linkage: receipt_hash = sha256(authorization_signature + result_signature)
+  // chain linkage: hash both signatures together so tampering with
+  // either half invalidates every downstream receipt
   const receiptHash = sha256(
     receipt.authorization.authorization_signature + result.result_signature,
   );
@@ -242,10 +227,11 @@ async function finalizeReceipt(
   };
 }
 
-// ---------------------------------------------------------------------------
-// KinthAI ActionReceipt compatibility: convert bilateral to their format
-// ---------------------------------------------------------------------------
-
+/**
+ * Converts a bilateral receipt to KinthAI's ActionReceipt format.
+ * Their existing audit infrastructure can consume these without
+ * changes on their side.
+ */
 function toKinthAIReceipt(bilateral: BilateralReceiptOpenClaw): KinthAIActionReceipt {
   return {
     agent_did: bilateral.authorization.agent_did,
@@ -259,17 +245,9 @@ function toKinthAIReceipt(bilateral: BilateralReceiptOpenClaw): KinthAIActionRec
   };
 }
 
-// ---------------------------------------------------------------------------
-// Utility
-// ---------------------------------------------------------------------------
-
 function sha256(input: string): string {
   return createHash('sha256').update(input, 'utf8').digest('hex');
 }
-
-// ---------------------------------------------------------------------------
-// Usage at the OpenClaw action-dispatch boundary
-// ---------------------------------------------------------------------------
 
 export {
   createBilateralReceipt,

@@ -1,0 +1,9 @@
+{
+  "verifier": "@nobulex/crypto",
+  "fixture": "aeoess/agent-passport-system/fixtures/bilateral-delegation/canonicalize-fixture-v1.json",
+  "vectors_total": 10,
+  "vectors_passed": 10,
+  "seed_sha256": "4f3d8defea1e82c1705c35d97ee4db046c6313ba83855a7d0de04a44f04c834a",
+  "timestamp": "2026-04-30T05:29:29.164Z",
+  "result": "PASS"
+}

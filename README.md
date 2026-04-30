@@ -3,7 +3,17 @@
 [![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12626/badge)](https://www.bestpractices.dev/projects/12626)
 
-**AI agents can't prove they followed their own rules. Nobulex fixes that.**
+**The trust layer for the autonomous economy.**
+
+AI agents are shipping into production. Nobody can prove what they actually do. Nobulex fixes that with cryptographic receipts: signed proof before and after every agent action, hash-chained, verifiable by anyone.
+
+## Status
+
+- Bilateral receipt primitive merged into [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1333) (PRs #1302, #1333)
+- 10/10 byte-match verified against [APS bilateral-delegation fixtures](https://github.com/aeoess/agent-passport-system/tree/main/fixtures/bilateral-delegation) ([reproduce it yourself](scripts/verify-aps-byte-match.mjs))
+- Five independent implementations validated (AgentGraph, APS, AgentID, HiveTrust, Nobulex) across TypeScript and Python
+- Named as fourth-party verifier in [cross-implementation composition fixture](https://github.com/aeoess/agent-governance-vocabulary/issues/36)
+- OpenSSF Best Practices [passing badge](https://www.bestpractices.dev/projects/12626)
 
 ```bash
 $ npx tsx examples/demo.ts
@@ -42,11 +52,12 @@ Three primitives. That's the whole protocol:
 2. **Enforce** — check every action *before* it runs
 3. **Prove** — tamper-evident hash chain anyone can verify
 
-![Tests](https://img.shields.io/badge/tests-2%2C736%20passing-brightgreen)
+![Tests](https://img.shields.io/badge/tests-6%2C057%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
 
 **[Try it live](https://nobulex.com/try.html)** · **[Policy Designer](https://nobulex.com/designer.html)** · **[Quickstart](https://nobulex.com/docs/quickstart.html)** · **[Compare](https://nobulex.com/compare.html)** · **[Receipt Schema](https://nobulex.com/docs/receipt-schema.html)** · **[Pricing](https://nobulex.com/pricing.html)** · **[IETF Draft](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)**
+
 
 ## What is Proof-of-Behavior?
 
@@ -106,6 +117,7 @@ console.log(result.compliant);    // true
 console.log(result.violations);   // []
 ```
 
+
 ## Cross-Agent Verification Handshake
 
 Before two agents transact, they verify each other's proof-of-behavior. **No proof, no transaction.**
@@ -145,58 +157,6 @@ The handshake checks eight things in order: covenant signature, proof signature,
 
 Proof-of-behavior fills the gap: declare → enforce → prove.
 
-## The Covenant DSL
-
-```
-covenant SafeTrader {
-  permit read;
-  permit transfer (amount <= 500);
-  forbid transfer (amount > 500);
-  forbid delete;
-  require counterparty.compliance_score >= 0.8;
-}
-```
-
-**Forbid wins.** If any `forbid` matches, the action is immediately blocked regardless of permits. Default deny for unmatched actions. Conditions support `>`, `<`, `>=`, `<=`, `==`, `!=` on numeric, string, and boolean fields.
-
-Three keywords. No configuration files. No YAML. No JSON schemas. Just rules.
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                      Integrations                           │
-│            mcp-server  ·  a2a  ·  langchain                 │
-├─────────────────────────────────────────────────────────────┤
-│                       User API                              │
-│                         sdk                                 │
-├─────────────────────────────────────────────────────────────┤
-│                   Proof-of-Behavior                         │
-│                                                             │
-│  identity · covenant-lang · action-log · enforcement        │
-│  middleware · verification · crypto · merkle · proofs       │
-│                                                             │
-│                         core                                │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Packages
-
-| Package | What It Does |
-|---------|-------------|
-| [`@nobulex/core`](packages/core/) | Everything — identity (DIDs), covenant DSL, hash-chained action logs, enforcement middleware, verification, cryptographic proofs |
-| [`@nobulex/sdk`](packages/sdk/) | User-facing API — `NobulexClient`, `CovenantAgent`, cross-agent handshake |
-| [`@nobulex/mcp-server`](packages/mcp-server/) | MCP compliance server for Claude Desktop, Cursor, VS Code |
-| [`@nobulex/a2a`](packages/a2a/) | A2A Agent Card behavioral attestation extension |
-| [`@nobulex/langchain`](packages/langchain/) | LangChain callback integration |
-| [`@nobulex/claude-agent-sdk`](packages/claude-agent-sdk/) | Claude Agent SDK compliance hooks — PreToolUse/PostToolUse gating, tamper-evident tool-call logs |
-
-## Integrations
-
-- **npm** — `npm install @nobulex/sdk`
-- **MCP** — `npx @nobulex/mcp-server` (works with Claude Desktop, Cursor, VS Code)
-- **A2A** — Agent Card behavioral attestation extension
-- **LangChain** — drop-in compliance callbacks
 
 ## Conceptual Comparison
 
@@ -213,7 +173,7 @@ Three keywords. No configuration files. No YAML. No JSON schemas. Just rules.
 npx tsx examples/demo.ts
 ```
 
-Creates two agents, defines behavioral rules, enforces at runtime, blocks a forbidden transfer, generates a proof-of-behavior, runs the 8-step handshake, and then shows the same handshake rejecting a third agent whose log was tampered with — all in one script.
+Creates two agents, defines behavioral rules, enforces at runtime, blocks a forbidden transfer, generates a proof-of-behavior, runs the 8-step handshake, and then shows the same handshake rejecting a third agent whose log was tampered with.
 
 ```bash
 npx tsx examples/langchain-agent.ts   # covenant enforcement around a mocked LangChain agent
@@ -228,20 +188,16 @@ We've conducted an internal security review. Here's what we tested and what we f
 - Hash chain integrity: modifying any entry breaks the chain (property-tested with fast-check across random chains of varying length).
 - Signature forgery: invalid signatures are rejected 100% of the time.
 - Replay attack prevention: audience-bound proofs fail when replayed to a different verifier (property-tested).
-- Covenant enforcement: forbidden actions are blocked *before* execution, never after — the handler never runs.
+- Covenant enforcement: forbidden actions are blocked *before* execution, never after.
 
 **Known limitations:**
-- No key revocation mechanism yet — compromised keys remain trusted until removed out-of-band.
-- No rate limiting on handshake verification — potential DoS vector under adversarial load.
-- Single-threaded chain verification — chains above ~100K entries take visible time (see [benchmarks](benchmarks/README.md)).
-- Clock skew tolerance is 0 — agents with desynchronized clocks may fail timestamp checks.
-
-**Not in scope:**
-- Model-level safety (prompt injection, jailbreaking) — use guardrails for that.
-- Network transport security — use TLS.
-- Key storage — use your platform's HSM or key vault.
+- No key revocation mechanism yet.
+- No rate limiting on handshake verification.
+- Single-threaded chain verification.
+- Clock skew tolerance is 0.
 
 See [docs/threat-model.md](docs/threat-model.md) for the full threat model.
+
 
 ## Development
 
@@ -259,6 +215,7 @@ npx tsx benchmarks/bench.ts
 - **[IETF Internet-Draft](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)** — `draft-gogani-nobulex-proof-of-behavior-00`: Proof-of-Behavior Protocol for Autonomous AI Agents
 - **[LangChain RFC #35691](https://github.com/langchain-ai/langchain/issues/35691)** — ComplianceCallbackHandler, 10+ implementations converging
 - **[NIST RFI Response](docs/nist-rfi.md)** — Formal comments to NIST AI Agent Standards Initiative
+- **[Microsoft AGT](https://github.com/microsoft/agent-governance-toolkit/pull/1333)** — Bilateral receipt primitive merged (PRs #1302, #1333)
 
 ## Ecosystem
 
@@ -266,12 +223,14 @@ Projects building on or composing with Nobulex:
 
 | Partner | Layer | Integration |
 |---------|-------|-------------|
+| [Microsoft AGT](https://github.com/microsoft/agent-governance-toolkit) | Governance toolkit | Bilateral receipt primitive (PR #1333) |
+| [APS](https://github.com/aeoess) | Receipt schema | 10/10 byte-match on bilateral-delegation fixtures |
+| [AgentGraph](https://agentgraph.co) | CTEF vectors | Cross-implementation byte-match validation |
+| [AgentID](https://github.com/haroldmalikfrimpong-ops/getagentid) | Identity layer | Claim type convergence |
+| [HiveTrust](https://github.com/srotzin/hivetrust) | Compliance | Bilateral receipt endorsement |
+| [Concordia](https://github.com/eriknewton) | Envelope layer | JCS canonicalization alignment |
 | [Dominion Observatory](https://github.com/vdineshk/dominion-observatory) | Pre-call trust scores | Feeds trust_score into covenant `require` |
-| [SidClaw](https://github.com/VladUZH) | HITL approval | Signed state-transition receipts |
-| [Aira](https://github.com/mbarakats) | Authorization + audit | Multi-party signing with RFC 3161 |
 | [Signet](https://github.com/willamhou) | Signing layer | Bilateral co-signing, policy attestation |
-| [AgentMint](https://github.com/aniketh-maddipati) | Runtime enforcement | Ed25519 plan signing, scope matching |
-| [APS](https://github.com/aeoess) | Receipt schema | Co-designed outcome_hash format |
 
 ## Documentation
 
@@ -285,12 +244,9 @@ Projects building on or composing with Nobulex:
 
 - **Website:** [nobulex.com](https://nobulex.com)
 - **Try it:** [nobulex.com/try](https://nobulex.com/try.html)
-- **Policy Designer:** [nobulex.com/designer](https://nobulex.com/designer.html)
-- **Compare:** [nobulex.com/compare](https://nobulex.com/compare.html)
 - **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
-- **PyPI:** [langchain-nobulex](https://pypi.org/project/langchain-nobulex/)
 - **IETF:** [draft-gogani-nobulex-proof-of-behavior-00](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)
 
 ## License
 
-MIT — use it for anything.
+MIT

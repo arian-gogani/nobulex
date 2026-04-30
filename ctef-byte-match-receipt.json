@@ -1,0 +1,13 @@
+{
+  "verifier": "@nobulex/crypto",
+  "fixture": "agentgraph.co/.well-known/cte-test-vectors.json",
+  "version": "0.3.1",
+  "vectors_total": 4,
+  "vectors_passed": 4,
+  "negative_path_error_codes": {
+    "scope_violation": "INVALID_CLAIM_SCOPE",
+    "composition_failure": "INVALID_COMPOSITION"
+  },
+  "timestamp": "2026-04-30T05:37:28.978Z",
+  "result": "PASS"
+}

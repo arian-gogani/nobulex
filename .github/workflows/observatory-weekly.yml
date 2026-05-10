@@ -1,0 +1,93 @@
+name: Observatory · Weekly Publication
+
+# The weekly publication cadence for the Agent Reliability Index.
+#
+# Runs every Monday at 13:00 UTC (08:00 Eastern) — the time the weekly issue
+# is published. The workflow:
+#   1. Runs the methodology smoke test (29 cases, no dependencies)
+#   2. Regenerates the synthetic preview issue (proves the pipeline composes)
+#   3. Fails loudly if either step fails — so a broken pipeline cannot
+#      silently miss a Monday publication
+#
+# This workflow does NOT yet:
+#   - Run the standardized 100-prompt set against real vendor APIs
+#   - Compose a real Issue 002+ from real measurements
+#   - Auto-commit and publish the result
+#
+# Those steps require API credentials, the (private) prompt set, and a real
+# vendor adapter layer. They will be added in a subsequent commit once the
+# prompt set is sealed.
+
+on:
+  schedule:
+    # Every Monday at 13:00 UTC (08:00 Eastern)
+    - cron: "0 13 * * 1"
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "scripts/observatory/**"
+      - "observatory/**"
+      - ".github/workflows/observatory-weekly.yml"
+
+jobs:
+  smoke-test:
+    name: Methodology smoke test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Run methodology smoke test
+        run: node scripts/observatory/smoke-test.mjs
+
+      - name: Regenerate synthetic preview issue
+        run: node scripts/observatory/render-demo.mjs
+
+      - name: Verify preview was generated
+        run: |
+          test -f observatory/_preview-issue-002.md
+          lines=$(wc -l < observatory/_preview-issue-002.md)
+          echo "Preview issue: $lines lines"
+          if [ "$lines" -lt 50 ]; then
+            echo "::error::Preview issue is suspiciously short ($lines lines). Renderer may be broken."
+            exit 1
+          fi
+
+      - name: Upload preview as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: observatory-preview
+          path: observatory/_preview-issue-002.md
+          retention-days: 30
+
+  publication-reminder:
+    name: Publication reminder
+    runs-on: ubuntu-latest
+    needs: smoke-test
+    if: github.event_name == 'schedule'
+    steps:
+      - name: Print publication checklist
+        run: |
+          echo "::notice::Monday observatory publication reminder"
+          echo ""
+          echo "It is Monday. The Agent Reliability Index publishes today."
+          echo ""
+          echo "Manual steps required (the harness does not yet run real measurements):"
+          echo "  1. Run the 100-prompt set against tracked endpoints"
+          echo "  2. Score the runs through scripts/observatory/scoring.ts"
+          echo "  3. Compose the resulting Issue object"
+          echo "  4. Render via render.ts / render-demo.mjs"
+          echo "  5. Write to observatory/issue-NNN-MMM.md"
+          echo "  6. Update website/observatory.html to link the new issue"
+          echo "  7. Commit, push, post to social"
+          echo ""
+          echo "Until vendor adapters are built, this is manual but the artifacts"
+          echo "exist (observatory/_template.md and observatory/_preview-issue-002.md)"
+          echo "to make the work fill-in-the-blanks rather than re-architecture."

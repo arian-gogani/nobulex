@@ -1,0 +1,32 @@
+{
+  "$schema": "./methodology.schema.json",
+  "version": "v0.1",
+  "releasedAt": "2026-05-11",
+  "deprecatedAt": null,
+  "weights": {
+    "outputStability": 0.30,
+    "confidenceCalibration": 0.15,
+    "refusalRate": 0.20,
+    "latencyVariance": 0.10,
+    "toolUseReliability": 0.25
+  },
+  "stabilitySubWeights": {
+    "lexical": 0.30,
+    "semantic": 0.50,
+    "structural": 0.20
+  },
+  "drift": {
+    "promptLevelSigmaThreshold": 2.0,
+    "rollingBaselineWeeks": 4,
+    "vendorBaselineWeeks": 12,
+    "vendorLevelMinDriftedPromptFraction": 0.15,
+    "vendorLevelMinCvriDelta": 5.0
+  },
+  "statusBands": {
+    "ok": { "minCvri": 95 },
+    "advisory": { "minCvri": 85 },
+    "regression": { "minCvri": 70 },
+    "critical": { "minCvri": 0 }
+  },
+  "notes": "Methodology v0.1 — Charter Issue. Weights reflect relative weight of each dimension in current enterprise post-incident reviews. Re-tuned quarterly as the dataset matures. Any change to this file requires a 12-week back-test per editorial policy."
+}

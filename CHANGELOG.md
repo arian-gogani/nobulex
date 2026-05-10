@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+
+- **Agent Reliability Index** (observatory layer): a weekly public publication tracking AI agent behavior change across frontier vendors. Charter Issue 001 committed at `observatory/issue-001-charter.md`. Methodology specified at `docs/AGENT-RELIABILITY-INDEX.md`. Strategic rationale documented at `docs/OBSERVATORY-VISION.md`. Public-facing page added at `website/observatory.html` with main-nav and sitemap entries.
+- The observatory layer sits on top of the existing bilateral receipt protocol substrate, not replacing it. Year-1 operation runs on publicly observable data (standardized prompts on public model endpoints, vendor disclosure deltas, public incident reports); Year-2+ scales to bilateral receipt streams as adoption grows.
+
+### Strategic positioning
+
+- Nobulex's category framing is updated from "compliance evidence protocol" to "neutral observer of cross-organization AI agent transactions, on path to becoming the rating-agency layer for the agent economy." The existing protocol work remains the substrate and credibility foundation; the observatory and rating-agency framing is the strategic destination layered on top. See `docs/OBSERVATORY-VISION.md` for the full thesis.
+
 ## [0.3.0] - 2026-04-16
 
 ### Changed

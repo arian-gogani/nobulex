@@ -14,6 +14,7 @@ AI agents are shipping into production. Nobody can prove what they actually do. 
 - Five independent implementations validated (AgentGraph, APS, AgentID, HiveTrust, Nobulex) across TypeScript and Python
 - Named as fourth-party verifier in [cross-implementation composition fixture](https://github.com/aeoess/agent-governance-vocabulary/issues/36)
 - OpenSSF Best Practices [passing badge](https://www.bestpractices.dev/projects/12626)
+- Strategic vision in [docs/OBSERVATORY-VISION.md](docs/OBSERVATORY-VISION.md); first issue of the **Agent Reliability Index** in [observatory/issue-001-charter.md](observatory/issue-001-charter.md); methodology in [docs/AGENT-RELIABILITY-INDEX.md](docs/AGENT-RELIABILITY-INDEX.md)
 
 ```bash
 $ npx tsx examples/demo.ts

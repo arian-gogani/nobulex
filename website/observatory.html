@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Agent Reliability Index — Nobulex</title>
+  <meta name="description" content="A weekly public observatory of AI agent behavior change across frontier vendors. Published by Nobulex.">
+  <meta property="og:title" content="Agent Reliability Index — Nobulex">
+  <meta property="og:description" content="A weekly public observatory of AI agent behavior change across frontier vendors. Published by Nobulex.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/observatory.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Agent Reliability Index — Nobulex">
+  <meta name="twitter:description" content="A weekly public observatory of AI agent behavior change across frontier vendors.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Sora:wght@600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .ari-page { font-family: 'Instrument Serif', Georgia, serif; }
+    .ari-page .ari-body { max-width: 56rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+    .ari-masthead {
+      border-bottom: 1px solid var(--border, #2a2a2a);
+      padding-bottom: 2rem;
+      margin-bottom: 3rem;
+    }
+    .ari-masthead__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted, #888);
+      margin-bottom: 0.75rem;
+    }
+    .ari-masthead h1 {
+      font-size: clamp(2.25rem, 5vw, 3.5rem);
+      font-weight: 400;
+      line-height: 1.1;
+      color: var(--text, #fff);
+      margin-bottom: 0.75rem;
+    }
+    .ari-masthead__meta {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      color: var(--text-muted, #888);
+      letter-spacing: 0.04em;
+    }
+
+    .ari-issue-meta {
+      display: flex;
+      gap: 2rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-muted, #888);
+      padding: 1rem 0;
+      border-top: 1px solid var(--border, #2a2a2a);
+      border-bottom: 1px solid var(--border, #2a2a2a);
+      margin-bottom: 3rem;
+    }
+    .ari-issue-meta span strong {
+      color: var(--text, #fff);
+      font-weight: 500;
+      margin-right: 0.5rem;
+    }
+
+    .ari-page h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.875rem;
+      font-weight: 400;
+      color: var(--text, #fff);
+      margin-top: 3rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .ari-page h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted, #888);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .ari-page p {
+      font-size: 1.2rem;
+      line-height: 1.65;
+      color: var(--text-secondary, #ccc);
+      margin-bottom: 1.25rem;
+    }
+    .ari-page p.lead {
+      font-size: 1.4rem;
+      color: var(--text, #fff);
+    }
+
+    .ari-page ul, .ari-page ol {
+      font-size: 1.15rem;
+      line-height: 1.6;
+      color: var(--text-secondary, #ccc);
+      margin: 0 0 1.5rem 1.5rem;
+    }
+    .ari-page li { margin-bottom: 0.5rem; }
+
+    .ari-page strong { color: var(--text, #fff); font-weight: 500; }
+
+    .ari-table-wrap {
+      margin: 1.5rem 0 2rem;
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+    .ari-page table {
+      width: 100%;
+      border-collapse: collapse;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+    }
+    .ari-page table th {
+      text-align: left;
+      padding: 0.85rem 1rem;
+      background: rgba(255,255,255,0.03);
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--text-muted, #888);
+      border-bottom: 1px solid var(--border, #2a2a2a);
+    }
+    .ari-page table td {
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--border, #2a2a2a);
+      color: var(--text-secondary, #ccc);
+      vertical-align: top;
+    }
+    .ari-page table tr:last-child td { border-bottom: none; }
+    .ari-page table td:first-child { color: var(--text, #fff); font-weight: 500; }
+
+    .ari-code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin: 1.5rem 0;
+      color: var(--text-secondary, #ccc);
+      line-height: 1.6;
+      overflow-x: auto;
+      white-space: pre;
+    }
+
+    .ari-callout {
+      border-left: 2px solid var(--accent, #f60);
+      padding: 0.25rem 0 0.25rem 1.5rem;
+      margin: 2rem 0;
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 1.2rem;
+      line-height: 1.6;
+      color: var(--text, #fff);
+    }
+
+    .ari-rule {
+      border: none;
+      border-top: 1px solid var(--border, #2a2a2a);
+      margin: 3rem 0;
+    }
+
+    .ari-cta-band {
+      margin-top: 4rem;
+      padding: 2.5rem 0 0;
+      border-top: 1px solid var(--border, #2a2a2a);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .ari-cta-band h3 {
+      margin-top: 0;
+    }
+    .ari-cta-band p {
+      font-size: 1.05rem;
+      color: var(--text-secondary, #ccc);
+    }
+    .ari-cta-band a {
+      color: var(--accent, #f60);
+      text-decoration: none;
+    }
+    .ari-cta-band a:hover { text-decoration: underline; }
+
+    .ari-footer-meta {
+      margin-top: 4rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border, #2a2a2a);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted, #888);
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="header__links">
+        <a href="index.html#problem">Problem</a>
+        <a href="observatory.html">Observatory</a>
+        <a href="try.html">Try it</a>
+        <a href="docs/index.html">Docs</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <a href="mailto:nobulex.dev@gmail.com?subject=Agent%20Reliability%20Index%20Subscription" class="header__cta">Subscribe</a>
+    </nav>
+  </header>
+
+  <main class="ari-page" id="main">
+    <article class="ari-body">
+
+      <div class="ari-masthead">
+        <div class="ari-masthead__eyebrow">A Nobulex Publication</div>
+        <h1>Agent Reliability Index</h1>
+        <div class="ari-masthead__meta">A weekly observatory of AI agent behavior change across frontier vendors.</div>
+      </div>
+
+      <div class="ari-issue-meta">
+        <span><strong>Issue</strong> 001 · Charter</span>
+        <span><strong>Volume</strong> 1</span>
+        <span><strong>Published</strong> 11 May 2026</span>
+        <span><strong>Methodology</strong> v0.1</span>
+      </div>
+
+      <p class="lead">Every week, the major frontier AI vendors silently change the behavior of agents in production. Some changes are announced. Most are not. Enterprise customers running these agents have no cross-customer baseline to detect drift. Vendors are structurally disincentivized to disclose regressions. The gap between what is observable and what is disclosed is the structural problem this index addresses.</p>
+
+      <p>The Agent Reliability Index is a public observatory. Each week, it publishes a standardized-prompt drift signal across the major frontier models, vendor-by-vendor reliability scorecards on the prior 7 days, notable incidents with structured severity classification, and methodology updates as the analytical model matures.</p>
+
+      <p>The index is free to read. The methodology is open and lives in the Nobulex repository. The premium tier — historical archives, machine-readable feeds, drill-down per task class, custom prompt queries — is paid.</p>
+
+      <p>This is the charter issue. It establishes the baseline and publishes the methodology in full. Subsequent issues will be denser, with real drift signal and incident catalogs. The methodology is being published <em>before</em> the first issue contains real findings, so that readers, vendors, regulators, and contributors can scrutinize the approach before it is loaded with results.</p>
+
+      <hr class="ari-rule">
+
+      <h2>The Index — Charter Baseline</h2>
+
+      <p>The headline figure for each issue is the <strong>Cross-Vendor Reliability Index (CVRI)</strong>, computed as a normalized composite across five behavioral dimensions for each tracked vendor.</p>
+
+      <p>For the charter issue, the index is set to a baseline of 100 for each tracked vendor. Subsequent issues will report deviations from baseline, week-over-week deltas, and longitudinal trend lines.</p>
+
+      <div class="ari-table-wrap">
+        <table>
+          <thead>
+            <tr><th>Vendor</th><th>CVRI (Charter Baseline)</th><th>Tracked Endpoints</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Anthropic</td><td>100</td><td>Claude family, current production</td></tr>
+            <tr><td>OpenAI</td><td>100</td><td>GPT family, o-series reasoning</td></tr>
+            <tr><td>Google</td><td>100</td><td>Gemini family, current production</td></tr>
+            <tr><td>Microsoft</td><td>100</td><td>Copilot, Azure-hosted variants</td></tr>
+            <tr><td>Meta</td><td>100</td><td>Llama production deployments via partners</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <p>The methodology for computing CVRI is published in full at <a href="https://github.com/arian-gogani/nobulex/blob/main/docs/AGENT-RELIABILITY-INDEX.md">docs/AGENT-RELIABILITY-INDEX.md</a>. Readers are invited to challenge weights, reweight components for their own use case, or build alternative composite indices on the underlying data.</p>
+
+      <hr class="ari-rule">
+
+      <h2>What is measured</h2>
+
+      <p>The index tracks five behavioral dimensions for each frontier agent endpoint. These dimensions were chosen because they are leading indicators most often cited in post-incident reviews of production agent failures, and because they are observable from the outside without privileged access.</p>
+
+      <h3>1 · Output stability under fixed prompts</h3>
+      <p>100 standardized prompts spanning 10 task classes are run weekly with deterministic settings (temperature 0 where supported, fixed seed where supported). Outputs are scored on lexical, semantic, and structural similarity to the prior week. A statistically significant divergence — particularly when accompanied by no announced model update — is flagged as silent drift.</p>
+
+      <h3>2 · Stated confidence calibration</h3>
+      <p>Where the agent provides confidence scores or hedge language, the empirical distribution is tracked. A shift in the mean or variance of stated confidence is a leading indicator that the underlying model has been retuned.</p>
+
+      <h3>3 · Refusal and safety-filter rate</h3>
+      <p>The proportion of prompts that result in refusal, partial refusal, or safety-filter intervention. Increases are not inherently problematic, but customers running agents in production rely on a stable refusal rate for downstream workflow design.</p>
+
+      <h3>4 · Latency and routing variance</h3>
+      <p>Response latency, time-to-first-token, and total token throughput. Significant changes here typically indicate routing or infrastructure changes that may also affect output quality.</p>
+
+      <h3>5 · Tool-use reliability</h3>
+      <p>Success rate on a fixed set of standardized tool-use scenarios for agent platforms with tool-calling capabilities. A drop in tool-use reliability is one of the highest-impact regressions for enterprise deployments and is rarely surfaced in vendor release notes.</p>
+
+      <hr class="ari-rule">
+
+      <h2>Drift signal — this week</h2>
+
+      <p>The charter issue establishes the baseline. There is, by definition, no drift signal yet.</p>
+
+      <p>Subsequent issues will populate this section with the week's flagged drift events, classified as <em>announced drift</em> (coinciding with vendor disclosure) or <em>silent drift</em> (no corresponding vendor disclosure). Silent drift is the editorially most significant signal the index produces — it surfaces behavior changes the vendor's customers have no other way to detect.</p>
+
+      <div class="ari-callout">
+        Silent drift — observable behavior change without corresponding vendor disclosure — is the structural problem the index exists to surface. The category receives the largest editorial weight in every weekly issue.
+      </div>
+
+      <hr class="ari-rule">
+
+      <h2>Notable incidents — this week</h2>
+
+      <p>The index tracks publicly reported AI agent incidents and classifies them on a four-level severity scale. Source streams include the AI Incident Database, vendor status pages, regulatory filings, and verifiable press coverage. The charter issue does not yet include a catalog. Subsequent issues will. Classification rubric:</p>
+
+      <ul>
+        <li><strong>Informational</strong> — reported behavioral oddity with no business or end-user impact.</li>
+        <li><strong>Advisory</strong> — behavior change that may affect specific deployment patterns; customers should review.</li>
+        <li><strong>Regression</strong> — measurable degradation in capability or reliability versus the prior week's behavior, affecting downstream production workflows.</li>
+        <li><strong>Critical</strong> — failure causing direct end-user harm, regulatory exposure, or material commercial loss.</li>
+      </ul>
+
+      <hr class="ari-rule">
+
+      <h2>Methodology — at a glance</h2>
+
+      <p>Full methodology lives at <a href="https://github.com/arian-gogani/nobulex/blob/main/docs/AGENT-RELIABILITY-INDEX.md">docs/AGENT-RELIABILITY-INDEX.md</a>. The CVRI composite is computed as:</p>
+
+      <pre class="ari-code">CVRI(vendor, week) = 100 - (
+  0.30 * |output_stability_z|     +
+  0.15 * |confidence_calibration_z| +
+  0.20 * |refusal_rate_z|           +
+  0.10 * |latency_variance_z|       +
+  0.25 * |tool_use_reliability_z|
+)</pre>
+
+      <p>Each <code>_z</code> is the z-score versus the vendor's own 12-week rolling baseline. A prompt-level drift event is flagged at greater than 2σ from the 4-week baseline. A vendor-level drift event requires at least 15% of tracked prompts to show drift in the same week and a CVRI delta of at least 5 points.</p>
+
+      <hr class="ari-rule">
+
+      <h2>What the index does not do</h2>
+
+      <ul>
+        <li><strong>It does not rank vendors as "better" or "worse."</strong> Reliability is task-conditional. A vendor with stable creative-writing output may have unstable agentic tool-use. Both are useful information for different buyers.</li>
+        <li><strong>It does not predict commercial success.</strong> Vendors with excellent reliability lose to better-distributed competitors all the time.</li>
+        <li><strong>It is not a benchmark.</strong> Benchmarks measure capability ceilings under optimized conditions. The index measures behavioral consistency under fixed inputs over time. A model can score 90 on benchmarks and 70 on CVRI.</li>
+        <li><strong>It does not replace vendor disclosures.</strong> Where vendors publish model cards and evaluation results, those remain authoritative for the model's intended capabilities. The index is a neutral observation of behavior in production, not an audit of stated capabilities.</li>
+      </ul>
+
+      <hr class="ari-rule">
+
+      <h2>Editorial policy</h2>
+
+      <p>Nobulex receives no payment from any AI vendor for inclusion, exclusion, weighting, or scoring. This is a contractual commitment and the structural moat that protects the index against the conflict-of-interest pattern that has weakened other rating agencies.</p>
+
+      <p>Vendors may dispute any finding. Disputes are resolved publicly: the vendor submits the dispute with a specific methodological objection; Nobulex publishes the dispute verbatim in the next issue alongside its response. The catalog of vendor disputes is itself a structured precedent stream.</p>
+
+      <p>Methodology changes are 12-week back-tested before going live. Back-tested impact on prior CVRI scores is published in the issue immediately preceding the change. The prior methodology is archived and remains accessible. This prevents the failure mode where a low-scoring vendor lobbies for methodology adjustments that retroactively rehabilitate their score.</p>
+
+      <div class="ari-cta-band">
+        <h3>Subscribe & contribute</h3>
+        <p>The Agent Reliability Index is published every Monday.</p>
+        <p>To subscribe, email <a href="mailto:nobulex.dev@gmail.com?subject=Agent%20Reliability%20Index%20Subscription">nobulex.dev@gmail.com</a> with the subject "Agent Reliability Index Subscription."</p>
+        <p>To submit methodology critique, open an issue at <a href="https://github.com/arian-gogani/nobulex/issues">github.com/arian-gogani/nobulex/issues</a> with the label <code>observatory:methodology</code>. Substantive critiques are addressed in subsequent issues with full attribution.</p>
+        <p>For the full strategic vision behind the observatory, see <a href="https://github.com/arian-gogani/nobulex/blob/main/docs/OBSERVATORY-VISION.md">docs/OBSERVATORY-VISION.md</a>.</p>
+      </div>
+
+      <div class="ari-footer-meta">
+        <span>Charter Issue · Methodology v0.1 · 11 May 2026</span>
+        <span>Published by Nobulex</span>
+      </div>
+
+    </article>
+  </main>
+
+  <script src="main.js" defer></script>
+</body>
+</html>

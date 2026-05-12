@@ -159,3 +159,92 @@ export function minimumScoreFor(capability: TrustCapability): number {
   }
   return TIER_THRESHOLDS.autonomous.min;
 }
+
+
+/**
+ * TrustCapitalLedger maintains the running credit state for an agent.
+ *
+ * This is the stateful accumulator. Every time a receipt is recorded,
+ * the ledger updates the agent's Trust Capital. The ledger tracks
+ * the full history and can produce a verifiable summary at any point.
+ */
+export class TrustCapitalLedger {
+  private receipts: { timestamp: string; compliant: boolean; actionHash: string }[] = [];
+  private _agentDid: string;
+
+  constructor(agentDid: string) {
+    this._agentDid = agentDid;
+  }
+
+  get agentDid(): string {
+    return this._agentDid;
+  }
+
+  /**
+   * Record a receipt outcome. Call this after verifying each bilateral receipt.
+   */
+  record(actionHash: string, compliant: boolean): void {
+    this.receipts.push({
+      timestamp: new Date().toISOString(),
+      compliant,
+      actionHash,
+    });
+  }
+
+  /**
+   * Get the current Trust Capital score for this agent.
+   */
+  getScore(): TrustCapitalScore {
+    const total = this.receipts.length;
+    const compliant = this.receipts.filter(r => r.compliant).length;
+    return calculateTrustCapital({ total, compliant });
+  }
+
+  /**
+   * Check if this agent has earned a specific capability.
+   */
+  can(capability: TrustCapability): boolean {
+    return hasCapability(this.getScore(), capability);
+  }
+
+  /**
+   * Get the number of receipts needed to reach the next tier.
+   */
+  receiptsToNextTier(): { nextTier: TrustTier; receiptsNeeded: number } | null {
+    const current = this.getScore();
+    const tierOrder: TrustTier[] = ['restricted', 'limited', 'standard', 'trusted', 'autonomous'];
+    const currentIndex = tierOrder.indexOf(current.tier);
+
+    if (currentIndex >= tierOrder.length - 1) return null;
+
+    const nextTier = tierOrder[currentIndex + 1];
+    const needed = MIN_RECEIPTS_FOR_TIER[nextTier] - this.receipts.length;
+
+    return {
+      nextTier,
+      receiptsNeeded: Math.max(0, needed),
+    };
+  }
+
+  /**
+   * Export the ledger as a verifiable summary.
+   */
+  toSummary(): {
+    agentDid: string;
+    totalReceipts: number;
+    compliantReceipts: number;
+    score: TrustCapitalScore;
+    firstReceipt: string | null;
+    lastReceipt: string | null;
+  } {
+    const score = this.getScore();
+    return {
+      agentDid: this._agentDid,
+      totalReceipts: this.receipts.length,
+      compliantReceipts: this.receipts.filter(r => r.compliant).length,
+      score,
+      firstReceipt: this.receipts[0]?.timestamp ?? null,
+      lastReceipt: this.receipts[this.receipts.length - 1]?.timestamp ?? null,
+    };
+  }
+}

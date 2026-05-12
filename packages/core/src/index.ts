@@ -999,3 +999,4 @@ export * from './store/index';
 export * from './compliance/index';
 export * from './replay/index';
 export * from './composition/index';
+export * from './trust-capital';

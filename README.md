@@ -179,6 +179,7 @@ Creates two agents, defines behavioral rules, enforces at runtime, blocks a forb
 
 ```bash
 npx tsx examples/langchain-agent.ts   # covenant enforcement around a mocked LangChain agent
+npx tsx examples/trust-capital-demo.ts # watch an agent earn credit through verified behavior
 npx tsx benchmarks/bench.ts           # protocol performance on your hardware
 ```
 

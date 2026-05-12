@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/a2a",
   "version": "0.3.0",
-  "description": "A2A Agent Card behavioral evidence extension — bridge between Nobulex proof-of-behavior and the Google A2A protocol",
+  "description": "A2A Agent Card behavioral evidence extension — bridge between Nobulex Trust Capital and the Google A2A protocol",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",

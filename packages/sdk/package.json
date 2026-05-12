@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/sdk",
   "version": "0.2.2",
-  "description": "Nobulex SDK — the proof-of-behavior protocol for autonomous AI agents",
+  "description": "Nobulex SDK — Trust Capital for autonomous AI agents. Bilateral receipts, earned reputation, verified behavior.",
   "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/mcp-server",
   "version": "0.2.1",
-  "description": "MCP compliance server — proof-of-behavior enforcement for any MCP-compatible agent",
+  "description": "MCP compliance server — Trust Capital enforcement for any MCP-compatible agent",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

@@ -2,7 +2,7 @@
   "name": "nobulex",
   "private": true,
   "version": "0.1.0",
-  "description": "The proof-of-behavior protocol for autonomous AI agents. Define rules. Enforce at runtime. Prove compliance with cryptography.",
+  "description": "The trust economy for autonomous AI agents. Trust Capital — machine reputation earned through verified behavior, gating what agents are allowed to do.",
   "workspaces": [
     "packages/core",
     "packages/sdk",

@@ -15,6 +15,7 @@ import { ActionLogBuilder } from '../action-log/index';
 import type { ActionLogEntry, ActionLog } from '../types/index';
 import { sha256String, sha256Object, signString, toHex } from '../crypto/index';
 import type { PrivateKey } from '../crypto/index';
+import { TrustCapitalLedger, type TrustCapitalScore, type TrustCapability } from '../trust-capital';
 
 export type { CovenantSpec, EnforcementDecision, ActionContext, EnforcementFn } from '../covenant-lang/index';
 export type { ActionLog, ActionLogEntry } from '../types/index';
@@ -67,6 +68,10 @@ export interface EnforcementMiddlewareConfig {
   readonly mode?: EnforcementMode;
   /** When provided, each execute() produces a signed bilateral receipt. */
   readonly signer?: ReceiptSigner;
+  /** When true, creates a TrustCapitalLedger that accumulates credit from receipts. */
+  readonly trackTrustCapital?: boolean;
+  /** Optional: required capability for actions to proceed. Agent must have earned sufficient credit. */
+  readonly requiredCapability?: TrustCapability;
   readonly onBlock?: (decision: EnforcementDecision, ctx: ActionContext) => void;
   readonly onAllow?: (decision: EnforcementDecision, ctx: ActionContext) => void;
 }
@@ -102,6 +107,8 @@ export class EnforcementMiddleware {
   private readonly _spec: CovenantSpec;
   private readonly _mode: EnforcementMode;
   private readonly _signer?: ReceiptSigner;
+  private readonly _ledger?: TrustCapitalLedger;
+  private readonly _requiredCapability?: TrustCapability;
   private _halted: boolean = false;
   private readonly _onBlock?: (decision: EnforcementDecision, ctx: ActionContext) => void;
   private readonly _onAllow?: (decision: EnforcementDecision, ctx: ActionContext) => void;
@@ -120,6 +127,10 @@ export class EnforcementMiddleware {
     this._signer = config.signer;
     this._onBlock = config.onBlock;
     this._onAllow = config.onAllow;
+    this._requiredCapability = config.requiredCapability;
+    if (config.trackTrustCapital) {
+      this._ledger = new TrustCapitalLedger(config.agentDid);
+    }
   }
 
   /** The covenant spec this middleware enforces. */
@@ -153,6 +164,21 @@ export class EnforcementMiddleware {
   /** Restore normal enforcement after a {@link halt}. */
   resume(): void {
     this._halted = false;
+  }
+
+  /** Get the current Trust Capital score. Only available when trackTrustCapital is enabled. */
+  get trustCapital(): TrustCapitalScore | null {
+    return this._ledger?.getScore() ?? null;
+  }
+
+  /** Check if the agent has earned a specific capability. */
+  canDo(capability: TrustCapability): boolean {
+    return this._ledger?.can(capability) ?? false;
+  }
+
+  /** Get the Trust Capital ledger for detailed inspection. */
+  get ledger(): TrustCapitalLedger | undefined {
+    return this._ledger;
   }
 
   /**

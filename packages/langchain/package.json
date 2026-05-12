@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/langchain",
   "version": "0.2.1",
-  "description": "LangChain integration — proof-of-behavior enforcement for AI agents",
+  "description": "The paper trail for AI agents — wrap any LangChain runnable, get signed Ed25519 receipts for every action",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -53,10 +53,16 @@
   "keywords": [
     "nobulex",
     "langchain",
-    "ai-accountability",
+    "ai-agents",
+    "paper-trail",
     "audit-trail",
-    "eu-ai-act",
+    "agent-accountability",
+    "bilateral-receipts",
+    "ed25519",
+    "merkle-tree",
+    "tamper-evident",
+    "agent-security",
     "compliance",
-    "ai-agent"
+    "agent-governance"
   ]
 }

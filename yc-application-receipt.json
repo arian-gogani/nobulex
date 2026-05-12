@@ -1,0 +1,29 @@
+{
+  "bilateral_receipt": {
+    "pre_execution": {
+      "type": "yc_application_pre_execution",
+      "applicant": "arian-gogani",
+      "company": "nobulex",
+      "batch": "S26",
+      "timestamp": "2026-05-01T00:12:40.915Z",
+      "content_hash": "cd0858631f992921c7a5ea476f3eee040481ada4ae5bae997cf19b32d79915cf",
+      "commitment": "these are the answers I intend to submit to Y Combinator",
+      "canonical_sha256": "96331c4767b11af668c6cb6f8d9634e6824000239a6a520b012bfc3a0eb44c30"
+    },
+    "post_execution": {
+      "type": "yc_application_post_execution",
+      "applicant": "arian-gogani",
+      "company": "nobulex",
+      "batch": "S26",
+      "timestamp": "2026-05-01T00:12:49.901Z",
+      "pre_execution_hash": "96331c4767b11af668c6cb6f8d9634e6824000239a6a520b012bfc3a0eb44c30",
+      "submission_status": "submitted - placeholder, regenerate with real submission",
+      "canonical_sha256": "6b865663f54dffcd23e70f5191fa4a7c1ab2401bdf8541e8e1b203e6b8bef175"
+    },
+    "chain_status": "complete",
+    "receipt_hash": "8120b749ca2c8aed68ef46399a374ba12f5ec7852b74fec580a21d05cdbad05d"
+  },
+  "verify": "clone this repo and run: node scripts/sign-yc-application.mjs verify",
+  "protocol": "nobulex bilateral receipt v0.3",
+  "repo": "https://github.com/arian-gogani/nobulex"
+}

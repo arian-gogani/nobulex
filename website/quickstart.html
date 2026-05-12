@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quickstart — The 3-line integration — Nobulex</title>
+  <meta name="description" content="Add a paper trail to any LangChain agent in three lines. Get signed, hash-chained, independently verifiable evidence of every action.">
+  <meta property="og:title" content="The 3-line integration — Nobulex">
+  <meta property="og:description" content="Wrap any LangChain runnable. Every action becomes signed evidence.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/quickstart.html">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="The 3-line integration — Nobulex">
+  <meta name="twitter:description" content="Wrap any LangChain runnable. Every action becomes signed evidence.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600;700&family=Sora:wght@600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .qs-page { font-family: 'Instrument Serif', Georgia, serif; }
+    .qs-page .qs-body { max-width: 56rem; margin: 0 auto; padding: 4rem 1.5rem 6rem; }
+
+    .qs-masthead {
+      border-bottom: 1px solid var(--border, #2a2a2a);
+      padding-bottom: 2.5rem;
+      margin-bottom: 3rem;
+    }
+    .qs-masthead__eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted, #888);
+      margin-bottom: 1rem;
+    }
+    .qs-masthead h1 {
+      font-size: clamp(2.5rem, 6vw, 4rem);
+      font-weight: 400;
+      line-height: 1.05;
+      color: var(--text, #fff);
+      margin-bottom: 1rem;
+    }
+    .qs-masthead .qs-sub {
+      font-family: 'Instrument Serif', serif;
+      font-size: 1.4rem;
+      font-style: italic;
+      color: var(--text-secondary, #ccc);
+      line-height: 1.4;
+      max-width: 42rem;
+    }
+
+    .qs-page h2 {
+      font-family: 'Instrument Serif', serif;
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--text, #fff);
+      margin-top: 3.5rem;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+    }
+    .qs-page h3 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--text-muted, #888);
+      margin-top: 2rem;
+      margin-bottom: 0.75rem;
+    }
+    .qs-page p {
+      font-size: 1.2rem;
+      line-height: 1.65;
+      color: var(--text-secondary, #ccc);
+      margin-bottom: 1.25rem;
+    }
+    .qs-page p.lead {
+      font-size: 1.35rem;
+      color: var(--text, #fff);
+      line-height: 1.55;
+    }
+    .qs-page strong { color: var(--text, #fff); font-weight: 500; }
+
+    .qs-snippet {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.95rem;
+      background: rgba(255,255,255,0.025);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 8px;
+      padding: 1.75rem 2rem;
+      margin: 2rem 0;
+      color: var(--text-secondary, #ccc);
+      line-height: 1.75;
+      overflow-x: auto;
+      white-space: pre;
+      position: relative;
+    }
+    .qs-snippet--featured {
+      font-size: 1.05rem;
+      padding: 2.25rem 2.25rem;
+    }
+    .qs-snippet .kw  { color: #c792ea; }
+    .qs-snippet .str { color: #a8e068; }
+    .qs-snippet .fn  { color: #82aaff; }
+    .qs-snippet .com { color: #5a6378; font-style: italic; }
+    .qs-snippet .var { color: #f78c6c; }
+
+    .qs-snippet .qs-label {
+      position: absolute;
+      top: 0.75rem;
+      right: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted, #666);
+    }
+
+    .qs-terminal {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      background: #0a0a0a;
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 8px;
+      padding: 1.25rem 1.5rem;
+      margin: 1.5rem 0 2rem;
+      color: #ccc;
+      line-height: 1.55;
+      overflow-x: auto;
+      white-space: pre;
+    }
+    .qs-terminal .term-header {
+      color: #6dd3ff;
+      font-weight: 600;
+    }
+    .qs-terminal .term-step {
+      color: #c084fc;
+      font-weight: 600;
+    }
+    .qs-terminal .term-ok { color: #4ade80; }
+    .qs-terminal .term-bad { color: #f87171; }
+    .qs-terminal .term-dim { color: #666; }
+    .qs-terminal .term-action { color: #fbbf24; }
+    .qs-terminal .term-hash { color: #555; }
+
+    .qs-vs-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem;
+      margin: 2rem 0;
+    }
+    @media (max-width: 700px) {
+      .qs-vs-grid { grid-template-columns: 1fr; }
+    }
+    .qs-vs-card {
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 8px;
+      padding: 1.5rem;
+    }
+    .qs-vs-card h4 {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      margin: 0 0 1rem;
+      color: var(--text-muted, #888);
+    }
+    .qs-vs-card ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      font-size: 1rem;
+      color: var(--text-secondary, #ccc);
+    }
+    .qs-vs-card li {
+      padding: 0.4rem 0;
+      line-height: 1.5;
+    }
+    .qs-vs-card li::before {
+      content: "";
+      display: inline-block;
+      width: 0.4rem;
+      height: 0.4rem;
+      border-radius: 50%;
+      margin-right: 0.65rem;
+      transform: translateY(-2px);
+    }
+    .qs-vs-card--bad li::before { background: #f87171; }
+    .qs-vs-card--good li::before { background: #4ade80; }
+
+    .qs-pitch {
+      font-family: 'Instrument Serif', serif;
+      font-style: italic;
+      font-size: 1.5rem;
+      line-height: 1.45;
+      color: var(--text, #fff);
+      border-left: 2px solid var(--accent, #f60);
+      padding: 0.5rem 0 0.5rem 1.5rem;
+      margin: 2.5rem 0;
+    }
+
+    .qs-rule {
+      border: none;
+      border-top: 1px solid var(--border, #2a2a2a);
+      margin: 3.5rem 0;
+    }
+
+    .qs-cta-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin: 2rem 0 0;
+    }
+    .qs-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.25rem;
+      border-radius: 100px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+    .qs-cta--primary {
+      background: var(--text, #fff);
+      color: #000;
+    }
+    .qs-cta--primary:hover { transform: translateY(-1px); }
+    .qs-cta--ghost {
+      background: transparent;
+      border: 1px solid var(--border, #2a2a2a);
+      color: var(--text, #fff);
+    }
+    .qs-cta--ghost:hover { border-color: var(--text, #fff); }
+
+    .qs-honest {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      color: var(--text-muted, #888);
+      background: rgba(255,255,255,0.02);
+      border: 1px solid var(--border, #2a2a2a);
+      border-radius: 6px;
+      padding: 1rem 1.25rem;
+      margin: 2.5rem 0;
+      line-height: 1.55;
+    }
+    .qs-honest strong { color: var(--text, #fff); }
+
+    .qs-footer-meta {
+      margin-top: 5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border, #2a2a2a);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--text-muted, #888);
+      letter-spacing: 0.04em;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+        <span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="header__links">
+        <a href="index.html#problem">Problem</a>
+        <a href="quickstart.html">Quickstart</a>
+        <a href="observatory.html">Observatory</a>
+        <a href="docs/index.html">Docs</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">GitHub</a>
+      </div>
+      <a href="https://github.com/arian-gogani/nobulex" class="header__cta" rel="noopener noreferrer">Star on GitHub</a>
+    </nav>
+  </header>
+
+  <main class="qs-page" id="main">
+    <article class="qs-body">
+
+      <div class="qs-masthead">
+        <div class="qs-masthead__eyebrow">Quickstart · @nobulex/langchain v0.2.1</div>
+        <h1>The 3-line integration.</h1>
+        <p class="qs-sub">Wrap any LangChain agent. Every action becomes signed, hash-chained, independently verifiable evidence. No workflow change.</p>
+      </div>
+
+      <h3>Install</h3>
+      <div class="qs-snippet"><span class="qs-label">bash</span><span class="var">npm</span> install <span class="str">@nobulex/langchain</span></div>
+
+      <h3>Wrap your agent</h3>
+      <div class="qs-snippet qs-snippet--featured"><span class="qs-label">typescript</span><span class="kw">import</span> { <span class="fn">nobulex</span> } <span class="kw">from</span> <span class="str">'@nobulex/langchain'</span>
+
+<span class="kw">const</span> agent = <span class="fn">nobulex</span>.<span class="fn">wrap</span>(yourAgent, { covenant: <span class="str">'your-policy-id'</span> })
+<span class="kw">const</span> result = <span class="kw">await</span> agent.<span class="fn">invoke</span>(input)   <span class="com">// same call, same result</span></div>
+
+      <p>That is the entire integration. Every LLM call, tool invocation, and chain step inside <code>yourAgent</code> is now intercepted and recorded as a signed evidence item. The agent still returns the same result. Your code does not change. Your downstream consumers do not change.</p>
+
+      <h3>Pull the receipts</h3>
+      <div class="qs-snippet"><span class="qs-label">typescript</span><span class="kw">const</span> auditLog = <span class="kw">await</span> agent.<span class="fn">getAuditLog</span>()
+<span class="com">// → { items, merkleRoot, signature, signerPublicKey, agentId, covenant, ... }</span>
+
+<span class="kw">const</span> integrity = <span class="kw">await</span> agent.<span class="fn">verifyIntegrity</span>()
+<span class="com">// → { valid, errors, totalItems, merkleRoot, signatureValid }</span></div>
+
+      <p>Every action is hash-chained into a Merkle tree. The root is signed with the agent's Ed25519 private key. Any third party — auditor, insurer, regulator, opposing counsel — can verify the integrity against the public key, independently, without trusting your logs.</p>
+
+      <hr class="qs-rule">
+
+      <h2>See it run.</h2>
+
+      <p>Clone the repo and run the example. Hermetic — no API keys required, simulated LangChain runnable, real Ed25519 signing, real Merkle tree, real verification.</p>
+
+      <div class="qs-snippet"><span class="qs-label">bash</span><span class="com"># clone and run</span>
+git clone https://github.com/arian-gogani/nobulex
+<span class="kw">cd</span> nobulex
+npx tsx examples/paper-trail.ts</div>
+
+      <h3>Expected output (excerpt)</h3>
+      <div class="qs-terminal"><span class="term-header">═══════════════════════════════════════════════════════════════════════
+  Nobulex — the paper trail for AI agents
+  Wrap any LangChain runnable. Every action becomes signed evidence.
+═══════════════════════════════════════════════════════════════════════</span>
+
+<span class="term-step">STEP 2</span>  Your agent makes a decision. Same code as before.
+
+        <span class="term-dim">Application: APP-2026-05-10-78421
+        Amount: $45,000, Income: $92,000, Credit: 742</span>
+
+<span class="term-ok">        ✓</span> Decision: APPROVED
+        <span class="term-dim">Reason: Credit score 742 ≥ 680 and debt-to-income ratio 0.12 < 0.40</span>
+
+<span class="term-step">STEP 3</span>  A signed paper trail was silently produced.
+
+        <span class="term-dim">Agent ID:       loan-agent-prod-east-1
+        Covenant:       lending-policy-v3
+        Actions logged: 10</span>
+
+        <span class="term-dim">Action timeline:</span>
+        ├─ <span class="term-action">chain_start  </span>  <span class="term-hash">hash:2823407685d8…</span>
+        ├─ <span class="term-action">llm_start    </span>  <span class="term-hash">hash:8a7681554ad8…</span>
+        ├─ <span class="term-action">llm_end      </span>  <span class="term-hash">hash:22867053f516…</span>
+        ├─ <span class="term-action">tool_start   </span>  <span class="term-hash">hash:4e38c6332f80…</span>
+        ├─ <span class="term-action">tool_end     </span>  <span class="term-hash">hash:3bf39c20a7f2…</span>
+        ├─ <span class="term-action">tool_start   </span>  <span class="term-hash">hash:815e4e0c9f1f…</span>
+        ├─ <span class="term-action">tool_end     </span>  <span class="term-hash">hash:c3d2937544e8…</span>
+        ├─ <span class="term-action">llm_start    </span>  <span class="term-hash">hash:46a1a4d0e15a…</span>
+        ├─ <span class="term-action">llm_end      </span>  <span class="term-hash">hash:fb0abf47000f…</span>
+        └─ <span class="term-action">chain_end    </span>  <span class="term-hash">hash:42a01ff93689…</span>
+
+        <span class="term-dim">Merkle root:    34a61a01be078e06e00224f051c72f30266a450699c5f98f…
+        Signature:      1b9c1d93f56da0dc87eeffd214df4b221b570be7e7cce969…</span>
+
+<span class="term-step">STEP 4</span>  Anyone can verify the paper trail.
+
+<span class="term-ok">        ✓</span> Integrity check passed
+        <span class="term-dim">Items verified:    10
+        Signature valid:   true</span></div>
+
+      <hr class="qs-rule">
+
+      <h2>Why this exists.</h2>
+
+      <p class="lead">Your AI agents are making consequential decisions — approvals, denials, recommendations, tool calls with real side effects. When something goes wrong, the first question every CEO, regulator, auditor, and opposing counsel asks is the same: <em>show me the paper trail.</em></p>
+
+      <p>Right now you have server logs. Logs are what IT keeps for debugging. A paper trail is what the company keeps for accountability. The difference is not academic.</p>
+
+      <div class="qs-vs-grid">
+        <div class="qs-vs-card qs-vs-card--bad">
+          <h4>Server logs (CloudTrail, Datadog, LangSmith)</h4>
+          <ul>
+            <li>You control them — therefore self-serving evidence</li>
+            <li>Tampering is not cryptographically prevented</li>
+            <li>Discovery counsel attacks them first</li>
+            <li>Insurance can't price them as evidence</li>
+          </ul>
+        </div>
+        <div class="qs-vs-card qs-vs-card--good">
+          <h4>Nobulex bilateral receipts</h4>
+          <ul>
+            <li>Hash-chained — tampering is detectable</li>
+            <li>Signed — origin is provable</li>
+            <li>Independently verifiable — no need to trust you</li>
+            <li>Same evidence holds up in court, audit, and underwriting</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="qs-pitch">Your humans have paper trails. Your AI agents don't. We fix that.</div>
+
+      <hr class="qs-rule">
+
+      <h2>What's in the box.</h2>
+
+      <p>The <code>@nobulex/langchain</code> package ships now. It is MIT licensed, ~5KB minified, has one peer dependency (<code>@langchain/core</code>, optional), and uses Web Crypto for signing — no native modules.</p>
+
+      <h3>What's working today</h3>
+      <ul style="font-size: 1.1rem; line-height: 1.6; color: var(--text-secondary, #ccc); margin: 0 0 1.5rem 1.5rem;">
+        <li><code>nobulex.wrap()</code> with full LangChain Runnable interface compatibility</li>
+        <li>Automatic interception of LLM, chain, and tool lifecycle events</li>
+        <li>SHA-256 hashing, Merkle tree construction, Ed25519 root signing</li>
+        <li>Independent integrity verification</li>
+        <li>EU AI Act Article 12 formatted compliance reports</li>
+      </ul>
+
+      <h3>What's coming next</h3>
+      <ul style="font-size: 1.1rem; line-height: 1.6; color: var(--text-secondary, #ccc); margin: 0 0 1.5rem 1.5rem;">
+        <li>Hosted receipt registry with cross-org verification (Q3 2026)</li>
+        <li>Insurance carrier integration (Armilla design partnership, in progress)</li>
+        <li>Drift detection feeding the Agent Reliability Index</li>
+        <li>Native adapters for LlamaIndex, AutoGen, CrewAI, Claude Agent SDK</li>
+      </ul>
+
+      <div class="qs-honest">
+        <strong>Honest note.</strong> This is v0.2.1. The integration works end-to-end, but Nobulex is early. Receipts are currently signed with ephemeral per-session keys; the hosted registry that lets you re-verify a receipt months later from a stable public-key index is on the Q3 roadmap. If you are deploying agents in production today and want a paper trail, the integration is real. If you need third-party verification by a specific date for a specific regulatory deadline, talk to us first — we will be honest about what is shipped and what is in flight.
+      </div>
+
+      <hr class="qs-rule">
+
+      <h2>Get going.</h2>
+
+      <div class="qs-cta-row">
+        <a href="https://github.com/arian-gogani/nobulex" class="qs-cta qs-cta--primary" rel="noopener noreferrer">View on GitHub →</a>
+        <a href="https://www.npmjs.com/package/@nobulex/langchain" class="qs-cta qs-cta--ghost" rel="noopener noreferrer">View on npm</a>
+        <a href="observatory.html" class="qs-cta qs-cta--ghost">Agent Reliability Index</a>
+        <a href="mailto:nobulex.dev@gmail.com?subject=Nobulex%20-%20Production%20Pilot" class="qs-cta qs-cta--ghost">Talk to us</a>
+      </div>
+
+      <div class="qs-footer-meta">
+        <span>@nobulex/langchain · v0.2.1 · MIT</span>
+        <span>github.com/arian-gogani/nobulex</span>
+      </div>
+
+    </article>
+  </main>
+
+  <script src="main.js"></script>
+</body>
+</html>

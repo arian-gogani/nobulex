@@ -2,56 +2,46 @@
 
 [![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions)
 [![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12626/badge)](https://www.bestpractices.dev/projects/12626)
+[![npm](https://img.shields.io/npm/v/@nobulex/core)](https://www.npmjs.com/package/@nobulex/core)
 
-**The trust economy for autonomous AI agents.**
+**Credit scores for AI agents. Autonomy earned, not granted.**
 
-AI agents are shipping into production — accessing data, moving money, approving workflows, operating business systems. Nobody knows which ones deserve power and which ones should be restricted. Nobulex fixes that: every agent action produces a bilateral cryptographic receipt, and those receipts accumulate into **Trust Capital** — a permissioned machine reputation asset that gates what each agent is allowed to do. Autonomy earned, not granted.
+AI agents get full access on day one and build zero track record. Nobulex fixes that.
 
-## Status
+Every agent starts restricted. As it performs reliably, it earns **Trust Capital** that unlocks higher autonomy, bigger transaction limits, lower insurance premiums, and enterprise approval. Agents that deviate lose access before the damage spreads. The same way credit scores turned lending into a scalable economic system, Trust Capital turns agent governance into one where reputation has real economic value.
 
-- Bilateral receipt primitive merged into [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1333) (PRs #1302, #1333)
-- 10/10 byte-match verified against [APS bilateral-delegation fixtures](https://github.com/aeoess/agent-passport-system/tree/main/fixtures/bilateral-delegation) ([reproduce it yourself](scripts/verify-aps-byte-match.mjs))
-- Five independent implementations validated (AgentGraph, APS, AgentID, HiveTrust, Nobulex) across TypeScript and Python
-- Named as fourth-party verifier in [cross-implementation composition fixture](https://github.com/aeoess/agent-governance-vocabulary/issues/36)
-- OpenSSF Best Practices [passing badge](https://www.bestpractices.dev/projects/12626)
-- Strategic vision in [docs/OBSERVATORY-VISION.md](docs/OBSERVATORY-VISION.md); first issue of the **Agent Reliability Index** in [observatory/issue-001-charter.md](observatory/issue-001-charter.md); methodology in [docs/AGENT-RELIABILITY-INDEX.md](docs/AGENT-RELIABILITY-INDEX.md)
+> **If this is useful, [star the repo](https://github.com/arian-gogani/nobulex/stargazers) to help others find it.**
+
+### Adopted by
+
+- **Microsoft** merged the core primitive into their [Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit) (PRs [#1302](https://github.com/microsoft/agent-governance-toolkit/pull/1302), [#1333](https://github.com/microsoft/agent-governance-toolkit/pull/1333))
+- **OpenLineage** (Linux Foundation) accepted Nobulex into their [ecosystem](https://github.com/OpenLineage/OpenLineage/pull/4480)
+- **AAIF** (Linux Foundation, founded by Anthropic/OpenAI/Google/Microsoft/AWS/Block) has the project [under staff review](https://github.com/aaif/project-proposals/issues/20)
+- **State of Agent Security 2026** [litepaper](https://agentgraph.co/state-of-agent-security-2026) lists @nobulex/crypto as 10/10 conformance validated
+
+### Quick Start
 
 ```bash
-$ npx tsx examples/demo.ts
-
-Agent A declares covenant: permit read, forbid transfer > 500
-Agent A executes 5 actions...
-  ✓ read /data/users — allowed
-  ✓ transfer $300 — allowed
-  ✓ read /data/orders — allowed
-  ✗ transfer $600 — BLOCKED by covenant
-  ✓ read /data/config — allowed
-
-Agent B verifies Agent A...
-  ✓ Step 1: Covenant signature valid
-  ✓ Step 2: Proof signature valid
-  ✓ Step 3: Log integrity verified (5 entries, chain intact)
-  ✓ Step 4: Compliance check passed (0 violations)
-  ✓ Step 5: History length sufficient (5 ≥ 1)
-  ✓ Step 6: Covenant matches requirements
-  ✓ Step 7: Audience binding confirmed
-  ✓ Step 8: Task class verified
-
-Result: Agent B trusts Agent A ✅
-
-Agent C presents tampered proof...
-  ✓ Step 1: Covenant signature valid
-  ✓ Step 2: Proof signature valid
-  ✗ Step 3: FAILED — hash chain broken at entry 2
-
-Result: Agent B refuses Agent C ❌
+npm install @nobulex/core
+npx tsx examples/trust-capital-demo.ts
 ```
 
-Three primitives. That's the whole protocol:
+```
+Agent starts at RESTRICTED tier (Trust Capital: 0)
 
-1. **Declare** — write rules: `permit`, `forbid`, `require`
-2. **Enforce** — check every action *before* it runs
-3. **Prove** — tamper-evident hash chain anyone can verify
+Action 1: read_data — ALLOWED ✓ (Trust Capital: 12)
+Action 2: read_data — ALLOWED ✓ (Trust Capital: 24)
+Action 3: process_payment — BLOCKED ✗ (insufficient trust for financial ops)
+Action 4: read_data — ALLOWED ✓ (Trust Capital: 36)
+Action 5: read_data — ALLOWED ✓ (Trust Capital: 48)
+
+Agent promoted to STANDARD tier
+Action 6: process_payment — ALLOWED ✓ (Trust Capital: 65)
+Action 7: approve_contract — BLOCKED ✗ (requires TRUSTED tier)
+
+Agent promoted to TRUSTED tier (Trust Capital: 89)
+Action 8: approve_contract — ALLOWED ✓
+```
 
 ![Tests](https://img.shields.io/badge/tests-6%2C057%20passing-brightgreen)
 ![License](https://img.shields.io/badge/license-MIT-green)

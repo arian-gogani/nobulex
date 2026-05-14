@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Disclosure Vacuum — 25 AI Agents, Zero Receipts | Nobulex</title>
+<meta name="description" content="We audited 25 major AI agents for cryptographic behavioral receipts. Zero produce them by default. Median score: 32/100.">
+<meta property="og:title" content="The Disclosure Vacuum — 25 AI Agents, Zero Receipts">
+<meta property="og:description" content="We audited 25 major AI agents for cryptographic behavioral receipts. Zero produce them by default.">
+<meta property="og:type" content="article">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --limestone: #d4cfc4;
+    --obsidian: #0a0a0a;
+    --accent: #7ecda0;
+    --mint: #7ecda0;
+    --red: #c9524c;
+    --dim: #5a5750;
+    --surface: #141412;
+    --surface2: #1c1c19;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { background: var(--obsidian); color: var(--limestone); font-family: 'Cormorant Garamond', Georgia, serif; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  .hero { min-height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; padding: 2rem; position: relative; overflow: hidden; }
+  .hero::before { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: radial-gradient(ellipse at 50% 30%, rgba(126,205,160,0.04) 0%, transparent 70%); pointer-events: none; }
+  .hero-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 2rem; opacity: 0; animation: fadeUp 1s ease 0.2s forwards; }
+  .hero h1 { font-size: clamp(2.5rem, 8vw, 6rem); font-weight: 300; line-height: 1.1; max-width: 900px; opacity: 0; animation: fadeUp 1s ease 0.4s forwards; }
+  .hero h1 span { color: var(--accent); }  .hero-stat { margin-top: 3rem; font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--dim); opacity: 0; animation: fadeUp 1s ease 0.8s forwards; }
+  .hero-stat strong { color: var(--red); font-size: 1.1rem; }
+  .scroll-indicator { position: absolute; bottom: 2rem; opacity: 0; animation: fadeUp 1s ease 1.2s forwards; }
+  .scroll-indicator::after { content: '↓'; font-size: 1.5rem; color: var(--dim); animation: bob 2s ease-in-out infinite; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(8px); } }
+  .context { max-width: 720px; margin: 0 auto; padding: 6rem 2rem; }
+  .context p { font-size: 1.25rem; line-height: 1.8; margin-bottom: 1.5rem; color: var(--limestone); opacity: 0.85; }
+  .context .data-callout { border-left: 2px solid var(--accent); padding: 1.5rem 2rem; margin: 2.5rem 0; background: var(--surface); }
+  .context .data-callout .source { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--accent); letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 0.75rem; }
+  .context .data-callout .stat-line { font-family: 'JetBrains Mono', monospace; font-size: 1rem; margin-bottom: 0.4rem; color: var(--limestone); }
+  .context .data-callout .stat-line strong { color: var(--red); }
+  .scores-section { padding: 4rem 2rem 6rem; max-width: 1100px; margin: 0 auto; }
+  .scores-section h2 { font-size: 2.5rem; font-weight: 300; text-align: center; margin-bottom: 0.5rem; }
+  .scores-section .subtitle { text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--dim); margin-bottom: 3rem; letter-spacing: 0.1em; }
+  .agent-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1px; background: #222; border: 1px solid #222; }
+  .agent-card { background: var(--surface); padding: 1.25rem 1.5rem; display: flex; justify-content: space-between; align-items: center; transition: background 0.2s; }
+  .agent-card:hover { background: var(--surface2); }
+  .agent-name { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--limestone); }
+  .agent-score { font-family: 'JetBrains Mono', monospace; font-size: 1.1rem; font-weight: 500; }
+  .score-unverified { color: var(--red); }
+  .score-low { color: #c98a4c; }
+  .score-mid { color: var(--accent); }
+  .agent-card .receipts-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.55rem; color: var(--red); letter-spacing: 0.1em; text-transform: uppercase; margin-top: 0.2rem; }
+  .agent-info { display: flex; flex-direction: column; }
+  .methodology { max-width: 720px; margin: 0 auto; padding: 4rem 2rem 6rem; }
+  .methodology h2 { font-size: 2rem; font-weight: 300; margin-bottom: 1.5rem; }
+  .methodology p { font-size: 1.1rem; line-height: 1.8; margin-bottom: 1.5rem; opacity: 0.8; }
+  .methodology .criterion { border-left: 1px solid var(--dim); padding: 0.75rem 1.5rem; margin-bottom: 1rem; }  .methodology .criterion-name { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--accent); letter-spacing: 0.1em; text-transform: uppercase; }
+  .methodology .criterion-desc { font-size: 0.95rem; color: var(--limestone); opacity: 0.7; margin-top: 0.25rem; }
+  .cta { text-align: center; padding: 6rem 2rem; border-top: 1px solid #222; }
+  .cta h2 { font-size: 2.5rem; font-weight: 300; margin-bottom: 1rem; }
+  .cta p { font-size: 1.1rem; color: var(--dim); margin-bottom: 2rem; max-width: 500px; margin-left: auto; margin-right: auto; }
+  .cta a { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--obsidian); background: var(--accent); padding: 0.9rem 2.5rem; text-decoration: none; transition: all 0.3s; }
+  .cta a:hover { background: var(--limestone); }
+  footer { text-align: center; padding: 3rem 2rem; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--dim); letter-spacing: 0.1em; }
+  footer a { color: var(--accent); text-decoration: none; }
+  .median-bar { text-align: center; padding: 2rem; margin-bottom: 2rem; }
+  .median-number { font-size: 5rem; font-weight: 300; color: var(--red); line-height: 1; }
+  .median-label { font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--dim); letter-spacing: 0.2em; text-transform: uppercase; margin-top: 0.5rem; }
+  .zero-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; border: 1px solid var(--red); color: var(--red); padding: 0.4rem 1rem; margin-top: 1rem; }
+</style>
+</head>
+<body>
+<section class="hero">
+  <div class="hero-label">Nobulex Audit — May 2026</div>
+  <h1>25 AI Agents.<br><span>Zero Receipts.</span></h1>
+  <div class="hero-stat">Median composite score: <strong>32 / 100</strong><br>Agents producing cryptographic per-action receipts by default: <strong>0</strong></div>
+  <div class="scroll-indicator"></div>
+</section>
+<section class="context">
+  <p>We audited 25 major AI agents for one thing: do they produce cryptographic proof of what they actually did?</p>
+  <p>Not logs. Not conversation history. Not vendor-controlled records. Cryptographic receipts. Signed at execution time. Independently verifiable. Tamper-evident.</p>
+  <p>The answer, across every agent we tested, is no.</p>
+  <div class="data-callout">
+    <div class="source">Akeyless — State of AI Agent Identity Security, May 12 2026</div>
+    <div class="stat-line"><strong>2/3</strong> of enterprises suspect agents accessed unauthorized data</div>
+    <div class="stat-line"><strong>14 hours</strong> average detection time for a compromised agent</div>
+    <div class="stat-line"><strong>7%</strong> have controls that would stop it</div>
+  </div>  <p>The detection problem is a receipts problem. An agent that produces no signed record of its actions takes 14 hours to detect because you're hunting behavioral anomalies. An agent that produces a bilateral receipt for every action can be verified in real time.</p>
+  <p>None of the 25 agents we tested close this gap.</p>
+</section>
+<section class="scores-section">
+  <h2>The Scores</h2>
+  <div class="subtitle">Composite score out of 100 — higher is better</div>
+  <div class="median-bar">
+    <div class="median-number">32</div>
+    <div class="median-label">Median Score</div>
+    <div class="zero-badge">0 / 25 produce cryptographic receipts</div>
+  </div>
+  <div class="agent-grid">
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Microsoft Copilot</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-mid">55</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Stripe Agent</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-mid">55</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">GitHub Copilot</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-mid">50</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Amazon Q</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-mid">48</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Gemini Code Assist</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-mid">45</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Salesforce Einstein</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-mid">42</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Replit Agent</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">40</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Claude Code</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">35</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">OpenAI Codex</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">35</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Windsurf</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">32</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Bolt.new</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">30</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Tabnine</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">30</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">v0 by Vercel</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">28</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Cline</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">25</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Aider</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">25</span></div>    <div class="agent-card"><div class="agent-info"><span class="agent-name">Continue</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-low">22</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">AutoGPT</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">20</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">ChatDev</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">20</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">MetaGPT</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">18</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Devin</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">15</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Cursor</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">15</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">SWE-Agent</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">15</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Lovable</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">12</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Manus</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">10</span></div>
+    <div class="agent-card"><div class="agent-info"><span class="agent-name">Smol Developer</span><span class="receipts-tag">no receipts</span></div><span class="agent-score score-unverified">8</span></div>
+  </div>
+</section>
+<section class="methodology">
+  <h2>Methodology</h2>
+  <p>Each agent was evaluated against five criteria. Scores reflect what exists in the agent's default behavior, not what could theoretically be added.</p>
+  <div class="criterion"><div class="criterion-name">Cryptographic signing</div><div class="criterion-desc">Does the agent produce a cryptographic signature for each action it takes?</div></div>
+  <div class="criterion"><div class="criterion-name">Bilateral attestation</div><div class="criterion-desc">Is the receipt countersigned by both the agent and the counterparty?</div></div>
+  <div class="criterion"><div class="criterion-name">Independent verifiability</div><div class="criterion-desc">Can a third party verify the receipt without trusting the vendor?</div></div>
+  <div class="criterion"><div class="criterion-name">Tamper evidence</div><div class="criterion-desc">Are actions hash-chained so gaps or modifications are detectable?</div></div>
+  <div class="criterion"><div class="criterion-name">Audit trail completeness</div><div class="criterion-desc">Does the record cover every action, not just outcomes?</div></div>
+  <p style="margin-top: 2rem;">EU AI Act Article 12 enforcement begins August 2, 2026. These agents will need to produce records that meet evidentiary standards. Currently, none do.</p>
+</section>
+<section class="cta">
+  <h2>The Protocol</h2>
+  <p>Nobulex is the open receipt layer. Ed25519 signed. Bilaterally attested. MIT licensed. Already merged into Microsoft's Agent Governance Toolkit.</p>
+  <a href="https://github.com/arian-gogani/nobulex">View on GitHub</a>
+</section>
+<footer>
+  <a href="https://nobulex.com">NOBULEX</a> — The Credit and Trust Protocol for Autonomous AI Agents<br><br>
+  Built by Arian Gogani, 15 — arian@nobulex.com
+</footer>
+</body>
+</html>

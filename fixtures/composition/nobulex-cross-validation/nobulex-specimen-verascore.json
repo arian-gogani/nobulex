@@ -1,0 +1,74 @@
+{
+  "specimen_meta": {
+    "source": "nobulex",
+    "version": "1.0.0",
+    "evidence_class": "trust_capital_receipt",
+    "description": "Bilateral Ed25519-signed covenant receipt with delegation chain and evidence signals. Exercises the Covenant primitive for Verascore multi-class conformance fixture.",
+    "created": "2026-05-15T00:00:00Z",
+    "contact": "arian@nobulex.com"
+  },
+  "covenant": {
+    "covenant_id": "cov_specimen_verascore_001",
+    "action_ref": "agent.code.execute",
+    "agent_id": "did:nobulex:agent:specimen-alpha",
+    "counterparty_id": "did:nobulex:counterparty:specimen-beta",
+    "timestamp_iso8601": "2026-05-15T00:00:00.000Z",
+    "payload_hash": "sha256:e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "delegation_chain": [
+      {
+        "delegator": "did:nobulex:operator:root",
+        "delegatee": "did:nobulex:agent:specimen-alpha",
+        "scope": {
+          "action_categories": ["code.execute", "code.read", "file.write"],
+          "max_token_value": 1000
+        },
+        "validity_window": {
+          "not_before": "2026-05-01T00:00:00Z",
+          "not_after": "2026-06-15T00:00:00Z"
+        },
+        "signature": "ed25519:SPECIMEN_DELEGATION_SIG_PLACEHOLDER"
+      }
+    ],
+    "agent_signature": "ed25519:SPECIMEN_AGENT_SIG_PLACEHOLDER",
+    "counterparty_signature": "ed25519:SPECIMEN_COUNTERPARTY_SIG_PLACEHOLDER"
+  },
+  "evidence_signals": {
+    "source": "nobulex",
+    "evidence_type": "bilateral_receipt",
+    "subject": "did:nobulex:agent:specimen-alpha",
+    "signals": {
+      "action_completed": true,
+      "bilateral_attestation": true,
+      "delegation_chain_valid": true,
+      "scope_respected": true,
+      "hash_chain_intact": true,
+      "freshness_valid": true
+    },
+    "provenance": {
+      "protocol": "nobulex-covenant-v1",
+      "canonicalization": "RFC8785-JCS",
+      "signature_algorithm": "Ed25519",
+      "hash_algorithm": "SHA-256"
+    },
+    "timestamp_iso8601": "2026-05-15T00:00:00.000Z",
+    "freshness_ttl_seconds": 3600
+  },
+  "trust_capital": {
+    "receipt_contributes_to": "trust_score",
+    "weight": 1.0,
+    "dimensions": {
+      "reliability": 1.0,
+      "scope_compliance": 1.0,
+      "counterparty_satisfaction": 1.0,
+      "delegation_integrity": 1.0
+    }
+  },
+  "verascore_mapping": {
+    "evidence_schema_version": "verascore-evidence-schema-v0.1",
+    "per_dimension_decomposition": {
+      "composite_score_source": "trust_capital.dimensions",
+      "constituent_receipts": ["covenant.covenant_id"],
+      "scoring_boundary": "operator_policy"
+    }
+  }
+}

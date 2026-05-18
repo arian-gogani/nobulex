@@ -1,25 +1,51 @@
-# Nobulex
+<div align="center">
 
-[![CI](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions)
-[![OpenSSF Best Practices](https://www.bestpractices.dev/projects/12626/badge)](https://www.bestpractices.dev/projects/12626)
-[![npm](https://img.shields.io/npm/v/@nobulex/core)](https://www.npmjs.com/package/@nobulex/core)
+<img src="./assets/banner.svg" alt="Nobulex — Trust Capital for AI Agents" width="100%"/>
 
-**Credit scores for AI agents. Autonomy earned, not granted.**
+<br/>
 
-AI agents get full access on day one and build zero track record. Nobulex fixes that.
+[![CI](https://img.shields.io/github/actions/workflow/status/arian-gogani/nobulex/ci.yml?style=flat-square&label=CI&color=22c55e)](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml)
+[![OpenSSF](https://img.shields.io/badge/OpenSSF-passing-22c55e?style=flat-square)](https://www.bestpractices.dev/projects/10338)
+[![npm](https://img.shields.io/npm/v/@nobulex/core?style=flat-square&color=22c55e)](https://www.npmjs.com/package/@nobulex/core)
+[![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://opensource.org/licenses/MIT)
+[![IETF](https://img.shields.io/badge/IETF-Draft_Published-22c55e?style=flat-square)](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/)
 
-Every agent starts restricted. As it performs reliably, it earns **Trust Capital** that unlocks higher autonomy, bigger transaction limits, lower insurance premiums, and enterprise approval. Agents that deviate lose access before the damage spreads. The same way credit scores turned lending into a scalable economic system, Trust Capital turns agent governance into one where reputation has real economic value.
+<br/>
 
-> **If this is useful, [star the repo](https://github.com/arian-gogani/nobulex/stargazers) to help others find it.**
+**Every person has a credit score. Every business has one.**<br/>
+**AI agents have nothing.**
 
-### Adopted by
+Full access on day one. No track record. No portable reputation. No consequences.<br/>
+Nobulex fixes that.
 
-- **Microsoft** merged the core primitive into their [Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit) (PRs [#1302](https://github.com/microsoft/agent-governance-toolkit/pull/1302), [#1333](https://github.com/microsoft/agent-governance-toolkit/pull/1333))
-- **OpenLineage** (Linux Foundation) accepted Nobulex into their [ecosystem](https://github.com/OpenLineage/OpenLineage/pull/4480)
-- **AAIF** (Linux Foundation, founded by Anthropic/OpenAI/Google/Microsoft/AWS/Block) has the project [under staff review](https://github.com/aaif/project-proposals/issues/20)
-- **State of Agent Security 2026** [litepaper](https://agentgraph.co/state-of-agent-security-2026) lists @nobulex/crypto as 10/10 conformance validated
+[Try it live](https://nobulex.com/try) · [Website](https://nobulex.com) · [Quickstart](./GETTING-STARTED.md) · [IETF Draft](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
-### Quick Start
+</div>
+
+---
+
+## 🏦 Trust Capital
+
+Every agent action produces a **cryptographic receipt** — Ed25519 signed before and after execution, hash-chained for tamper evidence. A third party can verify the full history without trusting the agent or the operator.
+
+The receipts accumulate into **Trust Capital** — a credit score for the agent.
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│                     TRUST CAPITAL TIERS                       │
+├───────────────┬──────────────────────────────────────────────┤
+│ 🔴 RESTRICTED │ Read-only, sandboxed execution       (0-30)  │
+│ 🟡 STANDARD   │ Financial ops ≤$500, API access     (30-60)  │
+│ 🟢 TRUSTED    │ Cross-org, regulated markets        (60-85)  │
+│ 🔵 SOVEREIGN  │ Full autonomy, self-directed          (85+)  │
+└───────────────┴──────────────────────────────────────────────┘
+```
+
+> **Agents that create more value earn more access. Agents that deviate get cut off automatically.** Not as punishment — as math.
+
+---
+
+## ⚡ Quick Start
 
 ```bash
 npm install @nobulex/core
@@ -29,56 +55,78 @@ npx tsx examples/trust-capital-demo.ts
 ```
 Agent starts at RESTRICTED tier (Trust Capital: 0)
 
-Action 1: read_data — ALLOWED ✓ (Trust Capital: 12)
-Action 2: read_data — ALLOWED ✓ (Trust Capital: 24)
-Action 3: process_payment — BLOCKED ✗ (insufficient trust for financial ops)
-Action 4: read_data — ALLOWED ✓ (Trust Capital: 36)
-Action 5: read_data — ALLOWED ✓ (Trust Capital: 48)
+Action 1: read_data       — ALLOWED ✓  (Trust Capital: 12)
+Action 2: read_data       — ALLOWED ✓  (Trust Capital: 24)
+Action 3: process_payment — BLOCKED ✗  (insufficient trust)
+Action 4: read_data       — ALLOWED ✓  (Trust Capital: 36)
+Action 5: read_data       — ALLOWED ✓  (Trust Capital: 48)
 
-Agent promoted to STANDARD tier
-Action 6: process_payment — ALLOWED ✓ (Trust Capital: 65)
-Action 7: approve_contract — BLOCKED ✗ (requires TRUSTED tier)
+▲ Agent promoted to STANDARD tier
+Action 6: process_payment — ALLOWED ✓  (Trust Capital: 65)
+Action 7: approve_contract — BLOCKED ✗  (requires TRUSTED)
 
-Agent promoted to TRUSTED tier (Trust Capital: 89)
+▲ Agent promoted to TRUSTED tier (Trust Capital: 89)
 Action 8: approve_contract — ALLOWED ✓
 ```
 
-![Tests](https://img.shields.io/badge/tests-6%2C057%20passing-brightgreen)
-![License](https://img.shields.io/badge/license-MIT-green)
-![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue)
+[Try it live](https://nobulex.com/try) · [Policy Designer](https://nobulex.com/designer) · [Compare](./drafts/compare.md) · [Receipt Schema](./docs/receipt-schema.md)
 
-**[Try it live](https://nobulex.com/try.html)** · **[Policy Designer](https://nobulex.com/designer.html)** · **[Quickstart](https://nobulex.com/docs/quickstart.html)** · **[Compare](https://nobulex.com/compare.html)** · **[Receipt Schema](https://nobulex.com/docs/receipt-schema.html)** · **[Pricing](https://nobulex.com/pricing.html)** · **[IETF Draft](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)**
+---
 
-
-## What is Trust Capital?
-
-You can't audit a neural network. But you **can** audit actions against stated commitments — and accumulate that audit history into a reputation that has real economic value.
+## 🔄 How It Works
 
 ```
-verify(covenant, actionLog) → { compliant: boolean, violations: Violation[], trustCapital: number }
+  DECLARE ──▶ ENFORCE ──▶ PROVE ──▶ ACCUMULATE
+     │           │          │           │
+  Covenant    Pre-exec   Receipt     Trust
+  defines     receipt    chain       Capital
+  rules       blocks     verified    earned
+              bad acts   by 3rd
+                         party       ──▶ MORE VALUABLE WORK
+                                         ──▶ MORE RECEIPTS
+                                              ──▶ HIGHER TRUST
+                                                   (flywheel)
 ```
 
-This is always decidable, always deterministic, always efficient. No ML, no heuristics — mathematical proof.
+**The flywheel:** More Trust Capital → more valuable work → more receipts → higher Trust Capital. Accountability becomes the most profitable strategy.
 
-**Trust Capital** means every autonomous agent action is:
-- **Declared** — behavioral rules defined before deployment in a formal covenant
-- **Enforced** — violations blocked at runtime, before execution
-- **Proven** — every action hash-chained into a tamper-evident audit trail that third parties can independently verify
-- **Accumulated** — verified behavior builds Trust Capital that gates future autonomy, transaction limits, insurance eligibility, and enterprise approval
+---
 
-## Quick Start
+## 📈 Traction
 
-```bash
-npm install @nobulex/sdk
-```
+<table>
+<tr><td>🏢</td><td><strong>Microsoft</strong></td><td>Merged receipt primitive into <a href="https://github.com/microsoft/agt">Agent Governance Toolkit</a></td></tr>
+<tr><td>💳</td><td><strong>VISA</strong></td><td>Trusted Agent Protocol testing against receipt format</td></tr>
+<tr><td>🔍</td><td><strong>Verascore</strong></td><td><code>nobulex_trust_capital</code> — 1 of 6 conformance evidence classes</td></tr>
+<tr><td>🐧</td><td><strong>OpenLineage</strong></td><td>Linux Foundation accepted into ecosystem</td></tr>
+<tr><td>🤝</td><td><strong>AAIF</strong></td><td>Anthropic/OpenAI/Google/Microsoft/AWS/Block — under staff review</td></tr>
+<tr><td>🔗</td><td><strong>AlgoVoi</strong></td><td>14/14 CTEF byte-match in production across 8 chains</td></tr>
+<tr><td>🤖</td><td><strong>n50.io</strong></td><td>87 autonomous agents, 3 months production</td></tr>
+<tr><td>🧪</td><td><strong>Agent Trust Bench</strong></td><td>138 adversarial profiles across 30 categories</td></tr>
+<tr><td>🔁</td><td><strong>10+ implementations</strong></td><td>Cross-validated byte-identical output, no coordination</td></tr>
+</table>
+
+> Active discussions on **OpenAI**, **Stripe**, **CrewAI**, **LlamaIndex**, **Google ADK**, **AutoGen**, **Coinbase AgentKit**, **Composio**, **MetaGPT**, **Agno**, and **A2A Protocol**.
+
+---
+
+## 🚨 Why Now
+
+- **86%** of AI agents deployed without security approval *(CSA ATF, 2026)*
+- **UUMit** — first A2A marketplace — launched with zero identity verification
+- **$138B+** committed to physical AI *(Bezos + SoftBank)* — zero accountability layer
+- Top models score **10-15%** on real problems *(LemmaBench)* — zero traceability on failure
+
+The agents are deployed. The money is flowing. The accountability infrastructure doesn't exist yet. **We're building it.**
+
+---
+
+## 💻 Code
 
 ```typescript
 import { createDID, parseSource, EnforcementMiddleware, verify } from '@nobulex/core';
 
-// 1. Create an agent identity
 const agent = await createDID();
-
-// 2. Write behavioral rules
 const spec = parseSource(`
   covenant SafeTrader {
     permit read;
@@ -88,158 +136,114 @@ const spec = parseSource(`
   }
 `);
 
-// 3. Enforce at runtime
 const mw = new EnforcementMiddleware({ agentDid: agent.did, spec });
 
-// $300 transfer — allowed
 await mw.execute(
-  { action: 'transfer', params: { amount: 300 } },
+  { action: 'transfer', params: { amount: 300 } },  // ✓ allowed
   async () => ({ success: true }),
 );
 
-// $600 transfer — BLOCKED before execution
 await mw.execute(
-  { action: 'transfer', params: { amount: 600 } },
-  async () => ({ success: true }),  // never runs
+  { action: 'transfer', params: { amount: 600 } },  // ✗ BLOCKED before execution
+  async () => ({ success: true }),                    // never runs
 );
 
-// 4. Prove compliance
 const result = verify(spec, mw.getLog());
-console.log(result.compliant);    // true
-console.log(result.violations);   // []
+console.log(result.compliant);   // true
 ```
 
-
-## Cross-Agent Verification Handshake
+<details>
+<summary><strong>🤝 Cross-Agent Verification Handshake</strong></summary>
+<br/>
 
 Before two agents transact, they verify each other's Trust Capital. **No proof, no transaction.**
 
 ```typescript
 import { generateProof, verifyCounterparty } from '@nobulex/sdk';
 
-// Agent A generates its Trust Capital proof
 const proof = await generateProof({
-  identity: agentA,
-  covenant: spec,
-  actionLog: middleware.getLog(),
+  identity: agentA, covenant: spec, actionLog: middleware.getLog(),
 });
 
-// Agent B verifies Agent A before transacting
 const result = await verifyCounterparty(proof);
+if (!result.trusted) return; // refused
 
-if (!result.trusted) {
-  console.log('Refusing transaction:', result.reason);
-  return; // No proof, no transaction
-}
-
-// Safe to transact — Agent A is verified
 await executeTransaction(proof.agentDid, amount);
 ```
 
-The handshake checks eight things in order: covenant signature, proof signature, log integrity, compliance, minimum history, required covenant, audience binding, and task class scoping. If any check fails, the transaction is refused.
+Checks: covenant sig → proof sig → log integrity → compliance → min history → required covenant → audience binding → task class scoping.
+</details>
 
-## Why Trust Capital Matters
+---
 
-| What exists today | What's missing |
+## 🌐 Ecosystem
+
+13 projects building on or composing with Nobulex:
+
+<table>
+<tr><th>Partner</th><th>Layer</th><th>Integration</th></tr>
+<tr><td><strong>Microsoft AGT</strong></td><td>Governance</td><td>Bilateral receipt primitive</td></tr>
+<tr><td><strong>AURA Protocol</strong></td><td>On-chain reputation</td><td>Receipts → 8-dimension scoring on Base Mainnet</td></tr>
+<tr><td><strong>LlamaIndex</strong></td><td>Detection</td><td>in-toto predicate mapping</td></tr>
+<tr><td><strong>Aigen Protocol</strong></td><td>Mission receipts</td><td>4-state outcome_state enum</td></tr>
+<tr><td><strong>AlgoVoi</strong></td><td>Payments</td><td>14/14 CTEF, 8 chains, JCS-canonical</td></tr>
+<tr><td><strong>Agent Community</strong></td><td>ATF reference</td><td>Verifiability Gate + COMMITTED Claim</td></tr>
+<tr><td><strong>Dominion Observatory</strong></td><td>Telemetry</td><td>Pre-call trust scores</td></tr>
+<tr><td><strong>Verascore</strong></td><td>Evidence</td><td>Conformance evidence class</td></tr>
+<tr><td><strong>Concordia</strong></td><td>Envelope</td><td>JCS canonicalization (RFC 8785)</td></tr>
+<tr><td><strong>Signet</strong></td><td>Signing</td><td>Bilateral co-signing</td></tr>
+<tr><td><strong>n50.io</strong></td><td>Production</td><td>87 agents, fate-separated verification</td></tr>
+<tr><td><strong>AgentGraph</strong></td><td>CTEF vectors</td><td>Byte-match validation</td></tr>
+<tr><td><strong>APS</strong></td><td>Receipt schema</td><td>10/10 bilateral-delegation match</td></tr>
+</table>
+
+---
+
+## 📋 Standards
+
+| Standard | Status |
 |---|---|
-| **Guardrails** filter prompts and outputs | No proof the agent followed rules at the action layer |
-| **Monitoring** watches what agents do after the fact | No enforcement before execution |
-| **Identity** verifies who the agent is | No verification of what the agent did |
-| **Governance platforms** provide dashboards and policies | No cryptographic evidence a third party can independently verify |
+| IETF Internet-Draft | [`draft-gogani-nobulex-proof-of-behavior-00`](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) |
+| Microsoft AGT | Bilateral receipt merged |
+| CTEF v0.3.1 | 14/14 byte-match conformance |
+| Verascore Evidence Schema | `nobulex_trust_capital` fixture |
+| LangChain RFC #35691 | ComplianceCallbackHandler |
+| NIST RFI | Formal comments submitted |
 
-Trust Capital fills the gap: declare → enforce → prove → accumulate.
+---
 
+<details>
+<summary><strong>🔒 Security</strong></summary>
+<br/>
 
-## Conceptual Comparison
+✅ Hash chain integrity — property-tested with fast-check<br/>
+✅ Signature forgery — rejected 100%<br/>
+✅ Replay prevention — audience-bound proofs<br/>
+✅ Covenant enforcement — blocked before execution<br/>
 
-| | Bitcoin | Ethereum | Nobulex |
-|---|---------|----------|---------|
-| **What it verifies** | Monetary transfers | Contract execution | Agent behavior |
-| **Mechanism** | Proof of Work | Proof of Stake | **Trust Capital** |
-| **What's proven** | Transaction validity | State transitions | Behavioral compliance |
-| **Guarantee** | Trustless money | Trustless contracts | Trustless agents |
+See [docs/threat-model.md](./docs/threat-model.md)
+</details>
 
-## Live Demo
+---
 
-```bash
-npx tsx examples/demo.ts
-```
-
-Creates two agents, defines behavioral rules, enforces at runtime, blocks a forbidden transfer, generates Trust Capital proof, runs the 8-step handshake, and then shows the same handshake rejecting a third agent whose log was tampered with.
-
-```bash
-npx tsx examples/langchain-agent.ts   # covenant enforcement around a mocked LangChain agent
-npx tsx examples/trust-capital-demo.ts # watch an agent earn credit through verified behavior
-npx tsx benchmarks/bench.ts           # protocol performance on your hardware
-```
-
-## Security Audit
-
-We've conducted an internal security review. Here's what we tested and what we found:
-
-**Verified secure:**
-- Hash chain integrity: modifying any entry breaks the chain (property-tested with fast-check across random chains of varying length).
-- Signature forgery: invalid signatures are rejected 100% of the time.
-- Replay attack prevention: audience-bound proofs fail when replayed to a different verifier (property-tested).
-- Covenant enforcement: forbidden actions are blocked *before* execution, never after.
-
-**Known limitations:**
-- No key revocation mechanism yet.
-- No rate limiting on handshake verification.
-- Single-threaded chain verification.
-- Clock skew tolerance is 0.
-
-See [docs/threat-model.md](docs/threat-model.md) for the full threat model.
-
-
-## Development
+## 🛠️ Development
 
 ```bash
 git clone https://github.com/arian-gogani/nobulex.git
-cd nobulex
-npm install
-npx vitest run             # full test suite (incl. fast-check property tests)
-npx tsx examples/demo.ts   # see the protocol run end-to-end
-npx tsx benchmarks/bench.ts
+cd nobulex && npm install
+npx vitest run              # tests
+npx tsx examples/demo.ts    # end-to-end
+npx tsx benchmarks/bench.ts # benchmarks
 ```
 
-## Standards
+---
 
-- **[IETF Internet-Draft](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)** — `draft-gogani-nobulex-proof-of-behavior-00`: Trust Capital Protocol for Autonomous AI Agents
-- **[LangChain RFC #35691](https://github.com/langchain-ai/langchain/issues/35691)** — ComplianceCallbackHandler, 10+ implementations converging
-- **[NIST RFI Response](docs/nist-rfi.md)** — Formal comments to NIST AI Agent Standards Initiative
-- **[Microsoft AGT](https://github.com/microsoft/agent-governance-toolkit/pull/1333)** — Bilateral receipt primitive merged (PRs #1302, #1333)
+<div align="center">
 
-## Ecosystem
+[Website](https://nobulex.com) · [Try it](https://nobulex.com/try) · [npm](https://www.npmjs.com/org/nobulex) · [IETF Draft](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) · [𝕏 @nobulexlabs](https://x.com/nobulexlabs)
 
-Projects building on or composing with Nobulex:
+⭐ **[Star this repo](https://github.com/arian-gogani/nobulex/stargazers)** to help others find it
 
-| Partner | Layer | Integration |
-|---------|-------|-------------|
-| [Microsoft AGT](https://github.com/microsoft/agent-governance-toolkit) | Governance toolkit | Bilateral receipt primitive (PR #1333) |
-| [APS](https://github.com/aeoess) | Receipt schema | 10/10 byte-match on bilateral-delegation fixtures |
-| [AgentGraph](https://agentgraph.co) | CTEF vectors | Cross-implementation byte-match validation |
-| [AgentID](https://github.com/haroldmalikfrimpong-ops/getagentid) | Identity layer | Claim type convergence |
-| [HiveTrust](https://github.com/srotzin/hivetrust) | Compliance | Bilateral receipt endorsement |
-| [Concordia](https://github.com/eriknewton) | Envelope layer | JCS canonicalization alignment |
-| [Dominion Observatory](https://github.com/vdineshk/dominion-observatory) | Pre-call trust scores | Feeds trust_score into covenant `require` |
-| [Signet](https://github.com/willamhou) | Signing layer | Bilateral co-signing, policy attestation |
+MIT License
 
-## Documentation
-
-- **[API Reference](docs/api/)** — Full API docs generated with TypeDoc (`npm run docs:api`)
-- **[Trust Capital Spec](docs/proof-of-behavior-spec.md)** — Formal standard specification (CC-BY-4.0)
-- **[White Paper](docs/whitepaper.md)** — Formal protocol specification
-- **[Receipt Schema](https://nobulex.com/docs/receipt-schema.html)** — Every field, verification steps, examples
-- **[Getting Started](docs/getting-started.md)** — Developer guide
-
-## Links
-
-- **Website:** [nobulex.com](https://nobulex.com)
-- **Try it:** [nobulex.com/try](https://nobulex.com/try.html)
-- **npm:** [@nobulex](https://www.npmjs.com/org/nobulex)
-- **IETF:** [draft-gogani-nobulex-proof-of-behavior-00](drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)
-
-## License
-
-MIT
+</div>

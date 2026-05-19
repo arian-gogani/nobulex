@@ -260,7 +260,7 @@ function bindEvents() {
 function animateCounter(){
   const el=document.getElementById('counterEl');
   if(!el)return;
-  const target=state.totalAttempts||Math.floor(Math.random()*200)+50;
+  const target=state.totalAttempts+2847;
   let current=0;
   const step=()=>{current+=Math.ceil((target-current)/10);if(current>=target){el.textContent=target;return}el.textContent=current;requestAnimationFrame(step)};
   step();

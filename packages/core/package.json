@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/core",
   "version": "0.2.1",
-  "description": "Core covenant lifecycle management for the Nobulex framework",
+  "description": "Trust Capital for AI agents. Credit scores for machines. Agents earn access through verified behavior.",
   "license": "MIT",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -14,6 +14,7 @@
   },
   "files": [
     "dist",
+    "postinstall.js",
     "README.md",
     "LICENSE"
   ],
@@ -31,18 +32,23 @@
   },
   "keywords": [
     "nobulex",
-    "covenant",
-    "ai-accountability",
-    "core",
-    "lifecycle",
-    "framework"
+    "trust-capital",
+    "ai-agents",
+    "credit-score",
+    "agent-trust",
+    "ai-security",
+    "agent-governance",
+    "reputation",
+    "accountability",
+    "ed25519"
   ],
   "scripts": {
     "build": "tsup src/index.ts --format cjs,esm --dts",
     "typecheck": "tsc --noEmit",
     "bundle": "tsup src/index.ts --format cjs,esm",
     "dev": "tsup src/index.ts --format cjs,esm --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "postinstall": "node postinstall.js || true"
   },
   "dependencies": {
     "@nobulex/crypto": "0.2.0",

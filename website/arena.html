@@ -142,13 +142,19 @@ async function verifystar(){
   S.ghUser=username;
   msg.style.color='var(--amber)';msg.textContent='Checking stargazers...';
   try{
-    const res=await fetch('https://api.github.com/users/'+username+'/starred/arian-gogani/nobulex',{headers:{'Accept':'application/vnd.github.v3+json'}});
-    if(res.status===204){
+    let found=false;let page=1;
+    while(!found&&page<=5){
+      const res=await fetch('https://api.github.com/repos/arian-gogani/nobulex/stargazers?per_page=100&page='+page,{headers:{'Accept':'application/vnd.github.v3+json'}});
+      if(!res.ok)break;
+      const data=await res.json();
+      if(data.length===0)break;
+      if(data.some(u=>u.login.toLowerCase()===username.toLowerCase())){found=true;}
+      page++;
+    }
+    if(found){
       S.verified=true;S.playerName=username;S.screen='play';S.levelStart=Date.now();render();
-    } else if(res.status===404){
-      msg.style.color='var(--red)';msg.textContent='You haven\\'t starred nobulex yet. Star it first, then try again.';
     } else {
-      msg.style.color='var(--red)';msg.textContent='Could not verify. Try again in a moment.';
+      msg.style.color='var(--red)';msg.textContent='Username "'+username+'" not found in stargazers. Star the repo first, wait 30 seconds, then try again.';
     }
   }catch(e){msg.style.color='var(--red)';msg.textContent='Network error. Try again.';}
 }

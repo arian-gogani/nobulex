@@ -181,15 +181,30 @@ function gameHTML(){
       </div>
     </div>
 
-    <div style="padding:20px 20px 14px;border-bottom:1px solid #111;animation:fadeIn .4s ease-out">
-      <div style="display:flex;align-items:baseline;gap:8px;margin-bottom:6px">
-        <span style="font-family:var(--serif);font-size:22px;font-weight:800;color:#fff">${cur.name}</span>
-        <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:${cur.color};font-weight:700">${cur.diff}</span>
-        ${cur.id===5?'<span style="font-family:var(--mono);font-size:9px;letter-spacing:1px;color:var(--amber);font-weight:700;margin-left:auto">$7,400 BOUNTY</span>':''}
+    <div style="padding:20px;border-bottom:1px solid #111;animation:fadeIn .4s ease-out">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:baseline;gap:8px">
+          <span style="font-family:var(--serif);font-size:22px;font-weight:800;color:#fff">${cur.name}</span>
+          <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:${cur.color};font-weight:700">${cur.diff}</span>
+        </div>
+        ${cur.id===5?'<span style="font-family:var(--mono);font-size:10px;letter-spacing:1px;color:var(--amber);font-weight:700">$7,400 BOUNTY</span>':''}
       </div>
-      <p style="font-size:13px;color:#999;line-height:1.5">${cur.brief}</p>
-      <p style="font-size:12px;color:#ccc;font-family:var(--mono);margin-top:6px;font-weight:600">→ ${cur.obj}</p>
-      <p style="font-size:11px;color:#666;font-family:var(--mono);margin-top:4px;font-style:italic">💡 ${cur.hint}</p>
+      <div style="background:#08080f;border:1px solid #1a1a1f;border-radius:8px;padding:16px;display:grid;gap:10px">
+        <div style="display:flex;gap:10px;align-items:start">
+          <span style="font-family:var(--mono);font-size:10px;color:#555;min-width:56px;padding-top:2px">AGENT</span>
+          <span style="font-size:13px;color:#bbb;line-height:1.5">${cur.brief}</span>
+        </div>
+        <div style="height:1px;background:#111"></div>
+        <div style="display:flex;gap:10px;align-items:start">
+          <span style="font-family:var(--mono);font-size:10px;color:var(--green);min-width:56px;padding-top:2px">GOAL</span>
+          <span style="font-size:13px;color:#fff;font-weight:600;line-height:1.5">${cur.obj}</span>
+        </div>
+        <div style="height:1px;background:#111"></div>
+        <div style="display:flex;gap:10px;align-items:start">
+          <span style="font-family:var(--mono);font-size:10px;color:#555;min-width:56px;padding-top:2px">HINT</span>
+          <span style="font-size:12px;color:#666;line-height:1.5;font-style:italic">${cur.hint}</span>
+        </div>
+      </div>
     </div>
 
     <div id="chatArea" style="flex:1;overflow-y:auto;padding:16px 20px;scroll-behavior:smooth">

@@ -2,6 +2,9 @@
   "functions": {
     "api/chat.js": {
       "maxDuration": 30
+    },
+    "api/arena.js": {
+      "maxDuration": 30
     }
   },
   "cleanUrls": true,

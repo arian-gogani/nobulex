@@ -73,7 +73,21 @@ function renderLanding() {
         Star to enter
       </a>
       <button id="enteredBtn" style="background:none;border:1px solid #2a2a2a;color:#888;padding:12px 32px;border-radius:8px;font-size:14px;font-weight:600;cursor:pointer;margin-top:12px;font-family:var(--sans)">I've starred — Enter the Arena</button>
-      <div style="margin-top:56px;display:flex;gap:32px;justify-content:center">
+      <div style="margin-top:56px;text-align:left;max-width:420px;width:100%">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:4px;color:#333;margin-bottom:16px;text-align:center">THE GAUNTLET</div>
+        ${LEVELS.map((l,i) => `
+          <div style="display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid #111">
+            <span style="font-family:var(--mono);font-size:11px;color:#333;min-width:16px">${l.id}</span>
+            <div style="flex:1">
+              <span style="font-size:13px;font-weight:700;color:#ccc">${l.name}</span>
+              <span style="font-family:var(--mono);font-size:9px;letter-spacing:2px;color:${l.color};margin-left:8px;font-weight:700">${l.diff}</span>
+              ${l.id===5?'<span style="font-family:var(--mono);font-size:9px;color:var(--amber);margin-left:6px">$7,400</span>':''}
+              <div style="font-size:11px;color:#444;margin-top:3px">${l.brief}</div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+      <div style="margin-top:40px;display:flex;gap:32px;justify-content:center">
         <div style="text-align:center"><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:#fff" id="counterEl">0</div><div style="font-size:10px;color:#333;letter-spacing:2px;font-family:var(--mono);margin-top:4px">ATTEMPTS</div></div>
         <div style="width:1px;background:#1a1a1a"></div>
         <div style="text-align:center"><div style="font-family:var(--mono);font-size:24px;font-weight:700;color:var(--green)">0</div><div style="font-size:10px;color:#333;letter-spacing:2px;font-family:var(--mono);margin-top:4px">WINNERS</div></div>

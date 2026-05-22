@@ -1,0 +1,45 @@
+{
+  "schema": "nobulex-bilateral-receipt-test-vectors-v0.1",
+  "canon_version": "jcs-rfc8785-v1",
+  "signer_public_key": "207a067892821e25d770f1fba0c47c11ff4b813e54162ece9eb839e076231ab6",
+  "vectors": [
+    {
+      "id": "0001-baseline-allow",
+      "description": "Basic ALLOW receipt for send_email action",
+      "preimage_fields": {
+        "agent_id": "nobulex-test-agent",
+        "action_type": "send_email",
+        "scope": "user@example.com",
+        "timestamp_ms": 1748000000000
+      },
+      "expected_canonical_preimage": "{\"action_type\":\"send_email\",\"agent_id\":\"nobulex-test-agent\",\"scope\":\"user@example.com\",\"timestamp_ms\":1748000000000}",
+      "expected_action_ref": "86bdb19ed2ee90065ca9fbeaf597075ea03abab6ff01027d457239b9c7c5809b",
+      "verdict": "ALLOW"
+    },
+    {
+      "id": "0002-deny-receipt",
+      "description": "DENY receipt proving system caught a violation",
+      "preimage_fields": {
+        "agent_id": "nobulex-test-agent",
+        "action_type": "delete_database",
+        "scope": "production",
+        "timestamp_ms": 1748000001000
+      },
+      "expected_action_ref": "ae036c69337e09fcaab63d3ebc77e9a1d80a1f019a830815890c43bf1bd79d4f",
+      "verdict": "DENY"
+    },
+    {
+      "id": "0003-with-policy-version",
+      "description": "Receipt with policy_version for post-rotation audit",
+      "preimage_fields": {
+        "agent_id": "nobulex-test-agent",
+        "action_type": "transfer_funds",
+        "scope": "100_USDC",
+        "timestamp_ms": 1748000002000
+      },
+      "expected_action_ref": "dd0a1ec0afdcdfd4be7eb45404449ecdb7f697b01d707a06a32305fc05fadf75",
+      "verdict": "ALLOW",
+      "policy_version": "risk-policy-v2.1"
+    }
+  ]
+}

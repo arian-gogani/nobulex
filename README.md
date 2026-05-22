@@ -44,6 +44,31 @@ Agents that create more value earn more access. Agents that deviate get cut off 
 
 ## Quick start
 
+### Python (recommended for AI agents)
+
+```bash
+pip install nobulex
+```
+
+```python
+from nobulex import Agent
+
+agent = Agent("my-agent")
+receipt = agent.act("send_email", scope="user@example.com")
+assert receipt.verify()       # Cryptographic proof
+print(agent.trust_score)      # Trust Capital: 13.86
+```
+
+#### LangChain integration (2 lines)
+
+```python
+from nobulex.langchain import NobuReceipts
+wrapped = NobuReceipts.wrap(your_agent, "my-agent")
+# Every tool call now generates a tamper-proof receipt
+```
+
+### JavaScript / TypeScript
+
 ```bash
 npm install @nobulex/core
 npx tsx examples/trust-capital-demo.ts

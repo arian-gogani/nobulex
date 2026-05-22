@@ -55,6 +55,10 @@ class Receipt:
             "action_ref": self.action_ref,
             "version": self.version,
         }
+        if self.policy_version:
+            signable["policy_version"] = self.policy_version
+        if self.attempt_id:
+            signable["attempt_id"] = self.attempt_id
         if self.metadata:
             signable["metadata"] = self.metadata
         return jcs_canonicalize(signable)
@@ -91,6 +95,8 @@ class Receipt:
             signature=data.get("signature", ""),
             signer_public_key=data.get("signer_public_key", ""),
             version=data.get("version", "nobulex-receipt-v0.1"),
+            policy_version=data.get("policy_version", ""),
+            attempt_id=data.get("attempt_id", ""),
             metadata=data.get("metadata", {}),
         )
 

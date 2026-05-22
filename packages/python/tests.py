@@ -144,6 +144,27 @@ def greet_last_verdict(fn):
     return fn.last_receipt.verdict
 
 
+def test_receipt_chain():
+    from nobulex.chain import ReceiptChain
+    chain = ReceiptChain("chain-test")
+    chain.append("a1", scope="s1")
+    chain.append("a2", scope="s2")
+    chain.append("a3", scope="s3")
+    assert chain.length == 3
+    assert chain.verify()
+    assert chain.head_hash is not None
+
+
+def test_chain_tamper_detection():
+    from nobulex.chain import ReceiptChain
+    chain = ReceiptChain("tamper-test")
+    chain.append("action", scope="original")
+    chain.append("action", scope="original2")
+    assert chain.verify()
+    chain._chain[0]["receipt"].scope = "TAMPERED"
+    assert not chain.verify()
+
+
 if __name__ == "__main__":
     tests = [
         test_agent_create,
@@ -157,6 +178,8 @@ if __name__ == "__main__":
         test_different_keys_cant_verify,
         test_decorator_basic,
         test_decorator_catches_errors,
+        test_receipt_chain,
+        test_chain_tamper_detection,
     ]
     for t in tests:
         try:

@@ -82,6 +82,31 @@ def test_langchain_integration():
     assert tracker.trust_score > 0
 
 
+def test_crewai_tracker():
+    from nobulex.crewai import NobuCrewTracker
+
+    crew = NobuCrewTracker("test-crew")
+    crew.on_task_start("agent-a", "research")
+    crew.on_task_complete("agent-a", "research", result="done")
+    crew.on_task_fail("agent-b", "write", error="timeout")
+
+    assert len(crew.receipts) == 3
+    assert len(crew.agent_names) == 2
+    scores = crew.trust_scores
+    assert scores["agent-a"] > 0
+    assert scores["agent-b"] > 0
+
+
+def test_different_keys_cant_verify():
+    keys1 = KeyPair()
+    keys2 = KeyPair()
+    receipt = Receipt.create(
+        agent_id="a", action_type="x", scope="s", keys=keys1
+    )
+    receipt.signer_public_key = keys2.public_hex
+    assert not receipt.verify()
+
+
 if __name__ == "__main__":
     tests = [
         test_agent_create,
@@ -91,6 +116,8 @@ if __name__ == "__main__":
         test_deny_receipt,
         test_receipt_json_roundtrip,
         test_langchain_integration,
+        test_crewai_tracker,
+        test_different_keys_cant_verify,
     ]
     for t in tests:
         try:

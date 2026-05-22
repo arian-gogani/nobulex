@@ -104,6 +104,8 @@ class Receipt:
         verdict: str = "ALLOW",
         timestamp_ms: Optional[int] = None,
         metadata: Optional[dict] = None,
+        policy_version: str = "",
+        attempt_id: str = "",
     ) -> "Receipt":
         """
         Create and sign a new receipt.
@@ -135,6 +137,8 @@ class Receipt:
             verdict=verdict,
             action_ref=action_ref,
             signer_public_key=keys.public_hex,
+            policy_version=policy_version,
+            attempt_id=attempt_id,
             metadata=metadata or {},
         )
 

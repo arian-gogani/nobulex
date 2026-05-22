@@ -35,6 +35,8 @@ class Receipt:
     signature: str = ""
     signer_public_key: str = ""
     version: str = "nobulex-receipt-v0.1"
+    policy_version: str = ""
+    attempt_id: str = ""
     metadata: dict = field(default_factory=dict)
 
     def to_dict(self) -> dict:

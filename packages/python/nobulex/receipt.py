@@ -1,0 +1,150 @@
+"""Receipt generation and verification for Nobulex."""
+
+import time
+from dataclasses import dataclass, field, asdict
+from typing import Optional, Literal
+
+from nobulex.crypto import (
+    KeyPair,
+    jcs_canonicalize,
+    sha256_hex,
+    compute_action_ref,
+)
+
+
+@dataclass
+class Receipt:
+    """
+    A tamper-proof cryptographic receipt for an AI agent action.
+    
+    Every receipt proves:
+    - WHO acted (agent_id)
+    - WHAT they did (action_type)  
+    - ON WHAT (scope)
+    - WHEN (timestamp_ms)
+    - WHETHER it was allowed (verdict)
+    - WHO verified it (signer)
+    """
+
+    agent_id: str
+    action_type: str
+    scope: str
+    timestamp_ms: int
+    verdict: Literal["ALLOW", "DENY"] = "ALLOW"
+    action_ref: str = ""
+    signature: str = ""
+    signer_public_key: str = ""
+    version: str = "nobulex-receipt-v0.1"
+    metadata: dict = field(default_factory=dict)
+
+    def to_dict(self) -> dict:
+        """Convert receipt to dictionary (excludes empty fields)."""
+        d = asdict(self)
+        return {k: v for k, v in d.items() if v != "" and v != {}}
+
+    def to_canonical(self) -> str:
+        """JCS-canonical JSON representation (for hashing/signing)."""
+        signable = {
+            "agent_id": self.agent_id,
+            "action_type": self.action_type,
+            "scope": self.scope,
+            "timestamp_ms": self.timestamp_ms,
+            "verdict": self.verdict,
+            "action_ref": self.action_ref,
+            "version": self.version,
+        }
+        if self.metadata:
+            signable["metadata"] = self.metadata
+        return jcs_canonicalize(signable)
+
+    def verify(self) -> bool:
+        """Verify the receipt's cryptographic signature."""
+        if not self.signature or not self.signer_public_key:
+            return False
+        try:
+            canonical = self.to_canonical()
+            return KeyPair.verify_signature(
+                bytes.fromhex(self.signer_public_key),
+                bytes.fromhex(self.signature),
+                canonical.encode("utf-8"),
+            )
+        except Exception:
+            return False
+
+    def to_json(self) -> str:
+        """Serialize receipt to JSON string."""
+        import json
+        return json.dumps(self.to_dict(), indent=2)
+
+    @classmethod
+    def from_dict(cls, data: dict) -> "Receipt":
+        """Create a Receipt from a dictionary."""
+        return cls(
+            agent_id=data["agent_id"],
+            action_type=data["action_type"],
+            scope=data["scope"],
+            timestamp_ms=data["timestamp_ms"],
+            verdict=data.get("verdict", "ALLOW"),
+            action_ref=data.get("action_ref", ""),
+            signature=data.get("signature", ""),
+            signer_public_key=data.get("signer_public_key", ""),
+            version=data.get("version", "nobulex-receipt-v0.1"),
+            metadata=data.get("metadata", {}),
+        )
+
+    @classmethod
+    def create(
+        cls,
+        agent_id: str,
+        action_type: str,
+        scope: str,
+        keys: KeyPair,
+        verdict: str = "ALLOW",
+        timestamp_ms: Optional[int] = None,
+        metadata: Optional[dict] = None,
+    ) -> "Receipt":
+        """
+        Create and sign a new receipt.
+
+        Args:
+            agent_id: The agent's identifier
+            action_type: What the agent did (e.g., "send_email", "api_call")
+            scope: What resource was acted on
+            keys: KeyPair used to sign the receipt
+            verdict: "ALLOW" or "DENY"
+            timestamp_ms: Unix epoch milliseconds (auto-generated if omitted)
+            metadata: Optional additional data
+
+        Returns:
+            A signed Receipt
+        """
+        if timestamp_ms is None:
+            timestamp_ms = int(time.time() * 1000)
+
+        action_ref = compute_action_ref(
+            agent_id, action_type, scope, timestamp_ms
+        )
+
+        receipt = cls(
+            agent_id=agent_id,
+            action_type=action_type,
+            scope=scope,
+            timestamp_ms=timestamp_ms,
+            verdict=verdict,
+            action_ref=action_ref,
+            signer_public_key=keys.public_hex,
+            metadata=metadata or {},
+        )
+
+        canonical = receipt.to_canonical()
+        receipt.signature = keys.sign_hex(canonical.encode("utf-8"))
+        return receipt
+
+    def __repr__(self) -> str:
+        status = "verified" if self.verify() else "unverified"
+        return (
+            f"Receipt(agent={self.agent_id!r}, "
+            f"action={self.action_type!r}, "
+            f"verdict={self.verdict}, "
+            f"status={status})"
+        )

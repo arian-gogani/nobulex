@@ -170,3 +170,4 @@ vite.config.ts.timestamp-*
 EMAILS_TO_SEND.md
 deprecate-old-packages.sh
 CONSOLIDATION_PROMPT.md
+.vercel

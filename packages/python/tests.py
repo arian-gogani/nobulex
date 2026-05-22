@@ -107,6 +107,43 @@ def test_different_keys_cant_verify():
     assert not receipt.verify()
 
 
+def test_decorator_basic():
+    from nobulex.decorator import track
+
+    @track("deco-agent")
+    def greet(name):
+        return f"hello {name}"
+
+    result = greet("world")
+    assert result == "hello world"
+    assert len(greet.receipts) == 1
+    assert greet.trust_score > 0
+    assert greet.last_receipt.verify()
+
+
+def test_decorator_catches_errors():
+    from nobulex.decorator import track
+
+    @track("error-agent")
+    def risky(x):
+        if x < 0:
+            raise ValueError("negative")
+        return x * 2
+
+    risky(5)
+    assert greet_last_verdict(risky) == "ALLOW"
+    try:
+        risky(-1)
+    except ValueError:
+        pass
+    assert risky.last_receipt.verdict == "DENY"
+    assert risky.last_receipt.verify()
+
+
+def greet_last_verdict(fn):
+    return fn.last_receipt.verdict
+
+
 if __name__ == "__main__":
     tests = [
         test_agent_create,
@@ -118,6 +155,8 @@ if __name__ == "__main__":
         test_langchain_integration,
         test_crewai_tracker,
         test_different_keys_cant_verify,
+        test_decorator_basic,
+        test_decorator_catches_errors,
     ]
     for t in tests:
         try:

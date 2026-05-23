@@ -40,6 +40,22 @@
       "expected_action_ref": "dd0a1ec0afdcdfd4be7eb45404449ecdb7f697b01d707a06a32305fc05fadf75",
       "verdict": "ALLOW",
       "policy_version": "risk-policy-v2.1"
+    },
+    {
+      "id": "0004-issued-valid-executed-revoked",
+      "description": "Receipt valid at issuance, authority revoked before execution. Dual-timestamp test case per Consilium Pass Candidate 2.",
+      "preimage_fields": {
+        "agent_id": "nobulex-test-agent",
+        "action_type": "transfer_funds",
+        "scope": "500_USDC_to_vendor",
+        "timestamp_ms": 1748000003000
+      },
+      "expected_action_ref": "57c4990825b8be98f326acf8065a43280f51e2c6727ffd9bdb14c62eff6985da",
+      "verdict": "ALLOW",
+      "policy_version": "spending-policy-v3.0",
+      "authority_verified_at_ms": 1748000003000,
+      "revocation_check_at_ms": 1748001803000,
+      "revocation_status": "REVOKED"
     }
   ]
 }

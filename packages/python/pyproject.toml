@@ -25,6 +25,7 @@ classifiers = [
 ]
 dependencies = [
     "cryptography>=41.0",
+    "rfc8785>=0.1.2",
 ]
 
 [project.urls]

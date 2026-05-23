@@ -4,6 +4,7 @@ import hashlib
 import json
 from typing import Optional
 
+import rfc8785
 from cryptography.hazmat.primitives.asymmetric.ed25519 import (
     Ed25519PrivateKey,
     Ed25519PublicKey,
@@ -58,10 +59,9 @@ class KeyPair:
 def jcs_canonicalize(obj: dict) -> str:
     """
     JSON Canonicalization Scheme (RFC 8785).
-    Produces deterministic JSON output with sorted keys
-    and minimal encoding.
+    Uses the rfc8785 package for strict conformance.
     """
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=False)
+    return rfc8785.dumps(obj).decode("utf-8")
 
 
 def sha256_hex(data: str) -> str:

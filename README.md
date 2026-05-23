@@ -47,7 +47,16 @@ Agents that create more value earn more access. Agents that deviate get cut off 
 ### Python (recommended for AI agents)
 
 ```bash
-pip install nobulex
+# Install from source (PyPI coming soon)
+pip install git+https://github.com/arian-gogani/nobulex.git#subdirectory=packages/python
+```
+
+```bash
+# Or try the CLI demo instantly
+git clone https://github.com/arian-gogani/nobulex.git
+cd nobulex/packages/python
+pip install -e .
+python -m nobulex demo
 ```
 
 ```python

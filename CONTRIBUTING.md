@@ -1,214 +1,50 @@
 # Contributing to Nobulex
 
-Thank you for your interest in contributing to Nobulex, the trust layer for the agent economy. This guide covers everything you need to get started.
+Thanks for your interest. Here's how to get started.
 
-## Good First Issues
-
-New to the project? See [docs/GOOD-FIRST-ISSUES.md](./docs/GOOD-FIRST-ISSUES.md) for scoped 1–2 hour tasks. These will also be created as GitHub issues labeled `good first issue`. Pick one, comment that you're taking it, and open a PR.
-
-## Nobulex Improvement Proposals (KIPs)
-
-Proposing protocol changes? See [docs/KIP-PROCESS.md](./docs/KIP-PROCESS.md) for the structured KIP process. Anyone can propose changes through a KIP.
-
-## Prerequisites
-
-- **Node.js** 18 or later (tested on 18, 20, and 22)
-- **npm** 9 or later (ships with Node 18+)
-- **Git** 2.25 or later
-
-## Getting Started
+## Setup
 
 ```bash
-# Clone the repository
 git clone https://github.com/arian-gogani/nobulex.git
-cd nobulex
-
-# Install all dependencies (npm workspaces resolves inter-package deps automatically)
-npm install
-
-# Build all packages
-npm run build
-
-# Run all tests
-npx vitest run
+cd nobulex/packages/python
+pip install cryptography rfc8785
+python tests.py  # 13 tests, all should pass
 ```
 
-## Running Tests
+## Architecture
 
-The project uses [Vitest](https://vitest.dev/) for testing. Every package has co-located
-tests in `src/index.test.ts` (and sometimes additional test files).
+- `nobulex/agent.py` — Agent class, receipt generation
+- `nobulex/crypto.py` — Ed25519 signing, JCS canonicalization (RFC 8785), SHA-256
+- `nobulex/receipt.py` — Receipt data structure, verification, serialization
+- `nobulex/chain.py` — Hash-linked receipt chains, audit trail export
+- `nobulex/trust.py` — Trust Capital scoring
+- `nobulex/langchain.py` — LangChain callback handler
+- `nobulex/crewai.py` — CrewAI tracker integration
+- `nobulex/decorator.py` — `@audited` function decorator
+- `fixtures/bilateral-receipt/v0/` — Cross-validated test vectors
 
-```bash
-# Run the full test suite
-npx vitest run
+## What we need help with
 
-# Run tests for a single package
-npx vitest run packages/crypto
-npx vitest run packages/ccl
-npx vitest run packages/core
+- **TypeScript/JS SDK** — port the Python SDK to TypeScript
+- **More framework integrations** — AutoGen, LlamaIndex, Haystack
+- **Test vectors** — additional edge cases for canonicalization
+- **Documentation** — tutorials, guides, examples
+- **PyPI publishing** — help with CI/CD for automated releases
 
-# Run tests in watch mode (re-runs on file changes)
-npx vitest
+## Code style
 
-# Run tests with coverage
-npx vitest run --coverage
-```
+- No unnecessary abstractions
+- Every function should be testable
+- Comments explain why, not what
+- Lowercase commit messages, imperative mood
 
-## Project Structure
+## Test vectors
 
-```
-nobulex/
-  packages/           # All 30+ packages live here
-    types/            # Shared types, error classes, validation
-    crypto/           # Ed25519 signing, SHA-256, encoding
-    ccl/              # Covenant Constraint Language parser/evaluator
-    core/             # Covenant lifecycle (build, verify, chain)
-    store/            # Pluggable storage backends
-    verifier/         # Standalone verification engine
-    sdk/              # High-level NobulexClient unified SDK
-    nobulex/          # Single-package Nobulex (withNobulex, presets)
-    eu-compliance/   # EU AI Act compliance checker
-    identity/         # Agent identity with lineage tracking
-    enforcement/      # Runtime constraint enforcement
-    proof/            # Poseidon-based compliance proofs
-    breach/           # Breach detection and trust graph
-    reputation/       # Reputation scoring and staking
-    mcp/              # MCP guard for tool enforcement
-    cli/              # Command-line interface (nobulex)
-    attestation/      # External attestation and reconciliation
-    canary/           # Canary testing framework
-    gametheory/       # Game-theoretic honesty proofs
-    composition/      # Constraint composition and verification
-    antifragile/      # Breach-to-improvement antifragility
-    negotiation/      # Multi-party covenant negotiation
-    consensus/        # Accountability-based consensus
-    robustness/       # Formal robustness analysis
-    temporal/         # Temporal evolution and trust decay
-    recursive/        # Meta-covenants and recursive verification
-    alignment/        # AI alignment property verification
-    norms/            # Emergent norm discovery
-    substrate/        # Cross-substrate constraint translation
-    derivatives/      # Trust futures and insurance
-    legal/            # Legal compliance and audit trails
-    react/            # Reactive UI primitives
-    evm/              # EVM anchoring utilities
-    mcp-server/       # JSON-RPC 2.0 MCP server
-  docs/               # Documentation
-    api/              # API reference
-    architecture.md   # Architecture overview
-  examples/           # Runnable example scripts
-```
+If you add a new test vector to `fixtures/`, it must include:
+- `preimage_fields` with all 4 canonical fields
+- `expected_action_ref` (SHA-256 hex)
+- Cross-validation against at least one other JCS implementation
 
-## Adding a New Package
+## Questions?
 
-Follow this checklist when adding a new package:
-
-1. **Create the directory**: `mkdir -p packages/my-package/src`
-2. **Create `package.json`**:
-   ```json
-   {
-     "name": "@nobulex/my-package",
-     "version": "0.1.0",
-     "type": "module",
-     "main": "dist/index.js",
-     "types": "dist/index.d.ts",
-     "scripts": {
-       "build": "tsup src/index.ts --format esm --dts",
-       "typecheck": "tsc --noEmit",
-       "test": "vitest run"
-     },
-     "dependencies": {
-       "@nobulex/types": "0.1.0"
-     }
-   }
-   ```
-3. **Create `tsconfig.json`** referencing the root config and package dependencies.
-4. **Create `src/index.ts`** with your exports.
-5. **Create `src/index.test.ts`** with at least basic smoke tests.
-6. **Add to root `tsconfig.json`** references array.
-7. **Add to root `package.json`** workspaces array.
-8. **Run `npm install`** from the repo root to link the new package.
-9. **Run `npm run build`** and `npx vitest run` to verify everything works.
-
-## Code Style
-
-We don't enforce a strict comment style — some files in this repo are heavily documented, some are terse, and that's intentional. Write comments when the code isn't obvious and skip them when it is. If you browse the source and notice the density varies from file to file, that's the goal, not a cleanup target.
-
-**Do:**
-- Write comments that explain WHY, not WHAT. The name of the function already tells you what.
-- Add `TODO` / `FIXME` notes when you know something needs work — they're better than silence.
-- Use descriptive variable names instead of comments where you can.
-- Document public APIs with JSDoc so consumers get hover-tips in their editor.
-
-**Don't:**
-- Add JSDoc to every single function. Internal helpers usually don't need it.
-- Use box-drawing dividers (`// ─── Section ───`) unless the file is genuinely long enough to need navigation aids. A blank line is almost always enough.
-- Write comments that just restate the code. `// increment i` above `i++` is noise.
-- Sweep through a file normalizing everyone else's style to match yours — if it reads fine, leave it alone.
-
-The underlying TypeScript rules:
-
-- **TypeScript strict mode**: All packages use `"strict": true` in `tsconfig.json`.
-- **No `any`**: Avoid `any` types. Use `unknown` and narrow with type guards.
-- **Prefer `readonly`**: Mark properties and parameters as `readonly` when they should
-  not be mutated.
-- **Pure functions**: Prefer pure functions over stateful classes where possible.
-- **Immutable returns**: Functions that transform documents return new copies rather
-  than mutating the input.
-- **Explicit error types**: Use the error classes from `@nobulex/types` (`NobulexError`,
-  `ValidationError`, `CryptoError`, etc.) rather than plain `Error`.
-- **Branded types**: Use branded string types (`HashHex`, `Base64Url`, etc.) for
-  type safety at API boundaries.
-
-## CCL Gotchas
-
-When writing tests or examples that use CCL (Covenant Constraint Language), be aware of
-these common pitfalls:
-
-- **`severity` is a reserved keyword** in CCL `when` conditions. Use `risk_level`
-  instead of `severity` in your condition expressions.
-- **Resource matching is exact**: The path `/secrets` does NOT match `/secrets/key`.
-  Use glob patterns like `/secrets/**` to match all sub-paths.
-- **Default deny**: When no rules in a CCL document match an action/resource pair,
-  `evaluate()` returns `{ permitted: false }`. This is intentional.
-- **`ConstraintSpec.rule` is a name**, not valid CCL. If you have a `ConstraintSpec`
-  with a `rule` field, use `buildDocFromSpec()` to convert it to a parseable CCL
-  document.
-- **Use `result.permitted`** (not `result.matchedRule`) to determine whether an action
-  is allowed.
-
-## Pull Request Process
-
-1. **Branch from `main`**: Create a feature branch with a descriptive name
-   (e.g., `feat/add-rate-limit-enforcement`, `fix/ccl-wildcard-matching`).
-2. **Keep commits focused**: Each commit should represent a single logical change.
-   Write descriptive commit messages explaining *why*, not just *what*.
-3. **Tests must pass**: Run `npx vitest run` before submitting. CI runs the full
-   matrix (Node 18/20/22) on every PR.
-4. **No breaking changes without discussion**: If your change alters a public API,
-   open an issue first to discuss the design.
-5. **Update documentation**: If you add or change a public API, update the relevant
-   documentation in `docs/`.
-6. **One approval required**: PRs require at least one maintainer review before merge.
-
-## Build System
-
-- **tsup** for bundling (ESM output with declaration files)
-- **tsc --build** for type-checking and declaration generation
-- **vitest** for testing
-
-```bash
-# Build a single package
-cd packages/crypto && npm run build
-
-# Type-check the entire project
-npm run typecheck
-
-# Generate API documentation
-npm run docs
-```
-
-## License
-
-By contributing to Nobulex, you agree that your contributions will be licensed
-under the MIT License.
+Open an issue or reach out on X: [@nobulexlabs](https://x.com/nobulexlabs)

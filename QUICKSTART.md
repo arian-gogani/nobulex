@@ -45,9 +45,9 @@ chain.export("audit.json")   # Export for auditors
 ## LangChain Integration
 
 ```python
-from nobulex.langchain import NoбулexCallbackHandler
+from nobulex.langchain import NobulexCallbackHandler
 
-handler = NoбулexCallbackHandler(agent_id="langchain-bot")
+handler = NobulexCallbackHandler(agent_id="langchain-bot")
 # Pass to your LangChain agent as a callback
 ```
 

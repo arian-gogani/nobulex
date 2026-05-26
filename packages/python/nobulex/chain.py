@@ -113,3 +113,44 @@ class ReceiptChain:
     def __repr__(self) -> str:
         v = "verified" if self.verify() else "BROKEN"
         return f"ReceiptChain(agent={self.agent.agent_id!r}, length={self.length}, status={v})"
+
+
+def verify_audit_trail(filepath: str) -> dict:
+    """Verify an exported audit trail JSON file.
+    
+    Checks hash chain integrity (prev_hash linkage).
+    Returns a verification report.
+    """
+    import json
+    import hashlib
+    
+    with open(filepath) as f:
+        data = json.load(f)
+    
+    entries = data.get("entries", [])
+    results = []
+    all_valid = True
+    prev = "0" * 64
+    
+    for entry in entries:
+        # Verify chain linkage
+        chain_ok = entry.get("prev_hash") == prev
+        if not chain_ok:
+            all_valid = False
+        
+        results.append({
+            "index": entry.get("index", len(results)),
+            "action_type": entry.get("action_type", ""),
+            "verdict": entry.get("verdict", ""),
+            "action_ref": entry.get("action_ref", "")[:32] + "...",
+            "chain_valid": chain_ok,
+        })
+        prev = entry.get("chain_hash", "")
+    
+    return {
+        "file": filepath,
+        "total_receipts": len(results),
+        "chain_intact": all_valid,
+        "head_hash": data.get("head_hash", ""),
+        "receipts": results,
+    }

@@ -22,7 +22,7 @@ def payment_agent():
     chain.append("confirm_settlement", scope="tx_hash_0xabc123")
     
     print("Payment agent audit trail:")
-    print(f"  Actions: {chain.chain_length}")
+    print(f"  Actions: {chain.length}")
     print(f"  Chain valid: {chain.verify()}")
     print(f"  Head hash: {chain.head_hash[:32]}...")
     

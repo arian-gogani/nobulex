@@ -141,7 +141,9 @@ def main():
                 skipped += 1
 
         # Update chain hash
-        if 'entry_hash' in entry:
+        if 'chain_hash' in entry:
+            prev_hash = entry['chain_hash']
+        elif 'entry_hash' in entry:
             prev_hash = entry['entry_hash']
         elif 'action_ref' in entry:
             prev_hash = entry['action_ref']

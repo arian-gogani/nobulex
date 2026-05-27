@@ -165,6 +165,8 @@ console.log(result.compliant);   // true
 | | **OpenLineage** | Linux Foundation accepted into ecosystem |
 | | **n50.io** | 87 autonomous agents, 3 months production |
 | | **10+ implementations** | Cross-validated byte-identical output, no coordination |
+| | **ahg/inference-receipts** | [PHP peer implementation](https://packagist.org/packages/ahg/inference-receipts) using nobulex test vectors |
+| | **AgentAudit AI** | On-chain anchoring across 5 EVM mainnets, [byte-identical confirmed](https://github.com/arian-gogani/nobulex/issues/5) |
 
 Active discussions on **OpenAI**, **Google ADK**, **CrewAI**, **HuggingFace**, **AutoGen**, **Coinbase AgentKit**, **LangChain**, and **A2A Protocol**.
 

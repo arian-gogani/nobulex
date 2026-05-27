@@ -191,7 +191,7 @@ The agents are deployed. The money is flowing. The accountability infrastructure
 |---|---|
 | IETF Internet-Draft | [`draft-gogani-nobulex-proof-of-behavior-00`](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) |
 | Microsoft AGT | Bilateral receipt merged |
-| CTEF v0.3.1 | 14/14 byte-match conformance |
+| CTEF v0.3.2 | 14/14 byte-match conformance |
 | A2A Protocol | URN scheme registered: `urn:nobulex:receipt:<id>` |
 | NIST RFI | Formal comments submitted |
 

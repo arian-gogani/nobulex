@@ -1,55 +1,81 @@
-# Getting Started with Kova
+# Getting Started with Nobulex
 
-**5 minutes to your first trusted agent.**
+**Tamper-proof receipts for everything your AI agent does.**
 
----
-
-## 1. Install
-
-```bash
-npm install kova
-```
-
-## 2. Wrap Your MCP Server (3 lines)
-
-```typescript
-import { withKova } from 'kova';
-
-const server = await withKova(yourMCPServer, 'data-isolation');
-// Done. Covenant enforcement is active.
-```
-
-**Presets:** `data-isolation` | `read-write` | `network` | `minimal`
-
-## 3. Run Compliance Audit
-
-```bash
-npx kova audit ./
-```
-
-Shows EU AI Act readiness, covenant coverage, and recommended next steps.
-
-## 4. Initialize (Optional)
-
-```bash
-npx kova init
-```
-
-Generates key pair and `nobulex.config.json` for custom covenants.
+Five minutes to your first verifiable receipt.
 
 ---
 
-## What You Get
+## Install (Python)
 
-- **Hard enforcement** — Agent cannot violate tool/API constraints
-- **Audit trail** — Hash-chained log of every action
-- **Compliance proof** — Verifiable without revealing proprietary logic
-- **EU AI Act path** — Mapped to Aug 2026 requirements
+Until the PyPI release lands, install from source:
+
+```bash
+git clone https://github.com/arian-gogani/nobulex.git
+cd nobulex/packages/python
+pip install -e .
+```
+
+## See it work
+
+```bash
+python -m nobulex demo
+```
+
+Output:
+
+```
+generated 3 receipts
+  allow: 141ca2947a7e819b8bdebbf8... verified=True
+  allow: f3377758ac94d812535cbb99... verified=True
+  deny:  85b2dfd6b87f2678795726e4... verified=True
+trust score: 23.26
+
+tamper test:
+  modified receipt verified=False   (tamper detected)
+```
+
+Change one byte of a receipt and verification fails. That is the whole guarantee.
+
+## First receipt in code
+
+```python
+from nobulex import Agent
+
+agent = Agent("my-agent")
+
+# Every action produces a signed receipt
+receipt = agent.act("send_email", scope="user@example.com")
+assert receipt.verify()        # Ed25519 signature checks out
+
+# A denied action is recorded too
+agent.deny("delete_db", scope="production")
+
+# Receipts accumulate into Trust Capital
+print(agent.trust_score)
+```
+
+## Verify a receipt from the command line
+
+```bash
+python -m nobulex verify receipt.json
+```
+
+Anyone can verify a receipt without trusting you or your infrastructure. That is the point: the proof travels with the receipt.
 
 ---
 
-## Next Steps
+## JavaScript / TypeScript
 
-- [Full Quick Start](./docs/QUICK-START.md) — 30 min custom covenant walkthrough
-- [EU AI Act Mapping](./docs/eu-ai-act-mapping.md) — Article-by-article compliance
-- [Examples](./examples/README.md) — Runnable code samples
+The `@nobulex/core` package on npm covers the covenant API (constraints,
+signing, chain verification). A refreshed build with the key-generation
+helper exposed is publishing shortly; until then the Python package above
+is the recommended path for receipt generation.
+
+---
+
+## Next steps
+
+- [EU AI Act mapping](./docs/eu-ai-act-mapping.md) — article-by-article
+- [Examples](./examples/README.md) — runnable samples
+- [Proof-of-Behavior spec](./docs/proof-of-behavior-spec.md) — the receipt format

@@ -8,7 +8,7 @@
 [![OpenSSF](https://img.shields.io/badge/OpenSSF-passing-22c55e?style=flat-square)](https://www.bestpractices.dev/projects/10338)
 [![npm](https://img.shields.io/npm/v/@nobulex/core?style=flat-square&color=22c55e)](https://www.npmjs.com/package/@nobulex/core)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://opensource.org/licenses/MIT)
-[![IETF](https://img.shields.io/badge/IETF-Draft_Published-22c55e?style=flat-square)](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/)
+[![Spec](https://img.shields.io/badge/Spec-Proof_of_Behavior-22c55e?style=flat-square)](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)
 
 <br/><br/>
 
@@ -19,7 +19,7 @@ Nobulex is the credit and trust protocol for autonomous AI agents.<br/>
 Agents earn Trust Capital through verified behavior. Higher trust, more access.<br/>
 Autonomy earned, not granted.
 
-[Website](https://nobulex.com) · [Try it live](https://nobulex.com/try) · [Quickstart](./GETTING-STARTED.md) · [IETF Draft](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) · [npm](https://www.npmjs.com/package/@nobulex/core)
+[Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
 </div>
 
@@ -204,7 +204,7 @@ The agents are deployed. The money is flowing. The accountability infrastructure
 
 | Standard | Status |
 |---|---|
-| IETF Internet-Draft | [`draft-gogani-nobulex-proof-of-behavior-00`](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) |
+| Proof-of-Behavior spec | [`draft-gogani-nobulex-proof-of-behavior-00`](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) |
 | Microsoft AGT | Bilateral receipt merged |
 | CTEF v0.3.2 | 14/14 byte-match conformance |
 | A2A Protocol | URN scheme registered: `urn:nobulex:receipt:<id>` |
@@ -226,7 +226,7 @@ npx tsx benchmarks/bench.ts # benchmarks
 
 <div align="center">
 
-[Website](https://nobulex.com) · [Try it](https://nobulex.com/try) · [npm](https://www.npmjs.com/org/nobulex) · [IETF Draft](https://datatracker.ietf.org/doc/draft-gogani-nobulex-proof-of-behavior/) · [X @nobulexlabs](https://x.com/nobulexlabs)
+[Website](https://nobulex.com) · [Try it](https://nobulex.com/demo) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
 
 **[Star this repo](https://github.com/arian-gogani/nobulex/stargazers)** to follow the project
 

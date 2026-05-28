@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/core",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Trust Capital for AI agents. Credit scores for machines. Agents earn access through verified behavior.",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -50,10 +50,5 @@
     "prepublishOnly": "npm run build",
     "postinstall": "node postinstall.js || true"
   },
-  "dependencies": {
-    "@nobulex/crypto": "0.2.0",
-    "@nobulex/ccl": "0.2.0",
-    "@nobulex/types": "0.2.1",
-    "@nobulex/covenant-lang": "0.2.0"
-  }
+  "dependencies": {}
 }

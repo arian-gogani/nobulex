@@ -29,6 +29,21 @@ Autonomy earned, not granted.
 
 Every agent action produces a cryptographic receipt -- Ed25519 signed before and after execution, hash-chained for tamper evidence. A third party can verify the full history without trusting the agent or the operator.
 
+Here is the whole idea in one run (`python -m nobulex demo`):
+
+```
+generated 3 receipts
+  allow: 141ca2947a7e819b8bdebbf8... verified=True
+  allow: f3377758ac94d812535cbb99... verified=True
+  deny:  85b2dfd6b87f2678795726e4... verified=True
+trust score: 23.26
+
+tamper test:
+  modified receipt verified=False   (tamper detected)
+```
+
+Change one byte of a receipt and verification fails. That is the whole guarantee.
+
 Receipts accumulate into **Trust Capital** -- a credit score for the agent.
 
 | Tier | Trust Capital | Access Level |

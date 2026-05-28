@@ -28,3 +28,11 @@
 ## Using Nobulex?
 
 Open an issue or PR to add yourself.
+
+**ATR (Agent-Threat-Rules)** — eeee2345 opened tracking issue #70 listing Nobulex as the reference implementation for the ATREventHandler protocol.
+
+**CTEF v0.3.2** — kenneives published the Conformance Test Evidence Format with nobulex accepted as a row alongside AlgoVoi, Concordia, Dominion Observatory, and Vauban Pay.
+
+**AURA** — luisllaver built a receipt sink using nobulex action_ref for idempotency. Receipts become reputation observations automatically via `POST /v1/reputation/ingest-receipt`.
+
+**LlamaIndex GuardedMemory** — vgudur-dev proposing `GuardedMemory(BaseMemory)` PR using nobulex action_ref pattern for memory provenance attestation.

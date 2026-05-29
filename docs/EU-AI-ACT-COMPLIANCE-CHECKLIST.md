@@ -1,23 +1,23 @@
-# EU AI Act Compliance Checklist — Kova Mapping
+# EU AI Act Compliance Checklist — Nobulex Mapping
 
 **Deadline: August 2, 2026** for general obligations on high-risk AI systems.
 
-Use this checklist to verify your agent deployment meets EU AI Act requirements via Kova.
+Use this checklist to verify your agent deployment meets EU AI Act requirements with Nobulex.
 
 ---
 
 ## High-Level Checklist
 
-| # | Requirement | Kova Capability | Package | Status |
-|---|-------------|----------------|---------|--------|
-| 1 | Risk management (Art. 10) | Covenant constraints, canary tests, breach detection | @nobulex/core, @nobulex/canary, @nobulex/breach | ✅ |
-| 2 | Data governance (Art. 11) | Behavioral provenance, audit trail | @nobulex/enforcement | ✅ |
-| 3 | Transparency (Art. 13) | CCL human-readable, LegalIdentityPackage | @nobulex/core, @nobulex/legal | ✅ |
-| 4 | Human oversight (Art. 14) | CCL require/deny, revocation | @nobulex/ccl, @nobulex/breach | ✅ |
-| 5 | Accuracy & cybersecurity (Art. 15) | Canary, robustness, Ed25519 | @nobulex/canary, @nobulex/robustness, @nobulex/crypto | ✅ |
-| 6 | Record-keeping (Art. 17) | Hash-chained audit trail | @nobulex/enforcement, @nobulex/store | ✅ |
-| 7 | Transparency obligations (Art. 53) | Covenant disclosure, LegalIdentityPackage | @nobulex/legal | ✅ |
-| 8 | Conformity assessment (Art. 71) | Verification, compliance proof | @nobulex/verifier, @nobulex/proof | ✅ |
+| # | Requirement | How Nobulex helps |
+|---|-------------|-------------------|
+| 1 | Risk management (Art. 10) | Covenant constraints declare permitted behavior; deviations are detectable |
+| 2 | Data governance (Art. 11) | Behavioral provenance via signed, hash-chained action log |
+| 3 | Transparency (Art. 13) | CCL constraints are human-readable; receipts are independently verifiable |
+| 4 | Human oversight (Art. 14) | CCL require/deny rules and covenant revocation |
+| 5 | Accuracy & cybersecurity (Art. 15) | Ed25519 signatures over RFC 8785 canonical JSON |
+| 6 | Record-keeping (Art. 17) | Tamper-evident hash-chained audit trail |
+| 7 | Transparency obligations (Art. 53) | Covenant disclosure; receipts verifiable without trusting the operator |
+| 8 | Conformity assessment (Art. 71) | Deterministic verification of the action log against the covenant |
 
 ---
 
@@ -26,44 +26,41 @@ Use this checklist to verify your agent deployment meets EU AI Act requirements 
 ### 1. Declare a Covenant (5 min)
 
 ```bash
-kova init
-# or
-npx kova init
+npx @nobulex/cli init
 ```
 
-Creates `nobulex.config.json` and key pair. Add constraints in CCL.
+Scaffolds a new covenant project. Add constraints in CCL.
 
-### 2. Run Compliance Audit (1 min)
+### 2. Verify the Action Log (1 min)
 
 ```bash
-kova audit .
+npx @nobulex/cli verify ./action-log.json
 ```
 
-Shows EU AI Act readiness %, missing items, and recommendations.
+Checks the Ed25519 signatures and hash-chain integrity of the log.
 
 ### 3. Enable Enforcement (10 min)
 
-```typescript
-import { withKova } from 'kova';
-const server = await withKova(yourMCPServer, 'data-isolation');
+```bash
+npm install -g @nobulex/mcp-server
+npx nobulex-mcp
 ```
 
-Or use `@nobulex/enforcement` Monitor for custom agents.
+Wire it into your MCP client config, or use `@nobulex/sdk`'s `protect()` for custom agents.
 
-### 4. Export Legal Package (5 min)
+### 4. Export Compliance Report (5 min)
 
-```typescript
-import { exportLegalPackage } from '@nobulex/legal';
-const pkg = exportLegalPackage(agentId, operatorId, data, 'json');
+```bash
+npx @nobulex/cli report ./action-log.json --framework eu-ai-act-article-12
 ```
 
-Court-ready evidentiary package for regulators and insurers.
+Produces a compliance report derived from the signed, hash-chained action log.
 
 ---
 
 ## Article-by-Article Mapping
 
-See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article → Kova capability mapping.
+See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article-to-capability mapping.
 
 ---
 
@@ -71,10 +68,10 @@ See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article → Kova cap
 
 For regulated industries (finance, healthcare, critical infrastructure):
 
-1. **Solo tier** — Run `kova init` + `kova audit`; fix gaps
-2. **Bilateral** — Add attestation; counterparty signs interactions
-3. **Network** — Enroll in Kova trust graph; publish reputation
-4. **Certified** — Use @nobulex/certification for agent class certification ($10K–100K)
+1. **Solo tier** — Run `npx @nobulex/cli init` then `verify`; fix gaps
+2. **Bilateral** — Add attestation; counterparty countersigns the covenant
+3. **Network** — Publish receipts so a downstream auditor can verify independently
+4. **Certified** — Third-party conformity assessment for your agent class
 
 ---
 

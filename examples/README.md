@@ -12,8 +12,7 @@ npx tsx examples/01-basic-covenant.ts
 
 | # | File | Description |
 |---|------|-------------|
-| — | demo.ts | **End-to-end interactive demo** — two agents verify each other over the Nobulex protocol, including a tampered-log failure case. See below. |
-| — | get-started-with-kova.ts | **Start here** — 3 lines: wrap MCP server with Kova |
+| — | demo.ts | **Start here** — end-to-end interactive demo: two agents verify each other over the Nobulex protocol, including a tampered-log failure case. See below. |
 | 01 | basic-covenant.ts | Create, sign, verify, and evaluate a covenant |
 | 02 | delegation-chain.ts | Chain delegation with narrowing constraints |
 | 03 | identity-lifecycle.ts | Agent identity creation, evolution, and lineage |

@@ -25,6 +25,13 @@ Autonomy earned, not granted.
 
 ---
 
+> ### Break the AI. Win $7,400.
+> Five AI agents, each with rules they must not break. Make them violate their own rules. Beat Level 5 to claim the bounty. **29 attempts, 0 winners so far.**
+>
+> **[Enter the Arena →](https://nobulex.com/arena)**
+
+---
+
 ## How it works
 
 Every agent action produces a cryptographic receipt -- Ed25519 signed before and after execution, hash-chained for tamper evidence. A third party can verify the full history without trusting the agent or the operator.

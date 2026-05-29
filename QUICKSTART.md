@@ -5,7 +5,9 @@ Generate your first tamper-proof receipt in 60 seconds.
 ## Install
 
 ```bash
-pip install cryptography rfc8785
+# until the PyPI release lands, install from source:
+git clone https://github.com/arian-gogani/nobulex.git
+cd nobulex/packages/python && pip install -e .
 ```
 
 ## Generate a Receipt
@@ -45,10 +47,15 @@ chain.export("audit.json")   # Export for auditors
 ## LangChain Integration
 
 ```python
-from nobulex.langchain import NobulexCallbackHandler
+from nobulex.langchain import NobuReceipts
 
-handler = NobulexCallbackHandler(agent_id="langchain-bot")
-# Pass to your LangChain agent as a callback
+tracker = NobuReceipts(agent_id="langchain-bot")
+
+# Use as a callback on any LangChain agent
+agent.invoke(input, config={"callbacks": [tracker]})
+
+print(tracker.receipts)      # signed receipt per tool call
+print(tracker.trust_score)
 ```
 
 ## Test Vectors

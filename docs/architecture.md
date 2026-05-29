@@ -1,8 +1,8 @@
-# Kova Architecture
+# Nobulex Architecture
 
 ## Overview
 
-Kova is an open cryptographic protocol (MIT license) and the trust layer for the agent economy. The way HTTPS enabled e-commerce, Kova enables agents to transact safely across organizational boundaries. The protocol core is three primitives; everything else is ecosystem.
+Nobulex is an open cryptographic protocol (MIT license) and the trust layer for the agent economy. The way HTTPS enabled e-commerce, Nobulex enables agents to transact safely across organizational boundaries. The protocol core is three primitives; everything else is ecosystem.
 
 **Key mechanism:** Self-enforcing covenant runtime. Covenants compile into capability restrictions — agents physically cannot violate tool/API constraints. Hard enforcement for actions (guaranteed), soft enforcement for language outputs (probabilistic, honestly labeled). The covenant is simultaneously the specification, the enforcement, and the proof — one object that can't drift.
 
@@ -12,7 +12,7 @@ The core idea: before an AI agent operates, it enters into a **covenant** — a 
 
 **Game theory:** Honest behavior is an Evolutionary Stable Strategy. No mutant strategy can invade the population. Applies to operators (rational humans), not agents (stochastic systems).
 
-Kova is designed to be:
+Nobulex is designed to be:
 
 - **Cryptographically verifiable**: All documents are signed with Ed25519 and content-addressed with SHA-256.
 - **Composable**: Covenants can form delegation chains where each child narrows the parent's constraints.
@@ -36,7 +36,7 @@ Protocol Layer (the standard):
   identity, core, ccl, crypto, proof, enforcement, verifier, store
 
 SDK Layer (developer experience):
-  kova (single package, one import, 30-minute integration)
+  @nobulex/sdk (protect() helper, one import, fast integration)
 
 Ecosystem Layer (commercial opportunity):
   attestation, canary, gametheory, composition, antifragile, negotiation,
@@ -55,7 +55,7 @@ layers below it:
 │       react  ·  evm  ·  mcp-server  ·  cli           │
 ├─────────────────────────────────────────────────────┤
 │                       SDK                            │
-│        kova (withKova)  ·  sdk (NobulexClient)          │
+│        @nobulex/sdk: protect() · NobulexClient        │
 ├─────────────────────────────────────────────────────┤
 │                    Protocol                          │
 │   attestation · canary · gametheory · composition     │
@@ -95,7 +95,7 @@ and legal compliance.
 
 ### SDK
 
-**kova** — Single package, `withKova(server, preset)` API. One import, 30-minute integration.
+**@nobulex/sdk** — `protect({ name, rules })` helper plus `NobulexClient` for lower-level control.
 
 **sdk** — `NobulexClient` (from `@nobulex/sdk`) for advanced use: custom covenants, identity, verification, event system.
 
@@ -106,7 +106,7 @@ JSON-RPC MCP server, and a command-line interface.
 
 ## Data Flow
 
-A typical Kova workflow follows this sequence:
+A typical Nobulex workflow follows this sequence:
 
 ```
 1. Key Generation

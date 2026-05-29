@@ -176,21 +176,18 @@ console.log(result.compliant);   // true
 
 ## Traction
 
-| | Partner | Integration |
-|---|---|---|
-| | **Microsoft** | Merged receipt primitive into [Agent Governance Toolkit](https://github.com/microsoft/agt) |
-| | **VISA** | Trusted Agent Protocol testing against receipt format |
-| | **AlgoVoi** | 14/14 CTEF byte-match conformance in production across 8 chains |
-| | **Dominion Observatory** | Pre-call trust scores for 14,800+ MCP servers |
-| | **Agent Community** | ATF Verifiability Gate + COMMITTED Claim reference |
-| | **Verascore** | `nobulex_trust_capital` conformance evidence class |
-| | **OpenLineage** | Linux Foundation accepted into ecosystem |
-| | **n50.io** | 87 autonomous agents, 3 months production |
-| | **10+ implementations** | Cross-validated byte-identical output, no coordination |
-| | **ahg/inference-receipts** | [PHP peer implementation](https://packagist.org/packages/ahg/inference-receipts) using nobulex test vectors |
-| | **AgentAudit AI** | On-chain anchoring across 5 EVM mainnets, [byte-identical confirmed](https://github.com/arian-gogani/nobulex/issues/5) |
 
-Active discussions on **OpenAI**, **Google ADK**, **CrewAI**, **HuggingFace**, **AutoGen**, **Coinbase AgentKit**, **LangChain**, and **A2A Protocol**.
+Independent, verifiable signals (each links to evidence):
+
+| | What | Evidence |
+|---|---|---|
+| | **PHP peer implementation** | [ahg/inference-receipts](https://packagist.org/packages/ahg/inference-receipts) on Packagist, rebuilt from nobulex test vectors |
+| | **AgentAudit AI** | Byte-identical `action_ref` digests confirmed ([issue #5](https://github.com/arian-gogani/nobulex/issues/5)) |
+| | **Cross-implementation vectors** | 3/3 byte-match against a second implementation ([fixtures](./fixtures/cross-implementation-vectors.json)) |
+| | **Microsoft AGT** | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged) |
+| | **OWASP AARS** | Per-action signed receipts proposed for the cryptographic-enforcement tier ([issue #32](https://github.com/OWASP/www-project-artificial-intelligence-vulnerability-scoring-system/issues/32)) |
+
+These are early signals from a forming ecosystem, not enterprise deployments. Engagement is ongoing across several agent frameworks (LangChain, AutoGen, CrewAI, A2A Protocol).
 
 ---
 

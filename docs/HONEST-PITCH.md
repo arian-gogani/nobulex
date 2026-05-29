@@ -8,7 +8,7 @@ Nobulex generates tamper-proof receipts for everything your AI agent does.
 AI agents are starting to do real things — move money, handle data, sign contracts. There's no standardized way to verify what they actually did. Nobulex fixes that with cryptographic receipts that build into a trust score.
 
 ### What it is
-- Open-source Python SDK: `pip install nobulex`
+- Open-source Python SDK (install from source; PyPI publish pending)
 - 4 lines to generate your first receipt
 - Ed25519 signatures, SHA-256 hashing, JCS canonicalization
 - Trust Capital scoring (credit score for machines)
@@ -28,8 +28,8 @@ AI agents are starting to do real things — move money, handle data, sign contr
 - Row 4 in A2A cross-extension matrix (urn:nobulex:receipt)
 - Singapore IMDA's AI Governance team received our feedback on MGF
 - Referenced in coinbase/agentkit trust architecture discussions
-- 29 GitHub stars, 51 X followers
-- Python SDK with 11 passing tests
+- 29 GitHub stars, ~55 X followers
+- Python SDK with 13 passing tests
 
 ### What NOT to say
 - ❌ "Microsoft merged our code into AutoGen"
@@ -51,4 +51,4 @@ AI agents are starting to do real things — move money, handle data, sign contr
 - GitHub: github.com/arian-gogani/nobulex
 - Site: nobulex.com
 - Arena: nobulex.com/arena
-- PyPI: (publishing tomorrow)
+- PyPI: not yet published (install from source via the repo)

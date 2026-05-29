@@ -13,17 +13,21 @@ Get from zero to a signed, verified covenant in under 30 minutes.
 
 ## Fastest Path: MCP Server (5 min)
 
-For MCP servers, use the `kova` package:
+Run the Nobulex MCP server and wire it into your MCP client:
 
 ```bash
-npm install kova
+npm install -g @nobulex/mcp-server
+npx nobulex-mcp
 ```
 
-```typescript
-import { withKova } from 'kova';
+Client config (Claude Desktop, Cursor, etc.):
 
-const server = await withKova(yourMCPServer, 'data-isolation');
-// Done. Covenant enforcement is active.
+```json
+{
+  "mcpServers": {
+    "nobulex": { "command": "npx", "args": ["nobulex-mcp"] }
+  }
+}
 ```
 
 ---
@@ -128,63 +132,15 @@ console.log('Canary passed:', canaryPasses === challenges.length);
 
 ## Step 7: Export for Compliance (5 min)
 
-Wire real data from your covenant, store, and canary results:
+Use the CLI to produce a compliance report from a saved action log:
 
-```typescript
-import { exportLegalPackage, computeNobulexScore } from '@nobulex/legal';
-
-// Build covenant history from store (or use loaded covenant)
-const covenantHistory = [
-  {
-    id: covenant.id,
-    constraints: covenant.constraints.split('\n').filter(Boolean),
-    signedAt: new Date(covenant.createdAt).getTime(),
-    status: 'active' as const,
-  },
-];
-
-// Build compliance from canary results + your interaction counts
-// In production: wire from enforcement monitor, breach tracker, attestation service
-const compliance = {
-  totalInteractions: 10,
-  covenantedInteractions: 10,
-  breaches: 0,
-  canaryTests: challenges.length,
-  canaryPasses,
-  attestationCoverage: 0.9,
-};
-
-const reputation = {
-  score: 0.95,
-  tier: 'high',
-  totalExecutions: 10,
-  successRate: 1,
-  timestamp: Date.now(),
-};
-
-const pkg = exportLegalPackage(
-  'agent-1',
-  'operator-1',
-  {
-    covenants: covenantHistory,
-    compliance,
-    reputation,
-    attestations: [],
-    insurance: [],
-  },
-  'json',
-);
-
-console.log('Package hash:', pkg.packageHash);
-
-// Kova Score — multidimensional trust profile (computeNobulexScore in @nobulex/legal)
-const kovaScore = computeNobulexScore('agent-1', compliance, covenantHistory, {
-  reputation,
-});
-console.log('Kova Score:', kovaScore.composite, kovaScore);
+```bash
+npx @nobulex/cli report ./action-log.json --framework eu-ai-act-article-12
 ```
 
-**Note:** `challenges` and `canaryPasses` come from Step 6. In production, wire `compliance` from your enforcement monitor, breach tracker, and attestation service.
+Supported frameworks: `eu-ai-act-article-12`, `colorado-ai-act`, `soc2`,
+`iso-42001`. The report is derived from the signed, hash-chained log, so it
+reflects what the agent actually did, not a self-asserted summary.
 
 ---
 
@@ -193,11 +149,10 @@ console.log('Kova Score:', kovaScore.composite, kovaScore);
 You now have:
 
 - A signed covenant with CCL constraints
-- Verification (11 specification checks)
+- Verification (specification checks)
 - Action evaluation
 - Persistence
 - Canary validation
-- Legal export for compliance
-- Kova Score (multidimensional trust profile)
+- A compliance report tied to a verifiable action log
 
 **Next:** See [docs/README.md](./README.md) for the full doc index, [architecture.md](./architecture.md) for the protocol, or [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for EU AI Act compliance.

@@ -3,13 +3,13 @@
 **Regulation (EU) 2024/1689** — Artificial Intelligence Act  
 **Key deadline:** August 2, 2026 (general obligations for high-risk AI systems)
 
-Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path to compliance.
+Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest path to compliance.
 
 ---
 
 ## Article 10 — Risk Management
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Identify and analyze known and foreseeable risks | Covenant constraints define permitted/denied actions; canary tests probe boundaries |
 | Iterative risk management throughout lifecycle | Temporal evolution; covenant updates; lineage tracking |
@@ -22,9 +22,9 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 11 — Data Governance
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
-| Training data quality and relevance | Out of scope (model-level); Kova constrains agent *behavior* post-training |
+| Training data quality and relevance | Out of scope (model-level); Nobulex constrains agent *behavior* post-training |
 | Bias monitoring | Canary tests for discriminatory patterns; CCL conditions |
 | Data provenance | Behavioral provenance; audit trail links actions to covenant |
 
@@ -34,7 +34,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 13 — Transparency and Explainability
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Design for interpretability | CCL is human-readable; covenant is the specification |
 | Instructions for use | Covenant constraints document intended use; beneficiary/issuer roles |
@@ -47,7 +47,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 14 — Human Oversight
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Effective human oversight | Covenant can require human-in-the-loop for specific actions |
 | Override and intervention | CCL `require` and `deny`; operator can revoke covenant |
@@ -59,7 +59,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 15 — Accuracy, Robustness, Cybersecurity
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Accuracy and resilience | Canary tests; robustness package; adversarial testing |
 | Fallback for critical applications | CCL conditions; temporal triggers for degraded mode |
@@ -72,7 +72,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 17 — Record-Keeping (Logs)
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Automatic logging | Enforcement monitor produces hash-chained audit trail |
 | Logs of decisions | Each action linked to covenant evaluation |
@@ -85,10 +85,10 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 53 — Transparency Obligations for Certain AI Systems
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Disclosure that content is AI-generated | Covenant can require labeling; CCL `require` for disclosure |
-| Synthetic content identification | Out of scope (model output); Kova can enforce metadata tagging |
+| Synthetic content identification | Out of scope (model output); Nobulex can enforce metadata tagging |
 | Transparency to deployers | LegalIdentityPackage; compliance record; covenant history |
 
 **Packages:** `@nobulex/legal`, `@nobulex/core`
@@ -97,7 +97,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 71 — Conformity Assessment
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Internal control (self-assessment) | Verification engine; 11 specification checks; canary tests |
 | Technical documentation | Covenant + audit trail + LegalIdentityPackage |
@@ -109,7 +109,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ## Article 72 — Post-Market Monitoring
 
-| Requirement | Kova Capability |
+| Requirement | Nobulex Capability |
 |-------------|------------------|
 | Monitor performance in use | Reputation; breach propagation; attestation coverage |
 | Report serious incidents | Breach attestation; trust graph propagation |
@@ -119,9 +119,9 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 
 ---
 
-## Summary: Kova → EU AI Act
+## Summary: Nobulex → EU AI Act
 
-| Article | Kova Coverage |
+| Article | Nobulex Coverage |
 |---------|----------------|
 | 10 — Risk management | Covenant, canary, temporal, legal |
 | 11 — Data governance | Partial (behavioral provenance) |
@@ -133,7 +133,7 @@ Kova capabilities mapped to EU AI Act requirements. Use this as the fastest path
 | 71 — Conformity assessment | Verifier, canary, legal |
 | 72 — Post-market monitoring | Reputation, breach, antifragile |
 
-**Gaps:** Training data quality (Article 11) and synthetic content identification (Article 53) are model-level; Kova operates at the agent/behavior layer. Combine with model documentation and output classifiers for full coverage.
+**Gaps:** Training data quality (Article 11) and synthetic content identification (Article 53) are model-level; Nobulex operates at the agent/behavior layer. Combine with model documentation and output classifiers for full coverage.
 
 ---
 

@@ -205,9 +205,9 @@ The agents are deployed. The money is flowing. The accountability infrastructure
 | Standard | Status |
 |---|---|
 | Proof-of-Behavior spec | [`draft-gogani-nobulex-proof-of-behavior-00`](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) |
-| Microsoft AGT | Bilateral receipt merged |
+| Microsoft AGT | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged) |
 | CTEF v0.3.2 | 14/14 byte-match conformance |
-| A2A Protocol | URN scheme registered: `urn:nobulex:receipt:<id>` |
+| A2A Protocol | Receipt row proposed; URN scheme `urn:nobulex:receipt:<id>` |
 | NIST RFI | Formal comments submitted |
 
 ---

@@ -12,7 +12,9 @@
 - **Status: APPLY NOW** (rolling admission, no deadline)
 - URL: thielfellowship.org/apply
 - Grant: $200K-$250K over 2 years, no equity taken
-- Eligibility: Under 23, no college degree (you're 15, you qualify)
+- Eligibility: Under 23, no college degree. You're 15, you qualify as-is.
+  You do NOT need to drop out of anything. The Fellowship is for people
+  who build instead of going to college, not for people who leave college.
 - Note: Danielle co-founded 1517 after running this program. Same ecosystem.
   If she's interested, the Fellowship application strengthens both paths.
 

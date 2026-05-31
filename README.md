@@ -6,6 +6,7 @@
 
 [![CI](https://img.shields.io/github/actions/workflow/status/arian-gogani/nobulex/ci.yml?style=flat-square&label=CI&color=22c55e)](https://github.com/arian-gogani/nobulex/actions/workflows/ci.yml)
 [![OpenSSF](https://img.shields.io/badge/OpenSSF-passing-22c55e?style=flat-square)](https://www.bestpractices.dev/projects/10338)
+[![PyPI](https://img.shields.io/pypi/v/nobulex?style=flat-square&color=22c55e&label=PyPI)](https://pypi.org/project/nobulex/)
 [![npm](https://img.shields.io/npm/v/@nobulex/core?style=flat-square&color=22c55e)](https://www.npmjs.com/package/@nobulex/core)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Spec](https://img.shields.io/badge/Spec-Proof_of_Behavior-22c55e?style=flat-square)](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)
@@ -19,7 +20,7 @@ Nobulex is the credit and trust protocol for autonomous AI agents.<br/>
 Agents earn Trust Capital through verified behavior. Higher trust, more access.<br/>
 Autonomy earned, not granted.
 
-[Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [npm](https://www.npmjs.com/package/@nobulex/core)
+[Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
 </div>
 
@@ -29,6 +30,25 @@ Autonomy earned, not granted.
 > Five AI agents, each with rules they must not break. Make them violate their own rules. Beat Level 5 to claim the bounty. **29 attempts, 0 winners so far.**
 >
 > **[Enter the Arena →](https://nobulex.com/arena)**
+
+---
+
+## Install
+
+```bash
+pip install nobulex
+```
+
+```bash
+npm install @nobulex/core
+```
+
+```python
+from nobulex.agent import Agent
+agent = Agent("my-agent")
+receipt = agent.act("send_email", scope="user@example.com")
+assert receipt.verify()  # tamper-proof
+```
 
 ---
 

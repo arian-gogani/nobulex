@@ -1,0 +1,165 @@
+{
+  "canonicalization": "RFC 8785 (JCS)",
+  "chain_3_receipts": {
+    "description": "Three receipts hash-linked. chain_hash[n] = SHA-256(chain_hash[n-1] || action_ref[n]), genesis_prev_hash = '0' * 64.",
+    "head_hash": "47fdb4e6c98819b154a4157fa2d7ec95a857b8c4042373e3c8ab5d5f1af41746",
+    "length": 3,
+    "receipts": [
+      {
+        "chain_hash": "06128355955750eff6ca85780b6bc750061876cffb7615a3dbca41ccaefbe19a",
+        "index": 0,
+        "prev_hash": "0000000000000000000000000000000000000000000000000000000000000000",
+        "receipt": {
+          "action_ref": "f7b58d795b6c6dea16a41c1d8340de2798940dc5c862d1a0ac039ab96bb55bac",
+          "action_type": "read_kyc_record",
+          "agent_id": "specimen-chain-001",
+          "scope": "customer:CUST-92481",
+          "signature": "8d30bfb0b70d84fdc506946ca6592b3abf8dd69218d2724a71862e0215da7cdaccd0c0d606d17007870bfd5f0cad91ade61a76e3c282acf1fd1188b99414a107",
+          "signer_public_key": "d7523fcea66f732091c86d9530f6e0a172f99400d10ef1db29814c797ca1678f",
+          "timestamp_ms": 1780271662268,
+          "verdict": "ALLOW",
+          "version": "nobulex-receipt-v0.1"
+        }
+      },
+      {
+        "chain_hash": "6c8a94f3521284cbac71ff50eed1256c070ac278422d16f4414009a5590fccf1",
+        "index": 1,
+        "prev_hash": "06128355955750eff6ca85780b6bc750061876cffb7615a3dbca41ccaefbe19a",
+        "receipt": {
+          "action_ref": "091bf035632d7ad16fc332b6c0d3f6b437edcaf8bf80cbab09586ce1479b1f4e",
+          "action_type": "compute_risk_score",
+          "agent_id": "specimen-chain-001",
+          "scope": "model:risk-v3.2:CUST-92481",
+          "signature": "688a22dd18ca176dd980a358dbf94c3c0484c555a388989c87da535aa593d7111577e5660e3b3b468737fb0903e8d31b238af5c5f3a0cb94261a3fad1782f00d",
+          "signer_public_key": "d7523fcea66f732091c86d9530f6e0a172f99400d10ef1db29814c797ca1678f",
+          "timestamp_ms": 1780271662268,
+          "verdict": "ALLOW",
+          "version": "nobulex-receipt-v0.1"
+        }
+      },
+      {
+        "chain_hash": "47fdb4e6c98819b154a4157fa2d7ec95a857b8c4042373e3c8ab5d5f1af41746",
+        "index": 2,
+        "prev_hash": "6c8a94f3521284cbac71ff50eed1256c070ac278422d16f4414009a5590fccf1",
+        "receipt": {
+          "action_ref": "76394ab03b7534f9b422e767bd385792015abf56dd613aac0d03c7094f749ca6",
+          "action_type": "transfer_funds",
+          "agent_id": "specimen-chain-001",
+          "scope": "500_USDC_to_vendor_acme",
+          "signature": "23905a1fe3e4b595d462141c3364afb84dcb7f540c4de96133f0e9512963ce36765a6531d5ae378f712afd488b52ddd8c000db0248633773d82a78d986a5c700",
+          "signer_public_key": "d7523fcea66f732091c86d9530f6e0a172f99400d10ef1db29814c797ca1678f",
+          "timestamp_ms": 1780271662268,
+          "verdict": "ALLOW",
+          "version": "nobulex-receipt-v0.1"
+        }
+      }
+    ]
+  },
+  "cross_validation_digests": {
+    "description": "Validated cross-implementation. Python + JS produce byte-identical action_refs for these preimages.",
+    "fixture_source": "fixtures/bilateral-receipt/v0/vectors.json",
+    "vector_count": 4,
+    "vectors": [
+      {
+        "expected_action_ref": "86bdb19ed2ee90065ca9fbeaf597075ea03abab6ff01027d457239b9c7c5809b",
+        "expected_canonical_preimage": "{\"action_type\":\"send_email\",\"agent_id\":\"nobulex-test-agent\",\"scope\":\"user@example.com\",\"timestamp_ms\":1748000000000}",
+        "id": "0001-baseline-allow",
+        "preimage_fields": {
+          "action_type": "send_email",
+          "agent_id": "nobulex-test-agent",
+          "scope": "user@example.com",
+          "timestamp_ms": 1748000000000
+        },
+        "verdict": "ALLOW"
+      },
+      {
+        "expected_action_ref": "ae036c69337e09fcaab63d3ebc77e9a1d80a1f019a830815890c43bf1bd79d4f",
+        "expected_canonical_preimage": null,
+        "id": "0002-deny-receipt",
+        "preimage_fields": {
+          "action_type": "delete_database",
+          "agent_id": "nobulex-test-agent",
+          "scope": "production",
+          "timestamp_ms": 1748000001000
+        },
+        "verdict": "DENY"
+      },
+      {
+        "expected_action_ref": "dd0a1ec0afdcdfd4be7eb45404449ecdb7f697b01d707a06a32305fc05fadf75",
+        "expected_canonical_preimage": null,
+        "id": "0003-with-policy-version",
+        "preimage_fields": {
+          "action_type": "transfer_funds",
+          "agent_id": "nobulex-test-agent",
+          "scope": "100_USDC",
+          "timestamp_ms": 1748000002000
+        },
+        "verdict": "ALLOW"
+      },
+      {
+        "expected_action_ref": "57c4990825b8be98f326acf8065a43280f51e2c6727ffd9bdb14c62eff6985da",
+        "expected_canonical_preimage": null,
+        "id": "0004-issued-valid-executed-revoked",
+        "preimage_fields": {
+          "action_type": "transfer_funds",
+          "agent_id": "nobulex-test-agent",
+          "scope": "500_USDC_to_vendor",
+          "timestamp_ms": 1748000003000
+        },
+        "verdict": "ALLOW"
+      }
+    ]
+  },
+  "generated_at_ms": 1780271662268,
+  "notes_for_integrator": [
+    "agent_id, action_type, scope, timestamp_ms are the ONLY four fields in the preimage.",
+    "policy_version, attempt_id, authority_verified_at_ms are siblings, not inside preimage.",
+    "Empty result payload convention: result_hash = sha256('') = e3b0c442...855",
+    "data_read scope convention: parse last two ':'-segments as version+hash; everything else is endpoint.",
+    "Verifier recomputes action_ref from preimage. Match = receipt is what it claims."
+  ],
+  "public_key_hex": "f3b74a5e7f07f5cb9f1fb0ec52ebf60148c8e3a206f9a45be96de8596d9a2f59",
+  "schema": "agentaudit-integration-specimen-v1",
+  "signature_alg": "Ed25519",
+  "single_receipt": {
+    "action_ref": "0595aac409ffda1f146300f49671f748525b7b77c7d124bf484f88503a201221",
+    "description": "One signed receipt. Verify by: 1) recompute JCS of preimage, 2) compute sha256 = action_ref, 3) verify Ed25519 signature over to_canonical().",
+    "preimage_fields_used_for_action_ref": {
+      "action_type": "transfer_funds",
+      "agent_id": "specimen-agent-001",
+      "scope": "500_USDC_to_vendor_acme",
+      "timestamp_ms": 1780271662268
+    },
+    "receipt": {
+      "action_ref": "0595aac409ffda1f146300f49671f748525b7b77c7d124bf484f88503a201221",
+      "action_type": "transfer_funds",
+      "agent_id": "specimen-agent-001",
+      "metadata": {
+        "policy_version": "risk-policy-v2.1",
+        "purpose": "agentaudit_integration_specimen"
+      },
+      "scope": "500_USDC_to_vendor_acme",
+      "signature": "6905d2a47600526d75e070cb841d7e3337e28a9b0073a8d2bc97932d043e4745975e4afe283c585e2440a4359e3825b8cb00277c81c51153dbcd9807f2e49303",
+      "signer_public_key": "f3b74a5e7f07f5cb9f1fb0ec52ebf60148c8e3a206f9a45be96de8596d9a2f59",
+      "timestamp_ms": 1780271662268,
+      "verdict": "ALLOW",
+      "version": "nobulex-receipt-v0.1"
+    },
+    "signature": "6905d2a47600526d75e070cb841d7e3337e28a9b0073a8d2bc97932d043e4745975e4afe283c585e2440a4359e3825b8cb00277c81c51153dbcd9807f2e49303",
+    "verdict": "ALLOW"
+  },
+  "spec_reference": "action-ref-v1.0",
+  "verification_recipe_python": [
+    "import json, hashlib",
+    "from rfc8785 import dumps as jcs_dumps  # pip install rfc8785",
+    "preimage = {",
+    "  'agent_id': r['preimage_fields_used_for_action_ref']['agent_id'],",
+    "  'action_type': r['preimage_fields_used_for_action_ref']['action_type'],",
+    "  'scope': r['preimage_fields_used_for_action_ref']['scope'],",
+    "  'timestamp_ms': r['preimage_fields_used_for_action_ref']['timestamp_ms'],",
+    "}",
+    "canonical = jcs_dumps(preimage)  # bytes",
+    "expected = hashlib.sha256(canonical).hexdigest()",
+    "assert expected == r['action_ref']  # action_ref matches"
+  ]
+}

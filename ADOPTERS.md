@@ -12,27 +12,19 @@
 
 **AURA Reputation Protocol** — Wired Nobulex `action_ref` as the idempotency key for reputation observations. Receipts feed directly into agent reputation scoring.
 
-**agentmemory** (16,700+ stars) — Developer acknowledged Nobulex for canonicalization and signing as the next layer for audit receipts.
-
-**Agent OS** (Liuyanfeng1234) — Byte-compatible COMMITTED Claim engine uses the same four-field preimage structure. Cross-validation in progress for the A2A v0.4 conformance matrix.
+**agentmemory** (16,700+ stars) — Privacy-safe audit receipts PR ([rohitg00/agentmemory#617](https://github.com/rohitg00/agentmemory/pull/617)) uses Nobulex canonicalization and signing for memory provenance.
 
 ## Standards & Ecosystem
 
-- **x402 Foundation** (Coinbase) — CODEOWNER review, composite trust-query co-sign, test vectors cross-validated
-- **IETF** — Referenced in draft-vauban-x402-stark-receipts-00
-- **W3C AIVS** — Exploring interoperability with Conduit session proofs
-- **OWASP** — Contributing to AML compliance and AI vulnerability scoring
-- **A2A** (Google) — Active in Composable Trust Evidence Format discussions
-- **AutoGen** (Microsoft) — Participating in delegation provenance discussions
+- **OWASP** — PR #2209 to CheatSheetSeries (AML and Sanctions Compliance for AI Agent Payments)
+- **Microsoft Agent Governance Toolkit** — ADOPTERS.md PR #1703 merged by Microsoft maintainers
+- **W3C AIVS** — In contact with chair re: format alignment between per-action receipts (Nobulex) and session-level proofs (Conduit)
+- **AutoGen (Microsoft)** — Engaged in HDP delegation provenance discussion ([microsoft/autogen#7667](https://github.com/microsoft/autogen/pull/7667))
 
 ## Using Nobulex?
 
 Open an issue or PR to add yourself.
 
-**ATR (Agent-Threat-Rules)** — eeee2345 opened tracking issue #70 listing Nobulex as the reference implementation for the ATREventHandler protocol.
-
-**CTEF v0.3.2** — kenneives published the Conformance Test Evidence Format with nobulex accepted as a row alongside AlgoVoi, Concordia, Dominion Observatory, and Vauban Pay.
-
-**AURA** — luisllaver built a receipt sink using nobulex action_ref for idempotency. Receipts become reputation observations automatically via `POST /v1/reputation/ingest-receipt`.
-
 **LlamaIndex GuardedMemory** — vgudur-dev proposing `GuardedMemory(BaseMemory)` PR using nobulex action_ref pattern for memory provenance attestation.
+
+**Mission Control (builderz-labs)** — RFC accepted as feature request, design proposal at [docs/integrations/builderz-labs-mission-control-rfc.md](./docs/integrations/builderz-labs-mission-control-rfc.md) covering DID identity, signed attestations, and blend policy.

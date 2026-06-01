@@ -2,7 +2,7 @@
 
 ## Integration Partners
 
-**AgentAudit AI** (RunLockAI) — On-chain persistence for Nobulex receipts. Deployed on 5 EVM mainnets (Base, Arbitrum, Optimism, Polygon, Mantle). Test vectors passed, integration call scheduled.
+**AgentAudit AI** (RunLockAI) — First integration partner. Five-point partnership locked: reference implementation, mutual docs, co-authored `action-ref-v1` spec, joint case study, founding member status. Cross-validation passed (5/5). Signed specimen receipt published at [fixtures/agentaudit-specimen-v1.json](./fixtures/agentaudit-specimen-v1.json). Integration guide: [docs/INTEGRATION-GUIDE-AGENTAUDIT.md](./docs/INTEGRATION-GUIDE-AGENTAUDIT.md). On-chain persistence across 5 EVM mainnets (Base, Arbitrum, Optimism, Polygon, Mantle).
 
 ## Peer Implementations
 

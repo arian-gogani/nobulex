@@ -22,14 +22,15 @@ AI agents are starting to do real things — move money, handle data, sign contr
 - Denied actions generate proof the system caught violations
 - Works with any Python function via @track decorator
 
-### Traction (honest version)
-- Active participant in x402, A2A, and OWASP ecosystem discussions
-- Invited into tri-party conformance fixture with Vauban Pay and AlgoVoi
-- Row 4 in A2A cross-extension matrix (urn:nobulex:receipt)
-- Singapore IMDA's AI Governance team received our feedback on MGF
-- Referenced in coinbase/agentkit trust architecture discussions
-- 29 GitHub stars, ~55 X followers
-- Python SDK with 13 passing tests
+### Traction (honest version, June 2026)
+- **Open-source SDK live:** `pip install nobulex` (PyPI verified)
+- **First integration partner locked:** AgentAudit AI / RunLockAI — five-point partnership, signed specimen receipt published, integration guide drafted, joint case study in progress
+- **Cross-implementation verified:** Python + JS produce byte-identical action_refs on the 4 published test vectors
+- **OWASP contribution:** PR #2209 to CheatSheetSeries (AML and Sanctions Compliance for AI Agent Payments cheat sheet)
+- **Standards body:** Microsoft AGT ADOPTERS.md PR merged (PR #1703, May 2026)
+- **Two warm call requests** in one week from a 1517 Fund partner and a W3C Community Group chair
+- **30 GitHub stars, 6 forks** (forkers include Red Sentinel — "the ultimate AI security platform" — and a Northrop Grumman senior engineer)
+- **Demo runs from clean clone:** tamper detection works, signature verification works, full audit trail reproducible
 
 ### What NOT to say
 - ❌ "Microsoft merged our code into AutoGen"

@@ -1,0 +1,64 @@
+{
+  "sdk": "nobulex-python-0.1.0",
+  "python": "3.14.3",
+  "platform": "darwin",
+  "results": [
+    {
+      "label": "JCS canonicalize (4-field preimage)",
+      "n": 10000,
+      "p50_us": 3.5,
+      "p95_us": 4.625,
+      "p99_us": 4.917,
+      "mean_us": 3.6880946
+    },
+    {
+      "label": "action_ref compute (JCS + SHA-256)",
+      "n": 10000,
+      "p50_us": 4.0,
+      "p95_us": 4.542,
+      "p99_us": 10.709,
+      "mean_us": 4.2479159
+    },
+    {
+      "label": "Ed25519 sign (over canonical preimage)",
+      "n": 10000,
+      "p50_us": 67.875,
+      "p95_us": 77.25,
+      "p99_us": 122.667,
+      "mean_us": 68.7977742
+    },
+    {
+      "label": "Ed25519 verify",
+      "n": 10000,
+      "p50_us": 136.208,
+      "p95_us": 165.333,
+      "p99_us": 185.417,
+      "mean_us": 142.9222232
+    },
+    {
+      "label": "agent.act (full signed receipt end-to-end)",
+      "n": 2000,
+      "p50_us": 73.083,
+      "p95_us": 94.542,
+      "p99_us": 115.333,
+      "mean_us": 77.351873
+    },
+    {
+      "label": "receipt.verify() (full verification)",
+      "n": 5000,
+      "p50_us": 143.125,
+      "p95_us": 169.792,
+      "p99_us": 185.75,
+      "mean_us": 149.1311676
+    },
+    {
+      "label": "ReceiptChain.append (signed + hash linked)",
+      "n": 2000,
+      "p50_us": 73.916,
+      "p95_us": 91.75,
+      "p99_us": 103.667,
+      "mean_us": 78.1823095
+    }
+  ],
+  "throughput_signed_receipts_per_sec": 13683
+}

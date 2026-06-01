@@ -71,6 +71,8 @@ tamper test:
 
 Change one byte of a receipt and verification fails. That is the whole guarantee.
 
+**Performance:** ~13,683 signed receipts/sec at p50 (Python SDK, single core). Full signed-and-chained receipt takes ~73 μs end-to-end. See [BENCHMARKS.md](./docs/BENCHMARKS.md) for the full breakdown; reproduce with `python3 scripts/benchmark.py`.
+
 Receipts accumulate into **Trust Capital** -- a credit score for the agent.
 
 | Tier | Trust Capital | Access Level |

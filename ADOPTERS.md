@@ -16,7 +16,8 @@
 
 ## Standards & Ecosystem
 
-- **OWASP** — PR #2209 to CheatSheetSeries (AML and Sanctions Compliance for AI Agent Payments)
+- **OWASP** — Sections 8-11 of the AML and Sanctions Compliance for AI Agent Payments cheat sheet ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210), merged into master by Jim Manico) include JCS canonicalization rationale, cross-agent payment accountability, sanctions-list freshness in signed receipts, and regulatory mapping, credited to @arian-gogani.
+- **vaara v0.50** (Henri Sirkkavaara) — Aider + MCP runtime audit layer shipping Ed25519-signed, JCS-canonical receipts with RFC 3161 timestamp anchoring and EU AI Act Article 12 export, citing the nobulex signed-receipt design. [GitHub](https://github.com/vaaraio/vaara)
 - **Microsoft Agent Governance Toolkit** — ADOPTERS.md PR #1703 merged by Microsoft maintainers
 - **W3C AIVS** — In contact with chair re: format alignment between per-action receipts (Nobulex) and session-level proofs (Conduit)
 - **AutoGen (Microsoft)** — Engaged in HDP delegation provenance discussion ([microsoft/autogen#7667](https://github.com/microsoft/autogen/pull/7667))

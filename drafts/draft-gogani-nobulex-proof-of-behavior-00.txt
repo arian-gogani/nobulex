@@ -13,6 +13,11 @@ Expires: October 19, 2026                                April 19, 2026
 
 Abstract
 
+NOTE: This document is a design specification formatted as an IETF
+Internet-Draft for readability. It has NOT been submitted to the IETF
+datatracker and is not an official IETF publication. It is published
+here for community review and implementation guidance.
+
    This document specifies the Nobulex Proof-of-Behavior protocol, a
    cryptographic framework for establishing behavioral accountability
    in autonomous AI agent systems. The protocol introduces three

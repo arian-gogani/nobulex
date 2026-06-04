@@ -17,7 +17,7 @@ credentials_for_provider:
     label:
       en_US: Agent ID
     placeholder:
-      en_US: "my-dify-agent (defaults to workflow name)"
+      en_US: "my-dify-agent (defaults to dify-agent)"
     help:
       en_US: "Identifier for this agent's receipt chain. Receipts from the same agent_id are chained together."
 tools:

@@ -22,6 +22,9 @@
 - **W3C AIVS** — In contact with chair re: format alignment between per-action receipts (Nobulex) and session-level proofs (Conduit)
 - **AutoGen (Microsoft)** — Engaged in HDP delegation provenance discussion ([microsoft/autogen#7667](https://github.com/microsoft/autogen/pull/7667))
 
+
+**Dify (LangGenius)** — Sherry Zhao (Community Operations, sherry.zhao@dify.ai) responded to outreach on June 4, 2026. Architecture confirmed sound. Trust Capital flagged as genuinely interesting and differentiated from existing Marketplace tools. Plugin PR and Template invited. Path: submit to langgenius/dify-plugins. Plugin built at \`packages/dify-plugin/\`.
+
 ## Using Nobulex?
 
 Open an issue or PR to add yourself.

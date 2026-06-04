@@ -48,3 +48,28 @@ not end users. The warmest leads are people who already forked or starred nobule
 ## RULE
 Stop cold-emailing guessed addresses (they bounce). Work the warm leads:
 forkers, starrers, people who replied. They already showed intent.
+
+---
+
+## TIER 1.5 — Independent Third-Party Adoption (no outreach needed, already shipping)
+
+**vaara** (vaaraio, Henri Sirkkavaara) — hello@vaara.io
+- Shipped vaara v0.50 to PyPI and npm with full Aider + MCP runtime audit
+- Ed25519-signed, JCS-canonical receipts with RFC 3161 timestamp anchoring
+- vaara trail export-article12 for EU AI Act Article 12 compliance packages
+- Independently cited the nobulex signed-receipt design — no coordination
+- RELATIONSHIP: warm, Gmail draft ready to hello@vaara.io
+- OPPORTUNITY: mutual README link, joint conformance vectors, deeper SDK integration
+
+---
+
+## TIER 1 — Inbound Warm (they reached out / responded positively)
+
+**Dify (LangGenius)** — sherry.zhao@dify.ai
+- 60,000+ GitHub stars, millions of active users, enterprise customers in regulated industries
+- Sherry Zhao (Community Operations) confirmed architecture is sound and Trust Capital is interesting
+- Asqav already in Marketplace (competitor for audit trail), but open to multiple tools
+- Path: Plugin PR to langgenius/dify-plugins + companion Template
+- Plugin BUILT at packages/dify-plugin/ (4 tools: sign_receipt, verify_receipt, export_article12, get_trust_score)
+- Gmail draft ready to sherry.zhao@dify.ai
+- OPPORTUNITY: Millions of Dify users, enterprise compliance focus, EU AI Act deadline tailwind

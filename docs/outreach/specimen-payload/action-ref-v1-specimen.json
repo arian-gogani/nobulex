@@ -1,0 +1,148 @@
+{
+  "schema": "action-ref-v1-specimen",
+  "version": "1.0.0",
+  "generated_for": "AgentAudit AI / RunLockAI integration",
+  "spec_reference": {
+    "name": "action-ref-v1",
+    "preimage_definition": "SHA-256(JCS({agent_id, action_type, scope, timestamp_ms}))",
+    "canonicalization": "RFC 8785 JSON Canonicalization Scheme",
+    "signature": "Ed25519 over the same canonical bytes",
+    "encoding": "UTF-8"
+  },
+  "preimage_fields": {
+    "agent_id": "nobulex-specimen-agent",
+    "action_type": "send_email",
+    "scope": "user@example.com",
+    "timestamp_ms": 1748000000000
+  },
+  "canonical_preimage_utf8": "{\"action_type\":\"send_email\",\"agent_id\":\"nobulex-specimen-agent\",\"scope\":\"user@example.com\",\"timestamp_ms\":1748000000000}",
+  "canonical_preimage_bytes_hex": "7b22616374696f6e5f74797065223a2273656e645f656d61696c222c226167656e745f6964223a226e6f62756c65782d73706563696d656e2d6167656e74222c2273636f7065223a2275736572406578616d706c652e636f6d222c2274696d657374616d705f6d73223a313734383030303030303030307d",
+  "action_ref_hex": "ea2397f5d5f808aba4fc6411117b8cc6879fefaf136a1f47d11e42e7edd80d16",
+  "action_ref": "sha256:ea2397f5d5f808aba4fc6411117b8cc6879fefaf136a1f47d11e42e7edd80d16",
+  "signer_public_key_hex": "4497a31949092e7ea36c085b3986a06d042d0303b4ea04035d3945bc760ad394",
+  "signer_public_key_length_bytes": 32,
+  "receipt_envelope": {
+    "agent_id": "nobulex-specimen-agent",
+    "action_type": "send_email",
+    "scope": "user@example.com",
+    "timestamp_ms": 1748000000000,
+    "verdict": "ALLOW",
+    "action_ref": "ea2397f5d5f808aba4fc6411117b8cc6879fefaf136a1f47d11e42e7edd80d16",
+    "signature": "f543d034ff10f0cc681e0300ae41602b5c82e95a3cc5d03b63084d7b0a81b64fc07cd064bc371c2b66ecef1f86224b2c6cf249a8a4b703c68363a90d51d04504",
+    "signer_public_key": "4497a31949092e7ea36c085b3986a06d042d0303b4ea04035d3945bc760ad394"
+  },
+  "verification": {
+    "verifies_locally": true,
+    "verification_recipe": [
+      "1. Reconstruct canonical preimage = JCS({agent_id, action_type, scope, timestamp_ms})",
+      "2. Compute SHA-256 over the canonical bytes -> action_ref",
+      "3. Verify Ed25519 signature against the same canonical bytes using signer_public_key",
+      "4. Confirm action_ref in the envelope matches the locally computed digest"
+    ],
+    "tamper_test": "Modify ANY preimage field and verify() returns False"
+  },
+  "cross_validation_vectors": {
+    "source_repo": "github.com/arian-gogani/nobulex",
+    "source_path": "fixtures/bilateral-receipt/v0/vectors.json",
+    "implementations_validated": [
+      {
+        "name": "nobulex (Python)",
+        "repo": "github.com/arian-gogani/nobulex"
+      },
+      {
+        "name": "nobulex (TypeScript)",
+        "repo": "github.com/arian-gogani/nobulex (packages/sdk)"
+      },
+      {
+        "name": "agentledger (Python)",
+        "repo": "github.com/dembovvski/agentledger"
+      }
+    ],
+    "vectors": [
+      {
+        "id": "0001-baseline-allow",
+        "preimage": {
+          "agent_id": "nobulex-test-agent",
+          "action_type": "send_email",
+          "scope": "user@example.com",
+          "timestamp_ms": 1748000000000
+        },
+        "expected_action_ref": "86bdb19ed2ee90065ca9fbeaf597075ea03abab6ff01027d457239b9c7c5809b",
+        "expected_canonical_preimage": "{\"action_type\":\"send_email\",\"agent_id\":\"nobulex-test-agent\",\"scope\":\"user@example.com\",\"timestamp_ms\":1748000000000}",
+        "verdict": "ALLOW"
+      },
+      {
+        "id": "0002-deny-receipt",
+        "preimage": {
+          "agent_id": "nobulex-test-agent",
+          "action_type": "delete_database",
+          "scope": "production",
+          "timestamp_ms": 1748000001000
+        },
+        "expected_action_ref": "ae036c69337e09fcaab63d3ebc77e9a1d80a1f019a830815890c43bf1bd79d4f",
+        "verdict": "DENY"
+      },
+      {
+        "id": "0003-with-policy-version",
+        "preimage": {
+          "agent_id": "nobulex-test-agent",
+          "action_type": "transfer_funds",
+          "scope": "100_USDC",
+          "timestamp_ms": 1748000002000
+        },
+        "expected_action_ref": "dd0a1ec0afdcdfd4be7eb45404449ecdb7f697b01d707a06a32305fc05fadf75",
+        "verdict": "ALLOW",
+        "siblings_outside_preimage": {
+          "policy_version": "risk-policy-v2.1"
+        }
+      },
+      {
+        "id": "0004-issued-valid-executed-revoked",
+        "preimage": {
+          "agent_id": "nobulex-test-agent",
+          "action_type": "transfer_funds",
+          "scope": "500_USDC_to_vendor",
+          "timestamp_ms": 1748000003000
+        },
+        "expected_action_ref": "57c4990825b8be98f326acf8065a43280f51e2c6727ffd9bdb14c62eff6985da",
+        "verdict": "ALLOW",
+        "siblings_outside_preimage": {
+          "policy_version": "spending-policy-v3.0",
+          "authority_verified_at_ms": 1748000003000,
+          "revocation_check_at_ms": 1748001803000,
+          "revocation_status": "REVOKED"
+        }
+      }
+    ],
+    "result": "All 4 vectors produce byte-identical action_ref values across nobulex Python and TypeScript SDKs; byte-identical against agentledger Python on independent re-implementation."
+  },
+  "key_design_decisions": [
+    {
+      "decision": "Four-field preimage only",
+      "rationale": "Keeps the action_ref stable across delegation, revocation, and policy-version state transitions. Optional metadata sits outside the preimage but is still signed in the receipt envelope."
+    },
+    {
+      "decision": "RFC 8785 JCS for canonicalization",
+      "rationale": "Independently re-implementable by any party with a JSON canonicalizer. Removes ambiguity (whitespace, key ordering, number encoding)."
+    },
+    {
+      "decision": "Ed25519 over the same canonical bytes",
+      "rationale": "Single canonicalization for both digest and signature. A verifier computes one canonical form and checks both properties at once."
+    },
+    {
+      "decision": "Optional siblings outside the preimage",
+      "rationale": "Lets policy_version, authority_verified_at_ms, attempt_id evolve without invalidating the action_ref. Critical for the dual-timestamp model (issued-valid / executed-revoked)."
+    }
+  ],
+  "open_items_for_review": {
+    "data_read_separator": {
+      "proposal": "Strict three-segment parse from the RIGHT. The last two colon-separated segments are dataset_version and result_hash; everything to the left is the endpoint (which may contain colons for ports or schemes).",
+      "example": "https://api.example.com:8443/datasets/v3:2026-05-31:sha256-abc -> endpoint='https://api.example.com:8443/datasets/v3', dataset_version='2026-05-31', result_hash='sha256-abc'",
+      "rationale": "No escape characters needed; format remains human-debuggable; handles ports and URL schemes correctly."
+    },
+    "empty_result_payload": {
+      "proposal": "Allow, with explicit convention: empty result -> result_hash = sha256(empty_bytes) = 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855'",
+      "rationale": "A 200-with-no-body or an explicit empty-set query is a legitimate outcome and the receipt should remain verifiable. The well-known empty-string SHA-256 is unambiguous."
+    }
+  }
+}

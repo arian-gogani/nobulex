@@ -1,0 +1,27 @@
+identity:
+  author: arian-gogani
+  name: nobulex
+  label:
+    en_US: Nobulex
+  description:
+    en_US: "Cryptographic receipt layer for Dify agents. Signs every tool call with Ed25519 over JCS-canonical JSON, chains receipts for tamper detection, and exports EU AI Act Article 12 evidence packages."
+  icon: _assets/icon.svg
+  background: "#000000"
+  tags:
+    - utilities
+    - productivity
+credentials_for_provider:
+  agent_id:
+    type: text-input
+    required: false
+    label:
+      en_US: Agent ID
+    placeholder:
+      en_US: "my-dify-agent (defaults to workflow name)"
+    help:
+      en_US: "Identifier for this agent's receipt chain. Receipts from the same agent_id are chained together."
+tools:
+  - tools/sign_receipt.yaml
+  - tools/verify_receipt.yaml
+  - tools/export_article12.yaml
+  - tools/get_trust_score.yaml

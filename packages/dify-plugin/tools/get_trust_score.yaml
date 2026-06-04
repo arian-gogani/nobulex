@@ -1,0 +1,37 @@
+identity:
+  name: get_trust_score
+  author: arian-gogani
+  label:
+    en_US: Get Trust Score
+description:
+  human:
+    en_US: "Get the current Trust Capital score for this agent based on its verified receipt history. Trust Capital accumulates over time as the agent builds a track record of verified, policy-compliant behavior."
+  llm: "Return the current Trust Capital score (0-100) for this agent, based on its verified receipt history. Higher scores unlock more autonomy."
+parameters:
+  - name: agent_id
+    type: string
+    required: false
+    label:
+      en_US: Agent ID
+    human_description:
+      en_US: "The agent to score. Defaults to the agent_id configured in the provider credentials."
+    llm_description: "Optional agent ID. Defaults to the configured agent."
+    form: llm
+output:
+  type: object
+  properties:
+    trust_score:
+      type: number
+      description: "Trust Capital score 0-100. Higher = more verified, policy-compliant history."
+    tier:
+      type: string
+      description: "Tier label: Restricted (0-25), Standard (26-50), Trusted (51-75), Sovereign (76-100)."
+    receipt_count:
+      type: integer
+      description: "Total verified receipts contributing to this score."
+    deny_rate:
+      type: number
+      description: "Fraction of actions that were denied, 0-1."
+    observation_window_days:
+      type: integer
+      description: "Days of history included in this score."

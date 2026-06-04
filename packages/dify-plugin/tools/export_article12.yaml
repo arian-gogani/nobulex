@@ -1,0 +1,40 @@
+identity:
+  name: export_article12
+  author: arian-gogani
+  label:
+    en_US: Export Article 12 Package
+description:
+  human:
+    en_US: "Export a regulator-facing EU AI Act Article 12 evidence package from this session's receipt chain. Returns signed receipts, chain head hash, and an obligation mapping."
+  llm: "Export the full session audit trail as a tamper-evident EU AI Act Article 12 evidence package."
+parameters:
+  - name: session_id
+    type: string
+    required: false
+    label:
+      en_US: Session ID
+    human_description:
+      en_US: "Identifier for this Dify workflow session. Defaults to the current session."
+    llm_description: "Optional session identifier. If omitted, exports the current session."
+    form: form
+  - name: include_policy_mapping
+    type: boolean
+    required: false
+    default: true
+    label:
+      en_US: Include Policy Mapping
+    human_description:
+      en_US: "Include a mapping from receipts to EU AI Act Article 12 obligations. Default: true."
+    form: form
+output:
+  type: object
+  properties:
+    package_json:
+      type: string
+      description: "Full evidence package as JSON. Contains signed receipts, chain head hash, and obligation mapping."
+    receipt_count:
+      type: integer
+      description: "Number of receipts in this session."
+    chain_head_hash:
+      type: string
+      description: "SHA-256 of the last receipt. An auditor walks back from here."

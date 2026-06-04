@@ -1,0 +1,55 @@
+identity:
+  name: sign_receipt
+  author: arian-gogani
+  label:
+    en_US: Sign Receipt
+description:
+  human:
+    en_US: "Generate an Ed25519-signed, JCS-canonical receipt for one agent tool call. The receipt is hash-chained to the previous receipt from this agent, making the full history tamper-evident."
+  llm: "Sign a cryptographic receipt for one agent action. Returns the receipt including action_ref (SHA-256 content address), signature, and chain_hash."
+parameters:
+  - name: action_type
+    type: string
+    required: true
+    label:
+      en_US: Action Type
+    human_description:
+      en_US: "What the agent did (e.g. 'search_web', 'send_email', 'query_database')."
+    llm_description: "The type of action performed. Used as part of the canonical receipt preimage."
+    form: llm
+  - name: scope
+    type: string
+    required: true
+    label:
+      en_US: Scope
+    human_description:
+      en_US: "What resource or data the action touched (e.g. 'user@example.com' or 'customer-db:table:orders')."
+    llm_description: "The specific resource, endpoint, or data scope the action affected."
+    form: llm
+  - name: policy_version
+    type: string
+    required: false
+    label:
+      en_US: Policy Version
+    human_description:
+      en_US: "Which policy or ruleset governed this action (e.g. 'eu-ai-act-v1', 'my-org-policy-v3'). Optional."
+    llm_description: "Optional policy version string recorded in the receipt for compliance tracing."
+    form: form
+output:
+  type: object
+  properties:
+    action_ref:
+      type: string
+      description: "SHA-256 of the JCS-canonical preimage. The unique, content-addressed identifier for this action."
+    signature:
+      type: string
+      description: "Hex-encoded Ed25519 signature over the canonical receipt bytes."
+    chain_hash:
+      type: string
+      description: "SHA-256 linking this receipt to the previous one in the chain."
+    timestamp_ms:
+      type: integer
+      description: "Unix epoch milliseconds when the receipt was generated."
+    receipt_json:
+      type: string
+      description: "Full receipt as a JSON string, suitable for archiving or passing to verify_receipt."

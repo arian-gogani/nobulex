@@ -1,0 +1,69 @@
+identity:
+  name: verify_receipt
+  author: arian-gogani
+  label:
+    en_US: Verify Receipt
+description:
+  human:
+    en_US: "Verify that a receipt's Ed25519 signature is valid and that the hash chain is intact. Returns true/false and the reason for any failure."
+  llm: "Verify a nobulex receipt is cryptographically valid. Pass the receipt_json from sign_receipt."
+parameters:
+  - name: receipt_json
+    type: string
+    required: true
+    label:
+      en_US: Receipt JSON
+    human_description:
+      en_US: "The full receipt JSON string returned by sign_receipt."
+    llm_description: "The receipt JSON string to verify. Comes from sign_receipt's receipt_json output."
+    form: llm
+output:
+  type: object
+  properties:
+    valid:
+      type: boolean
+      description: "True if the signature is valid and the receipt is unmodified."
+    reason:
+      type: string
+      description: "If valid is false, explains what failed (signature_invalid, chain_break, malformed)."
+---
+identity:
+  name: export_article12
+  author: arian-gogani
+  label:
+    en_US: Export Article 12 Package
+description:
+  human:
+    en_US: "Export a regulator-facing EU AI Act Article 12 evidence package from this session's receipt chain. Returns a JSON package with signed receipts, agent identity, and an obligation mapping."
+  llm: "Export the full session audit trail as a tamper-evident evidence package for EU AI Act Article 12 compliance."
+parameters:
+  - name: session_id
+    type: string
+    required: false
+    label:
+      en_US: Session ID
+    human_description:
+      en_US: "Identifier for this Dify workflow session. Defaults to the current session."
+    llm_description: "Optional session identifier. If omitted, exports the current session's receipts."
+    form: form
+  - name: include_policy_mapping
+    type: boolean
+    required: false
+    default: true
+    label:
+      en_US: Include Policy Mapping
+    human_description:
+      en_US: "Include a mapping from receipts to EU AI Act Article 12 obligations."
+    form: form
+output:
+  type: object
+  properties:
+    package_json:
+      type: string
+      description: "Full evidence package as JSON. Contains signed receipts, chain head hash, agent identity, and obligation mapping."
+    receipt_count:
+      type: integer
+      description: "Number of receipts in this session."
+    chain_head_hash:
+      type: string
+      description: "SHA-256 of the last receipt in the chain. An auditor can verify the full chain from this hash."

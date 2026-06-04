@@ -30,6 +30,8 @@ AI agents are starting to do real things — move money, handle data, sign contr
 - **vaara v0.50** — Independent Aider + MCP runtime audit layer by Henri Sirkkavaara shipping Ed25519-signed receipts citing the nobulex design.
 - **Standards body:** Microsoft AGT ADOPTERS.md PR merged (PR #1703, May 2026)
 - **Two warm call requests** in one week from a 1517 Fund partner and a W3C Community Group chair
+- **Dify Marketplace submission accepted for review** — langgenius/dify-plugins#2500. Dify (60,000+ stars, millions of users) confirmed the architecture is sound and Trust Capital is genuinely interesting and differentiated from existing tools. Plugin built at packages/dify-plugin/.
+- **Microsoft AI Agents for Beginners PR** — microsoft/ai-agents-for-beginners#571. Adds nobulex to Lesson 18 (Securing AI Agents with Cryptographic Receipts) as the only Python production receipt library listed in that lesson.
 - **30 GitHub stars, 6 forks** (forkers include Red Sentinel — "the ultimate AI security platform" — and a Northrop Grumman senior engineer)
 - **Demo runs from clean clone:** tamper detection works, signature verification works, full audit trail reproducible
 

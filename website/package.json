@@ -3,6 +3,7 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js",
+    "test": "node --test tests/*.test.mjs",
     "open": "open -a Safari http://127.0.0.1:3333"
   }
 }

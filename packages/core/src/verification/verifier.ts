@@ -18,6 +18,7 @@ import {
 import type {
   CovenantDocument,
   VerificationResult as CoreVerificationResult,
+  VerifyOptions,
 } from '../index';
 
 import {
@@ -212,11 +213,14 @@ export class Verifier {
    * if (!report.valid) console.log(report.warnings);
    * ```
    */
-  async verify(doc: CovenantDocument): Promise<VerificationReport> {
+  async verify(
+    doc: CovenantDocument,
+    options: VerifyOptions = {},
+  ): Promise<VerificationReport> {
     const startMs = Date.now();
     const warnings = collectWarnings(doc);
 
-    const coreResult = await verifyCovenant(doc);
+    const coreResult = await verifyCovenant(doc, options);
     const report = toReport(coreResult, this.verifierId, startMs, warnings, this.strictMode);
 
     this.recordHistory('single', [doc.id], report.valid, report.durationMs);
@@ -248,7 +252,10 @@ export class Verifier {
    * console.log(report.valid, report.integrityChecks);
    * ```
    */
-  async verifyChain(docs: CovenantDocument[]): Promise<ChainVerificationReport> {
+  async verifyChain(
+    docs: CovenantDocument[],
+    options: VerifyOptions = {},
+  ): Promise<ChainVerificationReport> {
     const startMs = Date.now();
     const documentResults: ChainDocumentResult[] = [];
     const integrityChecks: ChainIntegrityCheck[] = [];
@@ -274,7 +281,7 @@ export class Verifier {
 
     // 1. verify each document individually
     for (const doc of docs) {
-      const docReport = await this.verify(doc);
+      const docReport = await this.verify(doc, options);
       documentResults.push({ document: doc, report: docReport });
     }
 
@@ -423,11 +430,12 @@ export class Verifier {
     action: string,
     resource: string,
     context?: EvaluationContext,
+    options: VerifyOptions = {},
   ): Promise<ActionVerificationReport> {
     const startMs = Date.now();
 
     // Verify the document first
-    const coreResult = await verifyCovenant(doc);
+    const coreResult = await verifyCovenant(doc, options);
 
     // Parse and evaluate CCL
     const ctx = context ?? {};

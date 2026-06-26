@@ -63,10 +63,29 @@ class Receipt:
             signable["metadata"] = self.metadata
         return jcs_canonicalize(signable)
 
-    def verify(self) -> bool:
-        """Verify the receipt's cryptographic signature."""
+    def verify(self, authorized_keys=None) -> bool:
+        """Verify the receipt's cryptographic signature.
+
+        If authorized_keys is supplied (a hex public key or a list of them), the
+        signature is checked against those PINNED keys and a receipt whose
+        signer_public_key is not among them is rejected. This is the trust-root
+        check: it proves the receipt was signed by an authorized key, not merely
+        that it is internally self-consistent.
+
+        With no authorized_keys, this only confirms the signature is consistent
+        with the embedded signer_public_key (self-consistency, not authority).
+        Pass authorized_keys wherever the legitimate signer key is known.
+        """
         if not self.signature or not self.signer_public_key:
             return False
+        if authorized_keys is not None:
+            allowed = (
+                {authorized_keys}
+                if isinstance(authorized_keys, str)
+                else set(authorized_keys)
+            )
+            if self.signer_public_key not in allowed:
+                return False
         try:
             canonical = self.to_canonical()
             return KeyPair.verify_signature(

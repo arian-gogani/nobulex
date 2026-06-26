@@ -482,10 +482,45 @@ const VALID_PROOF_TYPES: readonly string[] = [
  * }
  * ```
  */
+/**
+ * Options controlling how a covenant's signer authority is established.
+ * Without a trust anchor, verifyCovenant fails closed: a covenant signed with
+ * an arbitrary key (including one embedded in the document) will not verify.
+ */
+export interface VerifyOptions {
+  /** Authorized Ed25519 public key(s), hex-encoded, for the covenant issuer. */
+  authorizedKeys?: string | string[];
+  /** Resolver: given an issuer id, return its authorized key(s). */
+  resolveAuthorizedKeys?: (issuerId: string) => string[] | undefined;
+}
+
+/** Collect the authorized signer keys for a document from the supplied options. */
+function resolveAuthorizedSigners(
+  doc: CovenantDocument,
+  options: VerifyOptions,
+): string[] {
+  const keys = new Set<string>();
+  if (typeof options.authorizedKeys === 'string') {
+    keys.add(options.authorizedKeys);
+  } else if (Array.isArray(options.authorizedKeys)) {
+    for (const k of options.authorizedKeys) keys.add(k);
+  }
+  const resolved = options.resolveAuthorizedKeys?.(doc.issuer.id);
+  if (resolved) for (const k of resolved) keys.add(k);
+  return [...keys];
+}
+
 export async function verifyCovenant(
   doc: CovenantDocument,
+  options: VerifyOptions = {},
 ): Promise<VerificationResult> {
   const checks: VerificationCheck[] = [];
+
+  // Resolve the authorized signer key(s) for this issuer. The signature is
+  // checked against these pinned keys, never the key embedded in the document,
+  // so a covenant self-signed with an attacker key cannot verify. With no
+  // anchor supplied, verification fails closed (see authorized_signer below).
+  const authorizedKeys = resolveAuthorizedSigners(doc, options);
 
   // 1. id match
   const expectedId = computeId(doc);
@@ -498,14 +533,41 @@ export async function verifyCovenant(
         : `ID mismatch: expected ${expectedId}, got ${doc.id}`,
   });
 
-  // ---
+  // 2a. authorized signer: the embedded issuer.publicKey is NOT trusted on its
+  // own. It must match a key the caller independently authorized for this issuer.
+  const embeddedKey = doc.issuer.publicKey;
+  let signerAuthorized = false;
+  let signerMsg: string;
+  if (authorizedKeys.length === 0) {
+    signerMsg =
+      'No trust anchor supplied: signer authority cannot be established. ' +
+      "Pass options.authorizedKeys (or resolveAuthorizedKeys) with the issuer's published key.";
+  } else if (!authorizedKeys.includes(embeddedKey)) {
+    signerMsg = `Embedded issuer key is not an authorized signer for '${doc.issuer.id}'`;
+  } else {
+    signerAuthorized = true;
+    signerMsg = `Issuer key is an authorized signer for '${doc.issuer.id}'`;
+  }
+  checks.push({
+    name: 'authorized_signer',
+    passed: signerAuthorized,
+    message: signerMsg,
+  });
+
+  // 2b. signature: verified against the PINNED authorized key(s), not the
+  // embedded key. A receipt signed with an unauthorized key fails here.
   let sigValid = false;
   try {
     const canonical = canonicalForm(doc);
     const messageBytes = new TextEncoder().encode(canonical);
     const sigBytes = fromHex(doc.signature);
-    const pubKeyBytes = fromHex(doc.issuer.publicKey);
-    sigValid = await verify(messageBytes, sigBytes, pubKeyBytes);
+    for (const key of authorizedKeys) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await verify(messageBytes, sigBytes, fromHex(key))) {
+        sigValid = true;
+        break;
+      }
+    }
   } catch {
     sigValid = false;
   }
@@ -513,8 +575,10 @@ export async function verifyCovenant(
     name: 'signature_valid',
     passed: sigValid,
     message: sigValid
-      ? 'Issuer signature is valid'
-      : 'Issuer signature verification failed',
+      ? 'Signature is valid under an authorized issuer key'
+      : authorizedKeys.length === 0
+        ? 'Signature not checked: no authorized key supplied (fail closed)'
+        : 'Signature does not verify under any authorized issuer key',
   });
 
   // 3. not expired

@@ -1,0 +1,11 @@
+{
+  "actionRef": "sha256:42f279db7f430127d682f1ccf6acdf90e679086b3c78b38fa30085cd6addc2f3",
+  "actionType": "purchase.fulfill",
+  "agentId": "agent:checkout-bot",
+  "paymentHash": "0x9c1f4ad2b7e84410a0f7c2d6e1b3f59a7c0d2e4f6a8b1c3d5e7f9a0b1c2d3e4f6",
+  "schema": "x402.settlement/v0",
+  "scope": "merchant:acme/order:INV-1/amount:42.00USDC",
+  "seq": 1,
+  "terminal": true,
+  "timestampMs": 1779200000000
+}

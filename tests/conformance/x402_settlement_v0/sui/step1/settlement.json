@@ -1,0 +1,22 @@
+{
+  "actionRef": "sha256:42f279db7f430127d682f1ccf6acdf90e679086b3c78b38fa30085cd6addc2f3",
+  "actionType": "purchase.fulfill",
+  "agentId": "agent:checkout-bot",
+  "schema": "x402.settlement.sui/v0",
+  "scope": "merchant:acme/order:INV-1/amount:42.00USDC",
+  "seq": 1,
+  "settlement": {
+    "amount": "1000000",
+    "assertedFrom": "net-balance-change-to-payTo",
+    "asset": "0x2::sui::SUI",
+    "decimals": 9,
+    "network": "testnet",
+    "payTo": "0xf0dab0dbd3011967b8a986abe16d0a7e580e408e972b6dc8473532815b898d86",
+    "rail": "sui",
+    "scheme": "exact",
+    "txDigest": "7eGzqT3xijsWJKw5aJRA8c6EtmB8ZbfXuDfMe4LJsGEW",
+    "verifiedBy": "facilitator://sui-exact"
+  },
+  "terminal": true,
+  "timestampMs": 1779200000000
+}

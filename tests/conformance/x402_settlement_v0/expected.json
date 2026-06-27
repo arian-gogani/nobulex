@@ -1,0 +1,28 @@
+{
+  "generic": {
+    "step0": {
+      "action_ref_recomputes": true,
+      "settlement_binding_resolves": true,
+      "receipt_signature_ok": true
+    },
+    "step1": {
+      "action_ref_recomputes": true,
+      "settlement_binding_resolves": true,
+      "receipt_signature_ok": true
+    },
+    "lifecycle_distinguishes_terminal": true
+  },
+  "sui": {
+    "step0": {
+      "action_ref_recomputes": true,
+      "settlement_binding_resolves": true,
+      "receipt_signature_ok": true
+    },
+    "step1": {
+      "action_ref_recomputes": true,
+      "settlement_binding_resolves": true,
+      "receipt_signature_ok": true
+    },
+    "lifecycle_distinguishes_terminal": true
+  }
+}

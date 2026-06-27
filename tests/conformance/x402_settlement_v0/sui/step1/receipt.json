@@ -1,0 +1,32 @@
+{
+  "alg": "ES256",
+  "backLink": {
+    "attestationDigest": "sha256:f1c376d69445d9425bcc259aa54b2b2b6350b571ccd659f8927e2616a6dc9da6",
+    "attestationNonce": "nobulex-sui-step1"
+  },
+  "decisionDerived": {
+    "decidedAt": "2026-06-27T00:00:00Z",
+    "decision": "allow",
+    "evidenceRef": {
+      "canonicalization": "JCS",
+      "digest": "sha256:d10cc62bb210d5c5a82eab9151c5ab49616faae45eeb66a704bf04de53ace7c2",
+      "ref": "x402:action_ref/sha256:42f279db7f430127d682f1ccf6acdf90e679086b3c78b38fa30085cd6addc2f3",
+      "schema": "x402.settlement/v0"
+    },
+    "policyId": "policy:nobulex-x402-fulfillment/1",
+    "reason": "agent acted within the authorized scope",
+    "riskScore": "0.05",
+    "thresholdAllow": "0.30",
+    "thresholdBlock": "0.80"
+  },
+  "issuerAsserted": {
+    "alg": "ES256",
+    "iat": "2026-06-27T00:00:00Z",
+    "iss": "issuer://nobulex",
+    "nonce": "nobulex-d-sui-step1",
+    "secretVersion": "v1",
+    "sub": "agent:nobulex-verifier"
+  },
+  "version": 1,
+  "signature": "f49224cf19dbfa31dbab74ade834911cf5b7b2908f5d450b24823503ae569fe0dabaac3120102f9f82ba0b73bc99cbe737b0abd40be6066f76bde805d5a605d5"
+}

@@ -112,12 +112,46 @@ assert receipt.verify()       # Cryptographic proof
 print(agent.trust_score)      # Trust Capital: 13.86
 ```
 
-#### LangChain integration (2 lines)
+#### LangChain integration
 
 ```python
-from nobulex.langchain import NobuReceipts
-wrapped = NobuReceipts.wrap(your_agent, "my-agent")
-# Every tool call now generates a tamper-proof receipt
+from nobulex.integrations.langchain import NobulexAuditHandler
+
+handler = NobulexAuditHandler(agent_id="my-agent")
+agent.invoke({"input": "..."}, config={"callbacks": [handler]})
+handler.export("audit.json")  # signed, hash-chained audit trail
+```
+
+#### CrewAI integration
+
+```python
+from nobulex.integrations.crewai import NobulexCrewAudit
+
+audit = NobulexCrewAudit(agent_id="my-crew")
+audit.record_task("credit_check", "loan-app-4821")
+audit.export("audit.json")
+```
+
+#### Google ADK integration
+
+```python
+from nobulex.integrations.google_adk import NobulexADKCallback
+
+cb = NobulexADKCallback(agent_id="my-agent")
+
+@cb.wrap_tool("web_search")
+def search(query):
+    return do_search(query)
+
+cb.export("audit.json")
+```
+
+#### Verify any exported trail (no operator trust)
+
+```python
+from nobulex.chain import verify_audit_trail
+report = verify_audit_trail("audit.json", authorized_keys=AGENT_PUBLIC_KEY)
+assert report["chain_intact"] and report["authenticated"]
 ```
 
 ### JavaScript / TypeScript

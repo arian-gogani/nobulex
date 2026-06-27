@@ -107,7 +107,7 @@ class Receipt:
         return cls(
             agent_id=data["agent_id"],
             action_type=data["action_type"],
-            scope=data["scope"],
+            scope=data.get("scope", ""),
             timestamp_ms=data["timestamp_ms"],
             verdict=data.get("verdict", "ALLOW"),
             action_ref=data.get("action_ref", ""),

@@ -146,6 +146,36 @@ def search(query):
 cb.export("audit.json")
 ```
 
+#### PydanticAI integration
+
+```python
+from nobulex.integrations.pydantic_ai import NobulexPydanticAIAudit
+
+audit = NobulexPydanticAIAudit(agent_id="typed-agent")
+audit.record_tool("get_weather", {"city": "Berlin"}, {"temp": 22})
+audit.export("audit.json")
+```
+
+#### Haystack integration
+
+```python
+from nobulex.integrations.haystack import NobulexHaystackAudit
+
+audit = NobulexHaystackAudit(agent_id="my-pipeline")
+audit.record_component("Retriever", {"query": "test"}, {"docs": 5})
+audit.export("audit.json")
+```
+
+#### LlamaIndex integration
+
+```python
+from nobulex.integrations.llama_index import NobulexLlamaIndexAudit
+
+audit = NobulexLlamaIndexAudit(agent_id="llama-agent")
+audit.record_tool("web_search", {"query": "test"}, {"results": 5})
+audit.export("audit.json")
+```
+
 #### Verify any exported trail (no operator trust)
 
 ```python

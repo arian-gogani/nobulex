@@ -59,9 +59,43 @@ def cmd_keygen():
     print("(private key held in memory only)")
 
 
+
+def cmd_verify_chain(filepath, authorized_key=None):
+    """Verify an exported receipt chain (audit trail)."""
+    from nobulex.chain import verify_audit_trail
+    try:
+        report = verify_audit_trail(filepath, authorized_keys=authorized_key)
+        n = report.get("receipt_count", 0)
+        intact = report.get("chain_intact", False)
+        auth = report.get("authenticated", False)
+        print(f"chain: {filepath}")
+        print(f"  receipts:      {n}")
+        print(f"  chain_intact:  {intact}")
+        print(f"  authenticated: {auth}")
+        if not intact:
+            print(f"  FAIL: hash chain broken")
+        if not auth:
+            print(f"  FAIL: signature verification failed")
+        if intact and auth:
+            print(f"  PASS: all {n} receipts verified")
+        sys.exit(0 if (intact and auth) else 1)
+    except Exception as e:
+        print(f"error: {e}")
+        sys.exit(1)
+
+
+def cmd_es256_keygen():
+    """Generate a new ES256 (ECDSA P-256) key pair."""
+    from nobulex.crypto import ES256KeyPair
+    keys = ES256KeyPair()
+    print(f"algorithm: es256")
+    print(f"public_key: {keys.public_hex}")
+    print("(private key held in memory only)")
+
+
 def main():
     if len(sys.argv) < 2:
-        print("usage: python -m nobulex [demo|verify|keygen]")
+        print("usage: python -m nobulex [demo|verify|verify-chain|keygen|es256-keygen]")
         sys.exit(1)
 
     cmd = sys.argv[1]
@@ -71,9 +105,14 @@ def main():
         cmd_verify(sys.argv[2])
     elif cmd == "keygen":
         cmd_keygen()
+    elif cmd == "es256-keygen":
+        cmd_es256_keygen()
+    elif cmd == "verify-chain" and len(sys.argv) >= 3:
+        key = sys.argv[3] if len(sys.argv) >= 4 else None
+        cmd_verify_chain(sys.argv[2], key)
     else:
         print(f"unknown command: {cmd}")
-        print("usage: python -m nobulex [demo|verify|keygen]")
+        print("usage: python -m nobulex [demo|verify|verify-chain|keygen|es256-keygen]")
         sys.exit(1)
 
 

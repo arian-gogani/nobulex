@@ -11,6 +11,7 @@ import {
   KeyManager,
   buildCovenant,
   verifyCovenant as coreVerifyCovenant,
+  type VerifyOptions,
   countersignCovenant,
   resolveChain as coreResolveChain,
   computeEffectiveConstraints,
@@ -540,11 +541,11 @@ export class NobulexClient {
    * }
    * ```
    */
-  async verifyCovenant(doc: CovenantDocument): Promise<VerificationResult> {
+  async verifyCovenant(doc: CovenantDocument, options: VerifyOptions = {}): Promise<VerificationResult> {
     if (!doc || typeof doc !== 'object') {
       throw new ValidationError('verifyCovenant: doc must be a CovenantDocument object');
     }
-    const result = await coreVerifyCovenant(doc);
+    const result = await coreVerifyCovenant(doc, options);
 
     this._emit('covenant:verified', {
       type: 'covenant:verified',
@@ -843,7 +844,7 @@ export class NobulexClient {
    * console.log(result.valid); // true if all docs valid and narrowing holds
    * ```
    */
-  async validateChain(docs: CovenantDocument[]): Promise<ChainValidationResult> {
+  async validateChain(docs: CovenantDocument[], options: VerifyOptions = {}): Promise<ChainValidationResult> {
     if (!Array.isArray(docs)) {
       throw new ValidationError('validateChain: docs must be an array of CovenantDocument');
     }
@@ -852,7 +853,7 @@ export class NobulexClient {
 
     // Verify each document individually
     for (const doc of docs) {
-      const result = await coreVerifyCovenant(doc);
+      const result = await coreVerifyCovenant(doc, options);
       results.push(result);
     }
 

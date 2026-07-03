@@ -145,6 +145,8 @@ export class Verifier {
   private readonly strictMode: boolean;
   private readonly maxHistorySize: number;
   private readonly maxChainDepth: number;
+  private readonly defaultAuthorizedKeys?: string | string[];
+  private readonly defaultResolveAuthorizedKeys?: (issuerId: string) => string[] | undefined;
   private history: VerificationRecord[] = [];
 
   constructor(options?: VerifierOptions) {
@@ -152,6 +154,25 @@ export class Verifier {
     this.strictMode = options?.strictMode ?? false;
     this.maxHistorySize = options?.maxHistorySize ?? DEFAULT_MAX_HISTORY;
     this.maxChainDepth = options?.maxChainDepth ?? MAX_CHAIN_DEPTH;
+    this.defaultAuthorizedKeys = options?.authorizedKeys;
+    this.defaultResolveAuthorizedKeys = options?.resolveAuthorizedKeys;
+  }
+
+  /**
+   * Merge this verifier's default trust store with per-call verify options.
+   * Per-call `authorizedKeys` takes precedence; resolvers are chained so the
+   * per-call resolver wins and the instance resolver is the fallback.
+   */
+  private mergeVerifyOptions(options: VerifyOptions): VerifyOptions {
+    const authorizedKeys = options.authorizedKeys ?? this.defaultAuthorizedKeys;
+    const perCallResolver = options.resolveAuthorizedKeys;
+    const instanceResolver = this.defaultResolveAuthorizedKeys;
+    const resolveAuthorizedKeys =
+      perCallResolver || instanceResolver
+        ? (issuerId: string): string[] | undefined =>
+            perCallResolver?.(issuerId) ?? instanceResolver?.(issuerId)
+        : undefined;
+    return { authorizedKeys, resolveAuthorizedKeys };
   }
 
 
@@ -220,7 +241,7 @@ export class Verifier {
     const startMs = Date.now();
     const warnings = collectWarnings(doc);
 
-    const coreResult = await verifyCovenant(doc, options);
+    const coreResult = await verifyCovenant(doc, this.mergeVerifyOptions(options));
     const report = toReport(coreResult, this.verifierId, startMs, warnings, this.strictMode);
 
     this.recordHistory('single', [doc.id], report.valid, report.durationMs);
@@ -435,7 +456,7 @@ export class Verifier {
     const startMs = Date.now();
 
     // Verify the document first
-    const coreResult = await verifyCovenant(doc, options);
+    const coreResult = await verifyCovenant(doc, this.mergeVerifyOptions(options));
 
     // Parse and evaluate CCL
     const ctx = context ?? {};
@@ -514,13 +535,14 @@ export class Verifier {
 export async function verifyDocumentBatch(
   docs: CovenantDocument[],
   options?: VerifierOptions,
+  verifyOptions: VerifyOptions = {},
 ): Promise<BatchVerificationReport> {
   const startMs = Date.now();
   const verifier = new Verifier(options);
 
   // Run all verifications concurrently
   const reports = await Promise.all(
-    docs.map((doc) => verifier.verify(doc)),
+    docs.map((doc) => verifier.verify(doc, verifyOptions)),
   );
 
   const passed = reports.filter((r) => r.valid).length;

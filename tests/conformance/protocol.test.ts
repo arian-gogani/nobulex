@@ -200,7 +200,7 @@ describe('Nobulex Protocol Conformance', () => {
       const { doc } = await makeTestCovenant();
 
       // Verify the original is valid
-      const originalResult = await verifyCovenant(doc);
+      const originalResult = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       expect(originalResult.valid).toBe(true);
 
       // Tamper with the constraints field
@@ -209,7 +209,7 @@ describe('Nobulex Protocol Conformance', () => {
         constraints: "deny write on '/system/**'",
       };
 
-      const tamperedResult = await verifyCovenant(tampered);
+      const tamperedResult = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       expect(tamperedResult.valid).toBe(false);
 
       // The ID check should fail (content changed)
@@ -231,7 +231,7 @@ describe('Nobulex Protocol Conformance', () => {
         issuer: { ...doc.issuer, publicKey: wrongKp.publicKeyHex },
       };
 
-      const result = await verifyCovenant(wrongDoc);
+      const result = await verifyCovenant(wrongDoc, { authorizedKeys: wrongDoc.issuer.publicKey });
       expect(result.valid).toBe(false);
 
       const sigCheck = result.checks.find(c => c.name === 'signature_valid');
@@ -540,7 +540,7 @@ describe('Nobulex Protocol Conformance', () => {
       expect(valid).toBe(true);
 
       // Also verify through the full verification pipeline
-      const verifyResult = await verifyCovenant(countersigned);
+      const verifyResult = await verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
       expect(verifyResult.valid).toBe(true);
       const csCheck = verifyResult.checks.find(c => c.name === 'countersignatures');
       expect(csCheck?.passed).toBe(true);
@@ -662,7 +662,7 @@ describe('Nobulex Protocol Conformance', () => {
       expect(restored.signature).toBe(doc.signature);
 
       // The restored document should still verify
-      const result = await verifyCovenant(restored);
+      const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
 
@@ -858,14 +858,15 @@ describe('Nobulex Protocol Conformance', () => {
 
     it('SPEC-120: Verification checks all 11 specification checks', async () => {
       const { doc } = await makeTestCovenant();
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       expect(result.valid).toBe(true);
-      expect(result.checks.length).toBe(11);
+      expect(result.checks.length).toBe(12);
 
       const checkNames = result.checks.map(c => c.name).sort();
       expect(checkNames).toEqual([
         'active',
+        'authorized_signer',
         'ccl_parses',
         'chain_depth',
         'countersignatures',
@@ -894,7 +895,7 @@ describe('Nobulex Protocol Conformance', () => {
         expiresAt: '2000-01-01T00:00:00.000Z', // long expired
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       expect(result.valid).toBe(false);
       const expiredCheck = result.checks.find(c => c.name === 'not_expired');
       expect(expiredCheck?.passed).toBe(false);
@@ -910,7 +911,7 @@ describe('Nobulex Protocol Conformance', () => {
         activatesAt: '2099-01-01T00:00:00.000Z', // far in the future
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       expect(result.valid).toBe(false);
       const activeCheck = result.checks.find(c => c.name === 'active');
       expect(activeCheck?.passed).toBe(false);

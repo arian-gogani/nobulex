@@ -7,6 +7,7 @@ import { generateKeyPair } from '@nobulex/crypto';
 import { verifyCovenant as coreVerifyCovenant } from '@nobulex/core';
 import type { KeyPair } from '@nobulex/crypto';
 import type { Issuer, Beneficiary } from '@nobulex/core';
+import { trustDoc, trustDocs } from '@nobulex/verification';
 
 import { NobulexClient, KeyManager } from '../src/index.js';
 import type { KeyRotatedEvent } from '../src/index.js';
@@ -156,7 +157,7 @@ describe('NobulexClient key rotation', () => {
       constraints: "permit read on '/data'",
     });
 
-    const result1 = await coreVerifyCovenant(doc1);
+    const result1 = await coreVerifyCovenant(doc1, trustDoc(doc1));
     expect(result1.valid).toBe(true);
 
     // Wait for key to expire
@@ -178,7 +179,7 @@ describe('NobulexClient key rotation', () => {
       constraints: "permit read on '/data'",
     });
 
-    const result2 = await coreVerifyCovenant(doc2);
+    const result2 = await coreVerifyCovenant(doc2, trustDoc(doc2));
     expect(result2.valid).toBe(true);
 
     // The two covenants should have been signed with different keys
@@ -262,7 +263,7 @@ describe('NobulexClient key rotation', () => {
 
     // The old covenant should still verify (the signature is valid against
     // the issuer's publicKey recorded in the document)
-    const result = await coreVerifyCovenant(doc);
+    const result = await coreVerifyCovenant(doc, trustDoc(doc));
     expect(result.valid).toBe(true);
 
     // The key manager should still be able to verify with the old key
@@ -297,7 +298,7 @@ describe('NobulexClient key rotation', () => {
       constraints: "permit read on '/data'",
     });
 
-    const result = await coreVerifyCovenant(doc);
+    const result = await coreVerifyCovenant(doc, trustDoc(doc));
     expect(result.valid).toBe(true);
   });
 
@@ -316,7 +317,7 @@ describe('NobulexClient key rotation', () => {
     const signed = await auditClient.countersign(doc, 'auditor');
     expect(signed.countersignatures).toHaveLength(1);
 
-    const result = await coreVerifyCovenant(signed);
+    const result = await coreVerifyCovenant(signed, trustDoc(signed));
     expect(result.valid).toBe(true);
   });
 

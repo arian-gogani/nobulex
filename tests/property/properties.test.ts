@@ -910,7 +910,7 @@ describe('Core Properties', () => {
         const kp = await generateKeyPair();
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
-        const result = await verifyCovenant(doc);
+        const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
         expect(result.valid).toBe(true);
       }
     });
@@ -920,8 +920,8 @@ describe('Core Properties', () => {
         const kp = await generateKeyPair();
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
-        const result = await verifyCovenant(doc);
-        expect(result.checks.length).toBe(11);
+        const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
+        expect(result.checks.length).toBe(12);
         for (const check of result.checks) {
           expect(check.passed).toBe(true);
         }
@@ -938,7 +938,7 @@ describe('Core Properties', () => {
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
         const tampered = { ...doc, constraints: "deny read on '/everything'" };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         expect(result.valid).toBe(false);
       }
     });
@@ -949,7 +949,7 @@ describe('Core Properties', () => {
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
         const tampered = { ...doc, issuer: { ...doc.issuer, id: 'tampered-' + randomString(5) } };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         expect(result.valid).toBe(false);
       }
     });
@@ -960,7 +960,7 @@ describe('Core Properties', () => {
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
         const tampered = { ...doc, nonce: toHex(randomBytes(32)) };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         expect(result.valid).toBe(false);
       }
     });
@@ -971,7 +971,7 @@ describe('Core Properties', () => {
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
         const tampered = { ...doc, signature: randomHex(64) };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         expect(result.valid).toBe(false);
       }
     });
@@ -985,7 +985,7 @@ describe('Core Properties', () => {
           ...doc,
           beneficiary: { ...doc.beneficiary, id: 'tampered-' + randomString(5) },
         };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         expect(result.valid).toBe(false);
       }
     });
@@ -1051,7 +1051,7 @@ describe('Core Properties', () => {
         const doc = await buildCovenant(options);
         const auditorKp = await generateKeyPair();
         const countersigned = await countersignCovenant(doc, auditorKp, 'auditor');
-        const result = await verifyCovenant(countersigned);
+        const result = await verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
         expect(result.valid).toBe(true);
       }
     });
@@ -1066,7 +1066,7 @@ describe('Core Properties', () => {
         doc = await countersignCovenant(doc, signerKp, 'auditor');
       }
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       expect(result.valid).toBe(true);
       expect(doc.countersignatures!.length).toBe(5);
     });
@@ -1081,7 +1081,7 @@ describe('Core Properties', () => {
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
         const resigned = await resignCovenant(doc, kp.privateKey);
-        const result = await verifyCovenant(resigned);
+        const result = await verifyCovenant(resigned, { authorizedKeys: resigned.issuer.publicKey });
         expect(result.valid).toBe(true);
       }
     });
@@ -1125,7 +1125,7 @@ describe('Core Properties', () => {
         depth: 1,
       };
       const child = await buildCovenant(childOptions);
-      const result = await verifyCovenant(child);
+      const result = await verifyCovenant(child, { authorizedKeys: child.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
 
@@ -1169,7 +1169,7 @@ describe('Core Properties', () => {
         const options = await makeCovenantOptions(kp);
         const doc = await buildCovenant(options);
         const deserialized = deserializeCovenant(serializeCovenant(doc));
-        const result = await verifyCovenant(deserialized);
+        const result = await verifyCovenant(deserialized, { authorizedKeys: deserialized.issuer.publicKey });
         expect(result.valid).toBe(true);
       }
     });
@@ -1204,7 +1204,7 @@ describe('Core Properties', () => {
           ...doc,
           issuer: { ...doc.issuer, publicKey: kpB.publicKeyHex },
         };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         expect(result.valid).toBe(false);
       }
     });

@@ -436,7 +436,12 @@ export class NobulexServer {
         return this._toolError(`Covenant not found: ${covenantId}`);
       }
 
-      const result = await this.client.verifyCovenant(doc);
+      // A verifier supplies the issuer key(s) it trusts. Callers may pass
+      // `authorizedKeys` explicitly; absent that, the server trusts the key
+      // embedded in the stored document's issuer (self-attested, lowest trust).
+      const authorizedKeys =
+        (args.authorizedKeys as string | string[] | undefined) ?? doc.issuer.publicKey;
+      const result = await this.client.verifyCovenant(doc, { authorizedKeys });
 
       return this._toolSuccess({
         valid: result.valid,

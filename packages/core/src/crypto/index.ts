@@ -99,10 +99,16 @@ export function sha256Object(obj: unknown): HashHex {
   return sha256String(canonicalizeJson(obj));
 }
 
-// JCS (RFC 8785) — deterministic JSON with sorted keys.
-// critical for cross-platform signature verification
+// Canonicalizes to RFC 8785 (JCS) compatible bytes: object keys sorted by
+// UTF-16 code unit, ECMAScript number/string serialization via JSON.stringify.
+// Verified byte-identical to the reference rfc8785 implementation by the
+// cross-impl conformance vectors in tests/conformance/jcs-rfc8785-cross-impl.
+// Numbers written in plain integer form beyond the safe-integer domain are
+// rejected (see sortKeys) so we fail closed instead of silently corrupting
+// precision. Values ECMAScript serializes in exponential form (e.g. 1e+21)
+// are valid RFC 8785 floats and are canonicalized, matching the Python
+// rfc8785 reference.
 export function canonicalizeJson(obj: unknown): string {
-  // historical: used to be async, keeping signature for compatibility
   return JSON.stringify(sortKeys(obj));
 }
 
@@ -123,6 +129,22 @@ function sortKeys(value: unknown): unknown {
       }
     }
     return sorted;
+  }
+  if (typeof value === 'number') {
+    if (!Number.isFinite(value)) {
+      throw new Error('JCS (RFC 8785): non-finite numbers are not permitted');
+    }
+    if (
+      Number.isInteger(value) &&
+      !Number.isSafeInteger(value) &&
+      !String(value).includes('e') &&
+      !String(value).includes('E')
+    ) {
+      throw new Error(
+        `JCS (RFC 8785): integer ${value} exceeds the safe integer domain and ` +
+          'would lose precision; encode large integers as strings',
+      );
+    }
   }
   return value;
 }

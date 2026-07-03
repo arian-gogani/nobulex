@@ -43,6 +43,20 @@ export interface VerifierOptions {
    * Defaults to MAX_CHAIN_DEPTH from @nobulex/core (16).
    */
   maxChainDepth?: number;
+
+  /**
+   * Default authorized issuer key(s), hex-encoded, forming this verifier's
+   * trust store. Applied to every verify/verifyChain/verifyAction call unless
+   * a per-call `authorizedKeys` is supplied. A verifier with no trust store
+   * fails closed: signatures cannot be established and results are invalid.
+   */
+  authorizedKeys?: string | string[];
+
+  /**
+   * Default resolver for authorized keys, given an issuer id. Merged with any
+   * per-call resolver. Lets a verifier back its trust store with a registry.
+   */
+  resolveAuthorizedKeys?: (issuerId: string) => string[] | undefined;
 }
 
 

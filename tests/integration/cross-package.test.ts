@@ -120,7 +120,7 @@ describe('SDK + Store integration', () => {
     await store.put(doc);
 
     const retrieved = await store.get(doc.id);
-    const result = await client.verifyCovenant(retrieved!);
+    const result = await client.verifyCovenant(retrieved!, { authorizedKeys: retrieved!.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -183,7 +183,7 @@ describe('SDK + Store integration', () => {
     await store.put(doc);
     const retrieved = await store.get(doc.id);
     expect(retrieved).toBeDefined();
-    const result = await verifyCovenant(retrieved!);
+    const result = await verifyCovenant(retrieved!, { authorizedKeys: retrieved!.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -196,7 +196,7 @@ describe('SDK + Store integration', () => {
 
     await store.put(doc);
     expect(store.size).toBe(1);
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 });
@@ -224,7 +224,7 @@ describe('SDK + Verifier integration', () => {
       constraints: "permit file.read on '/data/**'",
     });
 
-    const report = await verifier.verify(doc);
+    const report = await verifier.verify(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(report.valid).toBe(true);
     expect(report.verifierId).toBe('test-verifier');
     expect(report.durationMs).toBeGreaterThanOrEqual(0);
@@ -237,8 +237,8 @@ describe('SDK + Verifier integration', () => {
       constraints: "permit api.call on '**'",
     });
 
-    await verifier.verify(doc);
-    await verifier.verify(doc);
+    await verifier.verify(doc, { authorizedKeys: doc.issuer.publicKey });
+    await verifier.verify(doc, { authorizedKeys: doc.issuer.publicKey });
 
     const history = verifier.getHistory();
     expect(history).toHaveLength(2);
@@ -253,11 +253,11 @@ describe('SDK + Verifier integration', () => {
       constraints: "permit file.read on '/data/**'\ndeny file.write on '**' severity critical",
     });
 
-    const readReport = await verifier.verifyAction(doc, 'file.read', '/data/test.csv');
+    const readReport = await verifier.verifyAction(doc, 'file.read', '/data/test.csv', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(readReport.permitted).toBe(true);
     expect(readReport.documentValid).toBe(true);
 
-    const writeReport = await verifier.verifyAction(doc, 'file.write', '/data/test.csv');
+    const writeReport = await verifier.verifyAction(doc, 'file.write', '/data/test.csv', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(writeReport.permitted).toBe(false);
     expect(writeReport.severity).toBe('critical');
   });
@@ -273,7 +273,7 @@ describe('SDK + Verifier integration', () => {
       docs.push(d);
     }
 
-    const batchReport = await verifyDocumentBatch(docs);
+    const batchReport = await verifyDocumentBatch(docs, undefined, { authorizedKeys: docs.map((d) => d.issuer.publicKey) });
     expect(batchReport.summary.total).toBe(10);
     expect(batchReport.summary.passed).toBe(10);
     expect(batchReport.summary.failed).toBe(0);
@@ -287,7 +287,7 @@ describe('SDK + Verifier integration', () => {
     });
 
     const tampered = { ...doc, constraints: "permit file.write on '**'" };
-    const report = await verifier.verify(tampered);
+    const report = await verifier.verify(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(report.valid).toBe(false);
   });
 
@@ -339,7 +339,7 @@ describe('Core + Identity integration', () => {
     const idResult = await verifyIdentity(identity);
     expect(idResult.valid).toBe(true);
 
-    const covResult = await verifyCovenant(covenant);
+    const covResult = await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey });
     expect(covResult.valid).toBe(true);
 
     // The covenant issuer ID should be the agent identity hash
@@ -372,7 +372,7 @@ describe('Core + Identity integration', () => {
       privateKey: operatorKp.privateKey,
     });
 
-    const covResult = await verifyCovenant(covenant);
+    const covResult = await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey });
     expect(covResult.valid).toBe(true);
 
     const idResult = await verifyIdentity(identity);
@@ -402,7 +402,7 @@ describe('Core + Identity integration', () => {
       privateKey: operatorKp.privateKey,
     });
 
-    expect((await verifyCovenant(covenant)).valid).toBe(true);
+    expect((await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey })).valid).toBe(true);
     expect(covenant.issuer.id).toBe(restored.id);
   });
 
@@ -454,14 +454,14 @@ describe('CCL + Verifier integration', () => {
       privateKey: kp.privateKey,
     });
 
-    const readResult = await verifier.verifyAction(doc, 'file.read', '/data/report.csv');
+    const readResult = await verifier.verifyAction(doc, 'file.read', '/data/report.csv', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(readResult.permitted).toBe(true);
 
-    const writeResult = await verifier.verifyAction(doc, 'file.write', '/system/config.yaml');
+    const writeResult = await verifier.verifyAction(doc, 'file.write', '/system/config.yaml', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(writeResult.permitted).toBe(false);
     expect(writeResult.severity).toBe('critical');
 
-    const netResult = await verifier.verifyAction(doc, 'network.send', 'https://evil.com');
+    const netResult = await verifier.verifyAction(doc, 'network.send', 'https://evil.com', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(netResult.permitted).toBe(false);
     expect(netResult.severity).toBe('high');
   });
@@ -478,11 +478,11 @@ describe('CCL + Verifier integration', () => {
     });
 
     // Without context (no condition match), permit wins
-    const result1 = await verifier.verifyAction(doc, 'api.call', '/public/endpoint');
+    const result1 = await verifier.verifyAction(doc, 'api.call', '/public/endpoint', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(result1.permitted).toBe(true);
 
     // With matching context, deny wins
-    const result2 = await verifier.verifyAction(doc, 'api.call', '/public/endpoint', { user: { role: 'guest' } });
+    const result2 = await verifier.verifyAction(doc, 'api.call', '/public/endpoint', { user: { role: 'guest' } }, { authorizedKeys: doc.issuer.publicKey });
     expect(result2.permitted).toBe(false);
     expect(result2.severity).toBe('medium');
   });
@@ -498,7 +498,7 @@ describe('CCL + Verifier integration', () => {
       privateKey: kp.privateKey,
     });
 
-    const result = await verifier.verifyAction(doc, 'api.call', '/endpoint');
+    const result = await verifier.verifyAction(doc, 'api.call', '/endpoint', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(result.permitted).toBe(true);
     expect(result.documentValid).toBe(true);
   });
@@ -512,7 +512,7 @@ describe('CCL + Verifier integration', () => {
     });
 
     const tampered = { ...doc, constraints: "permit file.delete on '**'" };
-    const result = await verifier.verifyAction(tampered, 'file.read', '/data/file.txt');
+    const result = await verifier.verifyAction(tampered, 'file.read', '/data/file.txt', undefined, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.documentValid).toBe(false);
     expect(result.permitted).toBe(false);
   });
@@ -529,11 +529,11 @@ describe('CCL + Verifier integration', () => {
     });
 
     // Broad match: permitted
-    const r1 = await verifier.verifyAction(doc, 'file.read', '/data/public.txt');
+    const r1 = await verifier.verifyAction(doc, 'file.read', '/data/public.txt', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(r1.permitted).toBe(true);
 
     // Specific match: denied
-    const r2 = await verifier.verifyAction(doc, 'file.read', '/secret/key.pem');
+    const r2 = await verifier.verifyAction(doc, 'file.read', '/secret/key.pem', undefined, { authorizedKeys: doc.issuer.publicKey });
     expect(r2.permitted).toBe(false);
   });
 
@@ -590,7 +590,7 @@ describe('Store + Verifier integration', () => {
     const all = await store.list();
     expect(all).toHaveLength(8);
 
-    const batchReport = await verifyDocumentBatch(all);
+    const batchReport = await verifyDocumentBatch(all, undefined, { authorizedKeys: all.map((d) => d.issuer.publicKey) });
     expect(batchReport.summary.total).toBe(8);
     expect(batchReport.summary.passed).toBe(8);
     expect(batchReport.summary.failed).toBe(0);
@@ -627,7 +627,7 @@ describe('Store + Verifier integration', () => {
 
     // Put tampered under a different key approach: just verify separately
     const all = [legit, tampered];
-    const batchReport = await verifyDocumentBatch(all);
+    const batchReport = await verifyDocumentBatch(all, undefined, { authorizedKeys: all.map((d) => d.issuer.publicKey) });
     expect(batchReport.summary.passed).toBe(1);
     expect(batchReport.summary.failed).toBe(1);
   });
@@ -688,7 +688,7 @@ describe('Store + Verifier integration', () => {
 
     const verifier = new Verifier();
     const retrieved = await store.get(doc.id);
-    const report = await verifier.verify(retrieved!);
+    const report = await verifier.verify(retrieved!, { authorizedKeys: retrieved!.issuer.publicKey });
     expect(report.valid).toBe(true);
   });
 
@@ -731,7 +731,7 @@ describe('Crypto + Core integration', () => {
       privateKey: kp1.privateKey,
     });
 
-    const originalResult = await verifyCovenant(doc);
+    const originalResult = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(originalResult.valid).toBe(true);
 
     // Resign with new key pair (same issuer structure, new signature)
@@ -743,7 +743,7 @@ describe('Crypto + Core integration', () => {
     expect(resigned.constraints).toBe(doc.constraints);
 
     // Resigned doc should verify (same key)
-    const resignedResult = await verifyCovenant(resigned);
+    const resignedResult = await verifyCovenant(resigned, { authorizedKeys: resigned.issuer.publicKey });
     expect(resignedResult.valid).toBe(true);
   });
 
@@ -762,7 +762,7 @@ describe('Crypto + Core integration', () => {
     const resigned = await resignCovenant(doc, kp2.privateKey);
 
     // Verification should fail because issuer.publicKey != signing key
-    const result = await verifyCovenant(resigned);
+    const result = await verifyCovenant(resigned, { authorizedKeys: resigned.issuer.publicKey });
     expect(result.valid).toBe(false);
     const sigCheck = result.checks.find((c) => c.name === 'signature_valid');
     expect(sigCheck?.passed).toBe(false);
@@ -785,7 +785,7 @@ describe('Crypto + Core integration', () => {
     expect(countersigned.countersignatures![0]!.signerRole).toBe('auditor');
     expect(countersigned.countersignatures![0]!.signerPublicKey).toBe(auditorKp.publicKeyHex);
 
-    const result = await verifyCovenant(countersigned);
+    const result = await verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
     expect(result.valid).toBe(true);
     const csCheck = result.checks.find((c) => c.name === 'countersignatures');
     expect(csCheck?.passed).toBe(true);
@@ -813,7 +813,7 @@ describe('Crypto + Core integration', () => {
       }],
     };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
     const csCheck = result.checks.find((c) => c.name === 'countersignatures');
     expect(csCheck?.passed).toBe(false);
@@ -835,7 +835,7 @@ describe('Crypto + Core integration', () => {
     signed = await countersignCovenant(signed, regulatorKp, 'regulator');
 
     expect(signed.countersignatures).toHaveLength(2);
-    const result = await verifyCovenant(signed);
+    const result = await verifyCovenant(signed, { authorizedKeys: signed.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -856,7 +856,7 @@ describe('Crypto + Core integration', () => {
     const resigned = await resignCovenant(signed, issuerKp.privateKey);
     expect(resigned.countersignatures).toBeUndefined();
 
-    const result = await verifyCovenant(resigned);
+    const result = await verifyCovenant(resigned, { authorizedKeys: resigned.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -876,7 +876,7 @@ describe('Crypto + Core integration', () => {
     expect(restored.id).toBe(doc.id);
     expect(restored.constraints).toBe(doc.constraints);
 
-    const result = await verifyCovenant(restored);
+    const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 });
@@ -920,7 +920,7 @@ describe('SDK event system integration', () => {
       constraints: "permit file.read on '**'",
     });
 
-    await client.verifyCovenant(doc);
+    await client.verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
     expect(events).toHaveLength(1);
     expect(events[0]!.type).toBe('covenant:verified');
@@ -1015,7 +1015,7 @@ describe('SDK event system integration', () => {
       beneficiary: { id: 'rmall-ben', publicKey: kp.publicKeyHex, role: 'beneficiary' },
       constraints: "permit file.read on '**'",
     });
-    await client.verifyCovenant(doc);
+    await client.verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
     expect(events1).toHaveLength(0);
     expect(events2).toHaveLength(0);
@@ -1061,7 +1061,7 @@ describe('SDK event system integration', () => {
       chain: { parentId: root.id, relation: 'restricts', depth: 1 },
     });
 
-    const result = await client.validateChain([root, child]);
+    const result = await client.validateChain([root, child], { authorizedKeys: [root.issuer.publicKey, child.issuer.publicKey] });
     expect(result.valid).toBe(true);
     expect(events).toHaveLength(1);
     expect(events[0]!.type).toBe('chain:validated');
@@ -1136,7 +1136,7 @@ describe('Chain operations spanning multiple packages', () => {
     expect(store.size).toBe(3);
 
     // Verify the chain via Verifier
-    const chainReport = await verifier.verifyChain([root, mid, leaf]);
+    const chainReport = await verifier.verifyChain([root, mid, leaf], { authorizedKeys: [root.issuer.publicKey, mid.issuer.publicKey, leaf.issuer.publicKey] });
     expect(chainReport.valid).toBe(true);
     expect(chainReport.documentResults).toHaveLength(3);
     expect(chainReport.narrowingResults).toHaveLength(2);
@@ -1221,7 +1221,7 @@ describe('Chain operations spanning multiple packages', () => {
       chain: { parentId: root.id, relation: 'restricts', depth: 1 },
     });
 
-    const result = await client.validateChain([root, child]);
+    const result = await client.validateChain([root, child], { authorizedKeys: [root.issuer.publicKey, child.issuer.publicKey] });
     expect(result.valid).toBe(true);
     expect(result.narrowingViolations).toHaveLength(0);
   });
@@ -1298,6 +1298,6 @@ describe('Chain operations spanning multiple packages', () => {
     // Tamper the doc
     const tampered = { ...doc, constraints: "permit file.write on '**'" };
 
-    await expect(client.verifyCovenant(tampered)).rejects.toThrow(CovenantVerificationError);
+    await expect(client.verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey })).rejects.toThrow(CovenantVerificationError);
   });
 });

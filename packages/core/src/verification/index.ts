@@ -165,6 +165,7 @@ export function verifyBatch(
 
 // Re-export everything from the verifier engine (merged from @nobulex/verifier)
 export { Verifier, verifyDocumentBatch } from './verifier';
+export { trustDoc, trustDocs, trustStore } from './test-trust';
 export type {
   VerifierOptions,
   VerificationReport,

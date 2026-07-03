@@ -136,7 +136,7 @@ describe('@nobulex/core', () => {
     it('all checks pass for a freshly-built covenant', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       expect(result.valid).toBe(true);
       expect(result.checks.length).toBeGreaterThanOrEqual(11);
@@ -159,7 +159,7 @@ describe('@nobulex/core', () => {
       sigChars[0] = sigChars[0] === 'a' ? 'b' : 'a';
       tampered.signature = sigChars.join('');
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
 
       expect(result.valid).toBe(false);
       const sigCheck = result.checks.find((c) => c.name === 'signature_valid');
@@ -175,7 +175,7 @@ describe('@nobulex/core', () => {
       idChars[0] = idChars[0] === 'a' ? 'b' : 'a';
       tampered.id = idChars.join('');
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
 
       expect(result.valid).toBe(false);
       const idCheck = result.checks.find((c) => c.name === 'id_match');
@@ -192,7 +192,7 @@ describe('@nobulex/core', () => {
         expiresAt: '2000-01-01T00:00:00.000Z',
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       expect(result.valid).toBe(false);
       const expiryCheck = result.checks.find((c) => c.name === 'not_expired');
@@ -206,7 +206,7 @@ describe('@nobulex/core', () => {
         expiresAt: '2099-12-31T23:59:59.000Z',
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       const expiryCheck = result.checks.find((c) => c.name === 'not_expired');
       expect(expiryCheck).toBeDefined();
@@ -301,7 +301,7 @@ describe('@nobulex/core', () => {
 
       const countersigned = await countersignCovenant(doc, auditorKeyPair, 'auditor');
 
-      const result = await verifyCovenant(countersigned);
+      const result = await verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
       expect(result.valid).toBe(true);
 
       const csCheck = result.checks.find((c) => c.name === 'countersignatures');
@@ -331,7 +331,7 @@ describe('@nobulex/core', () => {
       expect(signed.countersignatures![0]!.signerRole).toBe('auditor');
       expect(signed.countersignatures![1]!.signerRole).toBe('regulator');
 
-      const result = await verifyCovenant(signed);
+      const result = await verifyCovenant(signed, { authorizedKeys: signed.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
   });
@@ -348,7 +348,7 @@ describe('@nobulex/core', () => {
       expect(resigned.nonce).not.toBe(doc.nonce);
       expect(resigned.signature).not.toBe(doc.signature);
 
-      const result = await verifyCovenant(resigned);
+      const result = await verifyCovenant(resigned, { authorizedKeys: resigned.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
 
@@ -675,7 +675,7 @@ describe('@nobulex/core', () => {
       const json = serializeCovenant(doc);
       const restored = deserializeCovenant(json);
 
-      const result = await verifyCovenant(restored);
+      const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
 
@@ -749,7 +749,7 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
 
       // Verification of a normal-sized document passes the size check
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const sizeCheck = result.checks.find((c) => c.name === 'document_size');
       expect(sizeCheck).toBeDefined();
       expect(sizeCheck!.passed).toBe(true);
@@ -764,7 +764,7 @@ describe('@nobulex/core', () => {
 
       const tampered = { ...doc, nonce: '' };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const nonceCheck = result.checks.find((c) => c.name === 'nonce_present');
       expect(nonceCheck).toBeDefined();
       expect(nonceCheck!.passed).toBe(false);
@@ -779,7 +779,7 @@ describe('@nobulex/core', () => {
         activatesAt: '2099-12-31T00:00:00.000Z',
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       const activeCheck = result.checks.find((c) => c.name === 'active');
       expect(activeCheck).toBeDefined();
@@ -791,7 +791,7 @@ describe('@nobulex/core', () => {
         activatesAt: '2000-01-01T00:00:00.000Z',
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       const activeCheck = result.checks.find((c) => c.name === 'active');
       expect(activeCheck).toBeDefined();
@@ -807,7 +807,7 @@ describe('@nobulex/core', () => {
         enforcement: { type: 'capability', config: {} },
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const enfCheck = result.checks.find((c) => c.name === 'enforcement_valid');
       expect(enfCheck).toBeDefined();
       expect(enfCheck!.passed).toBe(true);
@@ -822,7 +822,7 @@ describe('@nobulex/core', () => {
         proof: { type: 'zkp', config: {} },
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const proofCheck = result.checks.find((c) => c.name === 'proof_valid');
       expect(proofCheck).toBeDefined();
       expect(proofCheck!.passed).toBe(true);
@@ -839,7 +839,7 @@ describe('@nobulex/core', () => {
         chain: { parentId: root.id, relation: 'delegates', depth: 1 },
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const depthCheck = result.checks.find((c) => c.name === 'chain_depth');
       expect(depthCheck).toBeDefined();
       expect(depthCheck!.passed).toBe(true);
@@ -1047,7 +1047,7 @@ describe('@nobulex/core', () => {
           beneficiary,
           constraints: validConstraints(),
           privateKey: issuerKeyPair.privateKey,
-          enforcement: { type: 'invalid_type' as any, config: {} },
+          enforcement: { type: 'invalid_type' as never, config: {} },
         }),
       ).rejects.toThrow(CovenantBuildError);
 
@@ -1057,7 +1057,7 @@ describe('@nobulex/core', () => {
           beneficiary,
           constraints: validConstraints(),
           privateKey: issuerKeyPair.privateKey,
-          enforcement: { type: 'magic' as any, config: {} },
+          enforcement: { type: 'magic' as never, config: {} },
         });
       } catch (err) {
         expect((err as CovenantBuildError).field).toBe('enforcement.type');
@@ -1072,7 +1072,7 @@ describe('@nobulex/core', () => {
           beneficiary,
           constraints: validConstraints(),
           privateKey: issuerKeyPair.privateKey,
-          proof: { type: 'invalid_proof' as any, config: {} },
+          proof: { type: 'invalid_proof' as never, config: {} },
         }),
       ).rejects.toThrow(CovenantBuildError);
 
@@ -1082,7 +1082,7 @@ describe('@nobulex/core', () => {
           beneficiary,
           constraints: validConstraints(),
           privateKey: issuerKeyPair.privateKey,
-          proof: { type: 'handshake' as any, config: {} },
+          proof: { type: 'handshake' as never, config: {} },
         });
       } catch (err) {
         expect((err as CovenantBuildError).field).toBe('proof.type');
@@ -1117,7 +1117,7 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
       const tampered = { ...doc, id: 'b'.repeat(64) };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'id_match');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1128,11 +1128,11 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
       const tampered = { ...doc, signature: '00'.repeat(64) };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'signature_valid');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
-      expect(check!.message).toContain('failed');
+      expect(check!.message).toContain('does not verify');
     });
 
     it('check 3 - not_expired fails when document has expired', async () => {
@@ -1140,7 +1140,7 @@ describe('@nobulex/core', () => {
         expiresAt: '2000-01-01T00:00:00.000Z',
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'not_expired');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1150,7 +1150,7 @@ describe('@nobulex/core', () => {
     it('check 3 - not_expired passes when no expiresAt is set', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'not_expired');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('No expiry set');
@@ -1161,7 +1161,7 @@ describe('@nobulex/core', () => {
         activatesAt: '2099-01-01T00:00:00.000Z',
       });
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'active');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1171,7 +1171,7 @@ describe('@nobulex/core', () => {
     it('check 4 - active passes when no activatesAt is set', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'active');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('No activation time set');
@@ -1182,7 +1182,7 @@ describe('@nobulex/core', () => {
       // Directly tamper the constraints field (bypasses builder validation)
       const tampered = { ...doc, constraints: '!!!garbage!!!' };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'ccl_parses');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1193,10 +1193,10 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
       const tampered = {
         ...doc,
-        enforcement: { type: 'nonexistent' as any, config: {} },
+        enforcement: { type: 'nonexistent' as never, config: {} },
       };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'enforcement_valid');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1206,7 +1206,7 @@ describe('@nobulex/core', () => {
     it('check 6 - enforcement_valid passes when no enforcement is set', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'enforcement_valid');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('No enforcement config present');
@@ -1216,10 +1216,10 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
       const tampered = {
         ...doc,
-        proof: { type: 'handshake' as any, config: {} },
+        proof: { type: 'handshake' as never, config: {} },
       };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'proof_valid');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1229,7 +1229,7 @@ describe('@nobulex/core', () => {
     it('check 7 - proof_valid passes when no proof is set', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'proof_valid');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('No proof config present');
@@ -1242,7 +1242,7 @@ describe('@nobulex/core', () => {
         chain: { parentId: 'a'.repeat(64), relation: 'delegates' as const, depth: MAX_CHAIN_DEPTH + 5 },
       };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'chain_depth');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1252,7 +1252,7 @@ describe('@nobulex/core', () => {
     it('check 8 - chain_depth passes when no chain is set', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'chain_depth');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('No chain reference present');
@@ -1261,7 +1261,7 @@ describe('@nobulex/core', () => {
     it('check 9 - document_size passes for normal-sized documents', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'document_size');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('within limit');
@@ -1281,7 +1281,7 @@ describe('@nobulex/core', () => {
         ],
       };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'countersignatures');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1291,7 +1291,7 @@ describe('@nobulex/core', () => {
     it('check 10 - countersignatures passes when none present', async () => {
       const { doc } = await buildValidCovenant();
 
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'countersignatures');
       expect(check!.passed).toBe(true);
       expect(check!.message).toContain('No countersignatures present');
@@ -1301,7 +1301,7 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
       const tampered = { ...doc, nonce: 'abcdef' };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'nonce_present');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1313,7 +1313,7 @@ describe('@nobulex/core', () => {
       // 64 chars but includes non-hex characters
       const tampered = { ...doc, nonce: 'zzzz' + 'a'.repeat(60) };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'nonce_present');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1323,7 +1323,7 @@ describe('@nobulex/core', () => {
       const { doc } = await buildValidCovenant();
       const tampered = { ...doc, nonce: '' };
 
-      const result = await verifyCovenant(tampered);
+      const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
       const check = result.checks.find((c) => c.name === 'nonce_present');
       expect(check).toBeDefined();
       expect(check!.passed).toBe(false);
@@ -1332,10 +1332,11 @@ describe('@nobulex/core', () => {
 
     it('all 11 checks are always present in the result', async () => {
       const { doc } = await buildValidCovenant();
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       const expectedCheckNames = [
         'id_match',
+        'authorized_signer',
         'signature_valid',
         'not_expired',
         'active',
@@ -1348,7 +1349,7 @@ describe('@nobulex/core', () => {
         'nonce_present',
       ];
 
-      expect(result.checks.length).toBe(11);
+      expect(result.checks.length).toBe(12);
       for (const name of expectedCheckNames) {
         const check = result.checks.find((c) => c.name === name);
         expect(check).toBeDefined();
@@ -1433,7 +1434,7 @@ describe('@nobulex/core', () => {
       expect(signed.countersignatures![1]!.signerPublicKey).toBe(kp2.publicKeyHex);
       expect(signed.countersignatures![2]!.signerPublicKey).toBe(kp3.publicKeyHex);
 
-      const result = await verifyCovenant(signed);
+      const result = await verifyCovenant(signed, { authorizedKeys: signed.issuer.publicKey });
       expect(result.valid).toBe(true);
 
       const csCheck = result.checks.find((c) => c.name === 'countersignatures');
@@ -1464,7 +1465,7 @@ describe('@nobulex/core', () => {
       expect(restored.countersignatures).toHaveLength(1);
       expect(restored.countersignatures![0]!.signerPublicKey).toBe(kp.publicKeyHex);
 
-      const result = await verifyCovenant(restored);
+      const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
   });
@@ -1833,7 +1834,7 @@ describe('@nobulex/core', () => {
       expect(restored.revocation?.method).toBe('status_endpoint');
       expect(restored.metadata?.tags).toEqual(['test', 'demo']);
 
-      const result = await verifyCovenant(restored);
+      const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
       expect(result.valid).toBe(true);
     });
   });

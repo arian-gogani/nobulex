@@ -15,6 +15,7 @@ import type {
 } from '../index';
 
 import { Verifier, verifyDocumentBatch } from './index';
+import { trustDoc, trustDocs } from './test-trust';
 import type {
   VerificationReport,
   ChainVerificationReport,
@@ -164,7 +165,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('verifies a valid document successfully', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.valid).toBe(true);
       expect(report.verifierId).toBe('test-verifier');
@@ -175,14 +176,14 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('includes warnings for missing metadata', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.warnings).toContain('Document has no metadata');
     });
 
     it('includes warnings for missing expiration', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.warnings).toContain('Document has no expiration date');
     });
@@ -191,7 +192,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { doc } = await buildValidDoc({
         metadata: { name: 'test', description: 'test doc' },
       });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.warnings).not.toContain('Document has no metadata');
     });
@@ -199,7 +200,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('does not warn about expiration when expiresAt is set', async () => {
       const future = new Date(Date.now() + 86400_000).toISOString();
       const { doc } = await buildValidDoc({ expiresAt: future });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.warnings).not.toContain('Document has no expiration date');
     });
@@ -207,7 +208,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('detects a tampered document ID', async () => {
       const { doc } = await buildValidDoc();
       const tampered = { ...doc, id: 'aaaa' + doc.id.slice(4) };
-      const report = await verifier.verify(tampered as CovenantDocument);
+      const report = await verifier.verify(tampered as CovenantDocument, trustDoc(tampered));
 
       expect(report.valid).toBe(false);
       const idCheck = report.checks.find((c) => c.name === 'id_match');
@@ -217,7 +218,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('detects a tampered signature', async () => {
       const { doc } = await buildValidDoc();
       const tampered = { ...doc, signature: 'ff'.repeat(32) };
-      const report = await verifier.verify(tampered as CovenantDocument);
+      const report = await verifier.verify(tampered as CovenantDocument, trustDoc(tampered));
 
       expect(report.valid).toBe(false);
       const sigCheck = report.checks.find((c) => c.name === 'signature_valid');
@@ -227,7 +228,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('detects an expired document', async () => {
       const past = new Date(Date.now() - 86400_000).toISOString();
       const { doc } = await buildValidDoc({ expiresAt: past });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.valid).toBe(false);
       const expiryCheck = report.checks.find((c) => c.name === 'not_expired');
@@ -237,7 +238,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('detects a not-yet-active document', async () => {
       const future = new Date(Date.now() + 86400_000).toISOString();
       const { doc } = await buildValidDoc({ activatesAt: future });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.valid).toBe(false);
       const activeCheck = report.checks.find((c) => c.name === 'active');
@@ -246,7 +247,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('includes the document in the report', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.document).toBeDefined();
       expect(report.document?.id).toBe(doc.id);
@@ -254,7 +255,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('records the verification in history', async () => {
       const { doc } = await buildValidDoc();
-      await verifier.verify(doc);
+      await verifier.verify(doc, trustDoc(doc));
 
       const history = verifier.getHistory();
       expect(history).toHaveLength(1);
@@ -270,7 +271,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('fails validation when there are warnings in strict mode', async () => {
       const verifier = new Verifier({ verifierId: 'strict', strictMode: true });
       const { doc } = await buildValidDoc(); // no metadata, no expiry
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.valid).toBe(false);
       expect(report.warnings.length).toBeGreaterThan(0);
@@ -283,7 +284,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
         metadata: { name: 'test' },
         expiresAt: future,
       });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
 
       expect(report.valid).toBe(true);
       expect(report.warnings).toHaveLength(0);
@@ -298,8 +299,8 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { doc: doc1 } = await buildValidDoc();
       const { doc: doc2 } = await buildValidDoc();
 
-      await verifier.verify(doc1);
-      await verifier.verify(doc2);
+      await verifier.verify(doc1, trustDoc(doc1));
+      await verifier.verify(doc2, trustDoc(doc2));
 
       expect(verifier.getHistory()).toHaveLength(2);
     });
@@ -307,7 +308,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('clearHistory() removes all records', async () => {
       const verifier = new Verifier({ verifierId: 'hist' });
       const { doc } = await buildValidDoc();
-      await verifier.verify(doc);
+      await verifier.verify(doc, trustDoc(doc));
 
       expect(verifier.getHistory()).toHaveLength(1);
       verifier.clearHistory();
@@ -320,9 +321,9 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { doc: doc2 } = await buildValidDoc();
       const { doc: doc3 } = await buildValidDoc();
 
-      await verifier.verify(doc1);
-      await verifier.verify(doc2);
-      await verifier.verify(doc3);
+      await verifier.verify(doc1, trustDoc(doc1));
+      await verifier.verify(doc2, trustDoc(doc2));
+      await verifier.verify(doc3, trustDoc(doc3));
 
       const history = verifier.getHistory();
       expect(history).toHaveLength(2);
@@ -334,7 +335,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('getHistory() returns a copy, not a reference', async () => {
       const verifier = new Verifier({ verifierId: 'hist' });
       const { doc } = await buildValidDoc();
-      await verifier.verify(doc);
+      await verifier.verify(doc, trustDoc(doc));
 
       const history1 = verifier.getHistory();
       const history2 = verifier.getHistory();
@@ -345,7 +346,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('history records have correct timestamps and durations', async () => {
       const verifier = new Verifier({ verifierId: 'hist' });
       const { doc } = await buildValidDoc();
-      await verifier.verify(doc);
+      await verifier.verify(doc, trustDoc(doc));
 
       const record = verifier.getHistory()[0]!;
       expect(typeof record.timestamp).toBe('string');
@@ -375,7 +376,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('verifies a single-document chain', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifier.verifyChain([doc]);
+      const report = await verifier.verifyChain([doc], trustDocs([doc]));
 
       expect(report.valid).toBe(true);
       expect(report.documentResults).toHaveLength(1);
@@ -385,7 +386,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('verifies a valid two-document chain', async () => {
       const { docs } = await buildChain(2);
-      const report = await verifier.verifyChain(docs);
+      const report = await verifier.verifyChain(docs, trustDocs(docs));
 
       expect(report.valid).toBe(true);
       expect(report.documentResults).toHaveLength(2);
@@ -395,7 +396,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('verifies a valid three-document chain', async () => {
       const { docs } = await buildChain(3);
-      const report = await verifier.verifyChain(docs);
+      const report = await verifier.verifyChain(docs, trustDocs(docs));
 
       expect(report.valid).toBe(true);
       expect(report.documentResults).toHaveLength(3);
@@ -406,7 +407,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { docs } = await buildChain(2);
       // Tamper the child's chain reference
       const child = { ...docs[1]!, chain: { ...docs[1]!.chain!, parentId: 'wrong-id' } };
-      const report = await verifier.verifyChain([docs[0]!, child]);
+      const report = await verifier.verifyChain([docs[0]!, child], trustDocs([docs[0]!, child]));
 
       expect(report.valid).toBe(false);
       const parentRefCheck = report.integrityChecks.find((c) => c.name === 'parent_ref_1');
@@ -417,7 +418,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { doc: doc1 } = await buildValidDoc();
       const { doc: doc2 } = await buildValidDoc();
       // doc2 has no chain reference
-      const report = await verifier.verifyChain([doc1, doc2]);
+      const report = await verifier.verifyChain([doc1, doc2], trustDocs([doc1, doc2]));
 
       expect(report.valid).toBe(false);
       const check = report.integrityChecks.find((c) => c.name === 'parent_ref_1');
@@ -427,7 +428,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('detects chain depth exceeding the limit', async () => {
       const verifierSmall = new Verifier({ verifierId: 'small', maxChainDepth: 2 });
       const { docs } = await buildChain(3);
-      const report = await verifierSmall.verifyChain(docs);
+      const report = await verifierSmall.verifyChain(docs, trustDocs(docs));
 
       expect(report.valid).toBe(false);
       const depthCheck = report.integrityChecks.find((c) => c.name === 'chain_depth');
@@ -454,7 +455,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
         chain: { parentId: parent.id, relation: 'restricts', depth: 1 },
       });
 
-      const report = await verifier.verifyChain([parent, child]);
+      const report = await verifier.verifyChain([parent, child], trustDocs([parent, child]));
 
       expect(report.valid).toBe(false);
       expect(report.narrowingResults).toHaveLength(1);
@@ -464,7 +465,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('includes verifierId and timing in chain report', async () => {
       const { docs } = await buildChain(2);
-      const report = await verifier.verifyChain(docs);
+      const report = await verifier.verifyChain(docs, trustDocs(docs));
 
       expect(report.verifierId).toBe('chain-verifier');
       expect(report.timestamp).toBeTruthy();
@@ -475,7 +476,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { docs } = await buildChain(2);
       // Clear history from individual doc verifications inside verifyChain
       verifier.clearHistory();
-      await verifier.verifyChain(docs);
+      await verifier.verifyChain(docs, trustDocs(docs));
 
       const history = verifier.getHistory();
       // verifyChain calls verify() for each doc, then records 'chain'
@@ -496,7 +497,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('permits an action that matches a permit rule', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
-      const report = await verifier.verifyAction(doc, 'read', 'data');
+      const report = await verifier.verifyAction(doc, 'read', 'data', undefined, trustDoc(doc));
 
       expect(report.permitted).toBe(true);
       expect(report.documentValid).toBe(true);
@@ -506,7 +507,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('denies an action with no matching rules', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
-      const report = await verifier.verifyAction(doc, 'write', 'data');
+      const report = await verifier.verifyAction(doc, 'write', 'data', undefined, trustDoc(doc));
 
       expect(report.permitted).toBe(false);
       expect(report.reason).toContain('No matching rules');
@@ -514,7 +515,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('denies an action that matches a deny rule', async () => {
       const { doc } = await buildDocWithConstraints("deny write on 'data'");
-      const report = await verifier.verifyAction(doc, 'write', 'data');
+      const report = await verifier.verifyAction(doc, 'write', 'data', undefined, trustDoc(doc));
 
       expect(report.permitted).toBe(false);
       expect(report.matchedRule).toBeDefined();
@@ -525,7 +526,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { doc } = await buildDocWithConstraints(
         "permit write on 'data'\ndeny write on 'data'",
       );
-      const report = await verifier.verifyAction(doc, 'write', 'data');
+      const report = await verifier.verifyAction(doc, 'write', 'data', undefined, trustDoc(doc));
 
       expect(report.permitted).toBe(false);
     });
@@ -533,7 +534,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('denies action when document is invalid (tampered)', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
       const tampered = { ...doc, id: 'aaaa' + doc.id.slice(4) };
-      const report = await verifier.verifyAction(tampered as CovenantDocument, 'read', 'data');
+      const report = await verifier.verifyAction(tampered as CovenantDocument, 'read', 'data', undefined, trustDoc(tampered));
 
       expect(report.permitted).toBe(false);
       expect(report.documentValid).toBe(false);
@@ -543,14 +544,14 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('includes evaluation context in report', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
       const ctx = { user: { role: 'admin' } };
-      const report = await verifier.verifyAction(doc, 'read', 'data', ctx);
+      const report = await verifier.verifyAction(doc, 'read', 'data', ctx, trustDoc(doc));
 
       expect(report.context).toEqual(ctx);
     });
 
     it('includes timing information', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
-      const report = await verifier.verifyAction(doc, 'read', 'data');
+      const report = await verifier.verifyAction(doc, 'read', 'data', undefined, trustDoc(doc));
 
       expect(report.verifierId).toBe('action-verifier');
       expect(report.timestamp).toBeTruthy();
@@ -559,7 +560,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('records action verification in history', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
-      await verifier.verifyAction(doc, 'read', 'data');
+      await verifier.verifyAction(doc, 'read', 'data', undefined, trustDoc(doc));
 
       const history = verifier.getHistory();
       const actionRecords = history.filter((h) => h.kind === 'action');
@@ -569,21 +570,21 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('handles wildcard actions', async () => {
       const { doc } = await buildDocWithConstraints("permit ** on 'data'");
-      const report = await verifier.verifyAction(doc, 'read', 'data');
+      const report = await verifier.verifyAction(doc, 'read', 'data', undefined, trustDoc(doc));
 
       expect(report.permitted).toBe(true);
     });
 
     it('handles wildcard resources', async () => {
       const { doc } = await buildDocWithConstraints("permit read on '**'");
-      const report = await verifier.verifyAction(doc, 'read', 'anything/here');
+      const report = await verifier.verifyAction(doc, 'read', 'anything/here', undefined, trustDoc(doc));
 
       expect(report.permitted).toBe(true);
     });
 
     it('defaults context to empty object when not provided', async () => {
       const { doc } = await buildDocWithConstraints("permit read on 'data'");
-      const report = await verifier.verifyAction(doc, 'read', 'data');
+      const report = await verifier.verifyAction(doc, 'read', 'data', undefined, trustDoc(doc));
 
       expect(report.context).toEqual({});
     });
@@ -605,7 +606,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const { doc: doc1 } = await buildValidDoc();
       const { doc: doc2 } = await buildValidDoc();
 
-      const report = await verifyDocumentBatch([doc1, doc2]);
+      const report = await verifyDocumentBatch([doc1, doc2], undefined, trustDocs([doc1, doc2]));
 
       expect(report.reports).toHaveLength(2);
       expect(report.summary.total).toBe(2);
@@ -619,7 +620,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
         expiresAt: new Date(Date.now() - 86400_000).toISOString(),
       });
 
-      const report = await verifyDocumentBatch([validDoc, expiredDoc]);
+      const report = await verifyDocumentBatch([validDoc, expiredDoc], undefined, trustDocs([validDoc, expiredDoc]));
 
       expect(report.summary.total).toBe(2);
       expect(report.summary.passed).toBe(1);
@@ -639,14 +640,14 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
 
     it('includes timing in batch summary', async () => {
       const { doc } = await buildValidDoc();
-      const report = await verifyDocumentBatch([doc]);
+      const report = await verifyDocumentBatch([doc], undefined, trustDocs([doc]));
 
       expect(report.summary.durationMs).toBeGreaterThanOrEqual(0);
     });
 
     it('uses strict mode when specified', async () => {
       const { doc } = await buildValidDoc(); // no metadata -> warning
-      const report = await verifyDocumentBatch([doc], { strictMode: true });
+      const report = await verifyDocumentBatch([doc], { strictMode: true }, trustDocs([doc]));
 
       expect(report.summary.failed).toBe(1);
       expect(report.reports[0]!.valid).toBe(false);
@@ -659,7 +660,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
         docs.push(doc);
       }
 
-      const report = await verifyDocumentBatch(docs);
+      const report = await verifyDocumentBatch(docs, undefined, trustDocs(docs));
 
       expect(report.summary.total).toBe(5);
       expect(report.summary.passed).toBe(5);
@@ -682,7 +683,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
           config: { mechanism: 'token-gating' },
         },
       });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
       expect(report.valid).toBe(true);
     });
 
@@ -693,7 +694,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
           config: { endpoint: 'https://logs.example.com' },
         },
       });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
       expect(report.valid).toBe(true);
     });
 
@@ -705,7 +706,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
           action: 'log',
         }],
       });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
       expect(report.valid).toBe(true);
     });
 
@@ -717,7 +718,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
           tags: ['test', 'audit'],
         },
       });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
       expect(report.valid).toBe(true);
       expect(report.warnings).not.toContain('Document has no metadata');
     });
@@ -725,7 +726,7 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
     it('verifies a document with activation time in the past', async () => {
       const past = new Date(Date.now() - 86400_000).toISOString();
       const { doc } = await buildValidDoc({ activatesAt: past });
-      const report = await verifier.verify(doc);
+      const report = await verifier.verify(doc, trustDoc(doc));
       expect(report.valid).toBe(true);
     });
   });
@@ -737,12 +738,12 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const verifier = new Verifier({ verifierId: 'integration' });
       const { docs } = await buildChain(2);
 
-      const chainReport = await verifier.verifyChain(docs);
+      const chainReport = await verifier.verifyChain(docs, trustDocs(docs));
       expect(chainReport.valid).toBe(true);
 
       // Verify an action against the leaf document
       const leaf = docs[docs.length - 1]!;
-      const actionReport = await verifier.verifyAction(leaf, 'read', 'data');
+      const actionReport = await verifier.verifyAction(leaf, 'read', 'data', undefined, trustDoc(leaf));
       expect(actionReport.permitted).toBe(true);
 
       // History should contain both chain individual verifications, the chain record, and the action record
@@ -756,8 +757,8 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const verifier = new Verifier({ verifierId: 'consistency' });
       const { doc } = await buildValidDoc();
 
-      const singleReport = await verifier.verify(doc);
-      const batchReport = await verifyDocumentBatch([doc], { verifierId: 'consistency-batch' });
+      const singleReport = await verifier.verify(doc, trustDoc(doc));
+      const batchReport = await verifyDocumentBatch([doc], { verifierId: 'consistency-batch' }, trustDocs([doc]));
 
       expect(singleReport.valid).toBe(batchReport.reports[0]!.valid);
       expect(singleReport.checks.length).toBe(batchReport.reports[0]!.checks.length);
@@ -767,8 +768,8 @@ describe('Verifier (merged from @nobulex/verifier)', () => {
       const verifier = new Verifier({ verifierId: 'multi' });
       const { doc } = await buildValidDoc();
 
-      await verifier.verify(doc);
-      await verifier.verifyAction(doc, 'read', 'data');
+      await verifier.verify(doc, trustDoc(doc));
+      await verifier.verifyAction(doc, 'read', 'data', undefined, trustDoc(doc));
 
       const history = verifier.getHistory();
       expect(history.length).toBeGreaterThanOrEqual(2);

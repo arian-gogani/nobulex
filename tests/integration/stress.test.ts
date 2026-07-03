@@ -12,6 +12,7 @@ import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 import { parse, evaluate, merge, serialize } from '@nobulex/ccl';
 import { MemoryStore } from '@nobulex/store';
 import { Verifier, verifyDocumentBatch } from '@nobulex/verification';
+import { trustDoc, trustDocs } from '@nobulex/verification';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -65,7 +66,7 @@ describe('Sequential covenant creation', () => {
 
     // Spot-check first, middle, and last
     for (const idx of [0, 250, 499]) {
-      const result = await verifyCovenant(docs[idx]!);
+      const result = await verifyCovenant(docs[idx]!, trustDoc(docs[idx]!));
       expect(result.valid).toBe(true);
     }
   }, 30000);
@@ -96,7 +97,7 @@ describe('Concurrent covenant creation', () => {
     expect(ids.size).toBe(100);
 
     // Verify all are valid
-    const verifications = await Promise.all(docs.map((d) => verifyCovenant(d)));
+    const verifications = await Promise.all(docs.map((d) => verifyCovenant(d, { authorizedKeys: d.issuer.publicKey })));
     const allValid = verifications.every((v) => v.valid);
     expect(allValid).toBe(true);
   }, 15000);
@@ -143,7 +144,7 @@ describe('Chain building', () => {
 
     // Verify each document individually
     for (const doc of chain) {
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       expect(result.valid).toBe(true);
     }
   }, 15000);
@@ -271,7 +272,7 @@ describe('Verifier batch', () => {
       docs.push(doc);
     }
 
-    const report = await verifyDocumentBatch(docs);
+    const report = await verifyDocumentBatch(docs, undefined, trustDocs(docs));
     expect(report.summary.total).toBe(200);
     expect(report.summary.passed).toBe(200);
     expect(report.summary.failed).toBe(0);
@@ -345,7 +346,7 @@ describe('Large metadata', () => {
 
     expect(doc.metadata?.tags?.length).toBe(200);
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
 
     // Verify the serialized size is reasonable (under 1 MiB limit)
@@ -454,7 +455,7 @@ describe('Concurrent verification', () => {
       docs.push(doc);
     }
 
-    const results = await Promise.all(docs.map((d) => verifier.verify(d)));
+    const results = await Promise.all(docs.map((d) => verifier.verify(d, trustDoc(d))));
     const allValid = results.every((r) => r.valid);
     expect(allValid).toBe(true);
   }, 15000);
@@ -555,7 +556,7 @@ describe('Mixed batch verification', () => {
       docs.push({ ...doc, nonce: 'zz' });
     }
 
-    const report = await verifyDocumentBatch(docs);
+    const report = await verifyDocumentBatch(docs, undefined, trustDocs(docs));
     expect(report.summary.total).toBe(100);
     expect(report.summary.passed).toBe(50);
     expect(report.summary.failed).toBe(50);
@@ -666,7 +667,7 @@ describe('Many issuers stress', () => {
     expect(ids.size).toBe(100);
 
     // All should be valid
-    const results = await Promise.all(docs.map((d) => verifyCovenant(d)));
+    const results = await Promise.all(docs.map((d) => verifyCovenant(d, { authorizedKeys: d.issuer.publicKey })));
     expect(results.every((r) => r.valid)).toBe(true);
   }, 15000);
 });
@@ -725,10 +726,10 @@ describe('Verifier action stress', () => {
     });
 
     for (let i = 0; i < 100; i++) {
-      const readReport = await verifier.verifyAction(doc, 'read', `/data-${i}`);
+      const readReport = await verifier.verifyAction(doc, 'read', `/data-${i}`, undefined, trustDoc(doc));
       expect(readReport.permitted).toBe(true);
 
-      const writeReport = await verifier.verifyAction(doc, 'write', `/system/config-${i}`);
+      const writeReport = await verifier.verifyAction(doc, 'write', `/system/config-${i}`, undefined, trustDoc(doc));
       expect(writeReport.permitted).toBe(false);
     }
   }, 30000);

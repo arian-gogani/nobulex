@@ -5,6 +5,7 @@ import type { CovenantDocument, Issuer, Beneficiary } from '@nobulex/core';
 import { verifyCovenant as coreVerifyCovenant } from '@nobulex/core';
 import { verifyIdentity } from '@nobulex/identity';
 import { parse as cclParseDirect, evaluate as cclEvaluateDirect, merge as cclMergeDirect, serialize as cclSerializeDirect } from '@nobulex/ccl';
+import { trustDoc, trustDocs } from '@nobulex/verification';
 
 import {
   NobulexClient,
@@ -220,7 +221,7 @@ describe('@nobulex/sdk', () => {
       });
 
       // Should verify because signature matches issuer's public key
-      const result = await coreVerifyCovenant(doc);
+      const result = await coreVerifyCovenant(doc, trustDoc(doc));
       expect(result.valid).toBe(true);
     });
 
@@ -295,7 +296,7 @@ describe('@nobulex/sdk', () => {
         constraints: "permit read on 'data'",
       });
 
-      const result = await client.verifyCovenant(doc);
+      const result = await client.verifyCovenant(doc, trustDoc(doc));
       expect(result.valid).toBe(true);
       expect(result.checks.length).toBeGreaterThanOrEqual(11);
     });
@@ -311,7 +312,7 @@ describe('@nobulex/sdk', () => {
       });
 
       const tampered = { ...doc, signature: '00'.repeat(64) };
-      const result = await client.verifyCovenant(tampered);
+      const result = await client.verifyCovenant(tampered, trustDoc(tampered));
       expect(result.valid).toBe(false);
     });
 
@@ -329,7 +330,7 @@ describe('@nobulex/sdk', () => {
       });
 
       const tampered = { ...doc, signature: '00'.repeat(64) };
-      await expect(client.verifyCovenant(tampered)).rejects.toThrow(
+      await expect(client.verifyCovenant(tampered, trustDoc(tampered))).rejects.toThrow(
         CovenantVerificationError,
       );
     });
@@ -345,7 +346,7 @@ describe('@nobulex/sdk', () => {
       });
 
       const tampered = { ...doc, signature: '00'.repeat(64) };
-      const result = await client.verifyCovenant(tampered);
+      const result = await client.verifyCovenant(tampered, trustDoc(tampered));
       expect(result.valid).toBe(false);
     });
   });
@@ -369,7 +370,7 @@ describe('@nobulex/sdk', () => {
       expect(signed.countersignatures).toHaveLength(1);
       expect(signed.countersignatures![0]!.signerRole).toBe('auditor');
 
-      const result = await coreVerifyCovenant(signed);
+      const result = await coreVerifyCovenant(signed, trustDoc(signed));
       expect(result.valid).toBe(true);
     });
 
@@ -663,7 +664,7 @@ describe('@nobulex/sdk', () => {
         chain: { parentId: root.id, relation: 'restricts', depth: 1 },
       });
 
-      const result = await client.validateChain([root, child]);
+      const result = await client.validateChain([root, child], trustDocs([root, child]));
       expect(result.valid).toBe(true);
       expect(result.results).toHaveLength(2);
       expect(result.narrowingViolations).toHaveLength(0);
@@ -686,7 +687,7 @@ describe('@nobulex/sdk', () => {
         chain: { parentId: root.id, relation: 'restricts', depth: 1 },
       });
 
-      const result = await client.validateChain([root, child]);
+      const result = await client.validateChain([root, child], trustDocs([root, child]));
       expect(result.valid).toBe(false);
       expect(result.narrowingViolations.length).toBeGreaterThan(0);
     });
@@ -701,7 +702,7 @@ describe('@nobulex/sdk', () => {
         constraints: "permit read on '/data'",
       });
 
-      const result = await client.validateChain([doc]);
+      const result = await client.validateChain([doc], trustDocs([doc]));
       expect(result.valid).toBe(true);
       expect(result.results).toHaveLength(1);
       expect(result.results[0]!.valid).toBe(true);
@@ -778,7 +779,7 @@ describe('@nobulex/sdk', () => {
       const events: CovenantVerifiedEvent[] = [];
       client.on('covenant:verified', (e) => events.push(e));
 
-      await client.verifyCovenant(doc);
+      await client.verifyCovenant(doc, trustDoc(doc));
 
       expect(events).toHaveLength(1);
       expect(events[0]!.type).toBe('covenant:verified');
@@ -870,7 +871,7 @@ describe('@nobulex/sdk', () => {
       const events: ChainValidatedEvent[] = [];
       client.on('chain:validated', (e) => events.push(e));
 
-      await client.validateChain([doc]);
+      await client.validateChain([doc], trustDocs([doc]));
 
       expect(events).toHaveLength(1);
       expect(events[0]!.type).toBe('chain:validated');
@@ -1019,7 +1020,7 @@ describe('@nobulex/sdk', () => {
         );
 
         expect(doc.constraints).toBe("permit read on '/data'");
-        const result = await coreVerifyCovenant(doc);
+        const result = await coreVerifyCovenant(doc, trustDoc(doc));
         expect(result.valid).toBe(true);
       });
 
@@ -1051,7 +1052,7 @@ describe('@nobulex/sdk', () => {
         );
 
         expect(doc.constraints).toBe("deny write on '/system'");
-        const result = await coreVerifyCovenant(doc);
+        const result = await coreVerifyCovenant(doc, trustDoc(doc));
         expect(result.valid).toBe(true);
       });
     });
@@ -1066,7 +1067,7 @@ describe('@nobulex/sdk', () => {
           issuerKeyPair.privateKey,
         );
 
-        const result = await coreVerifyCovenant(doc);
+        const result = await coreVerifyCovenant(doc, trustDoc(doc));
         expect(result.valid).toBe(true);
 
         // Use CCL parse directly after consolidation
@@ -1290,7 +1291,7 @@ describe('@nobulex/sdk', () => {
       });
 
       // Verify
-      const v1 = await client.verifyCovenant(doc);
+      const v1 = await client.verifyCovenant(doc, trustDoc(doc));
       expect(v1.valid).toBe(true);
 
       // Countersign
@@ -1298,7 +1299,7 @@ describe('@nobulex/sdk', () => {
       expect(signed.countersignatures).toHaveLength(1);
 
       // Verify after countersign
-      const v2 = await client.verifyCovenant(signed);
+      const v2 = await client.verifyCovenant(signed, trustDoc(signed));
       expect(v2.valid).toBe(true);
 
       // Evaluate permitted action using CCL directly
@@ -1329,7 +1330,7 @@ describe('@nobulex/sdk', () => {
       });
 
       // Validate chain
-      const chainResult = await client.validateChain([root, child]);
+      const chainResult = await client.validateChain([root, child], trustDocs([root, child]));
       expect(chainResult.valid).toBe(true);
 
       // Resolve chain

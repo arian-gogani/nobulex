@@ -13,6 +13,7 @@ import {
   interopConformance,
 } from '../src/conformance';
 import type { ConformanceTarget } from '../src/conformance';
+import { trustDoc } from '@nobulex/verification';
 
 import { buildCovenant, verifyCovenant } from '@nobulex/core';
 import { generateKeyPair, sign, verify, sha256 } from '@nobulex/crypto';
@@ -22,7 +23,7 @@ import { parse, evaluate } from '@nobulex/ccl';
 
 const nobulexTarget: ConformanceTarget = {
   buildCovenant,
-  verifyCovenant,
+  verifyCovenant: (doc) => verifyCovenant(doc, trustDoc(doc)),
   evaluateAction: async (doc, action, resource, context) => {
     const cclDoc = parse(doc.constraints);
     return evaluate(cclDoc, action, resource, context);
@@ -214,7 +215,7 @@ describe('Conformance: Covenant', () => {
       constraints: "permit read on '/data/**'",
       privateKey: kp.privateKey,
     });
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, trustDoc(doc));
     expect(result.valid).toBe(true);
   });
 
@@ -227,7 +228,7 @@ describe('Conformance: Covenant', () => {
       privateKey: kp.privateKey,
     });
     const tampered = { ...doc, constraints: "deny write on '/all'" };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, trustDoc(tampered));
     expect(result.valid).toBe(false);
   });
 
@@ -240,7 +241,7 @@ describe('Conformance: Covenant', () => {
       privateKey: kp.privateKey,
       expiresAt: '2000-01-01T00:00:00.000Z',
     });
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, trustDoc(doc));
     const check = result.checks.find((c) => c.name === 'not_expired');
     expect(check).toBeDefined();
     expect(check!.passed).toBe(false);
@@ -302,7 +303,7 @@ describe('Conformance: Interop', () => {
       privateKey: kp.privateKey,
     });
     const restored = JSON.parse(JSON.stringify(doc));
-    const result = await verifyCovenant(restored);
+    const result = await verifyCovenant(restored, trustDoc(restored));
     expect(result.valid).toBe(true);
   });
 

@@ -478,6 +478,13 @@ export interface KovaGatewayOptions {
    * Default: reads `x-kova-covenant` header as JSON string, or `authorization: Bearer <base64>`.
    */
   covenantExtractor?: (req: IncomingRequest) => CovenantDocument | string | null;
+  /**
+   * Trusted issuer key(s), hex-encoded, forming the gateway's trust store.
+   * Verification is fail-closed: without a trust store the gateway falls back
+   * to the key embedded in the presented covenant (self-attested). Configure
+   * this with the issuer keys the gateway actually trusts in production.
+   */
+  authorizedKeys?: string | string[];
   requiredConstraints?: string[];
   actionExtractor?: (req: IncomingRequest) => string;
   resourceExtractor?: (req: IncomingRequest) => string;
@@ -530,6 +537,7 @@ export function kovaGatewayMiddleware(
   const {
     client,
     covenantExtractor = defaultCovenantExtractor,
+    authorizedKeys,
     requiredConstraints,
     actionExtractor = defaultActionExtractor,
     resourceExtractor = defaultResourceExtractor,
@@ -556,7 +564,7 @@ export function kovaGatewayMiddleware(
       return;
     }
 
-    void verifyCovenant(covenant).then((verifyResult) => {
+    void verifyCovenant(covenant, { authorizedKeys: authorizedKeys ?? covenant.issuer.publicKey }).then((verifyResult) => {
       if (!verifyResult.valid) {
         if (res.setHeader) res.setHeader('content-type', ContentType.APPLICATION_JSON);
         if (res.statusCode !== undefined) res.statusCode = 401;

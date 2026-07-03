@@ -76,9 +76,13 @@ export {
 } from './schema.js';
 
 export type {
-  ValidationError,
+  SchemaValidationIssue,
   ValidationResult,
 } from './schema.js';
+
+// The throwable ValidationError class (extends NobulexError). Distinct from
+// SchemaValidationIssue, the per-field record returned by schema validators.
+export { ValidationError } from './types/index.js';
 
 // composability (merged from @nobulex/composability)
 

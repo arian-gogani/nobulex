@@ -9,7 +9,7 @@
 
 
 /** A single validation error with path, message, and optional offending value. */
-export interface ValidationError {
+export interface SchemaValidationIssue {
   /** Dot-delimited path to the invalid field, e.g. "issuer.publicKey". */
   path: string;
   message: string;
@@ -22,7 +22,7 @@ export interface ValidationResult {
   /** Whether the document passed all validation checks. */
   valid: boolean;
   /** All validation errors found (empty when valid is true). */
-  errors: ValidationError[];
+  errors: SchemaValidationIssue[];
 }
 
 
@@ -68,8 +68,8 @@ function isPlainObject(val: unknown): val is Record<string, unknown> {
  * @param path  - The base path for error reporting (e.g. "issuer" or "beneficiary").
  * @returns An array of validation errors (empty if valid).
  */
-export function validatePartySchema(party: unknown, path: string): ValidationError[] {
-  const errors: ValidationError[] = [];
+export function validatePartySchema(party: unknown, path: string): SchemaValidationIssue[] {
+  const errors: SchemaValidationIssue[] = [];
 
   if (!isPlainObject(party)) {
     errors.push({ path, message: 'must be an object', value: party });
@@ -104,8 +104,8 @@ export function validatePartySchema(party: unknown, path: string): ValidationErr
  * @param constraints - The value to validate.
  * @returns An array of validation errors (empty if valid).
  */
-export function validateConstraintsSchema(constraints: unknown): ValidationError[] {
-  const errors: ValidationError[] = [];
+export function validateConstraintsSchema(constraints: unknown): SchemaValidationIssue[] {
+  const errors: SchemaValidationIssue[] = [];
 
   if (typeof constraints !== 'string') {
     errors.push({ path: 'constraints', message: 'must be a string', value: constraints });
@@ -129,8 +129,8 @@ export function validateConstraintsSchema(constraints: unknown): ValidationError
  * @param chain - The value to validate.
  * @returns An array of validation errors (empty if valid).
  */
-export function validateChainSchema(chain: unknown): ValidationError[] {
-  const errors: ValidationError[] = [];
+export function validateChainSchema(chain: unknown): SchemaValidationIssue[] {
+  const errors: SchemaValidationIssue[] = [];
 
   if (!isPlainObject(chain)) {
     errors.push({ path: 'chain', message: 'must be an object', value: chain });
@@ -184,7 +184,7 @@ export function validateChainSchema(chain: unknown): ValidationError[] {
  * @returns A {@link ValidationResult} with `valid` boolean and `errors` array.
  */
 export function validateDocumentSchema(doc: unknown): ValidationResult {
-  const errors: ValidationError[] = [];
+  const errors: SchemaValidationIssue[] = [];
 
   // Top-level must be an object
   if (!isPlainObject(doc)) {

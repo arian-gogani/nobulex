@@ -33,7 +33,7 @@ import {
   matchAction as cclMatchAction,
   matchResource as cclMatchResource,
   merge as cclMerge,
-  serialize as cclSerialize,
+  cclSerialize,
   checkRateLimit as cclCheckRateLimit,
   validateNarrowing as cclValidateNarrowing,
   createIdentity as identityCreate,

@@ -29,7 +29,7 @@ import {
   EnforcementMiddleware,
   createMiddleware,
   DidRelationship,
-  ProofType,
+  VCProofType,
   ValidationError,
   verifyCompliance as verify,
   verifyWithProofs,
@@ -232,7 +232,7 @@ export class CovenantAgent {
     const proofValue = await signWithDID(proofPayload, this.did);
 
     const proof: VCProof = {
-      type: ProofType.ED25519_SIGNATURE_2020,
+      type: VCProofType.ED25519_SIGNATURE_2020,
       created: now,
       verificationMethod: `${this.did.did}#key-1`,
       proofPurpose: DidRelationship.ASSERTION_METHOD,

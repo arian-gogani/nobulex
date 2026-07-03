@@ -105,7 +105,7 @@ describe('API Surface Tests', () => {
       'SUPPORTED_SIGNATURE_SCHEMES',
       'NobulexError',
       'NobulexErrorCode',
-      'ProofType',
+      'VCProofType',
       'StorageError',
       'Tracer',
       'ValidationError',

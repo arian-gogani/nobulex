@@ -1043,6 +1043,7 @@ export {
   parse as cclParse, evaluate, matchAction, matchResource, merge, checkRateLimit,
   validateNarrowing, validateCCL, CCLSyntaxError, CCLValidationError,
   specificity, evaluateCondition, parseTokens,
+  serialize as cclSerialize,
 } from './ccl/index';
 export type {
   CCLDocument, Statement, PermitDenyStatement, RequireStatement,

@@ -19,7 +19,7 @@ export const DidRelationship = {
 } as const;
 
 /** W3C Verifiable Credential proof suite type identifiers. */
-export const ProofType = {
+export const VCProofType = {
   ED25519_SIGNATURE_2020: 'Ed25519Signature2020',
 } as const;
 

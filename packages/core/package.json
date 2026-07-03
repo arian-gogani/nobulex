@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/core",
-  "version": "0.2.2",
+  "version": "1.0.0",
   "description": "Trust Capital for AI agents. Credit scores for machines. Agents earn access through verified behavior.",
   "license": "MIT",
   "main": "./dist/index.js",

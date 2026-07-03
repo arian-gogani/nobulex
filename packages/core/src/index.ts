@@ -1042,10 +1042,12 @@ export * from './crypto/index';
 export {
   parse as cclParse, evaluate, matchAction, matchResource, merge, checkRateLimit,
   validateNarrowing, validateCCL, CCLSyntaxError, CCLValidationError,
+  specificity, evaluateCondition, parseTokens,
 } from './ccl/index';
 export type {
   CCLDocument, Statement, PermitDenyStatement, RequireStatement,
   LimitStatement, NarrowingViolation, EvaluationContext, EvaluationResult,
+  Condition, CompoundCondition,
 } from './ccl/index';
 export * from './covenant-lang/index';
 export * from './action-log/index';

@@ -23,7 +23,7 @@ import type {
   DIDDocument,
   CovenantSpec,
   ActionLog,
-  VerificationResult,
+  ComplianceVerificationResult,
 } from '@nobulex/core';
 
 // ---------------------------------------------------------------------------
@@ -56,7 +56,7 @@ export interface HandshakeResult {
   readonly violationCount: number;
   readonly totalActions: number;
   readonly reason: string;
-  readonly verification: VerificationResult;
+  readonly verification: ComplianceVerificationResult;
   readonly verifiedAt: string;
 }
 

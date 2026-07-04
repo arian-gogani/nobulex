@@ -5,7 +5,7 @@ import {
   verifyAttestationChain,
   generateRiskProfile,
 } from './attestation-builder.js';
-import type { CovenantSpec, ActionLog, VerificationResult } from '../types/index';
+import type { CovenantSpec, ActionLog, ComplianceVerificationResult } from '../types/index';
 
 // ─── Helpers ────────────────────────────────────────────────────────────────
 
@@ -46,7 +46,7 @@ function makeActionLog(agentDid: string, count = 5, blocked = 0): ActionLog {
   };
 }
 
-function makeVerification(agentDid: string, violations = 0): VerificationResult {
+function makeVerification(agentDid: string, violations = 0): ComplianceVerificationResult {
   const violationList = Array.from({ length: violations }, (_, i) => ({
     entryIndex: i,
     action: `bad_action_${i}`,
@@ -296,8 +296,8 @@ describe('generateRiskProfile', () => {
     expect(profile.latestAttestationHash).toBe(record.hash);
     expect(profile.signature).toBeTruthy();
     // should not expose raw covenant or action log data
-    expect((profile as any).covenant).toBeUndefined();
-    expect((profile as any).actionLog).toBeUndefined();
-    expect((profile as any).recentSessions).toBeUndefined();
+    expect((profile as Record<string, unknown>).covenant).toBeUndefined();
+    expect((profile as Record<string, unknown>).actionLog).toBeUndefined();
+    expect((profile as Record<string, unknown>).recentSessions).toBeUndefined();
   });
 });

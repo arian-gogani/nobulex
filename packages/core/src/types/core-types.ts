@@ -231,7 +231,7 @@ export interface Violation {
 }
 
 /** Result of verifying a covenant against an action log. */
-export interface VerificationResult {
+export interface ComplianceVerificationResult {
   /** Whether the agent is fully compliant with the covenant (true if no violations). */
   readonly compliant: boolean;
   /** The identifier of the covenant that was verified against. */

@@ -7,7 +7,7 @@ import type {
   ToolDefinition,
   ToolResult,
 } from './index';
-import { MemoryStore } from '@nobulex/store';
+import { MemoryStore } from '@nobulex/core';
 import { generateKeyPair, toHex } from '@nobulex/crypto';
 import type { KeyPair } from '@nobulex/crypto';
 import { buildCovenant } from '@nobulex/core';

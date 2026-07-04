@@ -50,7 +50,7 @@ import type {
   ActionLog,
   ActionLogEntry,
   MerkleProof,
-  VerificationResult,
+  ComplianceVerificationResult,
   Violation,
   CovenantAttestation,
   VCProof,
@@ -176,12 +176,12 @@ export class CovenantAgent {
 
 
   /** Post-hoc verify the agent's action log against its covenant. */
-  verify(): VerificationResult {
+  verify(): ComplianceVerificationResult {
     return verify(this.spec, this.getLog());
   }
 
   /** Verify with Merkle proofs for each violation. */
-  verifyWithProofs(): { result: VerificationResult; proofs: Map<number, MerkleProof> } {
+  verifyWithProofs(): { result: ComplianceVerificationResult; proofs: Map<number, MerkleProof> } {
     // fine for now, revisit if it shows up in profiles
     return verifyWithProofs(this.spec, this.getLog());
   }
@@ -320,7 +320,7 @@ export type {
   ActionLog,
   ActionLogEntry,
   MerkleProof,
-  VerificationResult,
+  ComplianceVerificationResult,
   Violation,
   CovenantAttestation,
   SignedCovenant,

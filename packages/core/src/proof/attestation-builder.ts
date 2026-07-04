@@ -7,7 +7,7 @@
  */
 
 import { sha256String, signString, toHex } from '../crypto/index';
-import type { CovenantSpec, ActionLog, VerificationResult } from '../types/index';
+import type { CovenantSpec, ActionLog, ComplianceVerificationResult } from '../types/index';
 import type {
   SessionDigest,
   AttestationRecord,
@@ -24,7 +24,7 @@ import type {
 export function createSessionDigest(params: {
   covenant: CovenantSpec;
   actionLog: ActionLog;
-  verification: VerificationResult;
+  verification: ComplianceVerificationResult;
   platform?: string;
 }): SessionDigest {
   const { covenant, actionLog, verification, platform } = params;
@@ -58,7 +58,7 @@ export function createSessionDigest(params: {
 
 function buildViolationBreakdown(
   existing: readonly ViolationBreakdown[],
-  newViolations: VerificationResult['violations'],
+  newViolations: ComplianceVerificationResult['violations'],
 ): ViolationBreakdown[] {
   // start from existing categories
   const map = new Map<string, { count: number; lastOccurrence: string }>();

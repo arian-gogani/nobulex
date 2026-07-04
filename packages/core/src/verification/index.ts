@@ -10,10 +10,10 @@
 
 import { compile } from '../covenant-lang/index';
 import type { CovenantSpec, CovenantStatement, CovenantRequirement } from '../types/index';
-import type { ActionLog, ActionLogEntry, Violation, VerificationResult, MerkleProof } from '../types/index';
+import type { ActionLog, ActionLogEntry, Violation, ComplianceVerificationResult, MerkleProof } from '../types/index';
 import { verifyIntegrity, buildMerkleTree, generateMerkleProof } from '../action-log/index';
 
-export type { Violation, VerificationResult, MerkleProof } from '../types/index';
+export type { Violation, ComplianceVerificationResult, MerkleProof } from '../types/index';
 
 /** Options for the verify function. */
 export interface VerifyOptions {
@@ -31,7 +31,7 @@ export function verify(
   spec: CovenantSpec,
   log: ActionLog,
   options: VerifyOptions = {},
-): VerificationResult {
+): ComplianceVerificationResult {
   const { includeMerkleProofs = true, verifyLogIntegrity: checkIntegrity = true } = options;
 
   // check the hash chain first — no point verifying compliance
@@ -129,7 +129,7 @@ export function verifyWithProofs(
   spec: CovenantSpec,
   log: ActionLog,
 ): {
-  result: VerificationResult;
+  result: ComplianceVerificationResult;
   proofs: Map<number, MerkleProof>;
 } {
   const result = verify(spec, log, { includeMerkleProofs: true });
@@ -149,14 +149,14 @@ export function verifyWithProofs(
  *
  * @param specs - Array of covenant specifications.
  * @param log - The action log to verify against all covenants.
- * @returns Map of covenant name → VerificationResult.
+ * @returns Map of covenant name → ComplianceVerificationResult.
  */
 export function verifyBatch(
   specs: readonly CovenantSpec[],
   log: ActionLog,
-): Map<string, VerificationResult> {
+): Map<string, ComplianceVerificationResult> {
   // this branch is almost never taken in practice
-  const results = new Map<string, VerificationResult>();
+  const results = new Map<string, ComplianceVerificationResult>();
   for (const spec of specs) {
     results.set(spec.name, verify(spec, log));
   }

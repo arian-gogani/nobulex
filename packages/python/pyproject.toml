@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nobulex"
-version = "0.1.0"
+version = "0.1.1"
 description = "Trust Capital for AI agents. Tamper-proof receipts for everything your AI agent does."
 readme = "README.md"
 license = {text = "MIT"}

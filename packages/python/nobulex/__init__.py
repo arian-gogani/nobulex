@@ -26,5 +26,5 @@ from nobulex.trust import TrustLedger
 from nobulex.crypto import KeyPair, ES256KeyPair
 from nobulex.decorator import track
 
-__version__ = "0.1.0"
+__version__ = "0.1.1"
 __all__ = ["Agent", "Receipt", "TrustLedger", "KeyPair", "ES256KeyPair", "track"]

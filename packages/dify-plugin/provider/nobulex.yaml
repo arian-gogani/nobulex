@@ -25,3 +25,7 @@ tools:
   - tools/verify_receipt.yaml
   - tools/export_article12.yaml
   - tools/get_trust_score.yaml
+
+extra:
+  python:
+    source: provider/nobulex.py

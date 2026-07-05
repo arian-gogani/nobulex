@@ -7,7 +7,7 @@ label:
 description:
   en_US: "Cryptographic receipts for every Dify agent tool call. Ed25519-signed, JCS-canonical, hash-chained audit trail ready for EU AI Act Article 12 compliance and independent verification."
 created_at: "2026-06-05T00:00:00Z"
-icon: "_assets/icon.svg"
+icon: "icon.svg"
 resource:
   memory: 1048576
 permission:

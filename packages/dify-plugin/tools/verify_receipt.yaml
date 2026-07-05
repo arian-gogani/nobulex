@@ -26,3 +26,6 @@ output:
     reason:
       type: string
       description: "If valid is false, explains what failed (signature_invalid, chain_break, malformed)."
+extra:
+  python:
+    source: tools/verify_receipt.py

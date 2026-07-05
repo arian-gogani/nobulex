@@ -38,3 +38,7 @@ output:
     chain_head_hash:
       type: string
       description: "SHA-256 of the last receipt. An auditor walks back from here."
+
+extra:
+  python:
+    source: tools/export_article12.py

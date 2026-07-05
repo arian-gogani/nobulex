@@ -35,3 +35,7 @@ output:
     observation_window_days:
       type: integer
       description: "Days of history included in this score."
+
+extra:
+  python:
+    source: tools/get_trust_score.py

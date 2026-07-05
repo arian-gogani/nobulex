@@ -53,3 +53,7 @@ output:
     receipt_json:
       type: string
       description: "Full receipt as a JSON string, suitable for archiving or passing to verify_receipt."
+
+extra:
+  python:
+    source: tools/sign_receipt.py

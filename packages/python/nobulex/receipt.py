@@ -6,6 +6,7 @@ from typing import Optional, Literal
 
 from nobulex.crypto import (
     KeyPair,
+    ES256KeyPair,
     jcs_canonicalize,
     sha256_hex,
     compute_action_ref,
@@ -88,11 +89,16 @@ class Receipt:
                 return False
         try:
             canonical = self.to_canonical()
-            return KeyPair.verify_signature(
-                bytes.fromhex(self.signer_public_key),
-                bytes.fromhex(self.signature),
-                canonical.encode("utf-8"),
-            )
+            pub_bytes = bytes.fromhex(self.signer_public_key)
+            sig_bytes = bytes.fromhex(self.signature)
+            message = canonical.encode("utf-8")
+            # Algorithm discrimination by key encoding: an Ed25519 public
+            # key is 32 raw bytes; an uncompressed P-256 point is 65 bytes
+            # (0x04 prefix). Backward compatible: no schema change, and
+            # existing Ed25519 receipts verify exactly as before.
+            if len(pub_bytes) == 65:
+                return ES256KeyPair.verify_signature(pub_bytes, sig_bytes, message)
+            return KeyPair.verify_signature(pub_bytes, sig_bytes, message)
         except Exception:
             return False
 

@@ -50,3 +50,24 @@ def test_cross_algorithm_independence():
     data = b"cross-algo"
     assert KeyPair.verify_signature(ed.public_bytes, ed.sign(data), data)
     assert ES256KeyPair.verify_signature(es.public_bytes, es.sign(data), data)
+
+
+def test_receipt_roundtrip_es256_verifies():
+    """Regression: Receipt.verify hardcoded Ed25519, so ES256 receipts were
+    unverifiable through the Receipt API (create -> to_dict -> from_dict ->
+    verify returned False even with the correct key pinned)."""
+    from nobulex import Receipt, ES256KeyPair
+
+    es = ES256KeyPair()
+    pub = es.public_hex if isinstance(es.public_hex, str) else es.public_hex()
+    r = Receipt.create(
+        "agent:t", "file.read", "s:/x", es,
+        verdict="ALLOW", timestamp_ms=1751700002000,
+    )
+    d = Receipt.from_dict(r.to_dict())
+    assert d.verify() is True
+    assert d.verify(authorized_keys=[pub]) is True
+
+    bad = r.to_dict()
+    bad["scope"] = "s:/TAMPERED"
+    assert Receipt.from_dict(bad).verify() is False

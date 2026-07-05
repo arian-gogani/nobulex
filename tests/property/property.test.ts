@@ -429,7 +429,7 @@ describe('Core property-based invariants', () => {
       () => ({}),
       async () => {
         const { doc } = await buildTestCovenant();
-        const result = await verifyCovenant(doc);
+        const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
         return result.valid === true;
       },
     );
@@ -530,7 +530,7 @@ describe('Core property-based invariants', () => {
       async () => {
         const { doc } = await buildTestCovenant();
         const restored = deserializeCovenant(serializeCovenant(doc));
-        const result = await verifyCovenant(restored);
+        const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
         return result.valid === true;
       },
     );
@@ -545,7 +545,7 @@ describe('Core property-based invariants', () => {
       async () => {
         const { doc } = await buildTestCovenant();
         const tampered = { ...doc, constraints: `deny delete on '/tampered'` };
-        const result = await verifyCovenant(tampered);
+        const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
         return result.valid === false;
       },
     );

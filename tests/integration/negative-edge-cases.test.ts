@@ -399,7 +399,7 @@ describe('Core edge cases', () => {
     const firstChar = doc.signature[0]!;
     const flipped = firstChar === 'f' ? '0' : 'f';
     const tampered = { ...doc, signature: flipped + doc.signature.slice(1) };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     const sigCheck = result.checks.find((c) => c.name === 'signature_valid');
     expect(sigCheck?.passed).toBe(false);
     expect(result.valid).toBe(false);
@@ -411,7 +411,7 @@ describe('Core edge cases', () => {
       ...doc,
       issuer: { ...doc.issuer, id: 'hacker' },
     };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
     const idCheck = result.checks.find((c) => c.name === 'id_match');
     expect(idCheck?.passed).toBe(false);
@@ -423,7 +423,7 @@ describe('Core edge cases', () => {
       ...doc,
       beneficiary: { ...doc.beneficiary, id: 'evil-beneficiary' },
     };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -433,7 +433,7 @@ describe('Core edge cases', () => {
       ...doc,
       nonce: toHex(generateNonce()),
     };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -443,7 +443,7 @@ describe('Core edge cases', () => {
       ...doc,
       createdAt: '2000-01-01T00:00:00.000Z',
     };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -455,7 +455,7 @@ describe('Core edge cases', () => {
       issuer: { ...doc.issuer, publicKey: beneficiaryKp.publicKeyHex },
       beneficiary: { ...doc.beneficiary, publicKey: issuerKp.publicKeyHex },
     };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 

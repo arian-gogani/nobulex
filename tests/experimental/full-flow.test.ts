@@ -252,7 +252,7 @@ describe('Nobulex SDK: Full cross-package integration flow', () => {
     });
 
     it('should pass all 11 verification checks on the covenant document', async () => {
-      const result = await verifyCovenant(covenant);
+      const result = await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey });
 
       expect(result.valid).toBe(true);
       expect(result.checks.length).toBe(11);
@@ -1011,8 +1011,8 @@ describe('multi-agent collaboration flow', () => {
     });
 
     // Verify both
-    const v12 = await verifyCovenant(cov12);
-    const v23 = await verifyCovenant(cov23);
+    const v12 = await verifyCovenant(cov12, { authorizedKeys: cov12.issuer.publicKey });
+    const v23 = await verifyCovenant(cov23, { authorizedKeys: cov23.issuer.publicKey });
     expect(v12.valid).toBe(true);
     expect(v23.valid).toBe(true);
   });
@@ -1347,9 +1347,9 @@ describe('constraint narrowing chain flow', () => {
     });
 
     // All should verify
-    expect((await verifyCovenant(rootCov)).valid).toBe(true);
-    expect((await verifyCovenant(midCov)).valid).toBe(true);
-    expect((await verifyCovenant(leafCov)).valid).toBe(true);
+    expect((await verifyCovenant(rootCov, { authorizedKeys: rootCov.issuer.publicKey })).valid).toBe(true);
+    expect((await verifyCovenant(midCov, { authorizedKeys: midCov.issuer.publicKey })).valid).toBe(true);
+    expect((await verifyCovenant(leafCov, { authorizedKeys: leafCov.issuer.publicKey })).valid).toBe(true);
 
     // Resolve chain from leaf
     const resolver = new MemoryChainResolver();

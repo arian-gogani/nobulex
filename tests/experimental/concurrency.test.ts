@@ -524,7 +524,7 @@ describe('Parallel Covenant Operations', () => {
       docs.push(await buildSimpleDoc(issuerKp, beneficiaryKp, `permit read on '/verify-${i}'`));
     }
 
-    const results = await Promise.all(docs.map((d) => verifyCovenant(d)));
+    const results = await Promise.all(docs.map((d) => verifyCovenant(d, { authorizedKeys: d.issuer.publicKey })));
 
     expect(results.length).toBe(20);
     expect(results.every((r) => r.valid)).toBe(true);
@@ -536,7 +536,7 @@ describe('Parallel Covenant Operations', () => {
 
     const pipeline = Array.from({ length: 20 }, async (_, i) => {
       const doc = await buildSimpleDoc(issuerKp, beneficiaryKp, `permit read on '/pipe-${i}'`);
-      const result = await verifyCovenant(doc);
+      const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
       return { id: doc.id, valid: result.valid };
     });
 
@@ -571,7 +571,7 @@ describe('Parallel Covenant Operations', () => {
     }
 
     // Verify all countersigned docs
-    const verifications = await Promise.all(countersigned.map((d) => verifyCovenant(d)));
+    const verifications = await Promise.all(countersigned.map((d) => verifyCovenant(d, { authorizedKeys: d.issuer.publicKey })));
     expect(verifications.every((v) => v.valid)).toBe(true);
   }, 15_000);
 
@@ -651,7 +651,7 @@ describe('Parallel Covenant Operations', () => {
     const ids = new Set(docs.map((d) => d.id));
     expect(ids.size).toBe(20);
 
-    const verifications = await Promise.all(docs.map((d) => verifyCovenant(d)));
+    const verifications = await Promise.all(docs.map((d) => verifyCovenant(d, { authorizedKeys: d.issuer.publicKey })));
     expect(verifications.every((v) => v.valid)).toBe(true);
   }, 15_000);
 });
@@ -1164,7 +1164,7 @@ describe('High-Volume Integration', () => {
       await store.put(doc);
 
       // Verify
-      const verifyResult = await verifyCovenant(doc);
+      const verifyResult = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       // Evaluate CCL
       const cclDoc = parse(doc.constraints);
@@ -1303,7 +1303,7 @@ describe('High-Volume Integration', () => {
       });
 
       // Step 3: Verify covenant
-      const verifyResult = await verifyCovenant(doc);
+      const verifyResult = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
       // Step 4: Enforce via monitor
       const monitor = new Monitor(doc.id, doc.constraints, { mode: 'enforce' });

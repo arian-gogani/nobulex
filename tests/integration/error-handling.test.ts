@@ -290,7 +290,7 @@ describe('Tampered documents', () => {
     const { doc } = await buildValidCovenant();
     const tampered = { ...doc, constraints: "deny write on '**'" };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
 
     const idCheck = result.checks.find((c) => c.name === 'id_match');
@@ -304,7 +304,7 @@ describe('Tampered documents', () => {
       issuer: { ...doc.issuer, id: 'attacker-id' },
     };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -312,7 +312,7 @@ describe('Tampered documents', () => {
     const { doc } = await buildValidCovenant();
     const tampered = { ...doc, nonce: '00'.repeat(32) };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -324,7 +324,7 @@ describe('Tampered documents', () => {
     sigBytes[idx] = sigBytes[idx] === 'a' ? 'b' : 'a';
     const tampered = { ...doc, signature: sigBytes.join('') };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -335,7 +335,7 @@ describe('Tampered documents', () => {
       beneficiary: { ...doc.beneficiary, id: 'evil-beneficiary' },
     };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -347,7 +347,7 @@ describe('Tampered documents', () => {
       issuer: { ...doc.issuer, publicKey: attackerKp.publicKeyHex },
     };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -355,7 +355,7 @@ describe('Tampered documents', () => {
     const { doc } = await buildValidCovenant();
     const tampered = { ...doc, signature: doc.signature.slice(0, 32) };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -363,7 +363,7 @@ describe('Tampered documents', () => {
     const { doc } = await buildValidCovenant();
     const tampered = { ...doc, signature: '' };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 });
@@ -385,7 +385,7 @@ describe('Expired documents', () => {
       expiresAt: '2020-01-01T00:00:00Z',
     });
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(false);
 
     const expiryCheck = result.checks.find((c) => c.name === 'not_expired');
@@ -404,7 +404,7 @@ describe('Expired documents', () => {
       activatesAt: '2099-01-01T00:00:00Z',
     });
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(false);
 
     const activeCheck = result.checks.find((c) => c.name === 'active');
@@ -423,7 +423,7 @@ describe('Expired documents', () => {
       expiresAt: '2099-12-31T23:59:59Z',
     });
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 });
@@ -615,7 +615,7 @@ describe('Invalid countersignatures', () => {
       constraints: "deny write on '**'",
     };
 
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -624,7 +624,7 @@ describe('Invalid countersignatures', () => {
     const auditorKp = await generateKeyPair();
 
     const countersigned = await countersignCovenant(doc, auditorKp, 'auditor');
-    const result = await verifyCovenant(countersigned);
+    const result = await verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
     expect(result.valid).toBe(true);
 
     const csCheck = result.checks.find((c) => c.name === 'countersignatures');
@@ -880,7 +880,7 @@ describe('NobulexClient errors', () => {
     // Tamper to make it fail
     const tampered = { ...doc, constraints: "deny all on '**'" };
 
-    await expect(client.verifyCovenant(tampered)).rejects.toThrow();
+    await expect(client.verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey })).rejects.toThrow();
   });
 
   it('non-strict mode returns result on invalid verification', async () => {
@@ -889,7 +889,7 @@ describe('NobulexClient errors', () => {
 
     const tampered = { ...doc, constraints: "deny all on '**'" };
 
-    const result = await client.verifyCovenant(tampered);
+    const result = await client.verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
   });
 
@@ -905,7 +905,7 @@ describe('NobulexClient errors', () => {
     });
 
     expect(doc.id).toBeTruthy();
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 });

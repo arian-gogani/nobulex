@@ -784,7 +784,7 @@ describe('Serialization Snapshot Stability', () => {
     expect(restored.proof).toEqual(doc.proof);
 
     // Verify the document still passes verification
-    const vResult = await verifyCovenant(restored);
+    const vResult = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
     expect(vResult.valid).toBe(true);
   });
 
@@ -806,7 +806,7 @@ describe('Serialization Snapshot Stability', () => {
     const { doc } = await buildTestCovenant("permit read on '/data/**'");
     const json = serializeCovenant(doc);
     const restored = deserializeCovenant(json);
-    const result = await verifyCovenant(restored);
+    const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 

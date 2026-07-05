@@ -65,8 +65,8 @@ describe('CovenantBuilder', () => {
       .constraints(validConstraints())
       .privateKey(issuerKeyPair.privateKey)
       .expiresAt(expires)
-      .metadata({ purpose: 'test' } as any)
-      .chain({ parentId: 'a'.repeat(64), relation: 'delegation' as any, depth: 1 })
+      .metadata({ purpose: 'test' } as never)
+      .chain({ parentId: 'a'.repeat(64), relation: 'delegation' as never, depth: 1 })
       .enforcement({ type: 'audit', config: {} })
       .build();
 
@@ -80,7 +80,7 @@ describe('CovenantBuilder', () => {
     expect(doc.chain?.parentId).toBe('a'.repeat(64));
     expect(doc.enforcement?.type).toBe('audit');
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -99,7 +99,7 @@ describe('CovenantBuilder', () => {
     expect(doc.id).toMatch(/^[0-9a-f]{64}$/);
     expect(doc.signature).toMatch(/^[0-9a-f]{128}$/);
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -298,7 +298,7 @@ describe('CovenantBuilder', () => {
     expect(doc.enforcement?.type).toBe('monitor');
     expect(doc.metadata?.name).toBe('reversed');
 
-    const result = await verifyCovenant(doc);
+    const result = await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -392,8 +392,8 @@ describe('CovenantBuilder', () => {
     expect(doc1.id).not.toBe(doc2.id);
     expect(doc1.constraints).not.toBe(doc2.constraints);
 
-    const result1 = await verifyCovenant(doc1);
-    const result2 = await verifyCovenant(doc2);
+    const result1 = await verifyCovenant(doc1, { authorizedKeys: doc1.issuer.publicKey });
+    const result2 = await verifyCovenant(doc2, { authorizedKeys: doc2.issuer.publicKey });
     expect(result1.valid).toBe(true);
     expect(result2.valid).toBe(true);
   });

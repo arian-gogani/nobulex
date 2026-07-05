@@ -103,7 +103,7 @@ describe('Scenario 1: Chain Delegation with Constraint Narrowing', () => {
     expect(rootCovenant.chain).toBeUndefined();
 
     // Verify the root covenant
-    const verification = await verifyCovenant(rootCovenant);
+    const verification = await verifyCovenant(rootCovenant, { authorizedKeys: rootCovenant.issuer.publicKey });
     expect(verification.valid).toBe(true);
     for (const check of verification.checks) {
       expect(check.passed).toBe(true);
@@ -142,7 +142,7 @@ describe('Scenario 1: Chain Delegation with Constraint Narrowing', () => {
     expect(midCovenant.chain!.depth).toBe(1);
 
     // Verify the mid covenant
-    const verification = await verifyCovenant(midCovenant);
+    const verification = await verifyCovenant(midCovenant, { authorizedKeys: midCovenant.issuer.publicKey });
     expect(verification.valid).toBe(true);
   });
 
@@ -178,7 +178,7 @@ describe('Scenario 1: Chain Delegation with Constraint Narrowing', () => {
     expect(leafCovenant.chain!.depth).toBe(2);
 
     // Verify the leaf covenant
-    const verification = await verifyCovenant(leafCovenant);
+    const verification = await verifyCovenant(leafCovenant, { authorizedKeys: leafCovenant.issuer.publicKey });
     expect(verification.valid).toBe(true);
   });
 
@@ -907,7 +907,7 @@ describe('Scenario 2: MCP Server Wrap, Execute, Receipt, and Reputation', () => 
 
   it('Step 11: wrapped covenant passes full verification', async () => {
     const covenant = wrappedServer.getCovenant();
-    const result = await verifyCovenant(covenant);
+    const result = await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey });
 
     expect(result.valid).toBe(true);
     expect(result.checks.length).toBeGreaterThanOrEqual(11);
@@ -990,7 +990,7 @@ describe('Scenario 4: Full Protocol Lifecycle', () => {
       ].join('\n'),
       privateKey: operatorKp.privateKey,
     });
-    expect((await verifyCovenant(covenant)).valid).toBe(true);
+    expect((await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey })).valid).toBe(true);
 
     // Step 3: Monitor actions
     const monitor = new Monitor(covenant.id, covenant.constraints, { mode: 'enforce' });
@@ -1087,8 +1087,8 @@ describe('Scenario 5: Cross-Covenant Compliance', () => {
       privateKey: kp2.privateKey,
     });
 
-    expect((await verifyCovenant(cov1)).valid).toBe(true);
-    expect((await verifyCovenant(cov2)).valid).toBe(true);
+    expect((await verifyCovenant(cov1, { authorizedKeys: cov1.issuer.publicKey })).valid).toBe(true);
+    expect((await verifyCovenant(cov2, { authorizedKeys: cov2.issuer.publicKey })).valid).toBe(true);
 
     // Monitor for each covenant
     const monitor1 = new Monitor(cov1.id, cov1.constraints, { mode: 'enforce' });
@@ -1156,7 +1156,7 @@ describe('Scenario 6: Adversarial Detection', () => {
 
     // Tamper with constraints
     const tampered = { ...cov, constraints: "permit file.write on '**'" };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     expect(result.valid).toBe(false);
     const idCheck = result.checks.find(c => c.name === 'id_match');
     expect(idCheck?.passed).toBe(false);
@@ -1387,7 +1387,7 @@ describe('Scenario 7: Scale Tests', () => {
 
     // All should verify
     for (const cov of covenants) {
-      expect((await verifyCovenant(cov)).valid).toBe(true);
+      expect((await verifyCovenant(cov, { authorizedKeys: cov.issuer.publicKey })).valid).toBe(true);
     }
 
     // Resolve full chain from deepest
@@ -1423,7 +1423,7 @@ describe('Scenario 8: Serialization Round-trips', () => {
     expect(restored.signature).toBe(cov.signature);
 
     // Restored covenant should still verify
-    const result = await verifyCovenant(restored);
+    const result = await verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 

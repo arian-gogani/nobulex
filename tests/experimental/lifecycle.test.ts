@@ -185,7 +185,7 @@ describe('Covenant -> Enforcement -> Reputation -> Breach pipeline', () => {
   it('should build a valid covenant from the agent identity', async () => {
     expect(covenant.id).toMatch(/^[0-9a-f]{64}$/);
     expect(covenant.issuer.id).toBe(agentIdentity.id);
-    const result = await verifyCovenant(covenant);
+    const result = await verifyCovenant(covenant, { authorizedKeys: covenant.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -475,7 +475,7 @@ describe('Identity evolution + covenant binding', () => {
       privateKey: operatorKp.privateKey,
     });
 
-    const result = await verifyCovenant(initialCovenant);
+    const result = await verifyCovenant(initialCovenant, { authorizedKeys: initialCovenant.issuer.publicKey });
     expect(result.valid).toBe(true);
     expect(initialCovenant.issuer.id).toBe(initialIdentity.id);
   });
@@ -503,7 +503,7 @@ describe('Identity evolution + covenant binding', () => {
   });
 
   it('should keep the original covenant valid after identity evolution', async () => {
-    const result = await verifyCovenant(initialCovenant);
+    const result = await verifyCovenant(initialCovenant, { authorizedKeys: initialCovenant.issuer.publicKey });
     expect(result.valid).toBe(true);
     // The old covenant is still bound to the original identity hash
     expect(initialCovenant.issuer.id).toBe(initialIdentity.id);
@@ -525,7 +525,7 @@ describe('Identity evolution + covenant binding', () => {
       privateKey: operatorKp.privateKey,
     });
 
-    const result = await verifyCovenant(evolvedCovenant);
+    const result = await verifyCovenant(evolvedCovenant, { authorizedKeys: evolvedCovenant.issuer.publicKey });
     expect(result.valid).toBe(true);
     expect(evolvedCovenant.issuer.id).toBe(evolvedIdentity.id);
   });
@@ -652,7 +652,7 @@ describe('SDK NobulexClient full workflow', () => {
       constraints: "permit file.read on '**'",
     });
 
-    const result = await client.verifyCovenant(doc);
+    const result = await client.verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     expect(result.valid).toBe(true);
     expect(verifiedEvents).toHaveLength(1);
     expect(verifiedEvents[0]!.result.valid).toBe(true);
@@ -695,7 +695,7 @@ describe('SDK NobulexClient full workflow', () => {
     expect(countersigned.countersignatures![0]!.signerRole).toBe('auditor');
     expect(csEvents).toHaveLength(1);
 
-    const verifyResult = await client.verifyCovenant(countersigned);
+    const verifyResult = await client.verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
     expect(verifyResult.valid).toBe(true);
   });
 
@@ -792,7 +792,7 @@ describe('SDK NobulexClient full workflow', () => {
       beneficiary: { id: 'silent-ben', publicKey: kp.publicKeyHex, role: 'beneficiary' },
       constraints: "permit file.read on '**'",
     });
-    await client.verifyCovenant(doc);
+    await client.verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
 
     expect(events).toHaveLength(0);
   });
@@ -822,7 +822,7 @@ describe('SDK NobulexClient full workflow', () => {
     const restored = deserializeCovenant(json);
 
     expect(restored.id).toBe(doc.id);
-    const result = await client.verifyCovenant(restored);
+    const result = await client.verifyCovenant(restored, { authorizedKeys: restored.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 });

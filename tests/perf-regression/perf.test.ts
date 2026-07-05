@@ -115,7 +115,7 @@ describe('Performance regression guards', () => {
     });
     const start = performance.now();
     for (let i = 0; i < 10; i++) {
-      await verifyCovenant(doc);
+      await verifyCovenant(doc, { authorizedKeys: doc.issuer.publicKey });
     }
     const elapsed = performance.now() - start;
     expect(elapsed).toBeLessThan(3000);

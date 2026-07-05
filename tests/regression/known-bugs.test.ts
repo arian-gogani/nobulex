@@ -171,7 +171,7 @@ describe('Core regressions', () => {
     const { doc } = await makeCovenant("permit read on '/data'");
     // Tamper with constraints
     const tampered = { ...doc, constraints: "deny read on '/data'" };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     const idCheck = result.checks.find((c) => c.name === 'id_match');
     expect(idCheck!.passed).toBe(false);
   });
@@ -179,7 +179,7 @@ describe('Core regressions', () => {
   it('document with modified nonce after signing fails id_match', async () => {
     const { doc } = await makeCovenant("permit read on '/data'");
     const tampered = { ...doc, nonce: '00'.repeat(32) };
-    const result = await verifyCovenant(tampered);
+    const result = await verifyCovenant(tampered, { authorizedKeys: tampered.issuer.publicKey });
     const idCheck = result.checks.find((c) => c.name === 'id_match');
     expect(idCheck!.passed).toBe(false);
   });
@@ -187,7 +187,7 @@ describe('Core regressions', () => {
   it('countersigned document still passes verification', async () => {
     const { doc, beneficiaryKp } = await makeCovenant("permit read on '/data'");
     const countersigned = await countersignCovenant(doc, beneficiaryKp, 'beneficiary');
-    const result = await verifyCovenant(countersigned);
+    const result = await verifyCovenant(countersigned, { authorizedKeys: countersigned.issuer.publicKey });
     expect(result.valid).toBe(true);
   });
 
@@ -204,7 +204,7 @@ describe('Core regressions', () => {
   it('resignCovenant produces a new valid document', async () => {
     const { doc, issuerKp } = await makeCovenant("permit read on '/data'");
     const resigned = await resignCovenant(doc, issuerKp.privateKey);
-    const result = await verifyCovenant(resigned);
+    const result = await verifyCovenant(resigned, { authorizedKeys: resigned.issuer.publicKey });
     expect(result.valid).toBe(true);
     // Nonce and ID should differ from original
     expect(resigned.nonce).not.toBe(doc.nonce);

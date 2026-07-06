@@ -76,7 +76,7 @@ The requirement: high-risk AI systems must maintain tamper-evident automatic log
 
 Ed25519 over a hash chain satisfies this. It is the right shape for the problem.
 
-Most enterprise teams deploying agents in regulated industries are not yet building this. The August 2 deadline is now under two months away. The window to be the infrastructure they reach for is now.
+Most enterprise teams deploying agents in regulated industries are not yet building this. The deadline moved once already (from August 2026 to December 2027 via the Digital Omnibus), but the primitive the regulation requires did not change. The window to be the infrastructure they reach for is now.
 
 ---
 

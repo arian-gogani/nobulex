@@ -266,6 +266,8 @@ Independent, verifiable signals (each links to evidence):
 
 | | What | Evidence |
 |---|---|---|
+| | **OWASP Agentic Skills Top 10 (AST09)** | `action_ref` formula merged as normative implementation guidance. PRs [#35](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35) and [#38](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/38) merged by project lead Ken Huang, Jun 2026 |
+| | **x402 Conformance** | Cited as third independent issuer in x402 section 5 alongside agent-guard and Vaara. 14/14 conformance verdicts passed |
 | | **OWASP CheatSheetSeries** | Sections 8-11 (JCS canonicalization, cross-agent accountability, sanctions-list freshness, regulatory mapping) merged into master by Jim Manico, Jun 2026 ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210)) |
 | | **vaara v0.50** | Independent third-party adoption — Henri Sirkkavaara shipped EU AI Act Article 12 audit trails citing the nobulex signed-receipt design ([GitHub](https://github.com/vaaraio/vaara)) |
 | | **Dify Marketplace** | Plugin PR open on 60,000+ star platform ([PR #2500](https://github.com/langgenius/dify-plugins/pull/2500)). LangGenius Community Operations confirmed architecture is sound and Trust Capital is genuinely differentiated. |

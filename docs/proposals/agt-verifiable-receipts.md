@@ -9,7 +9,7 @@
 
 AGT's audit logger writes append-only hash chains. This gives you ordering guarantees, which is good. But the evidence lives on infrastructure the operator controls. If an auditor wants to verify compliance, they have to trust that nobody modified the chain after the fact.
 
-For EU AI Act Art. 12 (enforceable August 2, 2026) and SOC 2 audit scenarios, the question isn't "did you check?" It's "can you prove you checked, and can I verify that proof without trusting you?"
+For EU AI Act Art. 12 (enforceable December 2, 2027) and SOC 2 audit scenarios, the question isn't "did you check?" It's "can you prove you checked, and can I verify that proof without trusting you?"
 
 The missing piece: compliance evidence that a third party can verify independently, without access to the operator's infrastructure.
 

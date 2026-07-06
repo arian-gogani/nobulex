@@ -1,7 +1,7 @@
 # EU AI Act Mapping
 
 **Regulation (EU) 2024/1689** — Artificial Intelligence Act  
-**Key deadline:** August 2, 2026 (general obligations for high-risk AI systems)
+**Key deadline:** December 2, 2027 (general obligations for high-risk AI systems)
 
 Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest path to compliance.
 

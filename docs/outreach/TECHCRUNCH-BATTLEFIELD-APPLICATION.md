@@ -22,7 +22,7 @@ The format is minimal on purpose: action_ref = SHA-256(JCS({agent_id, action_typ
 
 pip install nobulex. The SDK ships with LangChain and CrewAI integrations, EU AI Act Article 12 export, and cross-validated test vectors (Python and TypeScript byte-identical). Benchmarks: ~13,700 signed receipts per second at p50.
 
-EU AI Act Article 12 requires tamper-evident automatic logging for high-risk AI systems. Enforcement is August 2, 2026. "Tamper-evident" rules out SQL logs and cloud observability. Ed25519 over a hash chain is the right shape and nobody building agent infrastructure ships it yet.
+EU AI Act Article 12 requires tamper-evident automatic logging for high-risk AI systems. Enforcement is December 2, 2027. "Tamper-evident" rules out SQL logs and cloud observability. Ed25519 over a hash chain is the right shape and nobody building agent infrastructure ships it yet.
 
 ## Stage
 

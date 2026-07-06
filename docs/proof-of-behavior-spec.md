@@ -193,7 +193,7 @@ The verification MUST return:
 
 The proof-of-behavior protocol directly addresses:
 
-- **EU AI Act Article 12** — Requires automatic event logging that is tamper-evident for high-risk AI systems. Proof-of-behavior's hash-chained action logs satisfy this requirement. Enforcement deadline: August 2, 2026.
+- **EU AI Act Article 12** — Requires automatic event logging that is tamper-evident for high-risk AI systems. Proof-of-behavior's hash-chained action logs satisfy this requirement. Enforcement deadline: December 2, 2027.
 - **NIST AI Agent Standards** — Behavioral accountability for autonomous agents. Nobulex submitted formal comments to Docket NIST-2025-0035.
 - **OWASP Top 10 for Agentic Applications** — Addresses audit trail requirements, access control enforcement, and action verification.
 

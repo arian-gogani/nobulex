@@ -1,6 +1,6 @@
 # EU AI Act Compliance Checklist — Nobulex Mapping
 
-**Deadline: August 2, 2026** for general obligations on high-risk AI systems.
+**Deadline: December 2, 2027** for general obligations on high-risk AI systems.
 
 Use this checklist to verify your agent deployment meets EU AI Act requirements with Nobulex.
 

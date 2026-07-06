@@ -31,7 +31,7 @@ have an integration partner who got byte-identical receipts independently.
 You're inside W3C and OWASP conversations. Pace of execution matters.
 
 ### "Why now?"
-EU AI Act Article 12 enforcement August 2. Agents starting to move money
+EU AI Act Article 12 enforcement December 2, 2027. Agents starting to move money
 (MiHoYo $300K in 13 hours, Anthropic $965B valuation built on agents).
 Three sentences max.
 

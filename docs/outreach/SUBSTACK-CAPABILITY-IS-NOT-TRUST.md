@@ -68,7 +68,7 @@ This is what pip install nobulex provides.
 
 ## The regulatory clock
 
-EU AI Act Article 12 comes into force August 2, 2026.
+EU AI Act Article 12 comes into force December 2, 2027.
 
 The requirement: high-risk AI systems must maintain tamper-evident automatic logging of events with sufficient traceability.
 

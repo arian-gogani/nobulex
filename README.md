@@ -274,7 +274,7 @@ Independent, verifiable signals (each links to evidence):
 | | **Microsoft AGT** | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged by Microsoft maintainers) |
 | | **builderz-labs / mission-control** | Cross-session Trust Capital RFC accepted as open issue; TypeScript reference implementation delivered |
 
-EU AI Act Article 12 enforcement: August 2, 2026.
+EU AI Act Article 12 enforcement: December 2, 2027.
 
 ---
 

@@ -41,7 +41,7 @@ The score follows the agent, not the operator. You can copy the code but you can
 
 ## Why now
 
-- **EU AI Act Article 12** requires tamper-evident audit logs for high-risk AI systems. Deadline: August 2, 2026.
+- **EU AI Act Article 12** requires tamper-evident audit logs for high-risk AI systems. Deadline: December 2, 2027.
 - **Colorado AI Act** requires accountability for AI making consequential decisions. Deadline: June 30, 2026.
 - Salesforce, Microsoft, and Google are all building agent frameworks. None of them solve the accountability gap.
 

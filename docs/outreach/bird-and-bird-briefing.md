@@ -6,7 +6,7 @@
 
 ## The question your clients will ask
 
-Article 12 of the EU AI Act takes effect August 2, 2026. For any high-risk AI system, it requires logs that are automatic, tamper-evident, and sufficient to enable post-incident investigation.
+Article 12 of the EU AI Act takes effect December 2, 2027. For any high-risk AI system, it requires logs that are automatic, tamper-evident, and sufficient to enable post-incident investigation.
 
 General counsel at your clients are already asking a specific version of this question: our AI agents are making decisions in production, how do we generate a record a regulator will actually accept.
 

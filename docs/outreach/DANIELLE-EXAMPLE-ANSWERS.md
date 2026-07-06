@@ -52,7 +52,7 @@ verify what an agent did without trusting whoever ran it. Install with
 
 **"Why now?"**
 
-"Two things. EU AI Act Article 12 enforcement starts August 2 — high-risk
+"Two things. EU AI Act Article 12 enforcement starts December 2, 2027 — high-risk
 AI systems are required to have tamper-evident audit logs and most
 companies deploying agents can't produce one. And the dollar amounts are
 growing fast — MiHoYo burned $300K of AI tokens in 13 hours running

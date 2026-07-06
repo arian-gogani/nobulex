@@ -36,7 +36,7 @@ No service dependency. No operator trust required.
   regulatory mapping for AI agent payments merged into master by Jim Manico
 
 **Why this matters now:** EU AI Act Article 12 requires tamper-evident
-automatic logging for high-risk AI systems. The deadline is August 2, 2026.
+automatic logging for high-risk AI systems. The deadline is December 2, 2027.
 "Tamper-evident" rules out SQLite and cloud logs. Ed25519 over a hash chain
 is the right shape — and nobody in the agent stack ships it yet.
 

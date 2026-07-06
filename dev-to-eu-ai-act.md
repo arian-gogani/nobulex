@@ -1,11 +1,11 @@
 ---
 title: EU AI Act Article 12 requires tamper-evident logs in 107 days. here's how to build them.
 published: false
-description: The EU AI Act high-risk deadline hits August 2, 2026. Article 12 requires automatic event logging that can't be silently altered. Here's what that actually means technically and how to implement it.
+description: The EU AI Act high-risk deadline hits December 2, 2027. Article 12 requires automatic event logging that can't be silently altered. Here's what that actually means technically and how to implement it.
 tags: ai, security, compliance, opensource
 ---
 
-the EU AI Act high-risk provisions take effect August 2, 2026. if you're deploying AI agents in regulated environments, Article 12 is the one that matters most.
+the EU AI Act high-risk provisions take effect December 2, 2027. if you're deploying AI agents in regulated environments, Article 12 is the one that matters most.
 
 it requires "automatic recording of events" for high-risk AI systems. sounds simple. it's not.
 
@@ -84,7 +84,7 @@ any third party can run the same verification and get the same result. determini
 ## the regulatory timeline
 
 - **June 30, 2026** — Colorado AI Act takes effect. accountability requirements for AI making consequential decisions.
-- **August 2, 2026** — EU AI Act high-risk provisions. tamper-evident logging required. penalties up to €15M or 3% of global revenue.
+- **December 2, 2027** — EU AI Act high-risk provisions. tamper-evident logging required. penalties up to €15M or 3% of global revenue.
 - **November 2026** — NAIC AI evaluation tool rolls out nationwide for insurance.
 
 if you're starting now, that's 107 days for the EU deadline. 74 days for Colorado.

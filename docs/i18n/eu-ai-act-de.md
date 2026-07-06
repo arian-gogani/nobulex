@@ -1,7 +1,7 @@
 # EU KI-Verordnung — Kova-Zuordnung (Zusammenfassung)
 
 **Verordnung (EU) 2024/1689** — Künstliche Intelligenz  
-**Frist:** 2. August 2026 (allgemeine Pflichten für Hochrisiko-KI-Systeme)
+**Frist:** 2. Dezember 2027 (allgemeine Pflichten für Hochrisiko-KI-Systeme)
 
 Kova-Funktionen der EU KI-Verordnung zugeordnet. Schnellster Weg zur Konformität.
 

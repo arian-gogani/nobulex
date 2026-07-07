@@ -34,12 +34,12 @@ field of the document and `valid` becomes `false`.
 
 ## API
 
-- `generateKeyPair()` — Ed25519 keypair (`privateKey`, `publicKeyHex`)
-- `buildCovenant(options)` — build and sign a covenant document
-- `verifyCovenant(doc)` — verify signature, id, and constraints
-- `countersignCovenant(doc, keyPair, role)` — add a counterparty signature
-- `resolveChain(doc, resolver)` — walk a delegation chain
-- `serializeCovenant` / `deserializeCovenant` — JSON round-trip
+- `generateKeyPair()`  - Ed25519 keypair (`privateKey`, `publicKeyHex`)
+- `buildCovenant(options)`  - build and sign a covenant document
+- `verifyCovenant(doc)`  - verify signature, id, and constraints
+- `countersignCovenant(doc, keyPair, role)`  - add a counterparty signature
+- `resolveChain(doc, resolver)`  - walk a delegation chain
+- `serializeCovenant` / `deserializeCovenant`  - JSON round-trip
 
 ## Learn More
 

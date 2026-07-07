@@ -46,7 +46,7 @@ Every time an AI agent does something, Nobulex generates a **cryptographic recei
 
 Receipts are tamper-proof. You can't edit them after the fact. You can't fake them. An independent verifier can check any receipt without trusting the agent.
 
-Over time, receipts build into **Trust Capital** — a portable trust score that follows the agent across deployments. You can copy an agent's code, but you can't copy its credit score. The copy starts at zero.
+Over time, receipts build into **Trust Capital**  - a portable trust score that follows the agent across deployments. You can copy an agent's code, but you can't copy its credit score. The copy starts at zero.
 
 ## Use Cases
 
@@ -90,4 +90,4 @@ print(receipt.to_json())           # JSON serialization
 
 ## License
 
-MIT — Arian Gogani (@nobulexlabs)
+MIT  - Arian Gogani (@nobulexlabs)

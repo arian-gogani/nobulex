@@ -24,12 +24,16 @@ action_type, scope, timestamp_ms})). One 64-character hex string identifies
 any agent action, independently and deterministically.
 
 The product is live. pip install nobulex. Cross-validated against four
-published test vectors  - Python and JavaScript implementations produce
-byte-identical action_refs. AgentAudit AI is the first integration partner
-with a five-point partnership locked. vaara v0.50 by Henri Sirkkavaara ships
-EU AI Act Article 12 audit trails citing the nobulex signed-receipt design.
-OWASP CheatSheetSeries merged my JCS canonicalization rationale and
-regulatory mapping (Sections 8-11, approved by Jim Manico).
+published test vectors - Python and JavaScript implementations produce
+byte-identical action_refs. AgentAudit AI is the first integration partner.
+
+The action_ref formula is normative implementation guidance in OWASP
+Agentic Skills Top 10 AST09 (PRs #35/#38, merged by project lead Ken Huang,
+June 2026). OWASP CheatSheetSeries sections 8-11 merged by Jim Manico.
+Cited as third independent issuer in the x402 payment conformance spec
+(14/14 verdicts passed). Six framework integrations shipped (LangChain,
+CrewAI, Google ADK, PydanticAI, Haystack, LlamaIndex). ~13,700 signed
+receipts/sec (Ed25519), ~60,000/sec (ES256).
 
 ---
 

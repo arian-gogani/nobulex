@@ -13,23 +13,23 @@ python tests.py  # 13 tests, all should pass
 
 ## Architecture
 
-- `nobulex/agent.py` — Agent class, receipt generation
-- `nobulex/crypto.py` — Ed25519 signing, JCS canonicalization (RFC 8785), SHA-256
-- `nobulex/receipt.py` — Receipt data structure, verification, serialization
-- `nobulex/chain.py` — Hash-linked receipt chains, audit trail export
-- `nobulex/trust.py` — Trust Capital scoring
-- `nobulex/langchain.py` — LangChain callback handler
-- `nobulex/crewai.py` — CrewAI tracker integration
-- `nobulex/decorator.py` — `@audited` function decorator
-- `fixtures/bilateral-receipt/v0/` — Cross-validated test vectors
+- `nobulex/agent.py`  - Agent class, receipt generation
+- `nobulex/crypto.py`  - Ed25519 signing, JCS canonicalization (RFC 8785), SHA-256
+- `nobulex/receipt.py`  - Receipt data structure, verification, serialization
+- `nobulex/chain.py`  - Hash-linked receipt chains, audit trail export
+- `nobulex/trust.py`  - Trust Capital scoring
+- `nobulex/langchain.py`  - LangChain callback handler
+- `nobulex/crewai.py`  - CrewAI tracker integration
+- `nobulex/decorator.py`  - `@audited` function decorator
+- `fixtures/bilateral-receipt/v0/`  - Cross-validated test vectors
 
 ## What we need help with
 
-- **TypeScript/JS SDK** — port the Python SDK to TypeScript
-- **More framework integrations** — AutoGen, LlamaIndex, Haystack
-- **Test vectors** — additional edge cases for canonicalization
-- **Documentation** — tutorials, guides, examples
-- **PyPI publishing** — help with CI/CD for automated releases
+- **TypeScript/JS SDK**  - port the Python SDK to TypeScript
+- **More framework integrations**  - AutoGen, LlamaIndex, Haystack
+- **Test vectors**  - additional edge cases for canonicalization
+- **Documentation**  - tutorials, guides, examples
+- **PyPI publishing**  - help with CI/CD for automated releases
 
 ## Code style
 

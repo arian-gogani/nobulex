@@ -12,9 +12,9 @@ If you discover a security vulnerability in Nobulex, please report it responsibl
 
 Nobulex uses well-established cryptographic primitives:
 
-- **Ed25519** — Digital signatures (RFC 8032)
-- **SHA-256** — Hash function (FIPS 180-4)
-- **JCS** — JSON Canonicalization Scheme (RFC 8785)
+- **Ed25519**  - Digital signatures (RFC 8032)
+- **SHA-256**  - Hash function (FIPS 180-4)
+- **JCS**  - JSON Canonicalization Scheme (RFC 8785)
 
 The `cryptography` Python package provides the Ed25519 implementation. The `rfc8785` package provides strict JCS conformance.
 

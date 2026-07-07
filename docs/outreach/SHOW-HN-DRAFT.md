@@ -27,13 +27,13 @@ to the previous one. An auditor verifies offline with only the public key.
 No service dependency. No operator trust required.
 
 **What's built:**
-- Python SDK on PyPI (`pip install nobulex`), ~13,700 signed receipts/sec
-- TypeScript SDK (`@nobulex/core`)  - byte-identical action_refs cross-validated
-- LangChain and CrewAI integrations
-- Dify Marketplace plugin (PR #2500 open)
-- EU AI Act Article 12 export
-- OWASP CheatSheetSeries PR #2210  - JCS canonicalization rationale and
-  regulatory mapping for AI agent payments merged into master by Jim Manico
+- Python SDK on PyPI (`pip install nobulex`), ~13,700 signed receipts/sec (Ed25519), ~60,000/sec (ES256)
+- TypeScript SDK (`@nobulex/core`) - byte-identical action_refs cross-validated
+- Six framework integrations: LangChain, CrewAI, Google ADK, PydanticAI, Haystack, LlamaIndex
+- The `action_ref` formula is normative implementation guidance in OWASP Agentic Skills Top 10 AST09 (PRs #35/#38, merged by project lead Ken Huang)
+- OWASP CheatSheetSeries sections 8-11 merged by Jim Manico (PR #2210)
+- Cited as third independent issuer in x402 payment conformance spec (14/14 verdicts)
+- EU AI Act Article 12 compliance export
 
 **Why this matters now:** EU AI Act Article 12 requires tamper-evident
 automatic logging for high-risk AI systems. The deadline is December 2, 2027.

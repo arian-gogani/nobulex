@@ -2,36 +2,36 @@
 
 ## Integration Partners
 
-**AgentAudit AI** (RunLockAI) — First integration partner. Five-point partnership locked: reference implementation, mutual docs, co-authored `action-ref-v1` spec, joint case study, founding member status. Cross-validation passed (5/5). Signed specimen receipt published at [fixtures/agentaudit-specimen-v1.json](./fixtures/agentaudit-specimen-v1.json). Integration guide: [docs/INTEGRATION-GUIDE-AGENTAUDIT.md](./docs/INTEGRATION-GUIDE-AGENTAUDIT.md). On-chain persistence across 5 EVM mainnets (Base, Arbitrum, Optimism, Polygon, Mantle).
+**AgentAudit AI** (RunLockAI)  - First integration partner. Five-point partnership locked: reference implementation, mutual docs, co-authored `action-ref-v1` spec, joint case study, founding member status. Cross-validation passed (5/5). Signed specimen receipt published at [fixtures/agentaudit-specimen-v1.json](./fixtures/agentaudit-specimen-v1.json). Integration guide: [docs/INTEGRATION-GUIDE-AGENTAUDIT.md](./docs/INTEGRATION-GUIDE-AGENTAUDIT.md). On-chain persistence across 5 EVM mainnets (Base, Arbitrum, Optimism, Polygon, Mantle).
 
 ## Peer Implementations
 
-**ahg/inference-receipts** (PHP) — Independent PHP implementation of the nobulex receipt format by ArchiveHeritageGroup/heratio. Apache-2.0, published on [Packagist](https://packagist.org/packages/ahg/inference-receipts). Uses nobulex test vectors as conformance fixtures. Built for EU AI Act Article 12 compliance in PHP 8.3/Laravel. [GitHub](https://github.com/ArchiveHeritageGroup/inference-receipts)
+**ahg/inference-receipts** (PHP)  - Independent PHP implementation of the nobulex receipt format by ArchiveHeritageGroup/heratio. Apache-2.0, published on [Packagist](https://packagist.org/packages/ahg/inference-receipts). Uses nobulex test vectors as conformance fixtures. Built for EU AI Act Article 12 compliance in PHP 8.3/Laravel. [GitHub](https://github.com/ArchiveHeritageGroup/inference-receipts)
 
 ## Ecosystem Adoption
 
-**AURA Reputation Protocol** — Wired Nobulex `action_ref` as the idempotency key for reputation observations. Receipts feed directly into agent reputation scoring.
+**AURA Reputation Protocol**  - Wired Nobulex `action_ref` as the idempotency key for reputation observations. Receipts feed directly into agent reputation scoring.
 
-**agentmemory** (16,700+ stars) — Privacy-safe audit receipts PR ([rohitg00/agentmemory#617](https://github.com/rohitg00/agentmemory/pull/617)) uses Nobulex canonicalization and signing for memory provenance.
+**agentmemory** (16,700+ stars)  - Privacy-safe audit receipts PR ([rohitg00/agentmemory#617](https://github.com/rohitg00/agentmemory/pull/617)) uses Nobulex canonicalization and signing for memory provenance.
 
 ## Standards & Ecosystem
 
-- **OWASP** — Sections 8-11 of the AML and Sanctions Compliance for AI Agent Payments cheat sheet ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210), merged into master by Jim Manico) include JCS canonicalization rationale, cross-agent payment accountability, sanctions-list freshness in signed receipts, and regulatory mapping, credited to @arian-gogani.
-- **vaara v0.50** (Henri Sirkkavaara) — Aider + MCP runtime audit layer shipping Ed25519-signed, JCS-canonical receipts with RFC 3161 timestamp anchoring and EU AI Act Article 12 export, citing the nobulex signed-receipt design. [GitHub](https://github.com/vaaraio/vaara)
+- **OWASP**  - Sections 8-11 of the AML and Sanctions Compliance for AI Agent Payments cheat sheet ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210), merged into master by Jim Manico) include JCS canonicalization rationale, cross-agent payment accountability, sanctions-list freshness in signed receipts, and regulatory mapping, credited to @arian-gogani.
+- **vaara v0.50** (Henri Sirkkavaara)  - Aider + MCP runtime audit layer shipping Ed25519-signed, JCS-canonical receipts with RFC 3161 timestamp anchoring and EU AI Act Article 12 export, citing the nobulex signed-receipt design. [GitHub](https://github.com/vaaraio/vaara)
 
-**Microsoft RAMPART** — Opened issue #80 ([ProductionReceiptSink feature](https://github.com/microsoft/RAMPART/issues/80)) proposing a bridge between RAMPART's CI regression receipts and nobulex's runtime audit layer. Also commented on issue #63 (regression receipt docs pattern). RAMPART has 350+ stars, backed by Microsoft AI Red Team.
+**Microsoft RAMPART**  - Opened issue #80 ([ProductionReceiptSink feature](https://github.com/microsoft/RAMPART/issues/80)) proposing a bridge between RAMPART's CI regression receipts and nobulex's runtime audit layer. Also commented on issue #63 (regression receipt docs pattern). RAMPART has 350+ stars, backed by Microsoft AI Red Team.
 
-- **Microsoft Agent Governance Toolkit** — ADOPTERS.md PR #1703 merged by Microsoft maintainers
-- **W3C AIVS** — In contact with chair re: format alignment between per-action receipts (Nobulex) and session-level proofs (Conduit)
-- **AutoGen (Microsoft)** — Engaged in HDP delegation provenance discussion ([microsoft/autogen#7667](https://github.com/microsoft/autogen/pull/7667))
+- **Microsoft Agent Governance Toolkit**  - ADOPTERS.md PR #1703 merged by Microsoft maintainers
+- **W3C AIVS**  - In contact with chair re: format alignment between per-action receipts (Nobulex) and session-level proofs (Conduit)
+- **AutoGen (Microsoft)**  - Engaged in HDP delegation provenance discussion ([microsoft/autogen#7667](https://github.com/microsoft/autogen/pull/7667))
 
 
-**Dify (LangGenius)** — Sherry Zhao (Community Operations, sherry.zhao@dify.ai) responded to outreach on June 4, 2026. Architecture confirmed sound. Trust Capital flagged as genuinely interesting and differentiated from existing Marketplace tools. Plugin PR and Template invited. Path: submit to langgenius/dify-plugins. Plugin built at \`packages/dify-plugin/\`.
+**Dify (LangGenius)**  - Sherry Zhao (Community Operations, sherry.zhao@dify.ai) responded to outreach on June 4, 2026. Architecture confirmed sound. Trust Capital flagged as genuinely interesting and differentiated from existing Marketplace tools. Plugin PR and Template invited. Path: submit to langgenius/dify-plugins. Plugin built at \`packages/dify-plugin/\`.
 
 ## Using Nobulex?
 
 Open an issue or PR to add yourself.
 
-**LlamaIndex GuardedMemory** — vgudur-dev proposing `GuardedMemory(BaseMemory)` PR using nobulex action_ref pattern for memory provenance attestation.
+**LlamaIndex GuardedMemory**  - vgudur-dev proposing `GuardedMemory(BaseMemory)` PR using nobulex action_ref pattern for memory provenance attestation.
 
-**Mission Control (builderz-labs)** — RFC accepted as feature request, design proposal at [docs/integrations/builderz-labs-mission-control-rfc.md](./docs/integrations/builderz-labs-mission-control-rfc.md) covering DID identity, signed attestations, and blend policy.
+**Mission Control (builderz-labs)**  - RFC accepted as feature request, design proposal at [docs/integrations/builderz-labs-mission-control-rfc.md](./docs/integrations/builderz-labs-mission-control-rfc.md) covering DID identity, signed attestations, and blend policy.

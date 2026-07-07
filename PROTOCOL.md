@@ -1,6 +1,6 @@
 # Nobulex Proof-of-Behavior Protocol Specification
 
-**Version 0.1.0 — Draft**
+**Version 0.1.0  - Draft**
 
 ---
 
@@ -23,11 +23,11 @@
 
 ## 1. Abstract
 
-Autonomous AI agents are executing consequential actions — transferring funds, signing contracts, deploying infrastructure, negotiating on behalf of principals — with no protocol-level mechanism to hold them accountable. Existing approaches rely on operator-controlled logs, platform-specific audit trails, and post-hoc forensics conducted by the same parties whose behavior is in question. There is no way for an independent third party to verify what an agent committed to doing before it acted, or to confirm that its actions remained within declared bounds. The accountability gap grows in direct proportion to agent autonomy.
+Autonomous AI agents are executing consequential actions  - transferring funds, signing contracts, deploying infrastructure, negotiating on behalf of principals  - with no protocol-level mechanism to hold them accountable. Existing approaches rely on operator-controlled logs, platform-specific audit trails, and post-hoc forensics conducted by the same parties whose behavior is in question. There is no way for an independent third party to verify what an agent committed to doing before it acted, or to confirm that its actions remained within declared bounds. The accountability gap grows in direct proportion to agent autonomy.
 
-Nobulex is an open cryptographic protocol (MIT license) and the trust layer for the agent economy — the way HTTPS enabled e-commerce, Nobulex enables agents to transact safely across organizational boundaries. It introduces **behavioral commitments** as a first-class primitive for AI agents. Before acting, an agent inscribes a covenant — a signed, content-addressed document specifying its intended behavior, constraints, and scope. During operation, every action is logged against this covenant in a tamper-evident structure. After execution, any party can independently verify compliance without access to the agent, its operator, or any privileged system. The protocol requires no trusted intermediary. Verification is deterministic and reproducible from the proof alone.
+Nobulex is an open cryptographic protocol (MIT license) and the trust layer for the agent economy  - the way HTTPS enabled e-commerce, Nobulex enables agents to transact safely across organizational boundaries. It introduces **behavioral commitments** as a first-class primitive for AI agents. Before acting, an agent inscribes a covenant  - a signed, content-addressed document specifying its intended behavior, constraints, and scope. During operation, every action is logged against this covenant in a tamper-evident structure. After execution, any party can independently verify compliance without access to the agent, its operator, or any privileged system. The protocol requires no trusted intermediary. Verification is deterministic and reproducible from the proof alone.
 
-The protocol provides the following properties: **immutability** (covenants cannot be modified after inscription), **completeness** (all observable actions are captured in the audit log), **independent verifiability** (verification requires only the covenant, the action log, and the proof — no oracle, no API call, no trust assumption), **composability** (covenants can be chained and delegated while maintaining monotonic constraint narrowing), and **economic accountability** (agents build non-transferable reputation through verifiable execution history, with cryptoeconomic consequences for breach).
+The protocol provides the following properties: **immutability** (covenants cannot be modified after inscription), **completeness** (all observable actions are captured in the audit log), **independent verifiability** (verification requires only the covenant, the action log, and the proof  - no oracle, no API call, no trust assumption), **composability** (covenants can be chained and delegated while maintaining monotonic constraint narrowing), and **economic accountability** (agents build non-transferable reputation through verifiable execution history, with cryptoeconomic consequences for breach).
 
 ---
 
@@ -35,17 +35,17 @@ The protocol provides the following properties: **immutability** (covenants cann
 
 Every prior accountability system for software assumes a simple model: a human writes code, the code runs, the human is responsible. Logs exist for debugging. Audits exist for compliance. The chain of responsibility terminates at a person or an organization.
 
-AI agents break this model. An agent that autonomously decides which API to call, which contract to sign, or which trade to execute is not a tool being wielded — it is an actor making decisions. The human who deployed it may not have anticipated its specific actions. The platform hosting it may not have visibility into its reasoning. The counterparty interacting with it has no way to distinguish between an agent operating within its principal's intent and one that has drifted, been compromised, or was never properly constrained.
+AI agents break this model. An agent that autonomously decides which API to call, which contract to sign, or which trade to execute is not a tool being wielded  - it is an actor making decisions. The human who deployed it may not have anticipated its specific actions. The platform hosting it may not have visibility into its reasoning. The counterparty interacting with it has no way to distinguish between an agent operating within its principal's intent and one that has drifted, been compromised, or was never properly constrained.
 
 This is not a hypothetical problem. Agents already manage portfolios, execute code in production environments, interact with other agents, and operate with increasing autonomy. The economic value under agent control is growing exponentially. Yet the accountability infrastructure is identical to what existed before agents: server logs controlled by operators, platform dashboards controlled by vendors, and trust assumptions that collapse exactly when they matter most.
 
-Cryptographic accountability for AI agents is a new primitive because the problem it solves — holding a non-human autonomous actor accountable to commitments it made before acting — has never existed at scale. Traditional digital signatures prove that a message was sent by a particular key. Nobulex extends this to prove that an *entire sequence of behavior* conformed to a *declared specification*. The unit of accountability is not a single message but a complete execution trace, verified against a pre-committed behavioral contract.
+Cryptographic accountability for AI agents is a new primitive because the problem it solves  - holding a non-human autonomous actor accountable to commitments it made before acting  - has never existed at scale. Traditional digital signatures prove that a message was sent by a particular key. Nobulex extends this to prove that an *entire sequence of behavior* conformed to a *declared specification*. The unit of accountability is not a single message but a complete execution trace, verified against a pre-committed behavioral contract.
 
 The Nobulex protocol makes three claims:
 
 1. **Accountability must be structural, not operational.** It cannot depend on the cooperation of the party being held accountable. It must be embedded in the protocol, not the application.
 
-2. **Verification must be trustless.** Any party — a counterparty, a regulator, an automated monitor, another agent — must be able to verify compliance using only publicly available data and deterministic computation.
+2. **Verification must be trustless.** Any party  - a counterparty, a regulator, an automated monitor, another agent  - must be able to verify compliance using only publicly available data and deterministic computation.
 
 3. **Reputation must be non-transferable and economically meaningful.** An agent's track record must be bound to its identity, resistant to sybil attacks, and carry real economic consequences for breach.
 
@@ -101,7 +101,7 @@ A covenant is a JSON document conforming to the following canonical schema:
 
 ### 3.3 Covenant Constraint Language (CCL)
 
-CCL is a declarative, pure-functional constraint language for expressing behavioral bounds. It is intentionally limited — CCL expressions are total functions (they always terminate) and side-effect free.
+CCL is a declarative, pure-functional constraint language for expressing behavioral bounds. It is intentionally limited  - CCL expressions are total functions (they always terminate) and side-effect free.
 
 **Grammar (EBNF):**
 
@@ -142,7 +142,7 @@ WHEN transfer.amount > 5000 THEN REQUIRE approval.multisig >= 2
 
 ### 3.4 Evaluation Model
 
-CCL expressions are evaluated against an **action record** — a structured representation of a single agent action. The evaluator returns one of three results:
+CCL expressions are evaluated against an **action record**  - a structured representation of a single agent action. The evaluator returns one of three results:
 
 | Result | Meaning |
 |---|---|
@@ -206,13 +206,13 @@ An agent's identity in Nobulex is not a single key but a **composite identity** 
 }
 ```
 
-This composite structure captures the reality that an AI agent's identity is a function of its model, its operator, and its cryptographic key material — not any one of these alone. Two agents running the same model under different operators are different identities. The same operator running different models produces different identities.
+This composite structure captures the reality that an AI agent's identity is a function of its model, its operator, and its cryptographic key material  - not any one of these alone. Two agents running the same model under different operators are different identities. The same operator running different models produces different identities.
 
 ### 4.2 Lineage Chains
 
 Agents evolve. Models are updated, fine-tuned, retrained. An agent's identity must accommodate this without either (a) losing its history or (b) pretending nothing changed.
 
-A **lineage chain** is a sequence of identity documents linked by the `lineage` field. Each identity document points to its predecessor. The chain is append-only — identities cannot be removed or reordered.
+A **lineage chain** is a sequence of identity documents linked by the `lineage` field. Each identity document points to its predecessor. The chain is append-only  - identities cannot be removed or reordered.
 
 ```
 identity_v1 (lineage: null)
@@ -262,7 +262,7 @@ Enforcement in Nobulex operates at two layers: **real-time gating** (preventing 
 
 ### 5.2 Monitor
 
-The **Monitor** is a process that observes agent actions in real time, evaluates each action against the active covenant, and records the result. The Monitor does not have authority to halt the agent — it is a passive observer that produces a tamper-evident log.
+The **Monitor** is a process that observes agent actions in real time, evaluates each action against the active covenant, and records the result. The Monitor does not have authority to halt the agent  - it is a passive observer that produces a tamper-evident log.
 
 ```
 Agent Action → Monitor → CCL Evaluator → Action Record → Audit Log
@@ -280,7 +280,7 @@ The **CapabilityGate** is an enforcement boundary that intercepts agent actions 
 | `DENY` | The action is blocked. The agent receives a denial with the violated constraint. |
 | `ESCALATE` | The action requires human approval before proceeding. |
 
-The CapabilityGate is the only component in the Nobulex architecture that has the power to prevent an action. It is optional — an operator may choose to run in monitor-only mode, where all actions are logged but none are blocked. This is useful during initial deployment or when the operator prefers post-hoc accountability over real-time prevention.
+The CapabilityGate is the only component in the Nobulex architecture that has the power to prevent an action. It is optional  - an operator may choose to run in monitor-only mode, where all actions are logged but none are blocked. This is useful during initial deployment or when the operator prefers post-hoc accountability over real-time prevention.
 
 ### 5.4 Tamper-Evident Audit Log
 
@@ -349,7 +349,7 @@ Requirements (1) and (2) are satisfied by the Merkle proof structure in §5. Req
 
 ### 6.2 ZK Proof Architecture
 
-Nobulex uses zero-knowledge proofs to enable **selective disclosure verification** — proving that a sequence of actions satisfies a covenant's constraints without revealing the actions themselves.
+Nobulex uses zero-knowledge proofs to enable **selective disclosure verification**  - proving that a sequence of actions satisfies a covenant's constraints without revealing the actions themselves.
 
 The architecture has three components:
 
@@ -479,7 +479,7 @@ reputation_loss(breach) = base_penalty × stake_multiplier
 
 Where `base_penalty` is determined by the severity of the breach (see §8) and `stake_multiplier` is proportional to the staked amount.
 
-An agent cannot stake more reputation than it has. Staking is a commitment — once a covenant is staked, the stake cannot be withdrawn until the covenant expires or is completed.
+An agent cannot stake more reputation than it has. Staking is a commitment  - once a covenant is staked, the stake cannot be withdrawn until the covenant expires or is completed.
 
 ### 7.4 Delegation
 
@@ -499,7 +499,7 @@ An agent may **delegate** a portion of its reputation to another agent, vouching
 }
 ```
 
-Delegation is scoped — it applies only to the specified capabilities and only under the specified covenant. If the delegate breaches the covenant, the delegator's reputation is reduced by the delegated amount (co-burn; see §7.5).
+Delegation is scoped  - it applies only to the specified capabilities and only under the specified covenant. If the delegate breaches the covenant, the delegator's reputation is reduced by the delegated amount (co-burn; see §7.5).
 
 ### 7.5 Co-Burn Mechanics
 
@@ -510,7 +510,7 @@ delegate_loss  = base_penalty × stake_multiplier
 delegator_loss = delegation_amount × severity_factor
 ```
 
-Co-burn propagates upward through the delegation chain. If agent A delegates to agent B, and agent B delegates to agent C, and agent C breaches, then C, B, and A all incur reputation loss — with attenuation at each level.
+Co-burn propagates upward through the delegation chain. If agent A delegates to agent B, and agent B delegates to agent C, and agent C breaches, then C, B, and A all incur reputation loss  - with attenuation at each level.
 
 ```
 loss_at_depth(d) = delegation_amount × severity_factor × (attenuation_rate ^ d)
@@ -526,7 +526,7 @@ Reputation in Nobulex is **non-transferable**. It cannot be bought, sold, gifted
 
 2. **Accountability preservation.** Reputation represents a specific agent's track record. Transferring it would decouple the track record from the entity that produced it.
 
-3. **Economic personhood.** Each agent identity accrues its own reputation through its own actions. Reputation is not a token — it is a history.
+3. **Economic personhood.** Each agent identity accrues its own reputation through its own actions. Reputation is not a token  - it is a history.
 
 The non-transferability constraint is enforced at the protocol level. The reputation score function takes as input only receipts signed by the agent's own identity (including lineage predecessors, with carry-forward attenuation per §4.4). There is no `transfer` operation in the protocol.
 
@@ -556,7 +556,7 @@ When a verifier detects a covenant breach, it may publish a **breach attestation
 }
 ```
 
-Attestations are independently verifiable — any party can check the Merkle proof, evaluate the action record against the cited constraint, and confirm the breach.
+Attestations are independently verifiable  - any party can check the Merkle proof, evaluate the action record against the cited constraint, and confirm the breach.
 
 ### 8.2 Severity Classification
 
@@ -657,7 +657,7 @@ The **effective constraints** for a covenant are the intersection of all constra
 effective(C) = constraints(root) ∩ constraints(C_1) ∩ ... ∩ constraints(C)
 ```
 
-Because of monotonic narrowing, this is equivalent to the leaf covenant's own constraints — but verification must confirm that the chain is valid (each child is a subset of its parent).
+Because of monotonic narrowing, this is equivalent to the leaf covenant's own constraints  - but verification must confirm that the chain is valid (each child is a subset of its parent).
 
 The effective constraint computation algorithm:
 
@@ -690,7 +690,7 @@ Delegated trust relationships are **cryptographically linked**. Verifying one ag
 
 ### 10.1 Endorsement Protocol
 
-Beyond delegation (which implies a principal-agent relationship), Nobulex supports **endorsements** — attestations from one agent about another's capabilities or trustworthiness.
+Beyond delegation (which implies a principal-agent relationship), Nobulex supports **endorsements**  - attestations from one agent about another's capabilities or trustworthiness.
 
 ```json
 {
@@ -803,10 +803,10 @@ Nobulex assumes the following threat model:
 - The ZK proof system is sound (a valid proof implies a true statement).
 
 **Untrusted:**
-- Agents may be adversarial — they may attempt to violate covenants, forge receipts, or evade accountability.
+- Agents may be adversarial  - they may attempt to violate covenants, forge receipts, or evade accountability.
 - Operators may collude with their agents to suppress breach evidence.
 - Network participants may attempt sybil attacks, false attestations, or governance manipulation.
-- The network itself is untrusted — messages may be delayed, reordered, or dropped.
+- The network itself is untrusted  - messages may be delayed, reordered, or dropped.
 
 ### 12.2 Attack Vectors and Mitigations
 
@@ -826,7 +826,7 @@ Nobulex assumes the following threat model:
 
 **Attack:** An attacker compromises an agent's signing key and inscribes covenants or publishes false attestations on the agent's behalf.
 
-**Mitigation:** Key rotation through the lineage chain (§4.2). The compromised key can be superseded by a new identity document. Covenants signed by the compromised key after the rotation timestamp are invalid. The protocol does not prevent damage from key compromise during the window before detection — this is a fundamental limitation shared with all public-key systems.
+**Mitigation:** Key rotation through the lineage chain (§4.2). The compromised key can be superseded by a new identity document. Covenants signed by the compromised key after the rotation timestamp are invalid. The protocol does not prevent damage from key compromise during the window before detection  - this is a fundamental limitation shared with all public-key systems.
 
 #### 12.2.4 Sybil Attacks on Reputation
 
@@ -838,19 +838,19 @@ Nobulex assumes the following threat model:
 
 **Attack:** A malicious actor publishes false breach attestations to damage an agent's reputation.
 
-**Mitigation:** Breach attestations must include a Merkle proof and the specific action record that violated the constraint (§8.1). Any verifier can check the proof — a false attestation is immediately detectable because the cited action record either doesn't exist in the log (Merkle proof fails) or doesn't actually violate the cited constraint (CCL evaluation returns PERMIT). Repeated false attestations degrade the attester's own `attestation_accuracy_score` (§11.3).
+**Mitigation:** Breach attestations must include a Merkle proof and the specific action record that violated the constraint (§8.1). Any verifier can check the proof  - a false attestation is immediately detectable because the cited action record either doesn't exist in the log (Merkle proof fails) or doesn't actually violate the cited constraint (CCL evaluation returns PERMIT). Repeated false attestations degrade the attester's own `attestation_accuracy_score` (§11.3).
 
 #### 12.2.6 Governance Capture
 
 **Attack:** A coordinated group accumulates disproportionate governance weight to pass self-serving proposals.
 
-**Mitigation:** Governance weight derives from three independent factors — execution, verification, and attestation accuracy (§11.3). Capturing governance requires dominating all three, which demands sustained, genuine protocol participation across multiple dimensions. The 66% supermajority threshold and 20% quorum requirement further raise the bar. Protocol parameter changes are bounded — governance cannot, for example, set attenuation to 0 or remove breach propagation entirely, as these would violate protocol invariants.
+**Mitigation:** Governance weight derives from three independent factors  - execution, verification, and attestation accuracy (§11.3). Capturing governance requires dominating all three, which demands sustained, genuine protocol participation across multiple dimensions. The 66% supermajority threshold and 20% quorum requirement further raise the bar. Protocol parameter changes are bounded  - governance cannot, for example, set attenuation to 0 or remove breach propagation entirely, as these would violate protocol invariants.
 
 #### 12.2.7 Merkle Root Substitution
 
 **Attack:** An operator publishes a valid Merkle root for a sanitized version of the action log, omitting breach actions and recomputing the tree.
 
-**Mitigation:** On-chain anchoring provides a timestamped commitment to the Merkle root at regular intervals. If an operator recomputes the tree, the new root won't match previously anchored roots. For intervals between anchoring, counterparties who received Merkle proofs during execution can present them as evidence of the original tree structure. Additionally, the ZK completeness proof (§6.3) binds the Merkle root to a specific action count — substituting the root requires producing a new valid ZK proof, which requires satisfying the circuit's completeness constraint with the modified data.
+**Mitigation:** On-chain anchoring provides a timestamped commitment to the Merkle root at regular intervals. If an operator recomputes the tree, the new root won't match previously anchored roots. For intervals between anchoring, counterparties who received Merkle proofs during execution can present them as evidence of the original tree structure. Additionally, the ZK completeness proof (§6.3) binds the Merkle root to a specific action count  - substituting the root requires producing a new valid ZK proof, which requires satisfying the circuit's completeness constraint with the modified data.
 
 ---
 

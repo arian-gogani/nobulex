@@ -1,4 +1,4 @@
-# Nobulex — The trust layer for the agent economy
+# Nobulex  - The trust layer for the agent economy
 
 Marketing site for [Nobulex](https://github.com/arian-gogani/nobulex), a protocol that makes honesty the only rational strategy for any autonomous system. Verifiable commitments for AI agents. Open source. MIT licensed.
 

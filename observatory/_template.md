@@ -1,4 +1,4 @@
-# Agent Reliability Index — Issue NNN
+# Agent Reliability Index  - Issue NNN
 
 **Volume V, Issue NNN · Week of DD MONTH YYYY**
 
@@ -9,11 +9,11 @@ Published by Nobulex.*
 
 ## This week's headline
 
-*One-paragraph editorial summary of the most significant finding this week. Lead with silent drift if any was detected. If no significant drift, lead with the most interesting cross-vendor pattern. If a week is genuinely uneventful, say so explicitly — "no silent drift detected; CVRI flat across all tracked vendors" is a valid headline.*
+*One-paragraph editorial summary of the most significant finding this week. Lead with silent drift if any was detected. If no significant drift, lead with the most interesting cross-vendor pattern. If a week is genuinely uneventful, say so explicitly  - "no silent drift detected; CVRI flat across all tracked vendors" is a valid headline.*
 
 ---
 
-## CVRI scorecards — this week
+## CVRI scorecards  - this week
 
 | Vendor    | CVRI    | Δ vs. last week | Drift events | Status |
 |-----------|---------|-----------------|--------------|--------|
@@ -27,13 +27,13 @@ Published by Nobulex.*
 
 ---
 
-## Drift events — this week
+## Drift events  - this week
 
 ### Silent drift
 
 *For each silent drift event detected this week, document under its own subheading. If none detected, write: "No silent drift events detected this week."*
 
-#### [Vendor] [Endpoint] — [task class affected]
+#### [Vendor] [Endpoint]  - [task class affected]
 
 - **Detected**: DD MONTH YYYY
 - **Dimension(s) affected**: output_stability / confidence_calibration / refusal_rate / latency_variance / tool_use_reliability
@@ -45,7 +45,7 @@ Published by Nobulex.*
 
 *For each drift event that coincides with vendor disclosure. If none, write: "No announced drift events this week."*
 
-#### [Vendor] — [model update announced]
+#### [Vendor]  - [model update announced]
 
 - **Vendor announcement**: link to release notes / model card / status page
 - **Detected CVRI delta**: X.X
@@ -53,7 +53,7 @@ Published by Nobulex.*
 
 ---
 
-## Notable incidents — this week
+## Notable incidents  - this week
 
 *Cross-referenced against the AI Incident Database, vendor status pages, regulatory filings, and verifiable press coverage. Each incident is classified per the methodology rubric.*
 

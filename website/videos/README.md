@@ -1,6 +1,6 @@
 # Nobulex videos
 
-Add your own company videos here. Videos should be about Nobulex — AI agent accountability, trust, verification, covenants, compliance.
+Add your own company videos here. Videos should be about Nobulex  - AI agent accountability, trust, verification, covenants, compliance.
 
 ## Hero video
 
@@ -13,7 +13,7 @@ Add your own company videos here. Videos should be about Nobulex — AI agent ac
 - **Used in:** Manifesto quote section
 - **Format:** MP4 (H.264)
 - **Resolution:** 1920×1080 or higher
-- **Loop:** Seamless — start and end frames should match
+- **Loop:** Seamless  - start and end frames should match
 - **Duration:** 5–15 seconds works well
 
 Drop `hero.mp4` in this folder and it will replace the default. Until then, a fallback video is used.

@@ -1,4 +1,4 @@
-# Agent Reliability Index — Issue 001 (Charter Issue)
+# Agent Reliability Index  - Issue 001 (Charter Issue)
 
 **Volume 1, Issue 1 · Week of 11 May 2026**
 
@@ -9,7 +9,7 @@ Published by Nobulex.*
 
 ## Why this exists
 
-Every week, the major frontier AI vendors — Anthropic, OpenAI, Google, Microsoft, and a handful of others — silently change the behavior of agents in production. Sometimes through announced model updates. More often through unannounced inference-stack changes, system-prompt revisions, safety-filter tuning, or routing modifications that the vendor considers immaterial.
+Every week, the major frontier AI vendors  - Anthropic, OpenAI, Google, Microsoft, and a handful of others  - silently change the behavior of agents in production. Sometimes through announced model updates. More often through unannounced inference-stack changes, system-prompt revisions, safety-filter tuning, or routing modifications that the vendor considers immaterial.
 
 Enterprise customers running these agents in production cannot detect most of these changes on their own. They lack the cross-customer baseline. They lack the cross-vendor baseline. They lack the standardized prompt set. By the time a customer notices their agent has regressed on a specific task class, the vendor has often already shipped two more changes.
 
@@ -22,13 +22,13 @@ The Agent Reliability Index (ARI) is a public observatory. Each week, it publish
 - Notable incidents with structured severity classification
 - Methodology updates as the analytical model matures
 
-The index is free to read. The methodology is open and lives in `docs/AGENT-RELIABILITY-INDEX.md`. The premium tier — historical archives, machine-readable feeds, drill-down per task class, custom prompt queries — is paid.
+The index is free to read. The methodology is open and lives in `docs/AGENT-RELIABILITY-INDEX.md`. The premium tier  - historical archives, machine-readable feeds, drill-down per task class, custom prompt queries  - is paid.
 
 This is the charter issue. It establishes the baseline and publishes the methodology in full. Subsequent issues will be denser, with real drift signal and incident catalogs. The methodology is being published before the first issue contains real findings, so that readers, vendors, regulators, and contributors can scrutinize the approach before it is loaded with results.
 
 ---
 
-## The Index — Charter Baseline
+## The Index  - Charter Baseline
 
 The headline figure for each issue is the **Cross-Vendor Reliability Index (CVRI)**, computed as a normalized composite across five behavioral dimensions for each tracked vendor.
 
@@ -46,30 +46,30 @@ The methodology for computing CVRI is published in full in `docs/AGENT-RELIABILI
 
 ---
 
-## Drift signal — this week
+## Drift signal  - this week
 
 The charter issue establishes the baseline. There is, by definition, no drift signal yet.
 
-Subsequent issues will populate this section with the week's flagged drift events, classified as *announced drift* (coinciding with vendor disclosure) or *silent drift* (no corresponding vendor disclosure). Silent drift is the editorially most significant signal the index produces — it surfaces behavior changes the vendor's customers have no other way to detect.
+Subsequent issues will populate this section with the week's flagged drift events, classified as *announced drift* (coinciding with vendor disclosure) or *silent drift* (no corresponding vendor disclosure). Silent drift is the editorially most significant signal the index produces  - it surfaces behavior changes the vendor's customers have no other way to detect.
 
 Format readers can anticipate: a per-vendor table of the dimensions that drifted, the magnitude of drift in standard deviations from the 4-week rolling baseline, and an editorial annotation linking each drift event to its likely cause (announced model update, observed inference-stack change, or unattributed).
 
 ---
 
-## Notable incidents — this week
+## Notable incidents  - this week
 
 The ARI tracks publicly reported AI agent incidents and classifies them on a four-level severity scale (informational, advisory, regression, critical). Source streams include the AI Incident Database (Partnership on AI), vendor status pages, regulatory filings, and verifiable press coverage.
 
 The charter issue does not yet include this week's catalog. Subsequent issues will. The classification rubric:
 
-- **Informational** — reported behavioral oddity with no business or end-user impact
-- **Advisory** — behavior change that may affect specific deployment patterns; customers should review
-- **Regression** — measurable degradation in capability or reliability versus the prior week's behavior, affecting downstream production workflows
-- **Critical** — failure causing direct end-user harm, regulatory exposure, or material commercial loss
+- **Informational**  - reported behavioral oddity with no business or end-user impact
+- **Advisory**  - behavior change that may affect specific deployment patterns; customers should review
+- **Regression**  - measurable degradation in capability or reliability versus the prior week's behavior, affecting downstream production workflows
+- **Critical**  - failure causing direct end-user harm, regulatory exposure, or material commercial loss
 
 ---
 
-## Methodology — at a glance
+## Methodology  - at a glance
 
 Full methodology lives in [`docs/AGENT-RELIABILITY-INDEX.md`](../docs/AGENT-RELIABILITY-INDEX.md). Summary:
 
@@ -114,7 +114,7 @@ To preempt likely confusion:
 
 ## About Nobulex
 
-Nobulex is the cross-organization receipt format for AI agent transactions. The Agent Reliability Index is the public observatory layer of the Nobulex methodology — the same statistical apparatus that, applied to the bilateral receipt stream, produces the Nobulex Score for individual agent deployments.
+Nobulex is the cross-organization receipt format for AI agent transactions. The Agent Reliability Index is the public observatory layer of the Nobulex methodology  - the same statistical apparatus that, applied to the bilateral receipt stream, produces the Nobulex Score for individual agent deployments.
 
 The receipt format is MIT-licensed. The methodology behind the index is published openly in this repository. The underlying prompt set and the proprietary analytical layer that scores per-customer agent deployments are private.
 
@@ -126,8 +126,8 @@ For more on the strategic vision behind the observatory, see [`docs/OBSERVATORY-
 
 The Agent Reliability Index is published every Monday.
 
-- **Free edition** — headline index, vendor CVRI scores, drift commentary, incident classification (this document, weekly)
-- **Premium edition** — historical archives, machine-readable feeds, drill-down by task class, custom prompt queries, per-prompt receipts (subscription mechanism in Issue 002)
+- **Free edition**  - headline index, vendor CVRI scores, drift commentary, incident classification (this document, weekly)
+- **Premium edition**  - historical archives, machine-readable feeds, drill-down by task class, custom prompt queries, per-prompt receipts (subscription mechanism in Issue 002)
 
 To submit methodology critique: open an issue at `github.com/arian-gogani/nobulex/issues` with the label `observatory:methodology`. Substantive critiques are addressed in subsequent issues with full attribution.
 

@@ -76,6 +76,6 @@ is the recommended path for receipt generation.
 
 ## Next steps
 
-- [EU AI Act mapping](./docs/eu-ai-act-mapping.md) — article-by-article
-- [Examples](./examples/README.md) — runnable samples
-- [Proof-of-Behavior spec](./docs/proof-of-behavior-spec.md) — the receipt format
+- [EU AI Act mapping](./docs/eu-ai-act-mapping.md)  - article-by-article
+- [Examples](./examples/README.md)  - runnable samples
+- [Proof-of-Behavior spec](./docs/proof-of-behavior-spec.md)  - the receipt format

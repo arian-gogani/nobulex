@@ -24,7 +24,7 @@ node scripts/observatory/smoke-test.mjs
 Expected output:
 
 ```
-Agent Reliability Index — scoring smoke tests
+Agent Reliability Index  - scoring smoke tests
 […]
 29 passed, 0 failed
 ```
@@ -41,7 +41,7 @@ The smoke test verifies:
 
 - **The actual 100-prompt set.** The standardized prompts are held privately to prevent vendors from training on them, which would defeat the measurement. The *shape* of the prompts (task class, expected format, prompt hash) is public via `PromptDescriptor` in `types.ts`.
 - **The vendor API integration code.** Each vendor's API client lives in `packages/sdk` or vendor-specific package adapters. The observatory harness composes those clients.
-- **The renderer for the weekly markdown issue.** That's intentionally not yet built — the Charter Issue and `_template.md` in the `observatory/` directory are hand-written for now. A `render-issue.ts` script will be added in Issue 003+ once the format has stabilized.
+- **The renderer for the weekly markdown issue.** That's intentionally not yet built  - the Charter Issue and `_template.md` in the `observatory/` directory are hand-written for now. A `render-issue.ts` script will be added in Issue 003+ once the format has stabilized.
 
 ## Methodology versioning
 

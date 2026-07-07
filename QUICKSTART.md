@@ -19,7 +19,7 @@ agent = Agent("my-agent")
 receipt = agent.act("send_email", scope="user@example.com")
 
 print(receipt.action_ref)    # SHA-256 hash of the action
-print(receipt.verify())      # True — signature is valid
+print(receipt.verify())      # True  - signature is valid
 print(receipt.to_json())     # Full receipt as JSON
 ```
 
@@ -27,7 +27,7 @@ print(receipt.to_json())     # Full receipt as JSON
 
 ```python
 receipt.scope = "TAMPERED"
-print(receipt.verify())      # False — signature breaks
+print(receipt.verify())      # False  - signature breaks
 ```
 
 ## Receipt Chains
@@ -40,7 +40,7 @@ chain.append("authenticate", scope="api.stripe.com")
 chain.append("create_payment", scope="100_USD")
 chain.append("send_notification", scope="user@co.com")
 
-print(chain.verify())        # True — entire chain intact
+print(chain.verify())        # True  - entire chain intact
 chain.export("audit.json")   # Export for auditors
 ```
 

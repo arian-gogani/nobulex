@@ -15,7 +15,7 @@ your agent calls a tool, makes a decision, accesses data. you log it to a databa
 
 but here's the question a regulator will ask: **how do you prove those logs weren't modified after the fact?**
 
-application logs live on infrastructure someone controls. they can be edited, deleted, or replaced without anyone noticing. Article 12 doesn't explicitly say "tamper-proof" — but if your logs can be silently altered and you can't prove otherwise, their evidentiary value is zero.
+application logs live on infrastructure someone controls. they can be edited, deleted, or replaced without anyone noticing. Article 12 doesn't explicitly say "tamper-proof"  - but if your logs can be silently altered and you can't prove otherwise, their evidentiary value is zero.
 
 a log whose integrity can be challenged is not evidence. it's a liability.
 
@@ -41,15 +41,15 @@ modify entry 2? the hash changes. entry 3's `prev_hash` no longer matches. the c
 
 based on the regulation and how enforcement is shaping up, here's the minimum:
 
-1. **every agent action logged automatically** — not just errors. every tool call, every decision, every data access.
+1. **every agent action logged automatically**  - not just errors. every tool call, every decision, every data access.
 
-2. **hash-chained entries** — each entry cryptographically linked to the previous one. SHA-256 minimum.
+2. **hash-chained entries**  - each entry cryptographically linked to the previous one. SHA-256 minimum.
 
-3. **signed by the agent's identity** — Ed25519 signatures bind each entry to a verifiable agent identity (W3C DIDs work well here).
+3. **signed by the agent's identity**  - Ed25519 signatures bind each entry to a verifiable agent identity (W3C DIDs work well here).
 
-4. **independently verifiable** — a third party (auditor, regulator, counterparty) can verify the entire chain without access to your infrastructure.
+4. **independently verifiable**  - a third party (auditor, regulator, counterparty) can verify the entire chain without access to your infrastructure.
 
-5. **retained for 6 months minimum** — Articles 19 and 26 set the floor. financial services may need longer.
+5. **retained for 6 months minimum**  - Articles 19 and 26 set the floor. financial services may need longer.
 
 ## implementation
 
@@ -83,9 +83,9 @@ any third party can run the same verification and get the same result. determini
 
 ## the regulatory timeline
 
-- **June 30, 2026** — Colorado AI Act takes effect. accountability requirements for AI making consequential decisions.
-- **December 2, 2027** — EU AI Act high-risk provisions. tamper-evident logging required. penalties up to €15M or 3% of global revenue.
-- **November 2026** — NAIC AI evaluation tool rolls out nationwide for insurance.
+- **June 30, 2026**  - Colorado AI Act takes effect. accountability requirements for AI making consequential decisions.
+- **December 2, 2027**  - EU AI Act high-risk provisions. tamper-evident logging required. penalties up to €15M or 3% of global revenue.
+- **November 2026**  - NAIC AI evaluation tool rolls out nationwide for insurance.
 
 if you're starting now, that's 107 days for the EU deadline. 74 days for Colorado.
 
@@ -93,7 +93,7 @@ if you're starting now, that's 107 days for the EU deadline. 74 days for Colorad
 
 this is not model safety. not prompt filtering. not guardrails. those are important but they solve different problems.
 
-this is **behavioral accountability** — proving that an agent's actions conformed to its stated rules, with cryptographic evidence that holds up in an audit.
+this is **behavioral accountability**  - proving that an agent's actions conformed to its stated rules, with cryptographic evidence that holds up in an audit.
 
 microsoft shipped their Agent Governance Toolkit for runtime enforcement. AWS launched Agent Registry for agent discovery. but neither generates tamper-evident proof that a third party can independently verify. that's the gap.
 

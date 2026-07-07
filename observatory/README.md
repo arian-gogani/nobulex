@@ -6,9 +6,9 @@ This directory contains the editorially-independent weekly publication produced 
 
 ## What lives here
 
-- **`issue-XXX-*.md`** — Weekly issues of the Agent Reliability Index. Each issue is published Monday and tracks behavior change across major frontier AI agents (Anthropic, OpenAI, Google, Microsoft, others).
-- **`incidents/`** *(future)* — Structured records of flagged incidents. Each incident is filed as a separate document for citation.
-- **`methodology-changes/`** *(future)* — A change log of every adjustment to the index methodology, with the back-test results that justified each change.
+- **`issue-XXX-*.md`**  - Weekly issues of the Agent Reliability Index. Each issue is published Monday and tracks behavior change across major frontier AI agents (Anthropic, OpenAI, Google, Microsoft, others).
+- **`incidents/`** *(future)*  - Structured records of flagged incidents. Each incident is filed as a separate document for citation.
+- **`methodology-changes/`** *(future)*  - A change log of every adjustment to the index methodology, with the back-test results that justified each change.
 
 ## Why this exists
 

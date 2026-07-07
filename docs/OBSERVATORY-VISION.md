@@ -14,7 +14,7 @@ Nobulex is the only neutral observer of cross-organization AI agent transactions
 
 ## Why a strategic vision now
 
-The Nobulex codebase to date has positioned itself as a *protocol* — proof-of-behavior, bilateral receipts, the technical primitive. That positioning is correct for what has been built. It is not the destination.
+The Nobulex codebase to date has positioned itself as a *protocol*  - proof-of-behavior, bilateral receipts, the technical primitive. That positioning is correct for what has been built. It is not the destination.
 
 The destination is structurally bigger and structurally more defensible: **the canonical reliability rating for AI agents.** Every consequential AI agent action flows through bilateral receipts; the accumulated receipts become the only neutral dataset of cross-organization agent reliability; that dataset becomes the canonical reference that insurers, regulators, and counterparties contractually depend on.
 
@@ -27,7 +27,7 @@ This document explains the strategic shape of the company that the protocol enab
 Three properties make Nobulex's accumulated dataset incumbent-proof:
 
 1. **Cross-org invisibility to hyperscalers.** AWS sees what happens inside its cloud. Azure sees what happens inside its cloud. Google sees what happens inside its cloud. None of them sees inter-organization agent transactions in their entirety, because the cryptographic primitive that proves them requires both organizations to participate. The bilateral signature is the only entity that observes the full transaction.
-2. **Bilaterality cannot be unilaterally replicated.** A single party — even a trillion-dollar one — cannot synthesize bilateral receipts retroactively. The data either exists because both organizations signed, or it does not exist at all.
+2. **Bilaterality cannot be unilaterally replicated.** A single party  - even a trillion-dollar one  - cannot synthesize bilateral receipts retroactively. The data either exists because both organizations signed, or it does not exist at all.
 3. **Time-compounding.** A competitor showing up tomorrow has zero history. Nobulex with six months of receipts has six months of statistical baseline that capital cannot accelerate. The moat is built in calendar time, not in engineering effort.
 
 Together, these properties create a one-winner-takes-all data position. Not because Nobulex is faster or smarter, but because the cross-org slot is structurally limited to one neutral observer.
@@ -75,7 +75,7 @@ Every successful trust-infrastructure company in history started as a publicatio
 
 | Company | Founded | Started as |
 |---|---|---|
-| Moody's | 1909 | *Moody's Manual of Industrial and Miscellaneous Securities* — a self-published manual |
+| Moody's | 1909 | *Moody's Manual of Industrial and Miscellaneous Securities*  - a self-published manual |
 | Best's Insurance Reports | 1899 | Self-published reports on insurance company financials |
 | Underwriters Laboratories | 1894 | Published testing standards; placed marks on electrical products |
 | FICO | 1956 | Operations-research consulting → scoring models from accumulated bank data |
@@ -87,9 +87,9 @@ Nobulex follows this pattern.
 
 ### Year 1: The Agent Reliability Index
 
-Nobulex publishes a weekly *Agent Reliability Index* — a public observatory of AI agent behavior change across the major frontier vendors (Anthropic, OpenAI, Google, Microsoft, others). The methodology is open. The index is free to read. The premium tier (historical archives, machine-readable feeds, drill-down) is paid.
+Nobulex publishes a weekly *Agent Reliability Index*  - a public observatory of AI agent behavior change across the major frontier vendors (Anthropic, OpenAI, Google, Microsoft, others). The methodology is open. The index is free to read. The premium tier (historical archives, machine-readable feeds, drill-down) is paid.
 
-Required inputs in Year 1: *no bilateral receipts*. The observatory operates on publicly observable data — standardized prompts run weekly against public model endpoints, public benchmark deltas, vendor model card changes, public incident reports. This solves the chicken-and-egg of "no data → no rating → no adoption → no data" because the observatory begins producing useful signal on day one without any customer ever signing anything.
+Required inputs in Year 1: *no bilateral receipts*. The observatory operates on publicly observable data  - standardized prompts run weekly against public model endpoints, public benchmark deltas, vendor model card changes, public incident reports. This solves the chicken-and-egg of "no data → no rating → no adoption → no data" because the observatory begins producing useful signal on day one without any customer ever signing anything.
 
 ### Year 2: Bilateral receipts as the scale-up data source
 
@@ -97,7 +97,7 @@ Once the observatory has built methodological credibility and brand recognition 
 
 ### Year 3: The Lloyd's / Armilla underwriting partnership
 
-By Year 3, Nobulex has enough cross-org receipt volume that statistical drift detection produces actionable underwriting signal. Armilla AI / Chaucer (Lloyd's) integrates Nobulex Score into AI E&O premium pricing — the first carrier to give a 15–20% premium discount tied to receipt issuance. This becomes the forcing function that scales receipt adoption from hundreds to thousands of issuers within 6 months.
+By Year 3, Nobulex has enough cross-org receipt volume that statistical drift detection produces actionable underwriting signal. Armilla AI / Chaucer (Lloyd's) integrates Nobulex Score into AI E&O premium pricing  - the first carrier to give a 15–20% premium discount tied to receipt issuance. This becomes the forcing function that scales receipt adoption from hundreds to thousands of issuers within 6 months.
 
 ### Year 5: The category-defining outcome
 
@@ -134,11 +134,11 @@ This neutrality is contractually committed in the editorial policy of the Agent 
 
 ## What this changes about the project
 
-The protocol substrate that has been built — the @nobulex/sdk, @nobulex/core, @nobulex/cli, @nobulex/mcp-server, @nobulex/claude-agent-sdk packages, the CTEF spec contributions, the Microsoft Agent Governance Toolkit merges, the OpenSSF Best Practices badge, the IETF draft — remains correct, valuable, and load-bearing. It is the substrate that makes the rating agency possible. Nothing about the existing technical work needs to be undone or redirected.
+The protocol substrate that has been built  - the @nobulex/sdk, @nobulex/core, @nobulex/cli, @nobulex/mcp-server, @nobulex/claude-agent-sdk packages, the CTEF spec contributions, the Microsoft Agent Governance Toolkit merges, the OpenSSF Best Practices badge, the IETF draft  - remains correct, valuable, and load-bearing. It is the substrate that makes the rating agency possible. Nothing about the existing technical work needs to be undone or redirected.
 
 What is *added* by this strategic vision:
 
-1. **A weekly publication infrastructure** — the Agent Reliability Index — that produces editorial output on a Monday cadence starting Issue 001 (charter issue committed in `observatory/issue-001-charter.md`).
+1. **A weekly publication infrastructure**  - the Agent Reliability Index  - that produces editorial output on a Monday cadence starting Issue 001 (charter issue committed in `observatory/issue-001-charter.md`).
 2. **A methodology document** specifying the statistical model that turns observable agent behavior into a reliability index.
 3. **A separation of layers** in how the project is described: the protocol layer (open, MIT, contributor-driven) and the analytical/observatory layer (open methodology, proprietary models and data).
 4. **A medium-term roadmap** that sequences observatory → bilateral-receipt scale-up → carrier underwriting partnership → Verisk-shape platform.
@@ -153,7 +153,7 @@ This entire strategic vision rests on three empirical questions. Each can be ans
 
 1. **Reverse case study.** Pick three publicly known AI agent failures (Air Canada chatbot misinformation; Cigna AI claim denial litigation; Character.AI Pennsylvania case). Reconstruct what bilateral receipts would have shown. Did the data contain leading indicators that would have been detected by drift analysis?
 2. **Data-additivity test.** Compare bilateral receipts vs. AWS CloudTrail / Azure Monitor for identical agent activity. Do receipts contain information *not derivable* from infrastructure logs? If yes, the bilateral primitive has unique value. If no, the substrate is redundant.
-3. **Underwriter signal test.** 25-minute conversation with Michael von Gablenz (Munich Re aiSure) or Karthik Ramakrishnan (Armilla AI): *given two AI vendors with identical ISO/IEC 42001 documentation, but one issues bilateral receipts and one does not — would your premium pricing differ? By how much?*
+3. **Underwriter signal test.** 25-minute conversation with Michael von Gablenz (Munich Re aiSure) or Karthik Ramakrishnan (Armilla AI): *given two AI vendors with identical ISO/IEC 42001 documentation, but one issues bilateral receipts and one does not  - would your premium pricing differ? By how much?*
 
 If two of three return positive, the rating-agency thesis is real and Nobulex is the only entity positioned to build it. If two of three return negative, the thesis collapses to the compliance-evidence framing and the strategic ceiling is materially smaller.
 

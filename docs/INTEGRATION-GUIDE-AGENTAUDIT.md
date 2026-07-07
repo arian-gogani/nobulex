@@ -1,6 +1,6 @@
 # Nobulex + AgentAudit Integration Guide
 
-> **Status:** Draft — Architecture and Nobulex side complete.
+> **Status:** Draft  - Architecture and Nobulex side complete.
 > AgentAudit on-chain anchoring section is a placeholder for Piotr to fill in.
 
 ## TL;DR
@@ -42,10 +42,10 @@ Each layer is independently verifiable. An auditor doesn't have to trust either 
 
 | Question | Nobulex answers | AgentAudit answers |
 |----------|-----------------|---------------------|
-| What did the agent claim it did? | ✅ Signed receipt | — |
-| Was the receipt tampered with? | ✅ Ed25519 verification fails | — |
-| Did the receipt exist at time T? | — | ✅ on-chain block timestamp |
-| Was the receipt produced AFTER the fact? | — | ✅ block ordering proves it wasn't |
+| What did the agent claim it did? | ✅ Signed receipt |  - |
+| Was the receipt tampered with? | ✅ Ed25519 verification fails |  - |
+| Did the receipt exist at time T? |  - | ✅ on-chain block timestamp |
+| Was the receipt produced AFTER the fact? |  - | ✅ block ordering proves it wasn't |
 | Can an auditor verify without trusting the operator? | ✅ recompute action_ref | ✅ read the chain |
 
 Use just Nobulex if you only need tamper-evident local proof. Use both if you need the operator to be unable to backdate receipts after a dispute.
@@ -66,9 +66,9 @@ Every receipt contains a four-field preimage that uniquely identifies the action
 The `action_ref` is `SHA-256(JCS(preimage))` per RFC 8785. This is the canonical identifier that travels with the receipt across all integrations.
 
 Optional siblings outside the preimage:
-- `policy_version` — which policy was in force at issuance
-- `attempt_id` — for retry deduplication
-- `authority_verified_at_ms` — when the agent's authority was last verified
+- `policy_version`  - which policy was in force at issuance
+- `attempt_id`  - for retry deduplication
+- `authority_verified_at_ms`  - when the agent's authority was last verified
 
 These don't change `action_ref`, so the same receipt is identifiable across policy rotations.
 
@@ -87,7 +87,7 @@ Contains:
 
 ```bash
 pip install nobulex          # Nobulex SDK (Python 3.9+)
-pip install agentaudit       # AgentAudit SDK (placeholder — Piotr to confirm)
+pip install agentaudit       # AgentAudit SDK (placeholder  - Piotr to confirm)
 ```
 
 ## Quickstart
@@ -130,12 +130,12 @@ Bridge to `keccak256` (EVM-native hash) is via `contentURI`: the URI references 
 
 ### Supported networks
 
-[Piotr to fill in — 5 EVM mainnets]
+[Piotr to fill in  - 5 EVM mainnets]
 
 ### Dual-timestamp model
 
-- `issued_at_ms` — when Nobulex signed the receipt (off-chain, in the receipt)
-- `anchored_at` — block timestamp when AgentAudit wrote the digest on-chain
+- `issued_at_ms`  - when Nobulex signed the receipt (off-chain, in the receipt)
+- `anchored_at`  - block timestamp when AgentAudit wrote the digest on-chain
 - Dispute resolution: a receipt with `issued_at_ms` after `anchored_at - epsilon` is suspect (operator may have backdated). epsilon = your protocol's clock skew tolerance.
 
 [Piotr to confirm the field names and any additional fields]
@@ -228,8 +228,8 @@ vk.verify(canonical, bytes.fromhex(receipt["signature"]))  # raises if invalid
 
 ## Authors
 
-- Arian Gogani — Nobulex (nobulex.dev@gmail.com)
-- Piotr — AgentAudit / RunLockAI (agentaudit@proton.me)
+- Arian Gogani  - Nobulex (nobulex.dev@gmail.com)
+- Piotr  - AgentAudit / RunLockAI (agentaudit@proton.me)
 
 ## License
 

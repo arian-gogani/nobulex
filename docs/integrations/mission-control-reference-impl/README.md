@@ -44,7 +44,7 @@ DIDs satisfy all three. The verifier delegates DID resolution to the `DidResolve
 
 ## Why a trusted-issuer allowlist
 
-It's the anti-inflation primitive. Without an explicit allowlist, anyone could publish signed attestations claiming high trust capital for an agent and have them counted. With the allowlist, only issuers a workspace admin has explicitly added can affect the blended score. Unknown issuers are not blended — they're returned in the `rejected` array so the operator can see they tried.
+It's the anti-inflation primitive. Without an explicit allowlist, anyone could publish signed attestations claiming high trust capital for an agent and have them counted. With the allowlist, only issuers a workspace admin has explicitly added can affect the blended score. Unknown issuers are not blended  - they're returned in the `rejected` array so the operator can see they tried.
 
 ## Why the cap
 

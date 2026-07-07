@@ -1,4 +1,4 @@
-# Quick Start — 30 Minutes to Your First Verified Covenant
+# Quick Start  - 30 Minutes to Your First Verified Covenant
 
 Get from zero to a signed, verified covenant in under 30 minutes.
 

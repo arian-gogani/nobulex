@@ -19,9 +19,9 @@ This specification defines the data formats, verification steps, and protocol fl
 
 The proof-of-behavior protocol defines three primitives:
 
-1. **Behavioral Declaration** — A formal specification of what an agent can and cannot do, expressed in a constraint language (permit/forbid/require).
-2. **Runtime Enforcement** — A middleware layer that evaluates every agent action against the declaration before execution. Forbidden actions are blocked, not logged-and-reported.
-3. **Cryptographic Proof** — A SHA-256 hash-chained audit trail where each entry is cryptographically linked to the previous. Any tampering breaks the chain and is immediately detectable.
+1. **Behavioral Declaration**  - A formal specification of what an agent can and cannot do, expressed in a constraint language (permit/forbid/require).
+2. **Runtime Enforcement**  - A middleware layer that evaluates every agent action against the declaration before execution. Forbidden actions are blocked, not logged-and-reported.
+3. **Cryptographic Proof**  - A SHA-256 hash-chained audit trail where each entry is cryptographically linked to the previous. Any tampering breaks the chain and is immediately detectable.
 
 The core verification function is:
 
@@ -52,7 +52,7 @@ covenant <Name> {
 - `forbid` takes precedence over `permit` (deny-override).
 - Unmatched actions are denied by default (default-deny).
 - Conditions support: `>`, `<`, `>=`, `<=`, `==`, `!=`.
-- Declarations are immutable once signed — they can only be narrowed, never loosened.
+- Declarations are immutable once signed  - they can only be narrowed, never loosened.
 
 ### 2.2 Example
 
@@ -159,17 +159,17 @@ Agent A                              Agent B
 
 A conforming implementation MUST perform these checks in order:
 
-1. **Covenant signature** — The `covenantSignature` MUST be a valid Ed25519 signature of the `covenantHash`, verifiable against the public key in the DID document. If invalid: REJECT (agent may not have committed to these rules).
+1. **Covenant signature**  - The `covenantSignature` MUST be a valid Ed25519 signature of the `covenantHash`, verifiable against the public key in the DID document. If invalid: REJECT (agent may not have committed to these rules).
 
-2. **Proof signature** — The `proofSignature` MUST be valid over the serialized proof payload. If invalid: REJECT (proof may have been tampered with in transit).
+2. **Proof signature**  - The `proofSignature` MUST be valid over the serialized proof payload. If invalid: REJECT (proof may have been tampered with in transit).
 
-3. **Log integrity** — The hash chain MUST be intact. Each entry's `hash` MUST correctly incorporate the `previousHash`. If broken: REJECT (action log has been modified).
+3. **Log integrity**  - The hash chain MUST be intact. Each entry's `hash` MUST correctly incorporate the `previousHash`. If broken: REJECT (action log has been modified).
 
-4. **Compliance** — Every action in the log MUST comply with the covenant. No `forbid` rules may be violated. If violations exceed `maxViolations`: REJECT.
+4. **Compliance**  - Every action in the log MUST comply with the covenant. No `forbid` rules may be violated. If violations exceed `maxViolations`: REJECT.
 
-5. **Minimum history** (OPTIONAL) — Implementations MAY require a minimum number of logged actions before trusting a counterparty.
+5. **Minimum history** (OPTIONAL)  - Implementations MAY require a minimum number of logged actions before trusting a counterparty.
 
-6. **Required covenant** (OPTIONAL) — Implementations MAY require a specific covenant name or covenant hash.
+6. **Required covenant** (OPTIONAL)  - Implementations MAY require a specific covenant name or covenant hash.
 
 ### 6.3 Handshake Result
 
@@ -193,9 +193,9 @@ The verification MUST return:
 
 The proof-of-behavior protocol directly addresses:
 
-- **EU AI Act Article 12** — Requires automatic event logging that is tamper-evident for high-risk AI systems. Proof-of-behavior's hash-chained action logs satisfy this requirement. Enforcement deadline: December 2, 2027.
-- **NIST AI Agent Standards** — Behavioral accountability for autonomous agents. Nobulex submitted formal comments to Docket NIST-2025-0035.
-- **OWASP Top 10 for Agentic Applications** — Addresses audit trail requirements, access control enforcement, and action verification.
+- **EU AI Act Article 12**  - Requires automatic event logging that is tamper-evident for high-risk AI systems. Proof-of-behavior's hash-chained action logs satisfy this requirement. Enforcement deadline: December 2, 2027.
+- **NIST AI Agent Standards**  - Behavioral accountability for autonomous agents. Nobulex submitted formal comments to Docket NIST-2025-0035.
+- **OWASP Top 10 for Agentic Applications**  - Addresses audit trail requirements, access control enforcement, and action verification.
 
 ---
 

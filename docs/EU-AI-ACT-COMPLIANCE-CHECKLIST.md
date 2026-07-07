@@ -1,4 +1,4 @@
-# EU AI Act Compliance Checklist — Nobulex Mapping
+# EU AI Act Compliance Checklist  - Nobulex Mapping
 
 **Deadline: December 2, 2027** for general obligations on high-risk AI systems.
 
@@ -68,10 +68,10 @@ See [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for full Article-to-capabilit
 
 For regulated industries (finance, healthcare, critical infrastructure):
 
-1. **Solo tier** — Run `npx @nobulex/cli init` then `verify`; fix gaps
-2. **Bilateral** — Add attestation; counterparty countersigns the covenant
-3. **Network** — Publish receipts so a downstream auditor can verify independently
-4. **Certified** — Third-party conformity assessment for your agent class
+1. **Solo tier**  - Run `npx @nobulex/cli init` then `verify`; fix gaps
+2. **Bilateral**  - Add attestation; counterparty countersigns the covenant
+3. **Network**  - Publish receipts so a downstream auditor can verify independently
+4. **Certified**  - Third-party conformity assessment for your agent class
 
 ---
 

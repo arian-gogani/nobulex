@@ -1,4 +1,4 @@
-# GitHub Coordination Briefing — May 11, 2026
+# GitHub Coordination Briefing  - May 11, 2026
 
 ## URGENT TASKS - DEADLINE MAY 18
 
@@ -73,8 +73,8 @@ Three independent implementations converging:
 
 ## WHAT ARIAN COMMITTED TO
 
-1. **v0.3.3 shared working doc participation** — confirmed
-2. **Respond to spending_authorization PR by May 18** — NOT YET DONE
+1. **v0.3.3 shared working doc participation**  - confirmed
+2. **Respond to spending_authorization PR by May 18**  - NOT YET DONE
 3. **Fixture cross-validation coordination** with aeoess
 4. **Technical alignment** on:
    - Forbidding floats in canonical hash scope (JCS + numeric profile)
@@ -157,11 +157,11 @@ Three independent implementations converging:
 The following was successfully posted:
 
 ```
-@jschoemaker @aeoess @kenneives — v0.3.3 coordination confirmed. Count me in for the shared working doc (markdown at aeoess/aps-conformance-suite works).
+@jschoemaker @aeoess @kenneives  - v0.3.3 coordination confirmed. Count me in for the shared working doc (markdown at aeoess/aps-conformance-suite works).
 
-On the three artifacts: envelope-shape diff, unified error enum, cross-extension fixture matrix — all aligned. The layer-attribution on error codes is the right call (wire/identity/authority/continuity routing).
+On the three artifacts: envelope-shape diff, unified error enum, cross-extension fixture matrix  - all aligned. The layer-attribution on error codes is the right call (wire/identity/authority/continuity routing).
 
-On canonicalization: forbidding floats in canonical hash scope is clean. JCS + numeric profile collapses to deterministic verification without the IEEE-754 portability rabbit hole. Semantic equivalence (select vs SELECT) staying at tool-version layer is correct — chain layer should verify bytes, not intent.
+On canonicalization: forbidding floats in canonical hash scope is clean. JCS + numeric profile collapses to deterministic verification without the IEEE-754 portability rabbit hole. Semantic equivalence (select vs SELECT) staying at tool-version layer is correct  - chain layer should verify bytes, not intent.
 
 On @lawcontinue's tag parameter insight: RFC 9421's tag for disambiguating signing purpose (task vs heartbeat vs delegation) from the same keyid without a registry is genuinely useful for the four-layer composition. Worth folding into the v0.3.3 envelope-shape diff: each claim_type can carry a different tag value, reducing the need for additional discrimination logic in the gateway.
 
@@ -169,7 +169,7 @@ On spending_authorization claim subtype (v0.3.2 field-shapes PR): will respond b
 
 Watching for State of Agent Security 2026 tomorrow 8am ET. Cross-validation fixtures land at aeoess/aps-conformance-suite this week.
 
-— Arian
+ - Arian
 ```
 
 ---

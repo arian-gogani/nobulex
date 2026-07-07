@@ -34,7 +34,7 @@ this protection is only as strong as your key management.
 
 ### Covenant policy drift
 
-A covenant document is content-addressed — its hash is what gets referenced
+A covenant document is content-addressed  - its hash is what gets referenced
 in attestations. Swapping in a more permissive version of a covenant after
 the fact doesn't help an attacker, because the verifier is checking against
 the specific hash the action committed to.
@@ -49,7 +49,7 @@ another produces a chain that doesn't verify.
 
 The SDK public surface now validates its arguments at runtime (empty
 strings, wrong-length keys, missing required fields) and throws typed
-errors. This is a defense-in-depth measure, not a security boundary —
+errors. This is a defense-in-depth measure, not a security boundary  -
 it's about failing loud and fast instead of silently producing garbage.
 
 ## What we do NOT protect against
@@ -88,7 +88,7 @@ as unvetted for that setting.
 
 The TEE integration package does what the TEE says. If the TEE is
 compromised or the attestation document from the TEE is forged, we have
-no independent way to detect that — we're trusting the hardware root of
+no independent way to detect that  - we're trusting the hardware root of
 trust, period.
 
 ### Social engineering, supply chain, compromised dependencies
@@ -109,13 +109,13 @@ provide.
 ## Trust assumptions
 
 - The signer's key is held by the signer and nobody else.
-- Clocks are "roughly right" — attestation timestamps are not used for
+- Clocks are "roughly right"  - attestation timestamps are not used for
   security-critical ordering (the chain links provide ordering), but they
   are used in CCL time-window policies, and a sufficiently skewed clock
   on the prover's side will cause policy evaluation to go sideways.
 - The underlying Ed25519 and SHA-256 primitives from `@noble/*` are
   correct and constant-time.
-- The runtime (Node.js) is not malicious — we don't attempt to defend
+- The runtime (Node.js) is not malicious  - we don't attempt to defend
   against a hostile JavaScript engine.
 
 ## Known limitations

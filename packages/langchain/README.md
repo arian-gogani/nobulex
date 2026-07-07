@@ -31,16 +31,16 @@ const integrity = await agent.verifyIntegrity()
 
 Every action is:
 
-- **Hash-chained** — tampering is cryptographically detectable
-- **Signed** — Ed25519 signatures over the Merkle root
-- **Independently verifiable** — any third party can run `verifyIntegrity()` against the public key without trusting you
-- **Court-, audit-, and underwriter-grade** — the same evidence holds up in litigation discovery, regulatory examination, and insurance claims
+- **Hash-chained**  - tampering is cryptographically detectable
+- **Signed**  - Ed25519 signatures over the Merkle root
+- **Independently verifiable**  - any third party can run `verifyIntegrity()` against the public key without trusting you
+- **Court-, audit-, and underwriter-grade**  - the same evidence holds up in litigation discovery, regulatory examination, and insurance claims
 
 ## Why this exists
 
-Your AI agents are making consequential decisions — approvals, denials, recommendations, tool calls with side effects. When something goes wrong, the first question every CEO, regulator, auditor, and opposing counsel asks is: *"show me the paper trail."*
+Your AI agents are making consequential decisions  - approvals, denials, recommendations, tool calls with side effects. When something goes wrong, the first question every CEO, regulator, auditor, and opposing counsel asks is: *"show me the paper trail."*
 
-Right now you have server logs. Logs are what IT keeps for debugging. A paper trail is what the company keeps for accountability. The difference matters because logs are self-serving — you control them, you could have modified them, and a competent opposing counsel will say so in court.
+Right now you have server logs. Logs are what IT keeps for debugging. A paper trail is what the company keeps for accountability. The difference matters because logs are self-serving  - you control them, you could have modified them, and a competent opposing counsel will say so in court.
 
 Nobulex receipts are bilateral cryptographic evidence. Hash-chained. Signed. Independently verifiable. The same evidence whether the reader is your board, your auditor, your insurer, or an opposing party in litigation.
 
@@ -69,12 +69,12 @@ const agent = nobulex.wrap(myAgent, {
 
 Returns a `NobulexWrapper` with the same `invoke()` signature as the original, plus:
 
-- `agent.invoke(input, options?)` — forwards to the wrapped runnable, injecting the audit handler
-- `agent.getAuditLog()` — full signed audit log with Merkle root
-- `agent.getComplianceReport()` — EU AI Act Article 12 formatted compliance report
-- `agent.verifyIntegrity()` — independent verification of the entire receipt chain
-- `agent.handler` — the underlying callback handler for advanced use
-- `agent.agentId`, `agent.covenant` — identifiers
+- `agent.invoke(input, options?)`  - forwards to the wrapped runnable, injecting the audit handler
+- `agent.getAuditLog()`  - full signed audit log with Merkle root
+- `agent.getComplianceReport()`  - EU AI Act Article 12 formatted compliance report
+- `agent.verifyIntegrity()`  - independent verification of the entire receipt chain
+- `agent.handler`  - the underlying callback handler for advanced use
+- `agent.agentId`, `agent.covenant`  - identifiers
 
 ### `nobulex.createHandler(agentId?)`
 

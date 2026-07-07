@@ -1,4 +1,4 @@
-# Kova API Gateway — Trust-Gated Access in 10 Minutes
+# Kova API Gateway  - Trust-Gated Access in 10 Minutes
 
 Protect your API with covenant verification. No Kova = no access.
 
@@ -39,7 +39,7 @@ app.use('/api', kovaGatewayMiddleware({
 }));
 
 app.get('/api/data', (req, res) => {
-  res.json({ message: 'Access granted — covenant verified' });
+  res.json({ message: 'Access granted  - covenant verified' });
 });
 
 app.listen(3000);
@@ -92,6 +92,6 @@ If any required constraint is missing from the covenant, the gateway returns 401
 
 ## Next Steps
 
-- [QUICK-START.md](./QUICK-START.md) — Create your first covenant
-- [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) — EU AI Act compliance
-- [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md) — Go-to-market
+- [QUICK-START.md](./QUICK-START.md)  - Create your first covenant
+- [eu-ai-act-mapping.md](./eu-ai-act-mapping.md)  - EU AI Act compliance
+- [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md)  - Go-to-market

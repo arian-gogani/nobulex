@@ -4,15 +4,15 @@
 
 The internet was built with three missing primitives: identity, value, and trust. Bitcoin solved value. We solve trust.
 
-As billions of autonomous systems — AI agents, robotic fleets, autonomous vehicles, drone swarms, IoT networks — deploy into the physical and digital world, a fundamental question emerges: how does one machine decide whether to cooperate with another? Today's trust systems (star ratings, credit scores, TLS certificates) are one-dimensional, centralized, and designed for humans making slow decisions. They cannot serve a world where machines must establish, evaluate, and act on trust at computational speed.
+As billions of autonomous systems  - AI agents, robotic fleets, autonomous vehicles, drone swarms, IoT networks  - deploy into the physical and digital world, a fundamental question emerges: how does one machine decide whether to cooperate with another? Today's trust systems (star ratings, credit scores, TLS certificates) are one-dimensional, centralized, and designed for humans making slow decisions. They cannot serve a world where machines must establish, evaluate, and act on trust at computational speed.
 
-The Covenant Protocol introduces **Trust Physics** — a mathematical framework where trust is a multidimensional vector, directional, context-dependent, time-decaying, composable through chains with attenuation, and stakeable as an economic primitive. Built on cryptographic identity and zero-knowledge proof verification, Trust Physics transforms trust from a human intuition into a computable, composable protocol primitive.
+The Covenant Protocol introduces **Trust Physics**  - a mathematical framework where trust is a multidimensional vector, directional, context-dependent, time-decaying, composable through chains with attenuation, and stakeable as an economic primitive. Built on cryptographic identity and zero-knowledge proof verification, Trust Physics transforms trust from a human intuition into a computable, composable protocol primitive.
 
 ## 1. The Problem
 
 Consider a world with 10 billion autonomous agents. Agent A needs to delegate a financial transaction to Agent B, whom it has never encountered. Three questions arise:
 
-1. **Should A trust B at all?** Not in a generic sense — specifically, should A trust B to execute a transaction of this type, in this amount, under these constraints?
+1. **Should A trust B at all?** Not in a generic sense  - specifically, should A trust B to execute a transaction of this type, in this amount, under these constraints?
 2. **How much should A trust B?** Not a binary yes/no, but a nuanced, multidimensional assessment across reliability, capability, integrity, benevolence, predictability, and transparency.
 3. **Can A's trust assessment be composed from others?** If Agent C trusts B, and A trusts C, can A derive a calibrated trust in B without direct experience?
 
@@ -43,7 +43,7 @@ Trust erodes in the absence of evidence. An agent that hasn't been verified in 9
 
 ### 2.4 Transferable (with Attenuation)
 
-If A trusts B with confidence 0.9 and B trusts C with confidence 0.8, then A can derive a trust in C — but not at 0.9 or 0.8. Each hop in a trust chain attenuates the signal. With an attenuation factor of 0.7, the derived trust per dimension is 0.9 × 0.8 × 0.7 = 0.504. Longer chains yield weaker derived trust.
+If A trusts B with confidence 0.9 and B trusts C with confidence 0.8, then A can derive a trust in C  - but not at 0.9 or 0.8. Each hop in a trust chain attenuates the signal. With an attenuation factor of 0.7, the derived trust per dimension is 0.9 × 0.8 × 0.7 = 0.504. Longer chains yield weaker derived trust.
 
 ### 2.5 Asymmetric (Hard to Build, Easy to Destroy)
 
@@ -122,7 +122,7 @@ T_agg = Σ(wᵢ × Tᵢ) / Σ(wᵢ)
 
 The weights can encode the trustworthiness of the assessors themselves, creating a recursive trust structure.
 
-**Consensus minimum:** The most conservative estimate — the component-wise minimum across all assessors:
+**Consensus minimum:** The most conservative estimate  - the component-wise minimum across all assessors:
 
 ```
 T_consensus = (min(T₁ᵢ, T₂ᵢ, ..., Tₖᵢ)) for each dimension i
@@ -136,7 +136,7 @@ Trust Physics does not exist in isolation. It is the emergent fourth layer of a 
 
 ### Layer 1: Identity (`@nobulex/identity`)
 
-Every autonomous system receives a cryptographic identity — a content-addressed, Ed25519-signed document that binds a public key to model attestations, capabilities, and a hash-linked lineage chain. Identity answers the question: **who is this agent?**
+Every autonomous system receives a cryptographic identity  - a content-addressed, Ed25519-signed document that binds a public key to model attestations, capabilities, and a hash-linked lineage chain. Identity answers the question: **who is this agent?**
 
 ### Layer 2: Covenants (`@nobulex/core`)
 
@@ -150,7 +150,7 @@ Third-party verifiers generate zero-knowledge compliance proofs attesting that a
 
 Accumulated verified covenants compose into rich, multidimensional trust relationships. Trust Physics answers the question: **how much should I rely on this agent, for what, and how has that changed over time?**
 
-The key insight is that trust is not declared — it is **earned** through repeated, verified covenant compliance and **erodes** in its absence. Trust Physics simply computes the mathematical consequence of an agent's verifiable history.
+The key insight is that trust is not declared  - it is **earned** through repeated, verified covenant compliance and **erodes** in its absence. Trust Physics simply computes the mathematical consequence of an agent's verifiable history.
 
 ## 5. Applications Beyond AI Agents
 
@@ -172,10 +172,10 @@ Trust staking transforms reputation into a tradeable economic primitive:
 2. **Risk pricing:** Agents with high trust can charge premiums for vouching. Agents with low trust must offer larger rewards to attract stakers.
 3. **Market dynamics:** Trust stakes create a market where the price of vouching for an agent reflects the collective assessment of that agent's trustworthiness.
 
-This is analogous to credit scores — but decentralized, multidimensional, and designed for machines operating at computational speed. No central bureau decides your score. Your score is the mathematical consequence of your verifiable behavior.
+This is analogous to credit scores  - but decentralized, multidimensional, and designed for machines operating at computational speed. No central bureau decides your score. Your score is the mathematical consequence of your verifiable behavior.
 
 ## Conclusion
 
 Communication layer: TCP/IP (1970s). Value layer: Bitcoin (2009). Trust layer: Covenant Protocol (2026).
 
-Trust Physics completes the internet's unfinished architecture by giving machines the ability to compute, compose, and act on trust — the missing primitive required for autonomous systems to cooperate at scale.
+Trust Physics completes the internet's unfinished architecture by giving machines the ability to compute, compose, and act on trust  - the missing primitive required for autonomous systems to cooperate at scale.

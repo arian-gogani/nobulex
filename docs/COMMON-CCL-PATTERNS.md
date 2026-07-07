@@ -27,7 +27,7 @@ deny write on '/data/**' when time_of_day = 'night'
 ```
 
 - Conditions use `when` with `=`, `!=`, `<`, `>`, `in`, `contains`, etc.
-- **Avoid** using `severity` as a condition key — it's reserved
+- **Avoid** using `severity` as a condition key  - it's reserved
 
 ---
 
@@ -91,8 +91,8 @@ permit read on '/data' enforcement hard   # Block if violated
 deny write on '/system' enforcement soft # Warn but allow (audit)
 ```
 
-- **hard** (default): strict enforcement — the action is blocked when the rule matches
-- **soft**: advisory — the rule is evaluated and logged, but violations do not block execution; use for audit trails and gradual rollout
+- **hard** (default): strict enforcement  - the action is blocked when the rule matches
+- **soft**: advisory  - the rule is evaluated and logged, but violations do not block execution; use for audit trails and gradual rollout
 
 Use `hard` for security-critical rules (e.g. deny exfiltration). Use `soft` when you want visibility without blocking (e.g. policy warnings).
 
@@ -124,6 +124,6 @@ permit tool.* on '/output/**'
 
 ## See Also
 
-- [examples/04-ccl-patterns.ts](../examples/04-ccl-patterns.ts) — runnable examples
-- [examples/08-covenant-with-when.ts](../examples/08-covenant-with-when.ts) — conditional covenants
-- [examples/10-mcp-custom-covenant.ts](../examples/10-mcp-custom-covenant.ts) — custom CCL for MCP
+- [examples/04-ccl-patterns.ts](../examples/04-ccl-patterns.ts)  - runnable examples
+- [examples/08-covenant-with-when.ts](../examples/08-covenant-with-when.ts)  - conditional covenants
+- [examples/10-mcp-custom-covenant.ts](../examples/10-mcp-custom-covenant.ts)  - custom CCL for MCP

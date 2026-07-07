@@ -6,10 +6,10 @@ Structured process for proposing protocol changes. Anyone can submit a KIP.
 
 ## Process
 
-1. **Draft** — Create a KIP document (see template below). Open a GitHub Discussion or PR.
-2. **Review** — Community and maintainers review. Feedback period: 2 weeks minimum.
-3. **Decision** — Maintainers accept, reject, or request changes.
-4. **Implementation** — Accepted KIPs move to implementation. Author may implement or others may volunteer.
+1. **Draft**  - Create a KIP document (see template below). Open a GitHub Discussion or PR.
+2. **Review**  - Community and maintainers review. Feedback period: 2 weeks minimum.
+3. **Decision**  - Maintainers accept, reject, or request changes.
+4. **Implementation**  - Accepted KIPs move to implementation. Author may implement or others may volunteer.
 
 **Cadence:** Monthly KIP review cycle. KIPs are batched for each cycle.
 
@@ -46,7 +46,7 @@ What other approaches were considered and why rejected?
 
 | KIP | Title | Status |
 |-----|-------|--------|
-| — | *(none yet)* | — |
+|  - | *(none yet)* |  - |
 
 ---
 

@@ -30,5 +30,5 @@ The export_article12 package contains:
 - Chain head hash (auditor recomputes from receipts to verify)
 - EU AI Act Article 12 obligation mapping
 
-Any auditor can verify offline — no vendor dependency, no operator trust required.
+Any auditor can verify offline  - no vendor dependency, no operator trust required.
 The chain breaks if any receipt is altered. EU AI Act Article 12 enforcement: December 2, 2027.

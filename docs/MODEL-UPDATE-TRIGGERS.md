@@ -6,10 +6,10 @@ When you fine-tune or swap the model, the covenant may no longer describe behavi
 
 ## Workflow
 
-1. **Mandatory re-verification** — Covenant must be re-signed or re-validated.
-2. **Canary re-run** — Challenge-response tests must pass again.
-3. **Lineage carry-forward** — Old covenant links to new; audit trail preserved.
-4. **Grace period at reduced trust tier** — Until re-verification completes, agent operates at lower trust level.
+1. **Mandatory re-verification**  - Covenant must be re-signed or re-validated.
+2. **Canary re-run**  - Challenge-response tests must pass again.
+3. **Lineage carry-forward**  - Old covenant links to new; audit trail preserved.
+4. **Grace period at reduced trust tier**  - Until re-verification completes, agent operates at lower trust level.
 
 ---
 
@@ -60,10 +60,10 @@ const fired = evaluateTriggers(covenant, agentState);
 
 When `model_update` fires:
 
-1. **Re-run canary tests** — Use `@nobulex/canary` to validate the new model against the covenant.
-2. **Re-sign or re-validate covenant** — Use `@nobulex/core` to produce a new signed covenant with updated model lineage.
-3. **Preserve lineage** — Link the old covenant to the new one in the audit trail.
-4. **Apply grace period** — Until re-verification completes, operate at reduced trust (e.g., via `tighten` action adding temporary constraints).
+1. **Re-run canary tests**  - Use `@nobulex/canary` to validate the new model against the covenant.
+2. **Re-sign or re-validate covenant**  - Use `@nobulex/core` to produce a new signed covenant with updated model lineage.
+3. **Preserve lineage**  - Link the old covenant to the new one in the audit trail.
+4. **Apply grace period**  - Until re-verification completes, operate at reduced trust (e.g., via `tighten` action adding temporary constraints).
 
 ---
 

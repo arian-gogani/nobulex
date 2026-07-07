@@ -25,14 +25,14 @@
 ### 2. The Accountability Gap
 
 - Agents execute consequential actions without protocol-level accountability
-- Operator logs, platform dashboards — not independently verifiable
+- Operator logs, platform dashboards  - not independently verifiable
 - Liability uncertainty for insurers
 
 ### 3. Kova as Risk Infrastructure
 
-- **Identity binding** — Who is responsible
-- **Covenant declaration** — What the agent committed to
-- **Compliance proof** — Cryptographic verification of behavior
+- **Identity binding**  - Who is responsible
+- **Covenant declaration**  - What the agent committed to
+- **Compliance proof**  - Cryptographic verification of behavior
 
 ### 4. Risk Factors (Quantifiable)
 
@@ -46,9 +46,9 @@
 
 ### 5. Proposed Risk Model
 
-- **Base rate** — Unverified agents
-- **Kova discount** — Verified agents: X% lower incident rate (simulated → validated)
-- **Tiered pricing** — Solo / Bilateral / Network verification
+- **Base rate**  - Unverified agents
+- **Kova discount**  - Verified agents: X% lower incident rate (simulated → validated)
+- **Tiered pricing**  - Solo / Bilateral / Network verification
 
 ### 6. Data Requirements
 
@@ -74,5 +74,5 @@
 
 - **Improvement 53:** Actuarial Risk Model
 - **ADOPTION-STRATEGY.md:** Insurance Discount: The Actuarial Play
-- **ADOPTION-READINESS.md:** Gap 2, Week 8 — Actuarial whitepaper
+- **ADOPTION-READINESS.md:** Gap 2, Week 8  - Actuarial whitepaper
 - **@nobulex/derivatives:** Risk assessment, premium calculation

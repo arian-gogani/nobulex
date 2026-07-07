@@ -1,7 +1,7 @@
 # Danielle Call: Example Answers (adapt to your voice)
 
 Fill in the bracketed parts. Rewrite anything that sounds off. Don't read
-these verbatim — read them once, then go talk like a person.
+these verbatim  - read them once, then go talk like a person.
 
 ---
 
@@ -11,7 +11,7 @@ these verbatim — read them once, then go talk like a person.
 going to be agents doing more and more without humans in the loop. We
 either build the proof for that or we run on faith. I'd rather spend my
 twenties on the proof. I've been working on this kind of problem since
-I was [X] — [one specific thing you built or got obsessed with before
+I was [X]  - [one specific thing you built or got obsessed with before
 nobulex]. This isn't a project I picked because it's hot, it's the thing
 I'd be working on anyway."
 
@@ -20,7 +20,7 @@ I'd be working on anyway."
 **"Tell me about yourself."**
 
 "I'm Arian, I'm 15, I'm from [place], currently in Europe. I taught
-myself to code [around when]. Built a few things before nobulex —
+myself to code [around when]. Built a few things before nobulex  -
 [one or two real examples in one line each]. Started nobulex about [X]
 weeks ago after [the specific moment you got pulled in]. Since then it's
 a working PyPI package, an integration partner, cross-implementation
@@ -43,7 +43,7 @@ Until then I'm not waiting."
 **"What does nobulex do?"**
 
 "Open-source receipt layer for AI agents. Every action an agent takes
-gets a cryptographic receipt — Ed25519 signed, hash-chained. Change one
+gets a cryptographic receipt  - Ed25519 signed, hash-chained. Change one
 byte and the chain breaks. So an auditor, a customer, or a regulator can
 verify what an agent did without trusting whoever ran it. Install with
 `pip install nobulex`."
@@ -52,10 +52,10 @@ verify what an agent did without trusting whoever ran it. Install with
 
 **"Why now?"**
 
-"Two things. EU AI Act Article 12 enforcement starts December 2, 2027 — high-risk
+"Two things. EU AI Act Article 12 enforcement starts December 2, 2027  - high-risk
 AI systems are required to have tamper-evident audit logs and most
 companies deploying agents can't produce one. And the dollar amounts are
-growing fast — MiHoYo burned $300K of AI tokens in 13 hours running
+growing fast  - MiHoYo burned $300K of AI tokens in 13 hours running
 agents internally last week. The infrastructure underneath is missing."
 
 ---
@@ -65,8 +65,8 @@ agents internally last week. The infrastructure underneath is missing."
 "Companies building agent infrastructure, not end users. Three patterns:
 security platforms like Red Sentinel and AgentAudit that need an evidence
 layer; trust-layer startups like t54.ai who need an open standard
-underneath their product; and enterprises in regulated industries —
-finance, healthcare, defense — that need audit trails before regulators
+underneath their product; and enterprises in regulated industries  -
+finance, healthcare, defense  - that need audit trails before regulators
 force them. AgentAudit is my first integration partner. A Northrop
 Grumman engineer starred the repo this week."
 
@@ -103,7 +103,7 @@ Open to one if it's the right fit, just haven't met that person yet."
 **"How much do you need and what for?"**
 
 "$50K to $100K. Roughly: $15-25K for a published security audit by
-Trail of Bits or similar — for a project positioning itself as a trust
+Trail of Bits or similar  - for a project positioning itself as a trust
 layer, an outside cryptographic audit is the credibility unlock. $3-5K
 for legal and getting the entity set up properly. $5-10K for travel to
 meet partners in person. $10-20K for a part-time contractor expanding

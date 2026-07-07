@@ -2,7 +2,7 @@
 
 **Date drafted:** 2026-05-10
 **Status:** Draft, not yet sent
-**Target:** Karthik Ramakrishnan — `insurance@armilla.ai`, or LinkedIn DM
+**Target:** Karthik Ramakrishnan  - `insurance@armilla.ai`, or LinkedIn DM
 **CC:** Baiju Devani (CTO/co-founder), Piers Tuggey (Chaucer, Head of Cyber)
 **Objective:** 25-minute call to explore Lloyd's / Armilla as design partner for AI E&O premium discount tied to bilateral receipt issuance
 
@@ -12,7 +12,7 @@
 
 - Armilla is the only Lloyd's-anointed MGA shipping affirmative AI E&O at $25M aggregate limits ([Vanguard AI, Feb 2026 launch](https://www.armilla.ai/resources/chaucer-and-armilla-launch-vanguard-ai-to-clarify-cyber-technology-and-ai-liability-in-a-single-coordinated-structure)).
 - Karthik's own framing maps directly to bilateral receipts: *"clarity at the moment it matters when a claim actually occurs… avoid post-loss debates about whether an AI failure belongs in cyber, tech E&O, or nowhere at all."* That is the exact gap bilateral receipts close.
-- The current Armilla underwriting evidence stack is model-level (ISO/IEC 42001 docs, third-party assurance). Bilateral receipts are per-transaction evidence — a different and complementary layer that lets pricing become actuarially sharper than competitors.
+- The current Armilla underwriting evidence stack is model-level (ISO/IEC 42001 docs, third-party assurance). Bilateral receipts are per-transaction evidence  - a different and complementary layer that lets pricing become actuarially sharper than competitors.
 - Armilla is small enough to act fast and large enough to set a market precedent. First carrier to require Nobulex receipts as evidence-of-record creates a forcing function that scales adoption industry-wide.
 
 ## The ask
@@ -23,15 +23,15 @@ I am not asking for a binding pilot in this conversation. I am asking whether th
 
 ---
 
-## DRAFT EMAIL — v1 (cold, no warm introduction)
+## DRAFT EMAIL  - v1 (cold, no warm introduction)
 
 **Subject:** Bilateral receipts as evidence-of-record for Vanguard AI
 
-Karthik —
+Karthik  -
 
-I noticed your framing on the Vanguard AI launch — that the structure exists to give policyholders "clarity at the moment it matters when a claim actually occurs." That is the exact problem I have been working on.
+I noticed your framing on the Vanguard AI launch  - that the structure exists to give policyholders "clarity at the moment it matters when a claim actually occurs." That is the exact problem I have been working on.
 
-I am the maintainer of Nobulex, an MIT-licensed bilateral receipt format for AI agent transactions. The receipts are post-action evidence: two cryptographic signatures (principal and agent) over the full action record, hash-chained, with deterministic reasoning trace. They produce a per-transaction record that holds up in dispute — closer in shape to a UCC filing than to a model card.
+I am the maintainer of Nobulex, an MIT-licensed bilateral receipt format for AI agent transactions. The receipts are post-action evidence: two cryptographic signatures (principal and agent) over the full action record, hash-chained, with deterministic reasoning trace. They produce a per-transaction record that holds up in dispute  - closer in shape to a UCC filing than to a model card.
 
 Last week I published the first issue of the Agent Reliability Index, a weekly public observatory of AI agent behavior change across frontier vendors. The methodology is open. The first issue and the strategic vision are at <https://nobulex.com/observatory.html>.
 
@@ -41,7 +41,7 @@ I am not asking for a binding pilot here. I am asking whether the structural arg
 
 If this is interesting, I am free any 25-minute window in the next two weeks.
 
-— Arian Gogani
+ - Arian Gogani
 Nobulex
 <https://github.com/arian-gogani/nobulex>
 
@@ -65,7 +65,7 @@ Nobulex
    *Response:* "Same shape as how cyber insurance forced MFA adoption in 2021–2023: the carrier-side discount becomes the customer-side requirement, which becomes the vendor-side feature. If Armilla offers 15% off for receipt issuance, customers run the math on their premium and adopt within the quarter."
 
 3. **"We already use ISO/IEC 42001 evidence."**
-   *Response:* "Right — and ISO 42001 is model-level governance, not per-transaction record. The two compose: 42001 says you have processes; bilateral receipts say what those processes actually produced on each specific consequential action. The disputes you're trying to avoid are per-transaction, not per-process."
+   *Response:* "Right  - and ISO 42001 is model-level governance, not per-transaction record. The two compose: 42001 says you have processes; bilateral receipts say what those processes actually produced on each specific consequential action. The disputes you're trying to avoid are per-transaction, not per-process."
 
 4. **"What's the cost?"**
    *Response:* "The protocol substrate is free and open. Once a critical mass of receipts is flowing, Armilla pays for per-receipt verification at scale plus access to the rating engine (Nobulex Score), priced on a per-query basis comparable to credit bureau pull fees. The design-partner relationship is no charge during the first 12 months."
@@ -73,5 +73,5 @@ Nobulex
 ## Follow-up cadence
 
 - Day 0: Send email
-- Day 7: One short follow-up if no response — "still useful?" + same observatory link
+- Day 7: One short follow-up if no response  - "still useful?" + same observatory link
 - Day 14: If no response, move on. Do not chase further; the artifact is in the public record.

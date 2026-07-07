@@ -51,21 +51,21 @@ forkers, starrers, people who replied. They already showed intent.
 
 ---
 
-## TIER 1.5 — Independent Third-Party Adoption (no outreach needed, already shipping)
+## TIER 1.5  - Independent Third-Party Adoption (no outreach needed, already shipping)
 
-**vaara** (vaaraio, Henri Sirkkavaara) — hello@vaara.io
+**vaara** (vaaraio, Henri Sirkkavaara)  - hello@vaara.io
 - Shipped vaara v0.50 to PyPI and npm with full Aider + MCP runtime audit
 - Ed25519-signed, JCS-canonical receipts with RFC 3161 timestamp anchoring
 - vaara trail export-article12 for EU AI Act Article 12 compliance packages
-- Independently cited the nobulex signed-receipt design — no coordination
+- Independently cited the nobulex signed-receipt design  - no coordination
 - RELATIONSHIP: warm, Gmail draft ready to hello@vaara.io
 - OPPORTUNITY: mutual README link, joint conformance vectors, deeper SDK integration
 
 ---
 
-## TIER 1 — Inbound Warm (they reached out / responded positively)
+## TIER 1  - Inbound Warm (they reached out / responded positively)
 
-**Dify (LangGenius)** — sherry.zhao@dify.ai
+**Dify (LangGenius)**  - sherry.zhao@dify.ai
 - 60,000+ GitHub stars, millions of active users, enterprise customers in regulated industries
 - Sherry Zhao (Community Operations) confirmed architecture is sound and Trust Capital is interesting
 - Asqav already in Marketplace (competitor for audit trail), but open to multiple tools

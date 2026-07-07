@@ -1,4 +1,4 @@
-# Agent Reliability Index — Methodology v0.1
+# Agent Reliability Index  - Methodology v0.1
 
 **Status:** Draft methodology, public for critique
 **Authors:** Arian Gogani (Nobulex)
@@ -16,7 +16,7 @@ The methodology is deliberately published before the first index issue contains 
 
 ## What the index measures
 
-The ARI tracks five behavioral dimensions for each tracked agent endpoint. These dimensions were chosen because (a) they are observable from the outside without privileged access, (b) they are leading indicators most often cited in post-incident reviews of production agent failures, and (c) they are statistically tractable — each dimension produces a numerical score that can be tracked week-over-week.
+The ARI tracks five behavioral dimensions for each tracked agent endpoint. These dimensions were chosen because (a) they are observable from the outside without privileged access, (b) they are leading indicators most often cited in post-incident reviews of production agent failures, and (c) they are statistically tractable  - each dimension produces a numerical score that can be tracked week-over-week.
 
 ### Dimension 1: Output Stability Under Fixed Prompts (`output_stability`)
 
@@ -30,11 +30,11 @@ The composite per-prompt stability score is a weighted average of the three sub-
 
 ### Dimension 2: Stated Confidence Calibration (`confidence_calibration`)
 
-Where the agent provides confidence scores or hedge language ("I think...", "I'm certain...", numerical confidence), the ARI tracks the empirical distribution of stated confidence across the 100-prompt set. Tracked statistics: mean, variance, skew. A statistically significant shift in any of these — particularly variance, which is a leading indicator of model retuning — is flagged.
+Where the agent provides confidence scores or hedge language ("I think...", "I'm certain...", numerical confidence), the ARI tracks the empirical distribution of stated confidence across the 100-prompt set. Tracked statistics: mean, variance, skew. A statistically significant shift in any of these  - particularly variance, which is a leading indicator of model retuning  - is flagged.
 
 ### Dimension 3: Refusal and Safety-Filter Rate (`refusal_rate`)
 
-The ARI tracks the proportion of prompts that result in (a) full refusal, (b) partial refusal with hedging, (c) safety-filter intervention, (d) full completion. Increases in refusal rate are not inherently problematic — vendors tighten filters for good reasons — but customers running agents in production rely on a stable refusal rate for downstream workflow design. Drift here is informational by default; when paired with drift in another dimension, it escalates to advisory or regression severity.
+The ARI tracks the proportion of prompts that result in (a) full refusal, (b) partial refusal with hedging, (c) safety-filter intervention, (d) full completion. Increases in refusal rate are not inherently problematic  - vendors tighten filters for good reasons  - but customers running agents in production rely on a stable refusal rate for downstream workflow design. Drift here is informational by default; when paired with drift in another dimension, it escalates to advisory or regression severity.
 
 ### Dimension 4: Latency and Routing Variance (`latency_variance`)
 
@@ -78,13 +78,13 @@ These weights reflect the relative weight of each dimension in current enterpris
 
 ### Score interpretation
 
-- **CVRI 100** — vendor is at its 12-week baseline on all dimensions. No drift.
-- **CVRI 95–99** — minor drift on at least one dimension. Informational.
-- **CVRI 85–94** — significant drift on one or more dimensions. Advisory; customers should review.
-- **CVRI 70–84** — material drift; downstream workflows likely affected. Regression class.
-- **CVRI < 70** — severe drift; broad reliability impact. Critical class.
+- **CVRI 100**  - vendor is at its 12-week baseline on all dimensions. No drift.
+- **CVRI 95–99**  - minor drift on at least one dimension. Informational.
+- **CVRI 85–94**  - significant drift on one or more dimensions. Advisory; customers should review.
+- **CVRI 70–84**  - material drift; downstream workflows likely affected. Regression class.
+- **CVRI < 70**  - severe drift; broad reliability impact. Critical class.
 
-CVRI is a *change detector*, not an absolute capability score. A vendor with a CVRI of 100 is not necessarily "better" than a vendor with a CVRI of 90 — the 90-vendor may simply have shifted recently. Capability is measured by benchmarks; reliability is measured by behavioral consistency.
+CVRI is a *change detector*, not an absolute capability score. A vendor with a CVRI of 100 is not necessarily "better" than a vendor with a CVRI of 90  - the 90-vendor may simply have shifted recently. Capability is measured by benchmarks; reliability is measured by behavioral consistency.
 
 ---
 
@@ -98,8 +98,8 @@ A **vendor-level drift event** is flagged when:
 
 Drift events are classified as:
 
-- **Announced drift** — the drift coincides with a vendor release note, model card update, or status page entry. Recorded but not editorially significant.
-- **Silent drift** — the drift is detected without any corresponding vendor disclosure. This is the editorially most significant signal the index produces. Customers running production agents have no way to detect silent drift on their own and are exactly the audience the ARI exists to serve.
+- **Announced drift**  - the drift coincides with a vendor release note, model card update, or status page entry. Recorded but not editorially significant.
+- **Silent drift**  - the drift is detected without any corresponding vendor disclosure. This is the editorially most significant signal the index produces. Customers running production agents have no way to detect silent drift on their own and are exactly the audience the ARI exists to serve.
 
 Each silent-drift event triggers (a) inclusion in the weekly issue, (b) a structured incident record in `observatory/incidents/`, (c) an open invitation to the vendor to comment in the next issue.
 
@@ -122,7 +122,7 @@ The ARI maintains 100 standardized prompts across 10 task classes (10 prompts pe
 
 The prompt set is **versioned**. Prompt set v1.0 is frozen for the first 12 weeks; v1.1 with adjustments will be released after a 12-week back-test demonstrating that the change does not materially alter prior weeks' scores.
 
-The full prompts are not published — to prevent vendors from training on them — but the task-class definitions, statistical properties of the prompt set, and any vendor-disputed prompts (in redacted form) are.
+The full prompts are not published  - to prevent vendors from training on them  - but the task-class definitions, statistical properties of the prompt set, and any vendor-disputed prompts (in redacted form) are.
 
 ---
 
@@ -138,7 +138,7 @@ Settings:
 - No system prompt unless required by the API
 - No vendor-specific prompt optimization
 
-The "no vendor-specific prompt optimization" choice is deliberate. The ARI is intended to measure *baseline* behavior — what enterprise customers experience when they have not invested in vendor-specific prompt engineering. This produces a different signal than capability benchmarks (which use optimized prompts) and is more representative of production reliability for the median enterprise deployment.
+The "no vendor-specific prompt optimization" choice is deliberate. The ARI is intended to measure *baseline* behavior  - what enterprise customers experience when they have not invested in vendor-specific prompt engineering. This produces a different signal than capability benchmarks (which use optimized prompts) and is more representative of production reliability for the median enterprise deployment.
 
 ---
 
@@ -167,7 +167,7 @@ Vendors may dispute any finding in any issue. Disputes are resolved publicly:
 3. Nobulex reviews and either (a) acknowledges the methodological issue and adjusts, with full transparency about the adjustment, or (b) explains in detail why the methodology stands
 4. The vendor may submit a follow-up which is also published
 
-This dispute process is, in itself, a structured precedent stream — by Year 2, the catalog of vendor disputes against the ARI methodology functions as a proto-dispute-registry.
+This dispute process is, in itself, a structured precedent stream  - by Year 2, the catalog of vendor disputes against the ARI methodology functions as a proto-dispute-registry.
 
 ---
 

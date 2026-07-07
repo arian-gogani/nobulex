@@ -17,10 +17,10 @@ The minimal formally verifiable core. Four operations. If these four are correct
 
 ## Guarantees
 
-- **Identity binding** — Agent cannot forge a different principal. Composite identity hash binds model, version, platform, configuration.
-- **Covenant signing** — Covenant cannot be modified after inscription. Ed25519 signature, content-addressed ID.
-- **Proof verification** — Verification requires only public data. No oracle, no API call, no trust assumption.
-- **Trust accounting** — Trust score bounded by collateralization. Cannot exceed staked value.
+- **Identity binding**  - Agent cannot forge a different principal. Composite identity hash binds model, version, platform, configuration.
+- **Covenant signing**  - Covenant cannot be modified after inscription. Ed25519 signature, content-addressed ID.
+- **Proof verification**  - Verification requires only public data. No oracle, no API call, no trust assumption.
+- **Trust accounting**  - Trust score bounded by collateralization. Cannot exceed staked value.
 
 ---
 

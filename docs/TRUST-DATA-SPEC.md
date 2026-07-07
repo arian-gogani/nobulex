@@ -6,9 +6,9 @@ Cross-platform reputation graph = largest verified agent behavioral dataset. Blo
 
 ## Asset
 
-- **Reputation graph** — Covenants, compliance proofs, breach attestations, execution history
-- **Verified** — Cryptographically signed; not self-reported
-- **Cross-platform** — Any agent, any substrate, any deployment
+- **Reputation graph**  - Covenants, compliance proofs, breach attestations, execution history
+- **Verified**  - Cryptographically signed; not self-reported
+- **Cross-platform**  - Any agent, any substrate, any deployment
 
 ---
 
@@ -25,9 +25,9 @@ Cross-platform reputation graph = largest verified agent behavioral dataset. Blo
 
 ## Pricing
 
-- **Per-verification toll** — $0.005+ per verification action
-- **API access** — Per-query pricing for compliance intelligence
-- **Custom reports** — Enterprise contracts via Nobulex Cloud
+- **Per-verification toll**  - $0.005+ per verification action
+- **API access**  - Per-query pricing for compliance intelligence
+- **Custom reports**  - Enterprise contracts via Nobulex Cloud
 
 ---
 

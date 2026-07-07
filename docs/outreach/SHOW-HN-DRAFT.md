@@ -1,4 +1,4 @@
-# Show HN: Nobulex — Ed25519 signed receipts for AI agent actions
+# Show HN: Nobulex  - Ed25519 signed receipts for AI agent actions
 
 **Title:** Show HN: Nobulex – cryptographic receipts for AI agent actions (pip install nobulex)
 
@@ -19,7 +19,7 @@ agent = Agent("my-agent")
 receipt = agent.act(action_type="send_email", scope="user@example.com")
 
 print(receipt.action_ref)   # SHA-256(JCS({agent_id, action_type, scope, timestamp_ms}))
-print(receipt.verify())     # True — modify any byte and this returns False
+print(receipt.verify())     # True  - modify any byte and this returns False
 ```
 
 The receipt is Ed25519-signed over RFC 8785 JCS-canonical JSON, hash-chained
@@ -28,17 +28,17 @@ No service dependency. No operator trust required.
 
 **What's built:**
 - Python SDK on PyPI (`pip install nobulex`), ~13,700 signed receipts/sec
-- TypeScript SDK (`@nobulex/core`) — byte-identical action_refs cross-validated
+- TypeScript SDK (`@nobulex/core`)  - byte-identical action_refs cross-validated
 - LangChain and CrewAI integrations
 - Dify Marketplace plugin (PR #2500 open)
 - EU AI Act Article 12 export
-- OWASP CheatSheetSeries PR #2210 — JCS canonicalization rationale and
+- OWASP CheatSheetSeries PR #2210  - JCS canonicalization rationale and
   regulatory mapping for AI agent payments merged into master by Jim Manico
 
 **Why this matters now:** EU AI Act Article 12 requires tamper-evident
 automatic logging for high-risk AI systems. The deadline is December 2, 2027.
 "Tamper-evident" rules out SQLite and cloud logs. Ed25519 over a hash chain
-is the right shape — and nobody in the agent stack ships it yet.
+is the right shape  - and nobody in the agent stack ships it yet.
 
 The receipt format is minimal on purpose: one 64-character action_ref,
 one signature, one chain link. Everything else is an application layer.

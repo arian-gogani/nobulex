@@ -8,7 +8,7 @@ The trust layer for the agent economy. Nobulex is an open cryptographic protocol
 
 | Doc | Description |
 |-----|-------------|
-| [ONE-PAGER.md](./ONE-PAGER.md) | Executive summary — one page |
+| [ONE-PAGER.md](./ONE-PAGER.md) | Executive summary  - one page |
 | [QUICK-START.md](./QUICK-START.md) | 30 minutes from install to verified covenant + compliance export |
 | [architecture.md](./architecture.md) | Protocol architecture, document lifecycle, extension points |
 
@@ -18,9 +18,9 @@ The trust layer for the agent economy. Nobulex is an open cryptographic protocol
 
 | Doc | Description |
 |-----|-------------|
-| [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) | EU AI Act (Regulation 2024/1689) — Article-by-Article mapping to Nobulex. **Deadline: Aug 2, 2026** |
-| [i18n/](./i18n/) | Localized docs — EU AI Act + Quick Start in German, French, Spanish |
-| [nist-ai-rmf-mapping.md](./nist-ai-rmf-mapping.md) | NIST AI Risk Management Framework — Govern, Map, Measure, Manage |
+| [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) | EU AI Act (Regulation 2024/1689)  - Article-by-Article mapping to Nobulex. **Deadline: Aug 2, 2026** |
+| [i18n/](./i18n/) | Localized docs  - EU AI Act + Quick Start in German, French, Spanish |
+| [nist-ai-rmf-mapping.md](./nist-ai-rmf-mapping.md) | NIST AI Risk Management Framework  - Govern, Map, Measure, Manage |
 
 ---
 
@@ -28,7 +28,7 @@ The trust layer for the agent economy. Nobulex is an open cryptographic protocol
 
 | Doc | Description |
 |-----|-------------|
-| [COMMON-CCL-PATTERNS.md](./COMMON-CCL-PATTERNS.md) | Common CCL patterns — permit/deny, when clauses, rate limits, wildcards |
+| [COMMON-CCL-PATTERNS.md](./COMMON-CCL-PATTERNS.md) | Common CCL patterns  - permit/deny, when clauses, rate limits, wildcards |
 
 ---
 
@@ -36,13 +36,13 @@ The trust layer for the agent economy. Nobulex is an open cryptographic protocol
 
 | Doc | Description |
 |-----|-------------|
-| [76-IMPROVEMENTS-MAP.md](./76-IMPROVEMENTS-MAP.md) | Master index — all 76 improvements mapped to packages/docs |
+| [76-IMPROVEMENTS-MAP.md](./76-IMPROVEMENTS-MAP.md) | Master index  - all 76 improvements mapped to packages/docs |
 | [UPGRADES.md](./UPGRADES.md) | 15 feature upgrades (attestation, canary, gametheory, derivatives, etc.) |
 | [CORE-MECHANISMS.md](./CORE-MECHANISMS.md) | 11 core mechanism improvements (self-enforcing covenants, trust algebra, etc.) |
 | [STRATEGIC-CHANGES.md](./STRATEGIC-CHANGES.md) | 13 strategic changes (positioning, 3 primitives, adoption mechanics) |
 | [ADOPTION-STRATEGY.md](./ADOPTION-STRATEGY.md) | Incentive alignment + three wedges (regulatory, internal, MCP) |
 | [ADOPTION-READINESS.md](./ADOPTION-READINESS.md) | 10-gap closure: champions, content, community, compliance audit, academic, conferences, pricing, moat, localization, milestones |
-| [KIP-PROCESS.md](./KIP-PROCESS.md) | Nobulex Improvement Proposals — structured process for protocol changes |
+| [KIP-PROCESS.md](./KIP-PROCESS.md) | Nobulex Improvement Proposals  - structured process for protocol changes |
 | [GOOD-FIRST-ISSUES.md](./GOOD-FIRST-ISSUES.md) | 20+ scoped tasks for new contributors (1–2 hr each) |
 | [HOLES-PATCHED.md](./HOLES-PATCHED.md) | 10 preemptive defenses against known objections |
 | [ACCOUNTABILITY-KERNEL.md](./ACCOUNTABILITY-KERNEL.md) | Four operations: identity binding, covenant signing, proof verification, trust accounting |
@@ -59,11 +59,11 @@ The trust layer for the agent economy. Nobulex is an open cryptographic protocol
 | [COMPLIANCE-AUTOPILOT-SPEC.md](./COMPLIANCE-AUTOPILOT-SPEC.md) | 0.5–1% budget, Salesforce stickiness |
 | [STAKING-TIERS-SPEC.md](./STAKING-TIERS-SPEC.md) | $1/$10/$100/$1000, governance weight |
 | [THE-RAIL-SPEC.md](./THE-RAIL-SPEC.md) | Trust = transaction, 0.15% of volume |
-| [PRICING.md](./PRICING.md) | Nobulex Cloud: per-verification toll model — per-action toll ($0.005+/verification), certification badges, compliance intelligence, insurance-linked coverage, embedded middleware |
-| [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) | Model update triggers (Hole 7/39) — re-verification workflow |
-| [METRICS-DASHBOARD.md](./METRICS-DASHBOARD.md) | What to track — npm installs, stars, DMs |
+| [PRICING.md](./PRICING.md) | Nobulex Cloud: per-verification toll model  - per-action toll ($0.005+/verification), certification badges, compliance intelligence, insurance-linked coverage, embedded middleware |
+| [MODEL-UPDATE-TRIGGERS.md](./MODEL-UPDATE-TRIGGERS.md) | Model update triggers (Hole 7/39)  - re-verification workflow |
+| [METRICS-DASHBOARD.md](./METRICS-DASHBOARD.md) | What to track  - npm installs, stars, DMs |
 | [DISCOVERY.md](./DISCOVERY.md) | Federated covenant discovery (`.well-known/nobulex`) |
-| [ZK-IDENTITY-HIERARCHY.md](./ZK-IDENTITY-HIERARCHY.md) | ZK identity design — prove trust without revealing identity |
+| [ZK-IDENTITY-HIERARCHY.md](./ZK-IDENTITY-HIERARCHY.md) | ZK identity design  - prove trust without revealing identity |
 
 ---
 
@@ -71,7 +71,7 @@ The trust layer for the agent economy. Nobulex is an open cryptographic protocol
 
 | Doc | Description |
 |-----|-------------|
-| [UNCOVENANTED-AGENT-PROBLEM-HN.md](./UNCOVENANTED-AGENT-PROBLEM-HN.md) | HN post — full pitch with defense in depth |
+| [UNCOVENANTED-AGENT-PROBLEM-HN.md](./UNCOVENANTED-AGENT-PROBLEM-HN.md) | HN post  - full pitch with defense in depth |
 | [crisis-playbook/](./crisis-playbook/) | Incident analysis templates, rapid-deployment compliance, thought leadership |
 
 ---

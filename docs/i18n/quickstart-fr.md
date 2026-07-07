@@ -1,4 +1,4 @@
-# Démarrage rapide — 30 minutes jusqu'à votre premier covenant vérifié
+# Démarrage rapide  - 30 minutes jusqu'à votre premier covenant vérifié
 
 De zéro à un covenant signé et vérifié en moins de 30 minutes.
 
@@ -72,5 +72,5 @@ console.log('Lecture autorisée:', eval_.permitted);
 ## Prochaines étapes
 
 - [QUICK-START.md](../QUICK-START.md) (complet, anglais)
-- [eu-ai-act-fr.md](./eu-ai-act-fr.md) — Règlement IA
-- [docs/README.md](../README.md) — Index de la documentation
+- [eu-ai-act-fr.md](./eu-ai-act-fr.md)  - Règlement IA
+- [docs/README.md](../README.md)  - Index de la documentation

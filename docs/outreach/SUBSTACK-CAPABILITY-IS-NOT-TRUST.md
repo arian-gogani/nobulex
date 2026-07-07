@@ -24,7 +24,7 @@ When you deploy an AI agent, you trust it the way you trust a new employee on th
 
 The references are the model provider's safety claims, the framework's observability hooks, and your own system prompt. None of these produce evidence a third party can verify.
 
-When the agent acts on your behalf — moves money, sends messages, reads files, makes decisions — the only record of what it did lives in your infrastructure. Your database. Your logs. Your S3 bucket.
+When the agent acts on your behalf  - moves money, sends messages, reads files, makes decisions  - the only record of what it did lives in your infrastructure. Your database. Your logs. Your S3 bucket.
 
 An auditor, a regulator, or a counterparty who wants to verify what the agent did has to ask you. You tell them. They either believe you or they don't.
 
@@ -34,7 +34,7 @@ This is not accountability. This is testimony.
 
 ## The accountability gap
 
-The AI agent ecosystem is building faster than any software infrastructure in history. Billions of dollars are flowing into capability — better models, faster inference, longer context, more sophisticated orchestration.
+The AI agent ecosystem is building faster than any software infrastructure in history. Billions of dollars are flowing into capability  - better models, faster inference, longer context, more sophisticated orchestration.
 
 The accountability layer is an afterthought.
 

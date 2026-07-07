@@ -39,11 +39,11 @@ LinkedIn takes minor-created profiles seriously. This can trigger a faster revie
 
 Both need to hear this BEFORE they bring it up. Don't wait for them to ask.
 
-**To Piotr:** already in your Gmail draft — "That LinkedIn profile is mine, made it
+**To Piotr:** already in your Gmail draft  - "That LinkedIn profile is mine, made it
 when I was younger, and I lost the password. I've been trying to get it taken down."
 
 **To Danielle:** mention it proactively during the call if she doesn't bring it up.
-"You might find a LinkedIn with my name that says Harvard — that's an old profile I
+"You might find a LinkedIn with my name that says Harvard  - that's an old profile I
 made when I was younger, it's wrong, and I've been trying to get it removed. The
 reality is I'm 15, self-taught, and this is my first project at this scale."
 

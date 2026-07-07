@@ -1,12 +1,12 @@
-# Unit of Trust — Multidimensional Trust Profile
+# Unit of Trust  - Multidimensional Trust Profile
 
-The Kova Score (unit of trust) is a **multidimensional trust profile** computed from public data by anyone running the open algorithm. It is the FICO score for agents — useful, but resistant to single-dimension gaming.
+The Kova Score (unit of trust) is a **multidimensional trust profile** computed from public data by anyone running the open algorithm. It is the FICO score for agents  - useful, but resistant to single-dimension gaming.
 
 ---
 
 ## Five Dimensions
 
-The profile has five dimensions that **trade off against each other**. An agent cannot optimize all five simultaneously; improving one often costs another. This prevents Goodhart's Law — gaming one dimension makes another worse.
+The profile has five dimensions that **trade off against each other**. An agent cannot optimize all five simultaneously; improving one often costs another. This prevents Goodhart's Law  - gaming one dimension makes another worse.
 
 | Dimension | Description | Anti-Gaming |
 |-----------|-------------|-------------|
@@ -20,10 +20,10 @@ The profile has five dimensions that **trade off against each other**. An agent 
 
 ## Trade-Offs (Anti-Gaming)
 
-- **High stake + low compliance** — Suspicious. Suggests buying reputation without behavior change.
-- **High attestation + narrow covenant** — Limited scope. Attestations only cover declared constraints.
-- **Broad covenant + shallow history** — Unproven. Many constraints, few executions to verify.
-- **Hard enforcement + low stake** — Mismatch. Strong runtime but little economic commitment.
+- **High stake + low compliance**  - Suspicious. Suggests buying reputation without behavior change.
+- **High attestation + narrow covenant**  - Limited scope. Attestations only cover declared constraints.
+- **Broad covenant + shallow history**  - Unproven. Many constraints, few executions to verify.
+- **Hard enforcement + low stake**  - Mismatch. Strong runtime but little economic commitment.
 
 The open algorithm (`computeNobulexScore` in `@nobulex/legal`, reputation scoring in `@nobulex/reputation`) combines these dimensions. No single number is sufficient; the full profile is the unit of trust.
 
@@ -31,8 +31,8 @@ The open algorithm (`computeNobulexScore` in `@nobulex/legal`, reputation scorin
 
 ## Implementation
 
-- **Reputation package:** [@nobulex/reputation](../packages/reputation) — `ReputationScore`, stake bounds, breach penalties.
-- **Legal package:** [@nobulex/legal](../packages/legal) — `computeNobulexScore`, compliance mapping.
+- **Reputation package:** [@nobulex/reputation](../packages/reputation)  - `ReputationScore`, stake bounds, breach penalties.
+- **Legal package:** [@nobulex/legal](../packages/legal)  - `computeNobulexScore`, compliance mapping.
 - **Hole 9 fix:** [HOLES-PATCHED.md](./HOLES-PATCHED.md#hole-9-single-trust-score-creates-gaming-incentives)
 
 ---

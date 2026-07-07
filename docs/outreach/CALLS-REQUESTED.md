@@ -1,12 +1,12 @@
 # Calls Requested (book these yourself, your own voice)
 
-## 1. Danielle Strachman — 1517 Fund
+## 1. Danielle Strachman  - 1517 Fund
 - Status: CALL REQUESTED. She sent a Mixmax calendar link (Zoom or in-person SF/Oakland).
 - This is your investor play. 1517 backs young founders (Vitalik, Austin Russell).
 - Prep: docs/outreach/DANIELLE-CALL-PREP.md
 - On the call, if it goes well, ASK for intros to NFX + South Park Commons.
 
-## 2. Ben Stone — W3C AIVS chair
+## 2. Ben Stone  - W3C AIVS chair
 - Status: CALL REQUESTED. "Free anytime after 1PM Mountain time US this next week.
   Let me know what works and we can get on a call."
 - This is your standards/credibility play. Ben chairs a W3C verifiability group.

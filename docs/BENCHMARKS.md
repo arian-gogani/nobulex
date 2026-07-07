@@ -4,7 +4,7 @@ Real numbers from the Python SDK. Reproducible with `python3 scripts/benchmark.p
 
 ## Headline
 
-**~13,683 signed receipts/sec** at p50. A full signed and hash-chained receipt — including JCS canonicalization (RFC 8785), SHA-256 hash, Ed25519 signature, and chain-link computation — takes about 73 microseconds end-to-end.
+**~13,683 signed receipts/sec** at p50. A full signed and hash-chained receipt  - including JCS canonicalization (RFC 8785), SHA-256 hash, Ed25519 signature, and chain-link computation  - takes about 73 microseconds end-to-end.
 
 That means a single nobulex instance can audit an agent that takes 10,000 actions per second without becoming the bottleneck.
 

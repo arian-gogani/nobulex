@@ -1,13 +1,13 @@
 # EU AI Act Mapping
 
-**Regulation (EU) 2024/1689** — Artificial Intelligence Act  
+**Regulation (EU) 2024/1689**  - Artificial Intelligence Act  
 **Key deadline:** December 2, 2027 (general obligations for high-risk AI systems)
 
 Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest path to compliance.
 
 ---
 
-## Article 10 — Risk Management
+## Article 10  - Risk Management
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -20,7 +20,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 11 — Data Governance
+## Article 11  - Data Governance
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -32,7 +32,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 13 — Transparency and Explainability
+## Article 13  - Transparency and Explainability
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -45,7 +45,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 14 — Human Oversight
+## Article 14  - Human Oversight
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -57,7 +57,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 15 — Accuracy, Robustness, Cybersecurity
+## Article 15  - Accuracy, Robustness, Cybersecurity
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -70,7 +70,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 17 — Record-Keeping (Logs)
+## Article 17  - Record-Keeping (Logs)
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -83,7 +83,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 53 — Transparency Obligations for Certain AI Systems
+## Article 53  - Transparency Obligations for Certain AI Systems
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -95,7 +95,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 71 — Conformity Assessment
+## Article 71  - Conformity Assessment
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -107,7 +107,7 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ---
 
-## Article 72 — Post-Market Monitoring
+## Article 72  - Post-Market Monitoring
 
 | Requirement | Nobulex Capability |
 |-------------|------------------|
@@ -123,15 +123,15 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 | Article | Nobulex Coverage |
 |---------|----------------|
-| 10 — Risk management | Covenant, canary, temporal, legal |
-| 11 — Data governance | Partial (behavioral provenance) |
-| 13 — Transparency | Covenant, CCL, LegalIdentityPackage |
-| 14 — Human oversight | CCL conditions, canary |
-| 15 — Accuracy, robustness | Canary, robustness, crypto |
-| 17 — Record-keeping | Enforcement, store, legal |
-| 53 — Transparency obligations | Legal, CCL |
-| 71 — Conformity assessment | Verifier, canary, legal |
-| 72 — Post-market monitoring | Reputation, breach, antifragile |
+| 10  - Risk management | Covenant, canary, temporal, legal |
+| 11  - Data governance | Partial (behavioral provenance) |
+| 13  - Transparency | Covenant, CCL, LegalIdentityPackage |
+| 14  - Human oversight | CCL conditions, canary |
+| 15  - Accuracy, robustness | Canary, robustness, crypto |
+| 17  - Record-keeping | Enforcement, store, legal |
+| 53  - Transparency obligations | Legal, CCL |
+| 71  - Conformity assessment | Verifier, canary, legal |
+| 72  - Post-market monitoring | Reputation, breach, antifragile |
 
 **Gaps:** Training data quality (Article 11) and synthetic content identification (Article 53) are model-level; Nobulex operates at the agent/behavior layer. Combine with model documentation and output classifiers for full coverage.
 
@@ -139,11 +139,11 @@ Nobulex capabilities mapped to EU AI Act requirements. Use this as the fastest p
 
 ## Quick Compliance Path
 
-1. **Create covenant** — Document permitted/denied actions, intended use, limitations.
-2. **Run canary tests** — Validate constraints; document in compliance record.
-3. **Enable enforcement** — Runtime gating; audit trail.
-4. **Export LegalIdentityPackage** — For conformity assessment and audits.
-5. **Map to jurisdiction** — Use `@nobulex/legal` EU-AI mapping.
+1. **Create covenant**  - Document permitted/denied actions, intended use, limitations.
+2. **Run canary tests**  - Validate constraints; document in compliance record.
+3. **Enable enforcement**  - Runtime gating; audit trail.
+4. **Export LegalIdentityPackage**  - For conformity assessment and audits.
+5. **Map to jurisdiction**  - Use `@nobulex/legal` EU-AI mapping.
 
 ```typescript
 import { NobulexClient } from '@nobulex/sdk';

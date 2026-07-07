@@ -1,6 +1,6 @@
 # Why AI agents need credit scores
 
-AI agents are starting to handle real things — money, data, decisions, customer interactions. But there's no way to know which agents deserve trust and which ones don't.
+AI agents are starting to handle real things  - money, data, decisions, customer interactions. But there's no way to know which agents deserve trust and which ones don't.
 
 ## The problem
 
@@ -12,10 +12,10 @@ When an AI agent handles money, you get logs. Self-reported logs. Written by the
 
 Nobulex generates tamper-proof cryptographic receipts for every AI agent action. Each receipt is:
 
-- **Ed25519 signed** — proves who generated it
-- **SHA-256 hashed** — linked to the previous receipt in the chain
-- **JCS canonical** — deterministic across implementations (RFC 8785)
-- **Independently verifiable** — no trust in the operator required
+- **Ed25519 signed**  - proves who generated it
+- **SHA-256 hashed**  - linked to the previous receipt in the chain
+- **JCS canonical**  - deterministic across implementations (RFC 8785)
+- **Independently verifiable**  - no trust in the operator required
 
 Modify anything after the fact and the signature breaks.
 

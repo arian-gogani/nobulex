@@ -1,8 +1,8 @@
-# TechCrunch Startup Battlefield 2026 — Application Text
+# TechCrunch Startup Battlefield 2026  - Application Text
 
 DEADLINE: June 8, 2026
 Apply at: https://techcrunch.com/startup-battlefield/
-Two short videos required (product demo + founder story — record these!)
+Two short videos required (product demo + founder story  - record these!)
 
 ---
 
@@ -10,13 +10,13 @@ Two short videos required (product demo + founder story — record these!)
 Nobulex
 
 ## One-Line Description
-Cryptographic receipts for AI agent actions — tamper-evident, independently verifiable, EU AI Act Article 12 compliant.
+Cryptographic receipts for AI agent actions  - tamper-evident, independently verifiable, EU AI Act Article 12 compliant.
 
 ## What does your company do?
 
-Every AI agent acting in the world — calling tools, moving money, reading files, sending messages — leaves no neutral proof of what it actually did. The operator's logs say what happened. A regulator, auditor, or counterparty either trusts those logs or doesn't.
+Every AI agent acting in the world  - calling tools, moving money, reading files, sending messages  - leaves no neutral proof of what it actually did. The operator's logs say what happened. A regulator, auditor, or counterparty either trusts those logs or doesn't.
 
-Nobulex is the receipt layer. Every agent action gets an Ed25519-signed, JCS-canonical receipt, hash-chained to the previous one. Change any byte and verification fails at exactly that point. An auditor verifies the complete history offline with only the agent's public key — no vendor dependency, no operator trust required.
+Nobulex is the receipt layer. Every agent action gets an Ed25519-signed, JCS-canonical receipt, hash-chained to the previous one. Change any byte and verification fails at exactly that point. An auditor verifies the complete history offline with only the agent's public key  - no vendor dependency, no operator trust required.
 
 The format is minimal on purpose: action_ref = SHA-256(JCS({agent_id, action_type, scope, timestamp_ms})). One 64-character hex string identifies any agent action, recomputably and independently.
 
@@ -71,14 +71,14 @@ The EU AI Act Article 12 deadline is August 2. Enterprise teams that need this a
 
 ## VIDEO NOTES (record these before June 8)
 
-Video 1 — Product demo (2 min max):
+Video 1  - Product demo (2 min max):
 1. pip install nobulex (10 sec)
 2. 10 lines of Python generating a signed receipt
 3. Modify one byte, show verify() returning False
 4. EU AI Act Article 12 export
 Just a screen recording. No flashy graphics.
 
-Video 2 — Founder story (1 min max):
+Video 2  - Founder story (1 min max):
 1. Who you are (15, self-taught, solo)
 2. What problem (agents leave no neutral proof)
 3. Why now (EU AI Act, August 2)

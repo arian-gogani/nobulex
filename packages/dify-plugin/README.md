@@ -1,4 +1,4 @@
-# Nobulex — Agent Receipt Layer for Dify
+# Nobulex  - Agent Receipt Layer for Dify
 
 Cryptographic receipts for every Dify agent tool call.
 
@@ -23,7 +23,7 @@ using only your agent's public key.
 ## Quick start
 
 1. Install the plugin in your Dify workspace.
-2. Set the **Agent ID** credential (optional — defaults to `dify-agent`).
+2. Set the **Agent ID** credential (optional  - defaults to `dify-agent`).
 3. Add `sign_receipt` as a node in your workflow after each tool call you
    want audited.
 4. Pass `action_type` (what the agent did) and `scope` (what it touched).
@@ -61,14 +61,14 @@ complete chain independently.
 
 - SDK: `pip install nobulex`
 - GitHub: [github.com/arian-gogani/nobulex](https://github.com/arian-gogani/nobulex)
-- OWASP reference: [PR #2210 — AML and Sanctions Compliance for AI Agent Payments](https://github.com/OWASP/CheatSheetSeries/pull/2210)
+- OWASP reference: [PR #2210  - AML and Sanctions Compliance for AI Agent Payments](https://github.com/OWASP/CheatSheetSeries/pull/2210)
 - Live demo: [nobulex.com/arena](https://nobulex.com/arena)
 
 ## Trust Capital
 
 `get_trust_score` returns a Trust Capital score (0-100) based on verified
 receipt history. This is the portable, accumulating agent reputation that
-works across platforms — the aspect Dify's team found most interesting and
+works across platforms  - the aspect Dify's team found most interesting and
 that doesn't overlap with existing Marketplace tools.
 
 Higher scores unlock more agent autonomy in Trust Capital-aware workflows.

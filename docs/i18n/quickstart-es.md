@@ -1,4 +1,4 @@
-# Inicio rápido — 30 minutos hasta tu primer covenant verificado
+# Inicio rápido  - 30 minutos hasta tu primer covenant verificado
 
 De cero a un covenant firmado y verificado en menos de 30 minutos.
 
@@ -72,5 +72,5 @@ console.log('Lectura permitida:', eval_.permitted);
 ## Próximos pasos
 
 - [QUICK-START.md](../QUICK-START.md) (completo, inglés)
-- [eu-ai-act-es.md](./eu-ai-act-es.md) — Reglamento de IA
-- [docs/README.md](../README.md) — Índice de documentación
+- [eu-ai-act-es.md](./eu-ai-act-es.md)  - Reglamento de IA
+- [docs/README.md](../README.md)  - Índice de documentación

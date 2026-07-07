@@ -8,7 +8,7 @@ The actual technical and conceptual improvements to Nobulex's trust infrastructu
 
 **Idea:** Agents execute inside covenant runtimes where violation is computationally impossible for tool use and API access.
 
-- Not audit — **architecture**.
+- Not audit  - **architecture**.
 - The covenant compiles into capability restrictions on the runtime itself.
 - Tool calls and API access are gated by the runtime; denied actions never reach the underlying system.
 - Enforcement monitor (`@nobulex/enforcement`) implements this; MCP middleware (`@nobulex/mcp`) gates tool calls.
@@ -21,10 +21,10 @@ The actual technical and conceptual improvements to Nobulex's trust infrastructu
 
 **Idea:** Formal algebraic system for trust with proven properties.
 
-- **Composition** — Trust(A→B) + Trust(B→C) ⇒ derivable properties about A→C.
-- **Intersection** — Multiple covenants on same agent; combined constraints.
-- **Negation** — What trust does *not* imply.
-- **Tensor product** — Trust across parallel delegation chains.
+- **Composition**  - Trust(A→B) + Trust(B→C) ⇒ derivable properties about A→C.
+- **Intersection**  - Multiple covenants on same agent; combined constraints.
+- **Negation**  - What trust does *not* imply.
+- **Tensor product**  - Trust across parallel delegation chains.
 
 **Status:** `@nobulex/composition` provides `composeTrust`, `intersectTrust`, `negateTrust`, and `tensorTrust`. Negation returns deny constraints; tensor merges parallel composition proofs.
 
@@ -46,7 +46,7 @@ The actual technical and conceptual improvements to Nobulex's trust infrastructu
 
 **Idea:** Trust can't exceed the economic value risked to back it.
 
-- **Collateralization bound** — Prevents trust inflation.
+- **Collateralization bound**  - Prevents trust inflation.
 - Trust has real scarcity, making it genuinely valuable.
 - Reputation and stake are linked; high trust requires staked value.
 
@@ -58,10 +58,10 @@ The actual technical and conceptual improvements to Nobulex's trust infrastructu
 
 **Idea:** Minimal formally verifiable core.
 
-- **Identity binding** — Agent ↔ keypair, lineage.
-- **Covenant signing** — Ed25519, content-addressed.
-- **Proof verification** — 11 specification checks.
-- **Trust accounting** — Reputation, stake, breach propagation.
+- **Identity binding**  - Agent ↔ keypair, lineage.
+- **Covenant signing**  - Ed25519, content-addressed.
+- **Proof verification**  - 11 specification checks.
+- **Trust accounting**  - Reputation, stake, breach propagation.
 
 If the kernel is correct, the entire system maintains guarantees regardless of ecosystem complexity.
 
@@ -85,7 +85,7 @@ They can't drift because they're the same object. CCL is parsed, evaluated, and 
 
 ## Core 7: Adversarial Trust Equilibrium
 
-**Idea:** Honest behavior isn't just a Nash equilibrium — it's an **Evolutionary Stable Strategy**.
+**Idea:** Honest behavior isn't just a Nash equilibrium  - it's an **Evolutionary Stable Strategy**.
 
 - No mutant strategy can invade the population.
 - Deviations self-extinguish.
@@ -124,10 +124,10 @@ They can't drift because they're the same object. CCL is parsed, evaluated, and 
 
 **Idea:** Define the fundamental limits of what any agent trust system can achieve.
 
-- **Observation bound** — What can be verified from finite observations?
-- **Trust–privacy tradeoff** — Can you have perfect trust and perfect privacy?
-- **Composition limit** — How many agents can compose before guarantees degrade?
-- **Conservation theorem** — Formalize collateralization bound.
+- **Observation bound**  - What can be verified from finite observations?
+- **Trust–privacy tradeoff**  - Can you have perfect trust and perfect privacy?
+- **Composition limit**  - How many agents can compose before guarantees degrade?
+- **Conservation theorem**  - Formalize collateralization bound.
 
 Published as conjectures inviting formal proofs. Creates research agenda.
 
@@ -142,7 +142,7 @@ Published as conjectures inviting formal proofs. Creates research agenda.
 - The kernel is immutable.
 - Parameters above it evolve (thresholds, decay rates, canary schedules).
 - Gets better, provably can't get worse.
-- `@nobulex/antifragile` — breaches generate improvements.
+- `@nobulex/antifragile`  - breaches generate improvements.
 
 **Status:** Antifragile package implements breach-to-improvement. Parameter evolution within envelopes is a design principle.
 

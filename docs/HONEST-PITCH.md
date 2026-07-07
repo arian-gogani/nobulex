@@ -1,11 +1,11 @@
-# Nobulex — Honest Pitch Sheet
+# Nobulex  - Honest Pitch Sheet
 ## Use this for all outreach. No inflated claims.
 
 ### One sentence
 Nobulex generates tamper-proof receipts for everything your AI agent does.
 
 ### Three sentences
-AI agents are starting to do real things — move money, handle data, sign contracts. There's no standardized way to verify what they actually did. Nobulex fixes that with cryptographic receipts that build into a trust score.
+AI agents are starting to do real things  - move money, handle data, sign contracts. There's no standardized way to verify what they actually did. Nobulex fixes that with cryptographic receipts that build into a trust score.
 
 ### What it is
 - Open-source Python SDK: `pip install nobulex`
@@ -24,15 +24,15 @@ AI agents are starting to do real things — move money, handle data, sign contr
 
 ### Traction (honest version, June 2026)
 - **Open-source SDK live:** `pip install nobulex` (PyPI verified)
-- **First integration partner locked:** AgentAudit AI / RunLockAI — five-point partnership, signed specimen receipt published, integration guide drafted, joint case study in progress
+- **First integration partner locked:** AgentAudit AI / RunLockAI  - five-point partnership, signed specimen receipt published, integration guide drafted, joint case study in progress
 - **Cross-implementation verified:** Python + JS produce byte-identical action_refs on the 4 published test vectors
 - **OWASP:** Sections 8-11 of the AML and Sanctions Compliance for AI Agent Payments cheat sheet ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210)) merged into master by Jim Manico with contributions from PR #2209 credited to @arian-gogani (JCS canonicalization rationale, cross-agent accountability, regulatory mapping).
-- **vaara v0.50** — Independent Aider + MCP runtime audit layer by Henri Sirkkavaara shipping Ed25519-signed receipts citing the nobulex design.
+- **vaara v0.50**  - Independent Aider + MCP runtime audit layer by Henri Sirkkavaara shipping Ed25519-signed receipts citing the nobulex design.
 - **Standards body:** Microsoft AGT ADOPTERS.md PR merged (PR #1703, May 2026)
 - **Two warm call requests** in one week from a 1517 Fund partner and a W3C Community Group chair
-- **Dify Marketplace submission accepted for review** — langgenius/dify-plugins#2500. Dify (60,000+ stars, millions of users) confirmed the architecture is sound and Trust Capital is genuinely interesting and differentiated from existing tools. Plugin built at packages/dify-plugin/.
-- **Microsoft AI Agents for Beginners PR** — microsoft/ai-agents-for-beginners#571. Adds nobulex to Lesson 18 (Securing AI Agents with Cryptographic Receipts) as the only Python production receipt library listed in that lesson.
-- **30 GitHub stars, 6 forks** (forkers include Red Sentinel — "the ultimate AI security platform" — and a Northrop Grumman senior engineer)
+- **Dify Marketplace submission accepted for review**  - langgenius/dify-plugins#2500. Dify (60,000+ stars, millions of users) confirmed the architecture is sound and Trust Capital is genuinely interesting and differentiated from existing tools. Plugin built at packages/dify-plugin/.
+- **Microsoft AI Agents for Beginners PR**  - microsoft/ai-agents-for-beginners#571. Adds nobulex to Lesson 18 (Securing AI Agents with Cryptographic Receipts) as the only Python production receipt library listed in that lesson.
+- **30 GitHub stars, 6 forks** (forkers include Red Sentinel  - "the ultimate AI security platform"  - and a Northrop Grumman senior engineer)
 - **Demo runs from clean clone:** tamper detection works, signature verification works, full audit trail reproducible
 
 ### What NOT to say

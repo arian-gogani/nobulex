@@ -41,7 +41,7 @@ We believe these bounds exist. We invite formal proofs or counterexamples. These
 - New agents do not generate trust from nothing.
 - Trust enters the system only through explicit staking by principals.
 - Trust is destroyed (burned) through breach.
-- Total trust in the system is bounded by total stake — prevents trust inflation.
+- Total trust in the system is bounded by total stake  - prevents trust inflation.
 
 **Status:** Weaker claim than "conservation." Defensible. Documented in HOLES-PATCHED (Hole 5).
 

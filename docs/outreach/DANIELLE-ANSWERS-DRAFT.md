@@ -70,7 +70,7 @@ nobulex [X hours/days], plan is [concrete]" beats "I'll figure it out."
 ### "What does nobulex do?"
 
 Example: "It's an open-source receipt layer for AI agents. Every action
-an agent takes — calling a tool, making a payment, reading a file — gets
+an agent takes  - calling a tool, making a payment, reading a file  - gets
 a cryptographic receipt that's signed and chained to the previous one.
 Change one byte and the chain breaks. So an auditor, a customer, or a
 regulator can verify what an agent actually did without trusting whoever
@@ -81,9 +81,9 @@ Then stop. Let her ask the next question.
 ### "Why now?"
 
 Example: "Two things. The EU AI Act Article 12 enforcement starts
-August 2 — high-risk AI systems are required to keep tamper-evident
+August 2  - high-risk AI systems are required to keep tamper-evident
 audit logs. Most companies deploying agents today can't produce one.
-And the dollar amounts at risk are growing fast — MiHoYo burned $300K
+And the dollar amounts at risk are growing fast  - MiHoYo burned $300K
 of AI tokens in 13 hours running agents internally. There's not enough
 proof infrastructure underneath this stuff."
 
@@ -93,7 +93,7 @@ Example: "Companies building agent infrastructure, not end users. Three
 patterns I'm seeing: security platforms like Red Sentinel and AgentAudit
 who need an evidence layer; trust-layer startups like t54.ai who need an
 open standard underneath their product; and enterprises in regulated
-industries — finance, healthcare, defense — who need audit trails before
+industries  - finance, healthcare, defense  - who need audit trails before
 regulators force them. My first integration partner is AgentAudit; I've
 got a Northrop Grumman engineer who starred the repo this week."
 
@@ -120,7 +120,7 @@ job is adoption, not monetization."
 
 Example: "Right now, focus. I'd rather get to first paying integration
 and standard validation alone than pick the wrong co-founder under time
-pressure. I'm open to one if it's the right fit — I just haven't met
+pressure. I'm open to one if it's the right fit  - I just haven't met
 that person yet."
 
 Do NOT mention your finance friend here. Adding "but I have a friend
@@ -129,10 +129,10 @@ who might join" weakens the answer.
 ### "How much do you need and what for?"
 
 Example: "$50-100K. Roughly: $15-25K for a published security audit by
-a firm like Trail of Bits — for a project positioning itself as a trust
+a firm like Trail of Bits  - for a project positioning itself as a trust
 layer, an outside cryptographic audit is the credibility unlock.
 $3-5K for legal and incorporation, getting the entity set up properly.
-$5-10K for travel to meet partners in person — there are three or four
+$5-10K for travel to meet partners in person  - there are three or four
 people I need to be in the same room with. $10-20K for a part-time
 contractor expanding SDKs to more languages. $5-10K for infrastructure
 and a runway buffer. Not a salary for me."

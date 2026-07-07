@@ -15,17 +15,17 @@ Trust resolution and transaction execution merged into one atomic operation. Kov
 ## Model
 
 - **Fee:** 0.15% of transaction volume
-- **Visa model:** Equifax ($30B) vs. Visa ($550B) — the rail is worth more than the credit report
+- **Visa model:** Equifax ($30B) vs. Visa ($550B)  - the rail is worth more than the credit report
 - **Atomicity:** Trust verification + transaction = single operation
 
 ---
 
 ## Architecture
 
-1. **Transaction request** — Agent A wants to pay Agent B $X
-2. **Trust resolution** — Kova verifies A's covenant, B's covenant, compliance
-3. **Execution** — If trust passes: transaction executes. If not: rejected. No partial state.
-4. **Fee** — 0.15% of $X to Kova
+1. **Transaction request**  - Agent A wants to pay Agent B $X
+2. **Trust resolution**  - Kova verifies A's covenant, B's covenant, compliance
+3. **Execution**  - If trust passes: transaction executes. If not: rejected. No partial state.
+4. **Fee**  - 0.15% of $X to Kova
 
 ---
 
@@ -44,7 +44,7 @@ Trust resolution and transaction execution merged into one atomic operation. Kov
 
 - **Phase 1:** Trust resolution API (exists)
 - **Phase 2:** Transaction execution layer (escrow, settlement)
-- **Phase 3:** Atomic integration — single API for "verify and execute"
+- **Phase 3:** Atomic integration  - single API for "verify and execute"
 - **Phase 4:** Volume; 0.15% of $1B = $1.5M
 
 ---

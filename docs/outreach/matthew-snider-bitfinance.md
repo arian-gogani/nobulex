@@ -23,18 +23,18 @@
 2. Substack Note / DM.
 3. LinkedIn (he's "Matthew Snider, MBA").
 
-## Draft reply to his post (Arian's voice — edit freely, do NOT send as-is if it doesn't sound like you)
+## Draft reply to his post (Arian's voice  - edit freely, do NOT send as-is if it doesn't sound like you)
 
 > This is the exact question I've been building on. "Who signs the audit trail"
 > is the whole problem.
 >
 > My take: the agent signs each action itself, before it runs, with its own key.
-> Every action becomes a receipt — what it did, when, the parameters — signed
+> Every action becomes a receipt  - what it did, when, the parameters  - signed
 > Ed25519 over canonical JSON. Change one byte and verification fails. An auditor
 > doesn't have to trust the operator's logs; they recompute the hash and check
 > the signature.
 >
-> I'm 15 and built this as an open-source SDK (nobulex). It's not theoretical —
+> I'm 15 and built this as an open-source SDK (nobulex). It's not theoretical  -
 > there's a second independent implementation that produces byte-identical
 > receipts, and a live $7,400 challenge where the top level is an agent that
 > cryptographically can't break its own rules: nobulex.com/arena
@@ -52,5 +52,5 @@
   on a relevant post where others will see it.
 
 ## Other leads from the same search (lower priority, still real)
-- "AI Governance Today" (Substack) — EU AI Act high-risk scope, governance audience.
+- "AI Governance Today" (Substack)  - EU AI Act high-risk scope, governance audience.
 - r/ArtificialIntelligence thread on EU AI Act + AI agent liability (active, on-topic).

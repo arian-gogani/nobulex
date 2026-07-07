@@ -4,11 +4,11 @@
 
 Nobulex is an open cryptographic protocol (MIT license) and the trust layer for the agent economy. The way HTTPS enabled e-commerce, Nobulex enables agents to transact safely across organizational boundaries. The protocol core is three primitives; everything else is ecosystem.
 
-**Key mechanism:** Self-enforcing covenant runtime. Covenants compile into capability restrictions — agents physically cannot violate tool/API constraints. Hard enforcement for actions (guaranteed), soft enforcement for language outputs (probabilistic, honestly labeled). The covenant is simultaneously the specification, the enforcement, and the proof — one object that can't drift.
+**Key mechanism:** Self-enforcing covenant runtime. Covenants compile into capability restrictions  - agents physically cannot violate tool/API constraints. Hard enforcement for actions (guaranteed), soft enforcement for language outputs (probabilistic, honestly labeled). The covenant is simultaneously the specification, the enforcement, and the proof  - one object that can't drift.
 
-The core idea: before an AI agent operates, it enters into a **covenant** — a signed document specifying constraints on its behavior. These constraints are written in CCL (Covenant Constraint Language), a purpose-built rule language. The covenant is signed by an **issuer** (typically the operator) and references a **beneficiary** (the party whose interests are protected). Every action the agent takes can be evaluated against its covenant constraints, producing a verifiable audit trail.
+The core idea: before an AI agent operates, it enters into a **covenant**  - a signed document specifying constraints on its behavior. These constraints are written in CCL (Covenant Constraint Language), a purpose-built rule language. The covenant is signed by an **issuer** (typically the operator) and references a **beneficiary** (the party whose interests are protected). Every action the agent takes can be evaluated against its covenant constraints, producing a verifiable audit trail.
 
-**Trust model:** Trust is a bounded resource — it can't exceed economic value staked to back it. Multidimensional trust profile resists gaming. Trust relationships can be entangled for efficient network-wide verification.
+**Trust model:** Trust is a bounded resource  - it can't exceed economic value staked to back it. Multidimensional trust profile resists gaming. Trust relationships can be entangled for efficient network-wide verification.
 
 **Game theory:** Honest behavior is an Evolutionary Stable Strategy. No mutant strategy can invade the population. Applies to operators (rational humans), not agents (stochastic systems).
 
@@ -95,9 +95,9 @@ and legal compliance.
 
 ### SDK
 
-**@nobulex/sdk** — `protect({ name, rules })` helper plus `NobulexClient` for lower-level control.
+**@nobulex/sdk**  - `protect({ name, rules })` helper plus `NobulexClient` for lower-level control.
 
-**sdk** — `NobulexClient` (from `@nobulex/sdk`) for advanced use: custom covenants, identity, verification, event system.
+**sdk**  - `NobulexClient` (from `@nobulex/sdk`) for advanced use: custom covenants, identity, verification, event system.
 
 ### Platform
 

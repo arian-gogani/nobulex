@@ -1,6 +1,6 @@
 # NIST AI RMF Mapping
 
-**NIST AI Risk Management Framework** — January 2023  
+**NIST AI Risk Management Framework**  - January 2023  
 Govern, Map, Measure, Manage AI risks.
 
 Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongside [eu-ai-act-mapping.md](./eu-ai-act-mapping.md) for comprehensive AI compliance.
@@ -67,7 +67,7 @@ Kova capabilities mapped to the four pillars of the NIST AI RMF. Use this alongs
 | Risk response | Breach attestation; stake burn; trust graph propagation |
 | Allocation of resources | Covenant constraints; rate limits; capability restrictions |
 | Tracking and documentation | Audit trail; LegalIdentityPackage; auditTrailExport |
-| Continuous improvement | Antifragile package — breaches generate constraint improvements |
+| Continuous improvement | Antifragile package  - breaches generate constraint improvements |
 | Communication | Covenant as public commitment; attestation as bilateral verification |
 
 **Packages:** `@nobulex/breach`, `@nobulex/antifragile`, `@nobulex/temporal`, `@nobulex/legal`
@@ -80,12 +80,12 @@ The **Kova Score** (multidimensional trust profile, `computeNobulexScore` in `@n
 
 | Kova Score Dimension | NIST RMF Alignment |
 |-----------------------|--------------------|
-| complianceRate | Map + Measure — covenant coverage |
-| attestationCoverage | Measure — external verification |
-| canaryPassRate | Measure — synthetic validation |
-| breachFreedom | Manage — risk response effectiveness |
-| stakeLevel | Govern — accountability backing |
-| lineageDepth | Map — governance lineage |
+| complianceRate | Map + Measure  - covenant coverage |
+| attestationCoverage | Measure  - external verification |
+| canaryPassRate | Measure  - synthetic validation |
+| breachFreedom | Manage  - risk response effectiveness |
+| stakeLevel | Govern  - accountability backing |
+| lineageDepth | Map  - governance lineage |
 
 ```typescript
 import { computeNobulexScore } from '@nobulex/legal';
@@ -100,10 +100,10 @@ const profile = computeNobulexScore(agentId, complianceRecord, covenantHistory, 
 
 ## Quick Compliance Path
 
-1. **Govern** — Create covenant; bind identity; document scope.
-2. **Map** — Define CCL constraints; run canary tests to map boundaries.
-3. **Measure** — Track compliance record; run computeNobulexScore; export LegalIdentityPackage.
-4. **Manage** — Enable breach detection; use antifragile improvements; evolve covenants via temporal package.
+1. **Govern**  - Create covenant; bind identity; document scope.
+2. **Map**  - Define CCL constraints; run canary tests to map boundaries.
+3. **Measure**  - Track compliance record; run computeNobulexScore; export LegalIdentityPackage.
+4. **Manage**  - Enable breach detection; use antifragile improvements; evolve covenants via temporal package.
 
 ```typescript
 import { NobulexClient } from '@nobulex/sdk';

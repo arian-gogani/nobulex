@@ -1,4 +1,4 @@
-# Quick Start — 30 Minuten zum ersten verifizierten Covenant
+# Quick Start  - 30 Minuten zum ersten verifizierten Covenant
 
 Von null zu einem signierten, verifizierten Covenant in unter 30 Minuten.
 
@@ -72,5 +72,5 @@ console.log('Lesen erlaubt:', eval_.permitted);
 ## Nächste Schritte
 
 - [QUICK-START.md](../QUICK-START.md) (vollständig, Englisch)
-- [eu-ai-act-de.md](./eu-ai-act-de.md) — EU KI-Verordnung
-- [docs/README.md](../README.md) — Dokumentationsindex
+- [eu-ai-act-de.md](./eu-ai-act-de.md)  - EU KI-Verordnung
+- [docs/README.md](../README.md)  - Dokumentationsindex

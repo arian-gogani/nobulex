@@ -5,21 +5,36 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [1.0.0] - 2026-07-06
+
+### Highlights
+
+- **OWASP AST09 normative inclusion**: the `action_ref` formula is merged as normative implementation guidance in the OWASP Agentic Skills Top 10 (PRs #35/#38, merged by project lead Ken Huang). This is the project's primary credibility anchor.
+- **x402 conformance**: cited as third independent issuer in x402 section 5 alongside agent-guard and Vaara. 14/14 conformance verdicts passed. Fixtures at `tests/conformance/x402_settlement_v0/`.
+- **OWASP CheatSheetSeries**: sections 8-11 merged by Jim Manico (PR #2210), covering JCS canonicalization, cross-agent accountability, sanctions-list freshness, and regulatory mapping.
 
 ### Added
 
-- **Python SDK published to PyPI**: `pip install nobulex` is live at https://pypi.org/project/nobulex/0.1.0/. Installation verified end-to-end on a fresh venv: import, demo, and the full quickstart all work from a clean Python 3.9+ environment.
-- **AgentAudit AI integration partner locked**: five-point partnership — reference implementation, mutual docs, co-authored `action-ref-v1` spec, joint case study, founding member status. Live specimen at `fixtures/agentaudit-specimen-v1.json` (signed receipt + 3-link chain + 4 cross-validation vectors, all byte-verified). Integration guide at `docs/INTEGRATION-GUIDE-AGENTAUDIT.md`.
-- **Real SDK performance benchmarks**: ~13,683 signed receipts/sec at p50, ~73 μs end-to-end for a full signed-and-chained receipt. Reproducible with `python3 scripts/benchmark.py`. Full per-operation breakdown in `docs/BENCHMARKS.md`.
-- **Cross-validation suite 4/4 PASS**: Python implementation produces byte-identical `action_ref` values against the published vectors in `fixtures/bilateral-receipt/v0/vectors.json`. Verifies the `action-ref-v1.0` derivation: `SHA-256(JCS({agent_id, action_type, scope, timestamp_ms}))` per RFC 8785.
-- **builderz-labs/mission-control RFC**: concrete design at `docs/integrations/builderz-labs-mission-control-rfc.md` covering DID-based portable identity, `nobulex-trust-attestation-v1` federation format with trusted-issuer allowlist, and capped weighted-average blend policy. Posted to [builderz-labs/mission-control#678](https://github.com/builderz-labs/mission-control/issues/678).
-- **Agent Reliability Index** (observatory layer): a weekly public publication tracking AI agent behavior change across frontier vendors. Charter Issue 001 committed at `observatory/issue-001-charter.md`. Methodology specified at `docs/AGENT-RELIABILITY-INDEX.md`. Strategic rationale documented at `docs/OBSERVATORY-VISION.md`. Public-facing page added at `website/observatory.html` with main-nav and sitemap entries.
-- The observatory layer sits on top of the existing bilateral receipt protocol substrate, not replacing it. Year-1 operation runs on publicly observable data (standardized prompts on public model endpoints, vendor disclosure deltas, public incident reports); Year-2+ scales to bilateral receipt streams as adoption grows.
+- ES256 (ECDSA P-256) signing alongside Ed25519. Key-length discrimination for automatic algorithm selection.
+- Trust anchor system: constructor-injected `authorizedKeys` / `resolveAuthorizedKeys` for fail-closed signature verification across SDK, verifier, MCP server, and gateway.
+- JCS RFC 8785 canonicalization fix: exponential-notation floats (e.g. `1e+21`) now canonicalize correctly. Byte-identical output verified against the Python `rfc8785` reference implementation. Conformance vectors at `tests/conformance/jcs-rfc8785-cross-impl.test.ts`.
+- Six framework integrations: LangChain, CrewAI, Google ADK, PydanticAI, Haystack, LlamaIndex.
+- AGT contributor-check CI workflow (profile, credential, cluster heuristics).
+- Trust Capital methodology page (`docs/trust-capital-methodology.md`).
 
-### Strategic positioning
+### Fixed
 
-- Nobulex's category framing is updated from "compliance evidence protocol" to "neutral observer of cross-organization AI agent transactions, on path to becoming the rating-agency layer for the agent economy." The existing protocol work remains the substrate and credibility foundation; the observatory and rating-agency framing is the strategic destination layered on top. See `docs/OBSERVATORY-VISION.md` for the full thesis.
+- Resolved `VerificationResult`, `ProofType`, `ValidationError` name collisions (type vs. value exports) that blocked clean `.d.ts` emission.
+- Removed ambient `langchain/src/merkle.d.ts` shim that was shadowing all `@nobulex/core` exports in the LangChain integration, causing phantom TS2305 errors invisible to tests.
+- Surfaced CCL evaluator/parser symbols the SDK re-exports.
+- Bound `cclSerialize` to the CCL serializer (was misbinding to proof serializer).
+
+### Changed
+
+- Python SDK v0.1.1: `Receipt.verify` now supports ES256 via key-length discrimination.
+- EU AI Act Article 12 enforcement date updated to December 2, 2027 across all docs (Digital Omnibus, May 2026).
+
+## [Unreleased]
 
 ## [0.3.0] - 2026-04-16
 
@@ -36,14 +51,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Behavioral attestation records (`@nobulex/attestation`) — session digests and chain verification
-- Cross-agent verification handshake — 8-step protocol in `@nobulex/sdk`
-- Property-based tests with fast-check — protocol correctness by construction (6 properties)
-- Performance benchmark suite (`benchmarks/bench.ts`) — 14 benchmarks covering keygen through 10K-action handshake
-- Interactive demo (`examples/demo.ts`) — two agents verify each other, tampered proof caught at step 3
-- LangChain integration example (`examples/langchain-agent.ts`) — covenant enforcement around a mocked agent
-- Financial and healthcare scenario examples (`examples/scenarios/`) — regulated-industry use cases
-- Partial chain verification (`verifyPartial`) — verify last N entries without replaying the full chain
+- Behavioral attestation records (`@nobulex/attestation`)  - session digests and chain verification
+- Cross-agent verification handshake  - 8-step protocol in `@nobulex/sdk`
+- Property-based tests with fast-check  - protocol correctness by construction (6 properties)
+- Performance benchmark suite (`benchmarks/bench.ts`)  - 14 benchmarks covering keygen through 10K-action handshake
+- Interactive demo (`examples/demo.ts`)  - two agents verify each other, tampered proof caught at step 3
+- LangChain integration example (`examples/langchain-agent.ts`)  - covenant enforcement around a mocked agent
+- Financial and healthcare scenario examples (`examples/scenarios/`)  - regulated-industry use cases
+- Partial chain verification (`verifyPartial`)  - verify last N entries without replaying the full chain
 - Threat model documentation (`docs/threat-model.md`)
 - Security self-audit section in README
 - API documentation with TypeDoc (`npm run docs:api`)
@@ -52,7 +67,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - Pruned ~520 trivial tests (string-equals-string assertions), replaced with parametric edge-case coverage
-- Humanized code comments across all packages — varied density, informal inline notes, removed uniform JSDoc boilerplate
+- Humanized code comments across all packages  - varied density, informal inline notes, removed uniform JSDoc boilerplate
 - Replaced generic `throw new Error()` with typed error classes (ValidationError, CryptoError, StorageError) across 37 call sites
 - Added runtime input validation on all public SDK entry points (19 functions)
 - Rewrote README to lead with demo output instead of description

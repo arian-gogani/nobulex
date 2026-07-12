@@ -35,7 +35,7 @@ def main():
     )
 
     # Task 3: failed deployment (policy violation)
-    print("3. deployer: push to production — blocked by policy")
+    print("3. deployer: push to production - blocked by policy")
     tracker.on_task_start("deployer", "push_production", {"target": "main"})
     tracker.on_task_fail(
         "deployer", "push_production",

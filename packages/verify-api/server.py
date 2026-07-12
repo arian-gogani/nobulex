@@ -38,6 +38,54 @@ app = Flask(__name__)
 agent_receipts = {}  # agent_id -> list of verified receipts
 api_calls = {"count": 0, "since": time.time()}
 
+# Rate limiting per API key
+TIERS = {
+    "free": {"daily_limit": 100, "chain": False, "bundle": False},
+    "pro": {"daily_limit": 10000, "chain": True, "bundle": True},
+    "scale": {"daily_limit": float("inf"), "chain": True, "bundle": True},
+}
+
+# In-memory rate tracking. Production uses Redis.
+rate_tracker = {}  # api_key -> {"count": N, "reset_at": timestamp}
+
+
+def get_tier(api_key):
+    """Look up tier for an API key. Default to free."""
+    # Production: check DB/Stripe. Demo: header-based.
+    if not api_key:
+        return "free", TIERS["free"]
+    if api_key.startswith("nbx_scale_"):
+        return "scale", TIERS["scale"]
+    if api_key.startswith("nbx_pro_"):
+        return "pro", TIERS["pro"]
+    return "free", TIERS["free"]
+
+
+def check_rate_limit(api_key, tier_config):
+    """Returns (allowed, remaining, reset_at)."""
+    now = time.time()
+    key = api_key or "anonymous"
+
+    if key not in rate_tracker or rate_tracker[key]["reset_at"] < now:
+        rate_tracker[key] = {"count": 0, "reset_at": now + 86400}
+
+    tracker = rate_tracker[key]
+    if tracker["count"] >= tier_config["daily_limit"]:
+        return False, 0, tracker["reset_at"]
+
+    tracker["count"] += 1
+    remaining = tier_config["daily_limit"] - tracker["count"]
+    return True, remaining, tracker["reset_at"]
+
+
+def rate_limit_response(remaining, reset_at):
+    """Return 429 with rate limit info."""
+    return jsonify({
+        "error": "Rate limit exceeded",
+        "upgrade": "https://nobulex.com/pricing",
+        "reset_at": int(reset_at),
+    }), 429
+
 
 def jcs_canonical(obj):
     return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
@@ -57,6 +105,12 @@ def health():
 @app.route("/verify", methods=["POST"])
 def verify_single():
     """Verify a single receipt's signature and content-derived action_ref."""
+    api_key = request.headers.get("X-API-Key", "")
+    tier_name, tier_config = get_tier(api_key)
+    allowed, remaining, reset_at = check_rate_limit(api_key, tier_config)
+    if not allowed:
+        return rate_limit_response(remaining, reset_at)
+
     api_calls["count"] += 1
     body = request.get_json()
     if not body:
@@ -99,6 +153,8 @@ def verify_single():
     }
     if reasons:
         result["reasons"] = reasons
+    result["tier"] = tier_name
+    result["remaining"] = remaining
 
     if verdict == "VALID":
         agent_receipts.setdefault(receipt.agent_id, []).append({
@@ -114,6 +170,14 @@ def verify_single():
 @app.route("/verify/chain", methods=["POST"])
 def verify_chain():
     """Verify a chain of receipts: signatures + hash-chain integrity."""
+    api_key = request.headers.get("X-API-Key", "")
+    tier_name, tier_config = get_tier(api_key)
+    if not tier_config["chain"]:
+        return jsonify({"error": "Chain verification requires Pro tier", "upgrade": "https://nobulex.com/pricing"}), 403
+    allowed, remaining, reset_at = check_rate_limit(api_key, tier_config)
+    if not allowed:
+        return rate_limit_response(remaining, reset_at)
+
     api_calls["count"] += 1
     body = request.get_json()
     if not body:

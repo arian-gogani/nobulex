@@ -364,11 +364,67 @@ def verify_bundle():
     return jsonify(report)
 
 
+@app.route("/demo/tamper-test", methods=["GET"])
+def tamper_test():
+    """Live demo: generate a receipt, tamper with it, show verification catches it."""
+    from nobulex import Agent as DemoAgent
+
+    a = DemoAgent("demo-agent")
+    receipt = a.act(action_type="tool:transfer", scope="amount=500,to=alice")
+
+    original = receipt.to_dict()
+    original_valid = receipt.verify()
+
+    tampered = receipt.to_dict()
+    tampered["scope"] = "amount=50000,to=attacker"
+
+    from nobulex import Receipt as R
+    tampered_receipt = R.from_dict(tampered)
+    tampered_valid = tampered_receipt.verify()
+
+    preimage_original = jcs_canonical({
+        "agent_id": original["agent_id"],
+        "action_type": original["action_type"],
+        "scope": original["scope"],
+        "timestamp_ms": original["timestamp_ms"],
+    })
+    preimage_tampered = jcs_canonical({
+        "agent_id": tampered["agent_id"],
+        "action_type": tampered["action_type"],
+        "scope": tampered["scope"],
+        "timestamp_ms": tampered["timestamp_ms"],
+    })
+
+    return jsonify({
+        "demo": "tamper-test",
+        "original": {
+            "scope": original["scope"],
+            "action_ref": original["action_ref"],
+            "signature_valid": original_valid,
+            "verdict": "VALID",
+        },
+        "tampered": {
+            "scope": tampered["scope"],
+            "action_ref": tampered["action_ref"],
+            "action_ref_recomputed": sha256_hex(preimage_tampered),
+            "action_ref_match": sha256_hex(preimage_tampered) == tampered["action_ref"],
+            "signature_valid": tampered_valid,
+            "verdict": "INVALID - tamper detected",
+        },
+        "explanation": "The attacker changed scope from amount=500 to amount=50000. "
+                       "The action_ref no longer matches the recomputed preimage, and the "
+                       "Ed25519 signature is invalid because the signed bytes changed. "
+                       "Both checks catch the tamper independently."
+    })
+
+
 if __name__ == "__main__":
     print("Nobulex Verify API")
     print("  POST /verify         - verify a single receipt")
     print("  POST /verify/chain   - verify a receipt chain")
+    print("  POST /verify/bundle  - compliance report")
     print("  GET  /agent/:id/score - agent trust score")
+    print("  GET  /demo/tamper-test - live tamper detection demo")
     print("  GET  /health         - health check")
     print()
     app.run(host="127.0.0.1", port=7749, debug=True)

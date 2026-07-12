@@ -1,66 +1,71 @@
-# Show HN: Nobulex  - Ed25519 signed receipts for AI agent actions
+# Show HN: Nobulex - credit scores for AI agents (pip install nobulex)
 
-**Title:** Show HN: Nobulex – cryptographic receipts for AI agent actions (pip install nobulex)
+**Title:** Show HN: Credit scores for AI agents - every action builds a verifiable track record
 
 ---
 
 ## Body
 
-When an AI agent calls a tool, moves money, or writes a file, there's
-currently no neutral record that a third party can verify. The operator's
-logs say what happened. You either trust the operator or you don't.
+You wouldn't give someone a credit card without checking their credit
+score. We give AI agents access to databases, bank accounts, and APIs
+without checking theirs.
 
-Nobulex adds a receipt layer. Every agent action gets:
+Nobulex is credit scores for machines. An agent commits to its rulebook
+before it acts, every action leaves a signed receipt, and the verified
+track record becomes portable trust. The credit history follows the
+agent and determines what it's allowed to do.
 
 ```python
 from nobulex import Agent
 
 agent = Agent("my-agent")
 receipt = agent.act(action_type="send_email", scope="user@example.com")
-
-print(receipt.action_ref)   # SHA-256(JCS({agent_id, action_type, scope, timestamp_ms}))
-print(receipt.verify())     # True  - modify any byte and this returns False
+print(agent.trust_score)   # builds over time
+print(receipt.verify())    # any third party can check
 ```
 
-The receipt is Ed25519-signed over RFC 8785 JCS-canonical JSON, hash-chained
-to the previous one. An auditor verifies offline with only the public key.
-No service dependency. No operator trust required.
+Each receipt is Ed25519-signed over RFC 8785 canonical JSON. An auditor
+verifies offline with only the public key. No operator trust required.
 
 **What's built:**
-- Python SDK on PyPI (`pip install nobulex`), ~13,700 signed receipts/sec (Ed25519), ~60,000/sec (ES256)
-- TypeScript SDK (`@nobulex/core`) - byte-identical action_refs cross-validated
-- Six framework integrations: LangChain, CrewAI, Google ADK, PydanticAI, Haystack, LlamaIndex
-- The `action_ref` formula is normative implementation guidance in OWASP Agentic Skills Top 10 AST09 (PRs #35/#38, merged by project lead Ken Huang)
-- OWASP CheatSheetSeries sections 8-11 merged by Jim Manico (PR #2210)
-- Cited as third independent issuer in x402 payment conformance spec (14/14 verdicts)
-- EU AI Act Article 12 compliance export
+- Python SDK: `pip install nobulex` (~13,700 receipts/sec Ed25519)
+- TypeScript SDK: `npm install @nobulex/core`
+- Hosted verification API with trust scoring and compliance reports
+- Six framework integrations (LangChain, CrewAI, PydanticAI, ADK, Haystack, LlamaIndex)
+- OWASP AST09: the action_ref formula is normative implementation guidance
+- x402 payment spec: cited as third independent issuer (14/14 verdicts)
+- IETF conformance suite: 4/4 vectors pass
 
-**Why this matters now:** EU AI Act Article 12 requires tamper-evident
-automatic logging for high-risk AI systems. The deadline is December 2, 2027.
-"Tamper-evident" rules out SQLite and cloud logs. Ed25519 over a hash chain
-is the right shape  - and nobody in the agent stack ships it yet.
+**Business model:** Credit-bureau economics. The SDK is free and open
+source (MIT). The paid product is the hosted verification layer: managed
+keys, compliance reports, the audit infrastructure enterprises can't
+self-host. Everyone has to check the score. We hold the record.
 
-The receipt format is minimal on purpose: one 64-character action_ref,
-one signature, one chain link. Everything else is an application layer.
+**Why now:** EU AI Act Article 12 requires tamper-evident automatic
+logging for high-risk AI systems (enforcement December 2, 2027). Nobody
+in the agent stack ships this yet.
+
+Try to break an agent protected by Nobulex receipts at
+nobulex.com/arena. $7,400 bounty if you beat level 5. Nobody has.
 
 Repo: github.com/arian-gogani/nobulex
-Spec: action-ref-v1 (in repo)
-Live demo: nobulex.com/arena (try to produce a valid forgery)
+Pricing: nobulex.com/pricing
+Methodology: nobulex.com/methodology
 
-Happy to answer questions on the crypto, the chain model, or the compliance
-angle.
+I'm 16 and built this solo. Happy to answer questions on the scoring,
+the crypto, or the compliance angle.
 
 ---
 
-## Timing notes
+## Timing
 
-Post Tuesday or Wednesday morning 9-10am ET for best HN front-page window.
-Avoid Monday (crowded) and Friday (low engagement).
+Post Tuesday or Wednesday 9-10am ET.
 
-Title variants to A/B in head:
-- "Show HN: Nobulex – Ed25519 receipts for every AI agent action (pip install nobulex)"
-- "Show HN: Cryptographic audit trails for AI agents – tamper-evident, no vendor dependency"
-- "Show HN: Nobulex – making AI agent actions independently verifiable"
+Title options:
+1. "Show HN: Credit scores for AI agents (pip install nobulex)"
+2. "Show HN: Nobulex - every AI agent action builds a verifiable track record"
+3. "Show HN: I'm 16. I built credit scores for machines."
 
-The first is most specific and most likely to get the HN crowd who cares about
-the crypto/implementation details. Lead with the technical claim.
+Option 3 is the most clickable on HN. The age + "credit scores for
+machines" combo is the hook. Use it if you want maximum engagement.
+Option 1 is the safest. Lead with option 3 if you're feeling bold.

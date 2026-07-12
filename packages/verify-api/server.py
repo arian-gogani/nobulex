@@ -240,7 +240,6 @@ def agent_score(agent_id):
     deny_count = sum(1 for r in receipts if r["verdict"] == "DENY")
     total = len(receipts)
 
-    # Simple scoring: base + allow bonus - deny penalty, capped
     score = min(100, max(0, 50 + (allow_count * 5) - (deny_count * 10)))
 
     return jsonify({
@@ -251,6 +250,118 @@ def agent_score(agent_id):
         "allow_count": allow_count,
         "deny_count": deny_count,
     })
+
+
+@app.route("/verify/bundle", methods=["POST"])
+def verify_bundle():
+    """Verify a receipt bundle and return a compliance report.
+
+    This is the enterprise product. A bundle is a collection of receipts
+    from one agent or one session, verified as a unit. The report includes
+    chain integrity, trust score, compliance flags, and a summary suitable
+    for a regulator or auditor.
+
+    Requires Pro tier or above.
+    """
+    api_key = request.headers.get("X-API-Key", "")
+    tier_name, tier_config = get_tier(api_key)
+    if not tier_config["bundle"]:
+        return jsonify({"error": "Bundle verification requires Pro tier", "upgrade": "https://nobulex.com/pricing"}), 403
+    allowed, remaining, reset_at = check_rate_limit(api_key, tier_config)
+    if not allowed:
+        return rate_limit_response(remaining, reset_at)
+
+    api_calls["count"] += 1
+    body = request.get_json()
+    if not body:
+        return jsonify({"error": "JSON body required"}), 400
+
+    receipts_data = body.get("receipts", [])
+    bundle_id = body.get("bundle_id", f"bundle-{int(time.time())}")
+
+    if not receipts_data:
+        return jsonify({"error": "receipts array required"}), 400
+
+    # Verify each receipt
+    verified = []
+    failed = []
+    allow_count = 0
+    deny_count = 0
+    agents_seen = set()
+    action_types = set()
+    earliest = float("inf")
+    latest = 0
+
+    for i, rd in enumerate(receipts_data):
+        try:
+            r = Receipt.from_dict(rd)
+            sig_ok = r.verify()
+
+            preimage = jcs_canonical({
+                "agent_id": r.agent_id,
+                "action_type": r.action_type,
+                "scope": r.scope,
+                "timestamp_ms": r.timestamp_ms,
+            })
+            ref_ok = sha256_hex(preimage) == r.action_ref
+
+            if sig_ok and ref_ok:
+                verified.append({"seq": i + 1, "action_ref": r.action_ref, "verdict": "VALID"})
+                agents_seen.add(r.agent_id)
+                action_types.add(r.action_type)
+                v = r.verdict or "ALLOW"
+                if v == "ALLOW":
+                    allow_count += 1
+                else:
+                    deny_count += 1
+                if r.timestamp_ms < earliest:
+                    earliest = r.timestamp_ms
+                if r.timestamp_ms > latest:
+                    latest = r.timestamp_ms
+            else:
+                reasons = []
+                if not sig_ok:
+                    reasons.append("signature_invalid")
+                if not ref_ok:
+                    reasons.append("action_ref_mismatch")
+                failed.append({"seq": i + 1, "reasons": reasons})
+        except Exception as e:
+            failed.append({"seq": i + 1, "reasons": [str(e)]})
+
+    total = len(receipts_data)
+    score = min(100, max(0, 50 + (allow_count * 5) - (deny_count * 10))) if verified else 0
+
+    # Compliance flags
+    flags = []
+    if deny_count > 0:
+        flags.append(f"{deny_count} action(s) were denied/blocked by policy")
+    if failed:
+        flags.append(f"{len(failed)} receipt(s) failed verification")
+    if len(agents_seen) > 1:
+        flags.append(f"Bundle spans {len(agents_seen)} agents (multi-agent chain)")
+
+    report = {
+        "bundle_id": bundle_id,
+        "verification_timestamp": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+        "summary": {
+            "total_receipts": total,
+            "verified": len(verified),
+            "failed": len(failed),
+            "trust_score": score,
+            "grade": "A" if score >= 80 else "B" if score >= 60 else "C" if score >= 40 else "D" if score >= 20 else "F",
+            "agents": list(agents_seen),
+            "action_types": list(action_types),
+            "allow_count": allow_count,
+            "deny_count": deny_count,
+            "time_range_ms": {"earliest": earliest if earliest != float("inf") else None, "latest": latest or None},
+        },
+        "compliance_flags": flags,
+        "verified_receipts": verified,
+        "failed_receipts": failed,
+        "tier": tier_name,
+    }
+
+    return jsonify(report)
 
 
 if __name__ == "__main__":

@@ -1,15 +1,15 @@
 """
-Nobulex Verify API — hosted receipt verification service.
+Nobulex Verify API - hosted receipt verification service.
 
 This is the thing that makes money. The SDK is free and open.
 The verification layer is the paid product.
 
 Endpoints:
-  POST /verify           — verify a single receipt
-  POST /verify/chain     — verify a receipt chain (integrity + order)
-  POST /verify/bundle    — verify a bundle and return compliance report
-  GET  /health           — health check
-  GET  /agent/:id/score  — get an agent's trust score from verified receipts
+  POST /verify           - verify a single receipt
+  POST /verify/chain     - verify a receipt chain (integrity + order)
+  POST /verify/bundle    - verify a bundle and return compliance report
+  GET  /health           - health check
+  GET  /agent/:id/score  - get an agent's trust score from verified receipts
 
 Free tier: 100 verifications/day, single receipts only
 Pro ($99/mo): 10K verifications/day, chain + bundle

@@ -287,12 +287,12 @@ The SDK is free. The hosted verification layer is the product.
 
 ```bash
 # Verify a receipt
-curl -X POST https://api.nobulex.com/v1/verify \
+curl -X POST https://nobulex.com/api/verify \
   -H "Content-Type: application/json" \
   -d '{"agent_id":"my-agent","action_type":"tool:search",...}'
 
 # Check an agent's trust score
-curl https://api.nobulex.com/v1/agent/my-agent/score
+curl https://nobulex.com/api/verify?action=score&agent_id=my-agent
 ```
 
 | Endpoint | What it does | Tier |

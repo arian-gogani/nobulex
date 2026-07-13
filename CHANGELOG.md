@@ -36,6 +36,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- Hosted verification API (`packages/verify-api/server.py`): POST /verify, POST /verify/chain, POST /verify/bundle, GET /agent/:id/score, GET /demo/tamper-test. Three tiers (Free/Pro/Scale) with rate limiting and tier gating. Dockerized.
+- IETF conformance driver for draft-farley-acta-signed-receipts: 4/4 vectors pass. PR ScopeBlind#12 filed.
+- Framework examples for all 6 integrations: PydanticAI, CrewAI, LangChain, Google ADK, Haystack, LlamaIndex. Each runs standalone.
+- Docs page for PydanticAI receipts (`docs/examples/pydantic-ai-receipts.md`).
+- Python tests for verify API (8 tests) and framework examples (3 tests). Suite: 17 to 28 tests.
+- Dify plugin packaging fix (icon path: `_assets/icon.svg` to `icon.svg`). `.difypkg` now builds with dify-cli v0.6.3.
+- OWASP PR #46 merged: AST-mapped fixture corpus proposal.
+- Verify API section in README with endpoints, tiers, and pricing links.
+
+### Fixed
+
+- All descriptions updated from "Trust Capital" to "Credit scores for AI agents" (pyproject.toml, package.json, Python README, main README).
+- Em dashes removed from verify-api docstrings and CrewAI example.
+
 ## [0.3.0] - 2026-04-16
 
 ### Changed

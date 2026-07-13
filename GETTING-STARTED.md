@@ -1,14 +1,18 @@
 # Getting Started with Nobulex
 
-**Tamper-proof receipts for everything your AI agent does.**
+**Credit scores for AI agents. Every action builds a verifiable track record.**
 
 Five minutes to your first verifiable receipt.
 
 ---
 
-## Install (Python)
+## Install
 
-Until the PyPI release lands, install from source:
+```bash
+pip install nobulex
+```
+
+Or from source:
 
 ```bash
 git clone https://github.com/arian-gogani/nobulex.git
@@ -67,10 +71,36 @@ Anyone can verify a receipt without trusting you or your infrastructure. That is
 
 ## JavaScript / TypeScript
 
-The `@nobulex/core` package on npm covers the covenant API (constraints,
-signing, chain verification). A refreshed build with the key-generation
-helper exposed is publishing shortly; until then the Python package above
-is the recommended path for receipt generation.
+```bash
+npm install @nobulex/core
+```
+
+---
+
+## Verify API (live)
+
+The SDK produces receipts locally. The hosted API verifies them:
+
+```bash
+# See a live tamper detection demo
+curl https://nobulex.com/api/verify?action=demo
+
+# Verify a receipt
+curl -X POST https://nobulex.com/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id":"my-agent","action_type":"tool:search","scope":"q=test","timestamp_ms":1720000000000,"action_ref":"..."}'
+```
+
+[API docs](https://nobulex.com/api-docs) |
+[Pricing](https://nobulex.com/pricing) |
+[Methodology](https://nobulex.com/methodology)
+
+---
+
+## Framework examples
+
+Working examples for PydanticAI, CrewAI, LangChain, Google ADK,
+Haystack, and LlamaIndex in `packages/python/examples/`.
 
 ---
 

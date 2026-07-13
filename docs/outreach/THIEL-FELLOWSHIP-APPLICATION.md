@@ -13,27 +13,26 @@ fixed deadline. Apply at thielfellowship.org/apply.
 
 ## Core: What are you working on?
 
-Nobulex is an open-source cryptographic receipt layer for AI agents. Every
-action an agent takes  - calling a tool, moving money, reading a file  - gets
-an Ed25519-signed, JCS-canonical receipt, hash-chained to the previous one.
-Change one byte and verification fails. An auditor, regulator, or customer
-can verify what an agent actually did without trusting the operator.
+Credit scores for machines. Nobulex is an open-source receipt layer for AI
+agents. Every action an agent takes gets an Ed25519-signed, JCS-canonical
+receipt, hash-chained to the previous one. Change one byte and verification
+fails. The verified track record becomes a trust score that determines what
+the agent is allowed to do. Autonomy earned, not granted.
 
-The technical primitive is simple: action_ref = SHA-256(JCS({agent_id,
-action_type, scope, timestamp_ms})). One 64-character hex string identifies
-any agent action, independently and deterministically.
+The technical primitive: action_ref = SHA-256(JCS({agent_id, action_type,
+scope, timestamp_ms})). One 64-character hex string identifies any agent
+action, independently and deterministically.
 
-The product is live. pip install nobulex. Cross-validated against four
-published test vectors - Python and JavaScript implementations produce
-byte-identical action_refs. AgentAudit AI is the first integration partner.
+The SDK is free and open source (MIT). The paid product is the hosted
+verification API: managed keys, compliance reports, the audit infrastructure
+enterprises can't self-host. Credit-bureau economics: everyone has to check
+the score, we hold the record.
 
 The action_ref formula is normative implementation guidance in OWASP
-Agentic Skills Top 10 AST09 (PRs #35/#38, merged by project lead Ken Huang,
-June 2026). OWASP CheatSheetSeries sections 8-11 merged by Jim Manico.
+Agentic Skills Top 10 AST09 (3 PRs merged by project lead Ken Huang).
 Cited as third independent issuer in the x402 payment conformance spec
-(14/14 verdicts passed). Six framework integrations shipped (LangChain,
-CrewAI, Google ADK, PydanticAI, Haystack, LlamaIndex). ~13,700 signed
-receipts/sec (Ed25519), ~60,000/sec (ES256).
+(14/14 verdicts). IETF conformance: 4/4 vectors pass. Six framework
+integrations shipped. ~13,700 signed receipts/sec (Ed25519).
 
 ---
 
@@ -69,29 +68,38 @@ building AI infrastructure today is using.
 
 ## Past achievements
 
-I'm 15. I taught myself to code at [age]. Before Nobulex:
-[Arian: add real prior projects here  - even small ones count]
+I'm 16. I taught myself to code at [age]. Before Nobulex:
+[Arian: add real prior projects here, art, Translucence, etc.]
 
 Nobulex milestones (all verifiable):
-- Built and shipped a working cryptographic SDK from scratch, solo, as a
-  15-year-old. pip install nobulex is live on PyPI with real benchmarks:
+- Built and shipped a working cryptographic SDK from scratch, solo, at 16.
+  pip install nobulex is live on PyPI with real benchmarks:
   ~13,683 signed receipts/sec at p50, ~73 microseconds end-to-end.
-- Cross-validated against the published bilateral receipt test vectors.
-  Python and TypeScript implementations produce byte-identical action_refs.
-  Four implementations, four passes, fully public fixtures.
-- Landed a five-point integration partnership with AgentAudit AI before
-  having a single paying customer. The signed specimen receipt
-  (fixtures/agentaudit-specimen-v1.json) verifies end-to-end in 10 lines
-  of Python. Nobody asked me to deliver it three days early. I did it.
-- Got four of my contributions (JCS canonicalization rationale, cross-agent
-  accountability, sanctions-list freshness, regulatory mapping) merged into
-  the OWASP CheatSheetSeries on AML compliance for AI agent payments,
-  approved by Jim Manico, credited to me.
+- Got the action_ref formula merged as normative implementation guidance in
+  OWASP Agentic Skills Top 10 AST09, reviewed and merged by project lead
+  Ken Huang. Three PRs merged total (#35, #38, #46).
+- Got four sections merged into the OWASP CheatSheetSeries on AML compliance
+  for AI agent payments, approved by Jim Manico, credited to me.
+- Cited as third independent issuer in the x402 payment conformance spec
+  (14/14 verdicts passed, alongside agent-guard and Vaara).
+- Filed IETF conformance implementation (draft-farley-acta-signed-receipts,
+  4/4 vectors pass). If merged: OWASP + x402 + IETF triple standards.
+- Built a hosted verification API with 6 endpoints, 3 pricing tiers, rate
+  limiting, and compliance report generation. Credit-bureau economics:
+  the SDK is free, the verification layer is the product.
+- Shipped working integration examples for 6 frameworks: LangChain, CrewAI,
+  PydanticAI, Google ADK, Haystack, LlamaIndex. All tested end-to-end.
+- Landed a design partnership with AgentAudit AI. The signed specimen receipt
+  verifies end-to-end in 10 lines of Python.
 - vaara v0.50 independently shipped EU AI Act Article 12 audit trails citing
   the nobulex signed-receipt design. Third-party adoption, no coordination.
-- Posted a 160-line RFC to builderz-labs/mission-control after the
-  maintainer asked for a concrete identity and signed-attestation design.
-  The answer was delivered the same day.
+- agentculture independently implemented a Culture-native provenance system
+  modeled on my work, explicitly keeping the pattern but not the dependency.
+  That's the strongest standards-adoption signal.
+- 1517 Fund partner Danielle Strachman said I have "qualities we very much
+  look for." Added to the 1517 community. Applying to 1517 camp.
+- 2911 tests across TypeScript and Python, all green. Zero em dashes in
+  the entire codebase (that's a style rule, not a joke).
 
 ---
 

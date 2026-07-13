@@ -42,3 +42,27 @@ def test_langchain_example():
     assert "search" in r.stdout
     assert "web_scrape" in r.stdout
     assert "Trust score" in r.stdout
+
+
+def test_google_adk_example():
+    r = run_example("google_adk_receipts.py")
+    assert r.returncode == 0, r.stderr
+    assert "google_search" in r.stdout
+    assert "send_email" in r.stdout
+    assert "Chain verified: True" in r.stdout
+
+
+def test_haystack_example():
+    r = run_example("haystack_receipts.py")
+    assert r.returncode == 0, r.stderr
+    assert "text_embedder" in r.stdout
+    assert "llm_generator" in r.stdout
+    assert "Chain verified: True" in r.stdout
+
+
+def test_llamaindex_example():
+    r = run_example("llamaindex_receipts.py")
+    assert r.returncode == 0, r.stderr
+    assert "vector_search" in r.stdout
+    assert "sql_query" in r.stdout
+    assert "Chain verified: True" in r.stdout

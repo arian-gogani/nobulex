@@ -88,6 +88,32 @@ print(receipt.action_ref)          # Content-addressable hash
 print(receipt.to_json())           # JSON serialization
 ```
 
+## Framework Examples
+
+Working examples for all 6 supported frameworks (each runs standalone):
+
+```bash
+python examples/pydantic_ai_receipts.py   # PydanticAI
+python examples/crewai_receipts.py        # CrewAI
+python examples/langchain_receipts.py     # LangChain
+python examples/google_adk_receipts.py    # Google ADK
+python examples/haystack_receipts.py      # Haystack
+python examples/llamaindex_receipts.py    # LlamaIndex
+```
+
+## Verify API
+
+The SDK is free. The hosted verification layer is the product.
+
+```bash
+curl -X POST https://api.nobulex.com/v1/verify \
+  -d '{"agent_id":"my-agent","action_type":"tool:search",...}'
+```
+
+[Pricing](https://nobulex.com/pricing) |
+[API docs](https://nobulex.com/api-docs) |
+[Methodology](https://nobulex.com/methodology)
+
 ## License
 
-MIT  - Arian Gogani (@nobulexlabs)
+MIT - Arian Gogani (@nobulexlabs)

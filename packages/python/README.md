@@ -1,6 +1,6 @@
 # nobulex
 
-**Trust Capital for AI agents. Tamper-proof receipts for everything your AI agent does.**
+**Credit scores for AI agents. Every action builds a verifiable track record.**
 
 Credit scores exist for people. They don't exist for machines. Until now.
 

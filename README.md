@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/banner.svg" alt="Nobulex  - Trust Capital for AI Agents" width="100%"/>
+<img src="./assets/banner.svg" alt="Nobulex - Credit scores for AI agents" width="100%"/>
 
 <br/>
 

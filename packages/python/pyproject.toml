@@ -5,12 +5,12 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "nobulex"
 version = "0.1.1"
-description = "Trust Capital for AI agents. Tamper-proof receipts for everything your AI agent does."
+description = "Credit scores for AI agents. Every action builds a verifiable track record."
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [{name = "Arian Gogani", email = "nobulex.dev@gmail.com"}]
-keywords = ["ai", "agents", "trust", "accountability", "receipts", "verification"]
+keywords = ["ai", "agents", "trust", "accountability", "receipts", "verification", "credit-score", "compliance", "eu-ai-act"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Intended Audience :: Developers",

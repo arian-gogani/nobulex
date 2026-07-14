@@ -271,7 +271,7 @@ Independent, verifiable signals (each links to evidence):
 | | **IETF Conformance** | draft-farley-acta-signed-receipts: 4/4 vectors pass. Implementation PR [#12](https://github.com/ScopeBlind/agent-governance-testvectors/pull/12) filed |
 | | **OWASP CheatSheetSeries** | Sections 8-11 (JCS canonicalization, cross-agent accountability, sanctions-list freshness, regulatory mapping) merged into master by Jim Manico, Jun 2026 ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210)) |
 | | **vaara v0.50** | Independent third-party adoption  - Henri Sirkkavaara shipped EU AI Act Article 12 audit trails citing the nobulex signed-receipt design ([GitHub](https://github.com/vaaraio/vaara)) |
-| | **Dify Marketplace** | Plugin PR open on 60,000+ star platform ([PR #2500](https://github.com/langgenius/dify-plugins/pull/2500)). LangGenius Community Operations confirmed architecture is sound and Trust Capital is genuinely differentiated. |
+| | **Dify Plugin Marketplace** | Plugin merged into official dify-plugins repository ([PR #2500](https://github.com/langgenius/dify-plugins/pull/2500)). Nobulex receipts available to 90K+ star Dify ecosystem |
 | | **Microsoft AI Agents for Beginners** | PR open to add nobulex as the Python production receipt library in Lesson 18  - Securing AI Agents with Cryptographic Receipts ([PR #571](https://github.com/microsoft/ai-agents-for-beginners/pull/571)) |
 | | **AgentAudit AI** | Five-point integration partnership active. Signed specimen receipt verifies end-to-end in 10 lines of Python ([fixture](./fixtures/agentaudit-specimen-v1.json)) |
 | | **Microsoft AGT** | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged by Microsoft maintainers) |

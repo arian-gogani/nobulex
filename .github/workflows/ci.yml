@@ -33,7 +33,7 @@ jobs:
       - name: Install dependencies
         run: |
           cd packages/python
-          pip install -e . pytest flask
+          pip install -e ".[dev]" pytest flask langchain-core
 
       - name: Run tests
         run: |

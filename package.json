@@ -2,7 +2,7 @@
   "name": "nobulex",
   "private": true,
   "version": "0.1.0",
-  "description": "The trust economy for autonomous AI agents. Trust Capital — machine reputation earned through verified behavior, gating what agents are allowed to do.",
+  "description": "Credit scores for AI agents. Every action builds a verifiable track record.",
   "workspaces": [
     "packages/core",
     "packages/sdk",

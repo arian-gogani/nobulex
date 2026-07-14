@@ -1,8 +1,8 @@
 # @nobulex/core
 
-Cryptographic covenant lifecycle for the Nobulex framework: build a signed
-covenant that declares what an agent is permitted to do, then verify it
-independently. Ed25519 signatures over RFC 8785 canonical JSON.
+Credit scores for AI agents. Cryptographic receipts for every agent action,
+Ed25519 signed over RFC 8785 canonical JSON. The verified track record
+becomes portable trust.
 
 ## Install
 
@@ -41,6 +41,18 @@ field of the document and `valid` becomes `false`.
 - `resolveChain(doc, resolver)`  - walk a delegation chain
 - `serializeCovenant` / `deserializeCovenant`  - JSON round-trip
 
+## Verify API
+
+The SDK produces receipts locally. The hosted API verifies them:
+
+```bash
+curl -X POST https://nobulex.com/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id":"my-agent","action_type":"tool:search",...}'
+```
+
+[API docs](https://nobulex.com/api-docs) | [Pricing](https://nobulex.com/pricing) | [Methodology](https://nobulex.com/methodology)
+
 ## Learn More
 
-[github.com/arian-gogani/nobulex](https://github.com/arian-gogani/nobulex) · [nobulex.com](https://nobulex.com)
+[github.com/arian-gogani/nobulex](https://github.com/arian-gogani/nobulex) | [nobulex.com](https://nobulex.com)

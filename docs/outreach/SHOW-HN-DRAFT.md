@@ -32,6 +32,7 @@ verifies offline with only the public key. No operator trust required.
 - TypeScript SDK: `npm install @nobulex/core`
 - Hosted verification API with trust scoring and compliance reports
 - Six framework integrations (LangChain, CrewAI, PydanticAI, ADK, Haystack, LlamaIndex)
+- Dify plugin merged into official marketplace (90K+ star ecosystem)
 - OWASP AST09: the action_ref formula is normative implementation guidance
 - x402 payment spec: cited as third independent issuer (14/14 verdicts)
 - IETF conformance suite: 4/4 vectors pass

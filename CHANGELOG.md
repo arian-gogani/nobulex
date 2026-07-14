@@ -43,7 +43,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Framework examples for all 6 integrations: PydanticAI, CrewAI, LangChain, Google ADK, Haystack, LlamaIndex. Each runs standalone.
 - Docs page for PydanticAI receipts (`docs/examples/pydantic-ai-receipts.md`).
 - Python tests for verify API (8 tests) and framework examples (3 tests). Suite: 17 to 28 tests.
-- Dify plugin packaging fix (icon path: `_assets/icon.svg` to `icon.svg`). `.difypkg` now builds with dify-cli v0.6.3.
+- Dify plugin packaging fix (icon path: `_assets/icon.svg` to `icon.svg`). `.difypkg` now builds with dify-cli v0.6.3. **PR #2500 merged into official dify-plugins repo.**
 - OWASP PR #46 merged: AST-mapped fixture corpus proposal.
 - Verify API section in README with endpoints, tiers, and pricing links.
 

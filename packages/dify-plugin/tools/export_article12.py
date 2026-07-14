@@ -1,4 +1,4 @@
-"""Nobulex — export_article12 tool. Built on `pip install nobulex`."""
+"""Nobulex - export_article12 tool. Built on `pip install nobulex`."""
 
 from __future__ import annotations
 

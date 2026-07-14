@@ -1,4 +1,4 @@
-"""Nobulex — verify_receipt tool. Built on `pip install nobulex`."""
+"""Nobulex - verify_receipt tool. Built on `pip install nobulex`."""
 
 from __future__ import annotations
 

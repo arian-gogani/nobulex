@@ -1,4 +1,4 @@
-"""Nobulex — get_trust_score tool. Built on `pip install nobulex`."""
+"""Nobulex - get_trust_score tool. Built on `pip install nobulex`."""
 
 from __future__ import annotations
 

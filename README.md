@@ -91,25 +91,36 @@ Agents that create more value earn more access. Agents that deviate get cut off 
 ### Python (recommended for AI agents)
 
 ```bash
-# Or install from source
-pip install git+https://github.com/arian-gogani/nobulex.git#subdirectory=packages/python
+pip install nobulex
 ```
 
-```bash
-# Or try the CLI demo instantly
-git clone https://github.com/arian-gogani/nobulex.git
-cd nobulex/packages/python
-pip install -e .
-python -m nobulex demo
+**One line to add receipts to any function:**
+
+```python
+from nobulex import track
+
+@track(agent_id="my-agent")
+def send_email(to, subject, body):
+    # your existing code, unchanged
+    return smtp.send(to, subject, body)
+
+# Every call now produces a signed receipt automatically
+send_email("user@example.com", "Hello", "Report attached")
+
+# Success = receipt. Exception = DENY receipt. Trust score accumulates.
+print(send_email.receipts)     # signed, tamper-evident
+print(send_email.trust_score)  # earned over time
 ```
+
+**Or use the Agent API directly:**
 
 ```python
 from nobulex import Agent
 
 agent = Agent("my-agent")
 receipt = agent.act("send_email", scope="user@example.com")
-assert receipt.verify()       # Cryptographic proof
-print(agent.trust_score)      # Trust Capital: 13.86
+assert receipt.verify()       # any third party can check
+print(agent.trust_score)      # builds with every action
 ```
 
 #### LangChain integration

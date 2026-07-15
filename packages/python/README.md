@@ -10,18 +10,30 @@ Credit scores exist for people. They don't exist for machines. Until now.
 pip install nobulex
 ```
 
-## Quick Start (5 minutes)
+## Quick Start
+
+**One line to add receipts to any function:**
+
+```python
+from nobulex import track
+
+@track(agent_id="my-agent")
+def send_email(to, subject, body):
+    return smtp.send(to, subject, body)
+
+# Every call produces a signed receipt. Exceptions produce DENY receipts.
+send_email("user@example.com", "Hello", "Report attached")
+print(send_email.receipts)     # tamper-evident
+print(send_email.trust_score)  # accumulates over time
+```
+
+**Or use the Agent API directly:**
 
 ```python
 from nobulex import Agent
 
-# Create an agent with a cryptographic identity
 agent = Agent("my-agent")
-
-# Every action generates a signed receipt
 receipt = agent.act("send_email", scope="user@example.com")
-
-# Receipts are cryptographically verifiable
 assert receipt.verify()  # Ed25519 signature check
 print(receipt.action_ref)  # SHA-256 hash of the action
 

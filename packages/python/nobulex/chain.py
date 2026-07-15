@@ -91,6 +91,33 @@ class ReceiptChain:
 
         return True
 
+    def merkle_batch(self):
+        """Build a Merkle batch over this chain's receipts (RFC 6962).
+
+        The hash chain proves ORDER (each receipt links to the previous).
+        The Merkle root proves MEMBERSHIP cheaply: anchor one root instead
+        of N receipts, and any single receipt still proves it belongs with
+        ~log2(N) hashes. The two are complementary, not alternatives.
+        """
+        from nobulex.merkle import MerkleBatch
+
+        return MerkleBatch([e["receipt"].action_ref for e in self._chain])
+
+    def merkle_root(self) -> Optional[str]:
+        """Root hash summarizing every receipt in the chain. Anchor this."""
+        if not self._chain:
+            return None
+        return self.merkle_batch().root()
+
+    def inclusion_proof(self, index: int) -> List[str]:
+        """Proof that the receipt at `index` is in the anchored root.
+
+        Hand this to a regulator with the receipt and the anchored root.
+        They verify offline, with no call to Nobulex and no trust in the
+        operator.
+        """
+        return self.merkle_batch().inclusion_proof(index)
+
     def export(self, filepath: str) -> None:
         """Export the chain as a JSON audit trail."""
         data = {

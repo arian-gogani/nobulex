@@ -17,7 +17,7 @@
 **AI agents have nothing.**
 
 Nobulex is the credit and trust protocol for autonomous AI agents.<br/>
-Agents earn Trust Capital through verified behavior. Higher trust, more access.<br/>
+Agents earn trust score through verified behavior. Higher trust, more access.<br/>
 Autonomy earned, not granted.
 
 [Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
@@ -73,9 +73,9 @@ Change one byte of a receipt and verification fails. That is the whole guarantee
 
 **Performance:** ~13,683 signed receipts/sec at p50 (Python SDK, single core). Full signed-and-chained receipt takes ~73 μs end-to-end. See [BENCHMARKS.md](./docs/BENCHMARKS.md) for the full breakdown; reproduce with `python3 scripts/benchmark.py`.
 
-Receipts accumulate into **Trust Capital** -- a credit score for the agent.
+Receipts accumulate into **trust score** -- a credit score for the agent.
 
-| Tier | Trust Capital | Access Level |
+| Tier | trust score | Access Level |
 |------|--------------|--------------|
 | Restricted | 0 -- 30 | Read-only, sandboxed execution |
 | Standard | 30 -- 60 | Financial ops up to $500, API access |
@@ -203,18 +203,18 @@ npx tsx examples/trust-capital-demo.ts
 ```
 
 ```
-Agent starts at RESTRICTED tier (Trust Capital: 0)
+Agent starts at RESTRICTED tier (trust score: 0)
 
-Action 1: read_data        - ALLOWED   (Trust Capital: 12)
-Action 2: read_data        - ALLOWED   (Trust Capital: 24)
+Action 1: read_data        - ALLOWED   (trust score: 12)
+Action 2: read_data        - ALLOWED   (trust score: 24)
 Action 3: process_payment  - BLOCKED   (insufficient trust)
-Action 4: read_data        - ALLOWED   (Trust Capital: 36)
-Action 5: read_data        - ALLOWED   (Trust Capital: 48)
+Action 4: read_data        - ALLOWED   (trust score: 36)
+Action 5: read_data        - ALLOWED   (trust score: 48)
 
 Agent promoted to STANDARD tier
-Action 6: process_payment  - ALLOWED   (Trust Capital: 65)
+Action 6: process_payment  - ALLOWED   (trust score: 65)
 
-Agent promoted to TRUSTED tier (Trust Capital: 89)
+Agent promoted to TRUSTED tier (trust score: 89)
 Action 8: approve_contract  - ALLOWED
 ```
 
@@ -225,7 +225,7 @@ Action 8: approve_contract  - ALLOWED
 ```
 DECLARE ──► ENFORCE ──► PROVE ──► ACCUMULATE
 
-Covenant      Pre-execution     Receipt chain     Trust Capital
+Covenant      Pre-execution     Receipt chain     trust score
 defines       receipt blocks    verified by       earned over
 the rules     violations        third parties     time
               before they
@@ -234,7 +234,7 @@ the rules     violations        third parties     time
                                                            ──► higher trust
 ```
 
-The flywheel: more Trust Capital leads to more valuable work, which produces more receipts, which builds higher Trust Capital. Accountability becomes the most profitable strategy.
+The flywheel: more trust score leads to more valuable work, which produces more receipts, which builds higher trust score. Accountability becomes the most profitable strategy.
 
 ---
 
@@ -286,7 +286,7 @@ Independent, verifiable signals (each links to evidence):
 | | **Microsoft AI Agents for Beginners** | PR open to add nobulex as the Python production receipt library in Lesson 18  - Securing AI Agents with Cryptographic Receipts ([PR #571](https://github.com/microsoft/ai-agents-for-beginners/pull/571)) |
 | | **AgentAudit AI** | Five-point integration partnership active. Signed specimen receipt verifies end-to-end in 10 lines of Python ([fixture](./fixtures/agentaudit-specimen-v1.json)) |
 | | **Microsoft AGT** | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged by Microsoft maintainers) |
-| | **builderz-labs / mission-control** | Cross-session Trust Capital RFC accepted as open issue; TypeScript reference implementation delivered |
+| | **builderz-labs / mission-control** | Cross-session trust score RFC accepted as open issue; TypeScript reference implementation delivered |
 
 EU AI Act Article 12 enforcement: December 2, 2027.
 

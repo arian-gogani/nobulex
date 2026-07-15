@@ -37,7 +37,7 @@ receipt = agent.act("send_email", scope="user@example.com")
 assert receipt.verify()  # Ed25519 signature check
 print(receipt.action_ref)  # SHA-256 hash of the action
 
-# Trust Capital builds with every verified action
+# trust score builds with every verified action
 print(agent.trust_score)  # 13.86
 
 # Denied actions prove the system caught violations
@@ -58,7 +58,7 @@ Every time an AI agent does something, Nobulex generates a **cryptographic recei
 
 Receipts are tamper-proof. You can't edit them after the fact. You can't fake them. An independent verifier can check any receipt without trusting the agent.
 
-Over time, receipts build into **Trust Capital**  - a portable trust score that follows the agent across deployments. You can copy an agent's code, but you can't copy its credit score. The copy starts at zero.
+Over time, receipts build into **trust score**  - a portable trust score that follows the agent across deployments. You can copy an agent's code, but you can't copy its credit score. The copy starts at zero.
 
 ## Use Cases
 
@@ -79,7 +79,7 @@ receipt = agent.act("tool_call",   # Record an action
                     scope="api.stripe.com")
 agent.deny("unauthorized_action",  # Record a caught violation
            scope="admin_panel")
-print(agent.trust_score)           # Get Trust Capital score
+print(agent.trust_score)           # Get trust score score
 print(agent.receipts)              # Get all receipts
 ```
 

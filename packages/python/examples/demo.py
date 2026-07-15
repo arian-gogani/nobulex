@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 """
-Nobulex Demo: Trust Capital for AI Agents
+Nobulex Demo: trust score for AI Agents
 
 This script demonstrates the core concepts:
 1. Agent identity with cryptographic keys
 2. Receipt generation for every action
 3. Tamper detection (modify a receipt, signature breaks)
-4. Trust Capital scoring
+4. trust score scoring
 5. Multi-agent crew tracking
 """
 
@@ -14,7 +14,7 @@ from nobulex import Agent, Receipt, KeyPair
 from nobulex.crewai import NobuCrewTracker
 
 print("=" * 60)
-print("  NOBULEX DEMO: Trust Capital for AI Agents")
+print("  NOBULEX DEMO: trust score for AI Agents")
 print("=" * 60)
 
 # --- 1. Create an Agent ---
@@ -95,7 +95,7 @@ print("  SUMMARY")
 print("=" * 60)
 print(f"  Agent: {agent.agent_id}")
 print(f"  Total receipts: {len(agent.receipts)}")
-print(f"  Trust Capital: {agent.trust_score}")
+print(f"  trust score: {agent.trust_score}")
 print(f"  Public key: {agent.public_key[:32]}...")
 print()
 print("  Credit scores exist for people.")

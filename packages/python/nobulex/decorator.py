@@ -36,7 +36,7 @@ def track(
 
     The decorated function gains these attributes:
         .receipts: List of all receipts
-        .trust_score: Current Trust Capital score
+        .trust_score: Current trust score score
         .agent: The underlying Agent object
         .last_receipt: Most recent receipt
 

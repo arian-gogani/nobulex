@@ -17,7 +17,7 @@ python tests.py  # 13 tests, all should pass
 - `nobulex/crypto.py`  - Ed25519 signing, JCS canonicalization (RFC 8785), SHA-256
 - `nobulex/receipt.py`  - Receipt data structure, verification, serialization
 - `nobulex/chain.py`  - Hash-linked receipt chains, audit trail export
-- `nobulex/trust.py`  - Trust Capital scoring
+- `nobulex/trust.py`  - trust score scoring
 - `nobulex/langchain.py`  - LangChain callback handler
 - `nobulex/crewai.py`  - CrewAI tracker integration
 - `nobulex/decorator.py`  - `@audited` function decorator

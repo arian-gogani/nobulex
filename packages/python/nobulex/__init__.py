@@ -1,5 +1,5 @@
 """
-Nobulex - Trust Capital for AI Agents
+Nobulex - trust score for AI Agents
 
 Tamper-proof receipts for everything your AI agent does.
 Credit scores for machines.

@@ -55,7 +55,7 @@ assert receipt.verify()        # Ed25519 signature checks out
 # A denied action is recorded too
 agent.deny("delete_db", scope="production")
 
-# Receipts accumulate into Trust Capital
+# Receipts accumulate into trust score
 print(agent.trust_score)
 ```
 

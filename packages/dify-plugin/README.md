@@ -18,7 +18,7 @@ using only your agent's public key.
 | `sign_receipt` | Sign a cryptographic receipt for one tool call |
 | `verify_receipt` | Verify a receipt's signature and chain integrity |
 | `export_article12` | Export a regulator-facing EU AI Act Article 12 evidence package |
-| `get_trust_score` | Get this agent's current Trust Capital score (0-100) |
+| `get_trust_score` | Get this agent's current trust score score (0-100) |
 
 ## Quick start
 
@@ -64,11 +64,11 @@ complete chain independently.
 - OWASP reference: [PR #2210  - AML and Sanctions Compliance for AI Agent Payments](https://github.com/OWASP/CheatSheetSeries/pull/2210)
 - Live demo: [nobulex.com/arena](https://nobulex.com/arena)
 
-## Trust Capital
+## trust score
 
-`get_trust_score` returns a Trust Capital score (0-100) based on verified
+`get_trust_score` returns a trust score score (0-100) based on verified
 receipt history. This is the portable, accumulating agent reputation that
 works across platforms  - the aspect Dify's team found most interesting and
 that doesn't overlap with existing Marketplace tools.
 
-Higher scores unlock more agent autonomy in Trust Capital-aware workflows.
+Higher scores unlock more agent autonomy in trust score-aware workflows.

@@ -1,4 +1,4 @@
-# RFC: Cross-Deployment Trust Capital for Mission Control
+# RFC: Cross-Deployment Trust Score for Mission Control
 
 > **Status:** Draft for discussion on [builderz-labs/mission-control#678](https://github.com/builderz-labs/mission-control/issues/678)
 > **Author:** Arian Gogani (nobulex)
@@ -8,11 +8,11 @@
 
 Mission Control's `agent_trust_scores` table is currently keyed by `(agent_name, workspace_id)`. Trust is local and per-deployment: when an agent runs in two workspaces, it gets two unrelated scores; when an operator runs many agents, MC can't tell them apart from agents with the same display name run by someone else.
 
-Three things are needed to accept external Trust Capital as a scoring input:
+Three things are needed to accept external trust score as a scoring input:
 
 1. **A portable cross-deployment agent identity.** Globally unique, not display-name based.
 2. **A federation/import format with a trusted source boundary.** Whose attestations does MC accept, and how are they signed so they can't be forged to inflate scores.
-3. **A blend policy.** How external Trust Capital weights against MC's local signals.
+3. **A blend policy.** How external trust score weights against MC's local signals.
 
 This document proposes a concrete design for all three.
 
@@ -37,7 +37,7 @@ Why DIDs:
 
 ## 2. Federation format: `nobulex-action-ref-v1` attestations
 
-External Trust Capital is delivered as **signed attestations** in the action-ref-v1 format (already cross-validated with byte-identical results across Python + JS implementations).
+External trust score is delivered as **signed attestations** in the action-ref-v1 format (already cross-validated with byte-identical results across Python + JS implementations).
 
 ```json
 {
@@ -88,7 +88,7 @@ Issuers are added explicitly by a workspace admin. An unknown issuer's attestati
 
 ## 3. Blend policy: capped weighted average with provenance
 
-External Trust Capital does not replace MC's local scoring. It contributes to a blended score where the operator controls the maximum influence external sources can have.
+External trust score does not replace MC's local scoring. It contributes to a blended score where the operator controls the maximum influence external sources can have.
 
 ```typescript
 function blendedTrust(local: number, externals: ExternalAttestation[]): BlendResult {

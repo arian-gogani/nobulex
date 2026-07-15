@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/mission-control-reference",
   "version": "0.1.0-rc.1",
-  "description": "Reference implementation of the nobulex Trust Capital integration for builderz-labs/mission-control. See ../builderz-labs-mission-control-rfc.md for the design.",
+  "description": "Reference implementation of the nobulex trust score integration for builderz-labs/mission-control. See ../builderz-labs-mission-control-rfc.md for the design.",
   "type": "module",
   "main": "./src/index.ts",
   "scripts": {

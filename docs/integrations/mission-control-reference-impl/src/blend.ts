@@ -1,5 +1,5 @@
 /**
- * Blend external Trust Capital attestations with a local score.
+ * Blend external trust score attestations with a local score.
  *
  * Reference implementation for the Mission Control integration RFC.
  *

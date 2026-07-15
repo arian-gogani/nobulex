@@ -67,7 +67,7 @@ forkers, starrers, people who replied. They already showed intent.
 
 **Dify (LangGenius)**  - sherry.zhao@dify.ai
 - 60,000+ GitHub stars, millions of active users, enterprise customers in regulated industries
-- Sherry Zhao (Community Operations) confirmed architecture is sound and Trust Capital is interesting
+- Sherry Zhao (Community Operations) confirmed architecture is sound and trust score is interesting
 - Asqav already in Marketplace (competitor for audit trail), but open to multiple tools
 - Path: Plugin PR to langgenius/dify-plugins + companion Template
 - Plugin BUILT at packages/dify-plugin/ (4 tools: sign_receipt, verify_receipt, export_article12, get_trust_score)

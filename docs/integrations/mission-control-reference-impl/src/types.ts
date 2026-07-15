@@ -4,7 +4,7 @@
  * Reference implementation for the Mission Control integration RFC at
  * docs/integrations/builderz-labs-mission-control-rfc.md.
  *
- * These types are the canonical shape of a signed Trust Capital
+ * These types are the canonical shape of a signed trust score
  * attestation that one deployment can hand to another. Tampering with
  * any field invalidates the signature.
  */
@@ -14,7 +14,7 @@ export type AttestationSchema = 'nobulex-trust-attestation-v1';
 export type TrustTier = 'Restricted' | 'Standard' | 'Trusted' | 'Sovereign';
 
 export interface AttestationClaim {
-  /** Numeric Trust Capital score, 0-100. */
+  /** Numeric trust score score, 0-100. */
   trust_capital: number;
   /** Tier name (matches nobulex TrustCapital tiers). */
   tier: TrustTier;

@@ -11,14 +11,14 @@ AI agents are starting to do real things  - move money, handle data, sign contra
 - Open-source Python SDK: `pip install nobulex`
 - 4 lines to generate your first receipt
 - Ed25519 signatures, SHA-256 hashing, JCS canonicalization
-- Trust Capital scoring (credit score for machines)
+- credit score for machines
 - LangChain and CrewAI integrations
 - MIT licensed
 
 ### What it does (honestly)
 - Generates cryptographic receipts for AI agent actions
 - Receipts are tamper-proof (modify anything, signature breaks)
-- Receipts build into a Trust Capital score
+- Receipts build into a trust score score
 - Denied actions generate proof the system caught violations
 - Works with any Python function via @track decorator
 
@@ -30,7 +30,7 @@ AI agents are starting to do real things  - move money, handle data, sign contra
 - **vaara v0.50**  - Independent Aider + MCP runtime audit layer by Henri Sirkkavaara shipping Ed25519-signed receipts citing the nobulex design.
 - **Standards body:** Microsoft AGT ADOPTERS.md PR merged (PR #1703, May 2026)
 - **Two warm call requests** in one week from a 1517 Fund partner and a W3C Community Group chair
-- **Dify Marketplace submission accepted for review**  - langgenius/dify-plugins#2500. Dify (60,000+ stars, millions of users) confirmed the architecture is sound and Trust Capital is genuinely interesting and differentiated from existing tools. Plugin built at packages/dify-plugin/.
+- **Dify Marketplace submission accepted for review**  - langgenius/dify-plugins#2500. Dify (90K+ stars). Plugin MERGED. Architecture confirmed sound and differentiated from existing tools. Plugin built at packages/dify-plugin/.
 - **Microsoft AI Agents for Beginners PR**  - microsoft/ai-agents-for-beginners#571. Adds nobulex to Lesson 18 (Securing AI Agents with Cryptographic Receipts) as the only Python production receipt library listed in that lesson.
 - **30 GitHub stars, 6 forks** (forkers include Red Sentinel  - "the ultimate AI security platform"  - and a Northrop Grumman senior engineer)
 - **Demo runs from clean clone:** tamper detection works, signature verification works, full audit trail reproducible

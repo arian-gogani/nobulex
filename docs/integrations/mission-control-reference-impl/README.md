@@ -1,6 +1,6 @@
 # Mission Control Reference Implementation
 
-TypeScript reference implementation of the nobulex Trust Capital integration described in [../builderz-labs-mission-control-rfc.md](../builderz-labs-mission-control-rfc.md).
+TypeScript reference implementation of the nobulex trust score integration described in [../builderz-labs-mission-control-rfc.md](../builderz-labs-mission-control-rfc.md).
 
 This is not a published npm package. It is a self-contained reference that the Mission Control maintainers can copy or adapt into their codebase. It uses Node's built-in `node:crypto` for Ed25519 verification and the `canonicalize` npm package for RFC 8785 JCS.
 
@@ -26,7 +26,7 @@ Three composable pieces:
 - Attestation is within the freshness window (default 7 days)
 - Ed25519 signature verifies against the issuer's resolved DID Document key
 
-**2. `blendVerified(local, validExternals, maxExternalWeight)`** is a pure function that takes already-verified attestations and computes the blended Trust Capital. Three safety properties hold by construction:
+**2. `blendVerified(local, validExternals, maxExternalWeight)`** is a pure function that takes already-verified attestations and computes the blended trust score. Three safety properties hold by construction:
 - Local signals always count for at least `(1 - maxExternalWeight)` of the final score
 - Each issuer's influence is bounded by its registered `max_weight`
 - The aggregate of external weights cannot exceed `maxExternalWeight` (default 0.3)

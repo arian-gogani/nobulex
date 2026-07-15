@@ -1,4 +1,4 @@
-# Trust Capital Methodology (v0)
+# trust score Methodology (v0)
 
 Behavioral reputation scoring for AI agents, derived from cryptographically
 signed action receipts. Scores are independently reproducible by any verifier
@@ -6,8 +6,8 @@ with the issuer JWKS and the receipt corpus.
 
 ## Overview
 
-Trust Capital is a reputation score for AI agents derived from a track record of
-cryptographically signed action receipts. An agent earns Trust Capital through
+trust score is a reputation score for AI agents derived from a track record of
+cryptographically signed action receipts. An agent earns trust score through
 verified behavior over time and gates what it is allowed to do on its score.
 Autonomy earned, not granted.
 
@@ -71,7 +71,7 @@ Returns: score, input receipt count, confidence interval from data completeness.
 ## Out of scope for v0 (v1 roadmap)
 
 Cross-issuer aggregation, adversarial injection resistance beyond signature
-verification, Trust Capital transfer at delegation, interpretability audits.
+verification, trust score transfer at delegation, interpretability audits.
 
 ## References
 

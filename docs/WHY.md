@@ -29,7 +29,7 @@ receipt = agent.act("transfer_funds", scope="100 USDC")
 assert receipt.verify()  # True
 ```
 
-## Receipts accumulate into Trust Capital
+## Receipts accumulate into trust score
 
 Every verified receipt builds the agent's reputation. Over time, agents earn autonomy:
 

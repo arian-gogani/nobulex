@@ -80,7 +80,7 @@ Most enterprise teams deploying agents in regulated industries are not yet build
 
 ---
 
-## Trust Capital
+## trust score
 
 The receipt layer is not the end of the story. It is the beginning.
 
@@ -88,11 +88,11 @@ A receipt chain is evidence. Evidence, over time, becomes reputation.
 
 An agent with 90 days of verified, policy-compliant receipts has demonstrated something that an agent without receipts cannot: a track record. Not a claim. Not a promise from the operator. A verifiable history of behavior that any counterparty can inspect.
 
-This is what we call Trust Capital.
+This is what we call trust score.
 
 Every person and business has a credit score. AI agents, for the first time, can have one too. Not assigned by an operator. Earned through a chain of cryptographic evidence that travels with the agent across deployments, across operators, across platforms.
 
-An agent with high Trust Capital earns more autonomy. Tighter caps relax. Larger transactions clear. Fewer approvals required. Not because someone vouched for it but because it has proven itself, verifiably, over time.
+An agent with high trust score earns more autonomy. Tighter caps relax. Larger transactions clear. Fewer approvals required. Not because someone vouched for it but because it has proven itself, verifiably, over time.
 
 This is how trust should work in agentic systems. Not extended optimistically on day one. Accumulated through demonstrated behavior, recorded in a format no one can fake.
 

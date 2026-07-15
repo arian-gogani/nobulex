@@ -85,7 +85,7 @@ export function buildSignaturePreimage(att: TrustAttestationV1): string {
 }
 
 /**
- * Full verification of a Trust Capital attestation.
+ * Full verification of a trust score attestation.
  *
  * Returns { ok: true, attestation } only if all checks pass:
  *   - well-formed structure with required fields

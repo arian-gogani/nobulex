@@ -40,7 +40,7 @@ All verifiable:
 - AgentAudit AI (integration partner): five-point partnership active. Signed specimen receipt verifies end-to-end in 10 lines of Python.
 - vaara v0.50: independent third-party adoption. Henri Sirkkavaara shipped EU AI Act Article 12 audit trails citing the nobulex signed-receipt design, no coordination.
 - OWASP CheatSheetSeries PR #2210: merged into master by Jim Manico on June 2, 2026. Sections 8-11 credited to @arian-gogani.
-- Dify Marketplace: PR #2500 open (60,000+ star platform). Community Operations confirmed architecture is sound and Trust Capital is genuinely differentiated.
+- Dify Marketplace: PR #2500 open (60,000+ star platform). Community Operations confirmed architecture is sound and trust score is genuinely differentiated.
 - Microsoft AI Agents for Beginners: PR #571 open, adding nobulex to Lesson 18 as the only Python production receipt library.
 
 ## Competitors

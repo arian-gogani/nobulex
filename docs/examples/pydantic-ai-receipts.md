@@ -80,7 +80,7 @@ After a run, inspect `receipts.receipts` for the signed chain and
 
 ## Standards
 
-The `action_ref` construction is normative implementation guidance in the
+The bilateral receipt pattern is normative implementation guidance in the
 [OWASP Agentic Skills Top 10 (AST09)](https://github.com/OWASP/www-project-agentic-skills-top-10/blob/main/ast09.md).
 The canonicalization is RFC 8785 (JSON Canonicalization Scheme), verified
 byte-identical against the Python `rfc8785` reference implementation.

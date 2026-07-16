@@ -30,7 +30,7 @@ the score, we hold the record.
 
 The action_ref reference implementation of the bilateral receipt pattern that is normative guidance in OWASP
 Agentic Skills Top 10 AST09 (3 PRs merged by project lead Ken Huang).
-Cited as an implementation cited alongside other independent issuers
+Referenced in an unmerged community PR (x402-foundation/x402 #2666); not a spec citation
 (
 integrations shipped. ~13,700 signed receipts/sec (Ed25519).
 
@@ -75,12 +75,12 @@ Nobulex milestones (all verifiable):
 - Built and shipped a working cryptographic SDK from scratch, solo, at 16.
   pip install nobulex is live on PyPI with real benchmarks:
   ~13,683 signed receipts/sec at p50, ~73 microseconds end-to-end.
-- Got the action_ref formula merged as normative implementation guidance in
+- Got the bilateral receipt pattern merged as normative guidance in
   OWASP Agentic Skills Top 10 AST09, reviewed and merged by project lead
   Ken Huang. Three PRs merged total (#35, #38, #46).
 - Got four sections merged into the OWASP CheatSheetSeries on AML compliance
   for AI agent payments, approved by Jim Manico, credited to me.
-- Cited as an implementation cited alongside other independent issuers
+- Referenced in an unmerged community PR (x402-foundation/x402 #2666); not a spec citation
   (
 - Filed IETF conformance implementation (draft-farley-acta-signed-receipts,
   4/4 vectors pass). If merged: OWASP + x402 + IETF triple standards.

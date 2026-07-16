@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://nobulex.dev/sitemap.xml
+Sitemap: https://nobulex.com/sitemap.xml

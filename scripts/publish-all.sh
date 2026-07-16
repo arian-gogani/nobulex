@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Nobulex Covenant Protocol — Publish All Packages
+# Nobulex Covenant Protocol, Publish All Packages
 #
 # Builds and publishes all 9 core packages to npm in dependency order.
 #
@@ -35,7 +35,7 @@ PACKAGES=(
 )
 
 echo "═══════════════════════════════════════════════════════════"
-echo "  Nobulex — Publish All Packages"
+echo "  Nobulex, Publish All Packages"
 if $DRY_RUN; then
   echo "  Mode: DRY RUN (pass --publish to actually publish)"
 else
@@ -61,7 +61,7 @@ for pkg in "${PACKAGES[@]}"; do
   PKG_NAME="@nobulex/$pkg"
 
   if [[ ! -d "$PKG_DIR" ]]; then
-    echo "  ✗ $PKG_NAME — directory not found, skipping"
+    echo "  ✗ $PKG_NAME, directory not found, skipping"
     FAILED+=("$PKG_NAME")
     continue
   fi

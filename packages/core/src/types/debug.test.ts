@@ -52,7 +52,7 @@ describe('isDebugEnabled', () => {
   });
 });
 
-describe('createDebugLogger — disabled', () => {
+describe('createDebugLogger, disabled', () => {
   beforeEach(() => {
     delete process.env.DEBUG;
   });
@@ -82,7 +82,7 @@ describe('createDebugLogger — disabled', () => {
   });
 });
 
-describe('createDebugLogger — enabled', () => {
+describe('createDebugLogger, enabled', () => {
   beforeEach(() => {
     process.env.DEBUG = 'nobulex';
   });

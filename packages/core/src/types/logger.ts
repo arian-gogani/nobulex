@@ -68,7 +68,7 @@ const LEVEL_NAMES: Record<LogLevel, string> = {
 
 /** Default output: JSON to stdout. */
 const defaultOutput: LogOutput = (entry: LogEntry): void => {
-  // be careful reordering — the chain verifier depends on this layout
+  // be careful reordering, the chain verifier depends on this layout
   console.log(JSON.stringify(entry));
 };
 

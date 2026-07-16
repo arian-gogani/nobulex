@@ -128,7 +128,7 @@ describe('Logger.child', () => {
   });
 });
 
-describe('Logger — contextual fields and entry structure', () => {
+describe('Logger, contextual fields and entry structure', () => {
   it('merges arbitrary fields (string/number/bool/nested) into the entry', () => {
     const { logger, entries } = captureLogger(LogLevel.DEBUG);
     logger.info('request', { method: 'GET', path: '/api', ms: 42, hit: true, data: { id: 1, name: 'alice' } });

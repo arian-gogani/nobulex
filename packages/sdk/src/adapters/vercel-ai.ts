@@ -185,7 +185,7 @@ export function createToolGuard(
 ): (tool: ToolLike, ...args: unknown[]) => Promise<unknown> {
   const { client, covenant, actionFromTool, resourceFromTool, onDenied } = options;
 
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   return async (tool: ToolLike, ...args: unknown[]): Promise<unknown> => {
     const action = actionFromTool
       ? actionFromTool(tool, args)

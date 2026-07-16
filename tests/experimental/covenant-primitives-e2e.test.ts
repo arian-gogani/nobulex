@@ -42,7 +42,7 @@ import { CovenantAgent } from '@nobulex/sdk';
 import { sha256String, canonicalizeJson, timestamp } from '@nobulex/crypto';
 
 // ─────────────────────────────────────────────────────────────────────────────
-// Scenario 1: Full agent lifecycle — DID → Covenant → Enforce → Verify → Slash
+// Scenario 1: Full agent lifecycle, DID → Covenant → Enforce → Verify → Slash
 // ─────────────────────────────────────────────────────────────────────────────
 
 describe('E2E Scenario 1: Full agent lifecycle', () => {
@@ -416,7 +416,7 @@ describe('E2E Scenario 5: Staking + violation detection + slashing', () => {
     expect(slashAmount).toBe(7500n);
     expect(sim.getStake(agent.did.did, cov.id)!.amount).toBe(42500n);
 
-    // 7. Second violation — escalated
+    // 7. Second violation, escalated
     const { slashAmount: slash2 } = sim.submitViolation(
       agent.did.did,
       cov.id,

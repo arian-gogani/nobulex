@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nobulex Arena — Break the AI. Win $7,400.</title>
+<title>Nobulex Arena, Break the AI. Win $7,400.</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800;900&family=JetBrains+Mono:wght@400;500;700&family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -274,7 +274,7 @@ function resultsHTML(){
     <div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap">
       <button onclick="restart()" style="background:#fff;color:#0a0a0a;border:none;padding:10px 24px;border-radius:6px;font-size:13px;font-weight:700">Play again</button>
       <button onclick="copyShare()" id="copyBtn" style="background:none;color:#666;border:1px solid #222;padding:10px 24px;border-radius:6px;font-size:13px">Copy results</button>
-      <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`🎮 Nobulex Arena — Score: ${S.totalScore.toLocaleString()} | ${S.broken.length}/5 agents broken\n\n$7,400 bounty still unclaimed.\nnobulex.com/arena`)}" target="_blank" style="background:none;color:#666;border:1px solid #222;padding:10px 24px;border-radius:6px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center">Post on 𝕏</a>
+      <a href="https://twitter.com/intent/tweet?text=${encodeURIComponent(`🎮 Nobulex Arena, Score: ${S.totalScore.toLocaleString()} | ${S.broken.length}/5 agents broken\n\n$7,400 bounty still unclaimed.\nnobulex.com/arena`)}" target="_blank" style="background:none;color:#666;border:1px solid #222;padding:10px 24px;border-radius:6px;font-size:13px;text-decoration:none;display:inline-flex;align-items:center">Post on 𝕏</a>
       <button onclick="S.screen='leaderboard';render()" style="background:none;color:#666;border:1px solid #222;padding:10px 24px;border-radius:6px;font-size:13px">Leaderboard</button>
     </div>
   </div>
@@ -284,7 +284,7 @@ function resultsHTML(){
 <script>
 function leaderboardHTML(){
   const all=[...FAKE_LEADERBOARD];
-  if(S.totalScore>0)all.push({name:S.playerName||'you',score:S.totalScore,broken:S.broken.length,best:S.broken.length>0?LEVELS[Math.max(...S.broken.map(id=>id-1))].name:'—'});
+  if(S.totalScore>0)all.push({name:S.playerName||'you',score:S.totalScore,broken:S.broken.length,best:S.broken.length>0?LEVELS[Math.max(...S.broken.map(id=>id-1))].name:', '});
   all.sort((a,b)=>b.score-a.score);
   const rows=all.slice(0,15).map((p,i)=>{
     const isMe=p.name===S.playerName;
@@ -315,7 +315,7 @@ function leaderboardHTML(){
         <span style="font-family:var(--mono);font-size:8px;color:#333;letter-spacing:1px;text-align:right">BEST LVL</span>
       </div>
       ${rows}
-      <p style="text-align:center;margin-top:24px;font-size:11px;color:#333;font-family:var(--mono)">$7,400 bounty — 0 winners — ${2847+S.totalAttempts} total attempts</p>
+      <p style="text-align:center;margin-top:24px;font-size:11px;color:#333;font-family:var(--mono)">$7,400 bounty, 0 winners, ${2847+S.totalAttempts} total attempts</p>
     </div>
   </div>`;
 }
@@ -335,7 +335,7 @@ async function sendAttack(){
     const reply=data.content||data.error||'[no response]';
     S.msgs.push({role:'agent',text:reply});S.loading=false;
     if(data.broken){S.broken.push(LEVELS[S.level].id);S.screen='win';}
-  }catch(e){S.msgs.push({role:'agent',text:'[connection error — try again]'});S.loading=false;}
+  }catch(e){S.msgs.push({role:'agent',text:'[connection error, try again]'});S.loading=false;}
   render();scrollChat();
 }
 
@@ -352,7 +352,7 @@ function skipLevel(){
 }
 function restart(){S.screen='play';S.level=0;S.msgs=[];S.attempts=0;S.broken=[];S.scores={};S.totalScore=0;S.levelStart=Date.now();render()}
 function copyShare(){
-  const t=`🎮 Nobulex Arena — Score: ${S.totalScore.toLocaleString()} | ${S.broken.length}/5 agents broken\n\n$7,400 bounty still unclaimed.\nnobulex.com/arena`;
+  const t=`🎮 Nobulex Arena, Score: ${S.totalScore.toLocaleString()} | ${S.broken.length}/5 agents broken\n\n$7,400 bounty still unclaimed.\nnobulex.com/arena`;
   navigator.clipboard?.writeText(t);
   const b=document.getElementById('copyBtn');if(b){b.textContent='Copied!';setTimeout(()=>b.textContent='Copy results',2000)}
 }

@@ -3,15 +3,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nobulex — The Proof-of-Behavior Protocol for AI Agents</title>
+  <title>Nobulex, The Proof-of-Behavior Protocol for AI Agents</title>
   <meta name="description" content="The proof-of-behavior protocol for autonomous AI agents. Define rules. Enforce at runtime. Prove compliance with cryptography.">
-  <meta property="og:title" content="Nobulex — Proof-of-Behavior for AI Agents">
+  <meta property="og:title" content="Nobulex, Proof-of-Behavior for AI Agents">
   <meta property="og:description" content="The proof-of-behavior protocol for autonomous AI agents. Define rules. Enforce at runtime. Prove compliance with cryptography.">
   <meta property="og:type" content="website">
   <meta property="og:image" content="https://nobulex.com/images/nobulex-logo.png">
   <meta property="og:url" content="https://nobulex.com/">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Nobulex — Proof-of-Behavior for AI Agents">
+  <meta name="twitter:title" content="Nobulex, Proof-of-Behavior for AI Agents">
   <meta name="twitter:description" content="Define rules. Enforce at runtime. Prove compliance with cryptography.">
   <meta name="theme-color" content="#000000">
   <link rel="icon" type="image/png" href="/icon.png">
@@ -65,7 +65,7 @@
         <h1 class="hero__title">
           <span class="hero__line" data-split="words">The paper trail for AI agents.</span>
         </h1>
-        <p class="hero__tagline" data-reveal>Your humans have paper trails. Your AI agents don't. Wrap any LangChain agent in three lines — every action becomes signed, hash-chained, independently verifiable evidence.</p>
+        <p class="hero__tagline" data-reveal>Your humans have paper trails. Your AI agents don't. Wrap any LangChain agent in three lines, every action becomes signed, hash-chained, independently verifiable evidence.</p>
         <div class="hero__cta hero__cta-buttons" data-reveal>
           <a href="quickstart.html" class="btn btn--primary">See the 3 lines</a>
           <a href="https://github.com/arian-gogani/nobulex" class="btn btn--ghost" rel="noopener noreferrer">View on GitHub</a>
@@ -109,7 +109,7 @@
           <article class="primitive-card">
             <span class="primitive-card__label">Covenant</span>
             <h3 class="primitive-card__title">Behavioral spec</h3>
-            <p>What will it do — and won’t do? Signed, immutable constraints. Only narrowable, never loosened.</p>
+            <p>What will it do, and won’t do? Signed, immutable constraints. Only narrowable, never loosened.</p>
           </article>
           <article class="primitive-card">
             <span class="primitive-card__label">Attestation</span>
@@ -124,7 +124,7 @@
           <article class="primitive-card">
             <span class="primitive-card__label">Verification</span>
             <h3 class="primitive-card__title">Deterministic</h3>
-            <p>Same inputs, same result. Independent, deterministic verification—no trust in the verifier.</p>
+            <p>Same inputs, same result. Independent, deterministic verification, no trust in the verifier.</p>
           </article>
           <article class="primitive-card">
             <span class="primitive-card__label">Enforcement</span>
@@ -194,7 +194,7 @@
             <div class="demo__terminal-body">
               <div class="demo__line demo__line--prompt demo__line--visible"><span class="demo__prompt">$</span> mw.execute({ action: 'transfer', params: { amount: 600 } }, ...)</div>
               <div class="demo__line demo__line--step" data-step="1"><span class="demo__label">Agent:</span> Attempting transfer of $600</div>
-              <div class="demo__line demo__line--step demo__line--blocked" data-step="2"><span class="demo__label">Middleware:</span> <span class="demo__blocked">BLOCKED</span> — covenant: amount > 500</div>
+              <div class="demo__line demo__line--step demo__line--blocked" data-step="2"><span class="demo__label">Middleware:</span> <span class="demo__blocked">BLOCKED</span>, covenant: amount > 500</div>
               <div class="demo__line demo__line--step" data-step="3"><span class="demo__label">Action log:</span> { action: "transfer", amount: 600, result: "blocked", hash: "0x7a3f..." } ✓ verifiable</div>
             </div>
           </div>
@@ -218,7 +218,7 @@
             <span class="guarantee__tier-label">Tier 1</span>
             <h3>Impossible violation</h3>
             <p>Middleware runs in a TEE. Policy bypass is prevented inside the enforcement boundary (TEE + attestation assumptions).</p>
-            <p class="guarantee__threat-model"><strong>Assumptions &amp; threat model:</strong> We assume the TEE is uncompromised and correctly attests its identity. The enclave intercepts all agent actions before execution; forbidden actions never reach the host. If the enclave is compromised, an attacker could bypass enforcement — attestation lets you verify which software is running. See the <a href="https://github.com/arian-gogani/nobulex/blob/main/PROTOCOL.md" rel="noopener noreferrer">Spec</a> for details.</p>
+            <p class="guarantee__threat-model"><strong>Assumptions &amp; threat model:</strong> We assume the TEE is uncompromised and correctly attests its identity. The enclave intercepts all agent actions before execution; forbidden actions never reach the host. If the enclave is compromised, an attacker could bypass enforcement, attestation lets you verify which software is running. See the <a href="https://github.com/arian-gogani/nobulex/blob/main/PROTOCOL.md" rel="noopener noreferrer">Spec</a> for details.</p>
           </article>
           <article class="guarantee__tier guarantee__tier--2">
             <span class="guarantee__tier-label">Tier 2</span>
@@ -303,7 +303,7 @@
         <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;text-align:center" data-reveal>
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem">
             <p style="font-weight:700;margin-bottom:0.25rem">AWS AgentCore</p>
-            <p style="color:#888;font-size:0.8rem">MCP-native — auto-discoverable in Agent Registry</p>
+            <p style="color:#888;font-size:0.8rem">MCP-native, auto-discoverable in Agent Registry</p>
           </div>
           <div style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:1.5rem">
             <p style="font-weight:700;margin-bottom:0.25rem">Microsoft AGT</p>

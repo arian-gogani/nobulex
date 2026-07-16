@@ -1,5 +1,5 @@
 /*
- * `nobulex inspect <log-file>` — human-readable timeline.
+ * `nobulex inspect <log-file>`, human-readable timeline.
  *
  * Reuses the replay() primitive from @nobulex/core, then renders each event
  * one-per-line. --json emits the ReplayTimeline as-is for programmatic use.

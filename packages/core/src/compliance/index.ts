@@ -1,5 +1,5 @@
 /*
- * Compliance reporting — map an action log onto a regulatory framework's
+ * Compliance reporting, map an action log onto a regulatory framework's
  * requirements. Output is structured JSON an auditor can walk against the
  * framework text (EU AI Act Art. 12, Colorado AI Act, SOC 2, ISO/IEC 42001).
  *
@@ -107,7 +107,7 @@ function indexesMatching(
   return indexes;
 }
 
-// EU AI Act, Article 12 — Record-keeping for high-risk AI systems.
+// EU AI Act, Article 12, Record-keeping for high-risk AI systems.
 function euAiActArticle12(log: ActionLog, integrityValid: boolean): ComplianceRequirement[] {
   const hasAnyLogs = log.entries.length > 0;
   const blocks = indexesMatching(log, (e) => e.outcome === 'blocked' || e.outcome === 'would_block' || e.outcome === 'halted');
@@ -120,7 +120,7 @@ function euAiActArticle12(log: ActionLog, integrityValid: boolean): ComplianceRe
       met: hasAnyLogs,
       rationale: hasAnyLogs
         ? `${log.entries.length} events are recorded in the action log`
-        : 'Action log is empty — no events recorded',
+        : 'Action log is empty, no events recorded',
       evidence: log.entries.map((e) => e.index),
     },
     {
@@ -128,7 +128,7 @@ function euAiActArticle12(log: ActionLog, integrityValid: boolean): ComplianceRe
       title: 'Logs ensure traceability of the system\'s functioning',
       met: integrityValid && hasAnyLogs,
       rationale: integrityValid
-        ? 'Action log hash chain verifies — entries are tamper-evident'
+        ? 'Action log hash chain verifies, entries are tamper-evident'
         : 'Action log integrity check failed',
       evidence: timestamped,
     },
@@ -139,14 +139,14 @@ function euAiActArticle12(log: ActionLog, integrityValid: boolean): ComplianceRe
       rationale: blocks.length > 0
         ? `${blocks.length} enforcement events recorded (blocked / would_block / halted)`
         : hasAnyLogs
-          ? 'No blocked actions — either no risky actions attempted or enforcement not exercised'
+          ? 'No blocked actions, either no risky actions attempted or enforcement not exercised'
           : 'No events to assess',
       evidence: blocks,
     },
   ];
 }
 
-// Colorado AI Act (SB 24-205) — developer/deployer recordkeeping duties.
+// Colorado AI Act (SB 24-205), developer/deployer recordkeeping duties.
 function coloradoAiAct(log: ActionLog, integrityValid: boolean): ComplianceRequirement[] {
   const hasLogs = log.entries.length > 0;
   const firstAction = log.entries[0];
@@ -174,7 +174,7 @@ function coloradoAiAct(log: ActionLog, integrityValid: boolean): ComplianceRequi
   ];
 }
 
-// SOC 2 — selected Common Criteria relevant to agent action logging.
+// SOC 2, selected Common Criteria relevant to agent action logging.
 function soc2(log: ActionLog, integrityValid: boolean): ComplianceRequirement[] {
   const hasLogs = log.entries.length > 0;
   const failures = indexesMatching(log, (e) => e.outcome === 'failure' || e.outcome === 'blocked');
@@ -211,7 +211,7 @@ function soc2(log: ActionLog, integrityValid: boolean): ComplianceRequirement[] 
   ];
 }
 
-// ISO/IEC 42001 — AI Management System.
+// ISO/IEC 42001, AI Management System.
 function iso42001(log: ActionLog, integrityValid: boolean): ComplianceRequirement[] {
   const hasLogs = log.entries.length > 0;
   const blocks = indexesMatching(log, (e) => e.outcome === 'blocked' || e.outcome === 'would_block');

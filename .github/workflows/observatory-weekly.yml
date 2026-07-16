@@ -2,11 +2,11 @@ name: Observatory · Weekly Publication
 
 # The weekly publication cadence for the Agent Reliability Index.
 #
-# Runs every Monday at 13:00 UTC (08:00 Eastern) — the time the weekly issue
+# Runs every Monday at 13:00 UTC (08:00 Eastern), the time the weekly issue
 # is published. The workflow:
 #   1. Runs the methodology smoke test (29 cases, no dependencies)
 #   2. Regenerates the synthetic preview issue (proves the pipeline composes)
-#   3. Fails loudly if either step fails — so a broken pipeline cannot
+#   3. Fails loudly if either step fails, so a broken pipeline cannot
 #      silently miss a Monday publication
 #
 # This workflow does NOT yet:

@@ -1,5 +1,5 @@
 /*
- * MCP server — exposes Nobulex tools to AI agents via JSON-RPC over stdio.
+ * MCP server, exposes Nobulex tools to AI agents via JSON-RPC over stdio.
  * Works with Claude Desktop, Cursor, VS Code, etc.
  */
 
@@ -347,7 +347,7 @@ export class NobulexServer {
       }
 
       case 'notifications/initialized':
-        // Client acknowledges initialization — no response needed for notifications,
+        // Client acknowledges initialization, no response needed for notifications,
         // but we return success for non-notification calls.
         return this._successResponse(id, {});
 

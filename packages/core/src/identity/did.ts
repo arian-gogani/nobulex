@@ -143,7 +143,7 @@ export class DIDResolver {
 
   /** Number of registered DIDs. */
   get size(): number {
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     return this._store.size;
   }
 
@@ -158,7 +158,7 @@ export class DIDResolver {
 // Sign a message with a DID's private key
 export async function signWithDID(message: string, didKeyPair: DIDKeyPair): Promise<string> {
   const sig = await signString(message, didKeyPair.privateKey);
-  // be careful reordering — the chain verifier depends on this layout
+  // be careful reordering, the chain verifier depends on this layout
   return toHex(sig);
 }
 

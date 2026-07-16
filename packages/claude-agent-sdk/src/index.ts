@@ -82,11 +82,11 @@ export type EnforcementMode = 'enforce' | 'observe';
 export interface NobulexHooksConfig {
   /** DID of the agent whose actions this log records. */
   readonly agentDid: string;
-  /** Parsed covenant specification — use `parseSource` from `@nobulex/core`. */
+  /** Parsed covenant specification, use `parseSource` from `@nobulex/core`. */
   readonly spec: CovenantSpec;
   /**
    * Enforcement mode. `'enforce'` (default) blocks covenant violations;
-   * `'observe'` logs them as `would_block` but lets them run — useful for
+   * `'observe'` logs them as `would_block` but lets them run, useful for
    * validating a new covenant in production before flipping to enforce.
    */
   readonly mode?: EnforcementMode;
@@ -106,7 +106,7 @@ export interface NobulexHooks {
   readonly SessionEnd: (event: SessionEvent) => void;
 
   // Nobulex control surface.
-  /** Emergency halt — block every subsequent tool call. */
+  /** Emergency halt, block every subsequent tool call. */
   readonly halt: () => void;
   /** Restore normal enforcement after a {@link halt}. */
   readonly resume: () => void;
@@ -155,7 +155,7 @@ export function createNobulexHooks(config: NobulexHooksConfig): NobulexHooks {
         outcome: 'halted',
         timestamp,
       });
-      const reason = 'Emergency halt active — all actions suspended';
+      const reason = 'Emergency halt active, all actions suspended';
       config.onBlocked?.(action, reason);
       config.onAction?.(entry);
       return { blocked: `Nobulex: ${reason}` };
@@ -178,7 +178,7 @@ export function createNobulexHooks(config: NobulexHooksConfig): NobulexHooks {
       return { blocked: `Nobulex: ${reason}` };
     }
 
-    // Allowed (or observe-mode "would_block") — defer logging until we know
+    // Allowed (or observe-mode "would_block"), defer logging until we know
     // the outcome so the final entry binds to the actual post-execution result.
     pending = {
       action, resource, params,
@@ -217,7 +217,7 @@ export function createNobulexHooks(config: NobulexHooksConfig): NobulexHooks {
 
   function SessionEnd(_event: SessionEvent): void {
     // Flush any dangling pending call (tool started but SDK never fired
-    // PostToolUse — e.g. session aborted). Record it as a failure so the
+    // PostToolUse, e.g. session aborted). Record it as a failure so the
     // chain stays complete.
     if (pending) {
       const current = pending;

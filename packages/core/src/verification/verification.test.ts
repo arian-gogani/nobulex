@@ -78,7 +78,7 @@ describe('@nobulex/verification', () => {
         { action: 'read', params: {} },
       ]);
       const result = verify(SPEC, log);
-      // 'blocked' entries are skipped — they were already enforced
+      // 'blocked' entries are skipped, they were already enforced
       expect(result.compliant).toBe(true);
     });
 

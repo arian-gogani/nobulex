@@ -1,5 +1,5 @@
 /*
- * Minimal hand-written arg parser — no dep on `util.parseArgs` so this keeps
+ * Minimal hand-written arg parser, no dep on `util.parseArgs` so this keeps
  * working on Node 18 without polyfills. Recognises:
  *   - bare positionals
  *   - `--flag` / `--flag=value` / `--flag value`

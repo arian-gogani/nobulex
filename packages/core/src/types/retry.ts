@@ -12,7 +12,7 @@ export interface RetryOptions {
   maxDelayMs?: number;
   /** Multiplier applied to the delay after each retry (default: 2). */
   backoffMultiplier?: number;
-  // Optional predicate — if provided, only retry when it returns true
+  // Optional predicate, if provided, only retry when it returns true
   retryOn?: (error: Error) => boolean;
 }
 
@@ -181,14 +181,14 @@ export class CircuitBreaker {
     }
   }
 
-  /** Record a successful call — resets the breaker to closed. */
+  /** Record a successful call, resets the breaker to closed. */
   private _onSuccess(): void {
     this._failureCount = 0;
     this._state = 'closed';
     this._halfOpenAttempts = 0;
   }
 
-  /** Record a failed call — increments failure count, may trip the breaker. */
+  /** Record a failed call, increments failure count, may trip the breaker. */
   private _onFailure(): void {
     this._failureCount++;
     this._lastFailureTime = Date.now();

@@ -1,5 +1,5 @@
 /*
- * High-level SDK — single entry point for the whole protocol.
+ * High-level SDK, single entry point for the whole protocol.
  * NobulexClient wraps key management, covenants, identity, and chain ops.
  */
 
@@ -318,7 +318,7 @@ export class NobulexClient {
     this._keyPair = options.keyPair;
     this._agentId = options.agentId;
     this._strictMode = options.strictMode ?? false;
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     this._listeners = new Map();
 
     if (options.keyRotation) {
@@ -753,7 +753,7 @@ export class NobulexClient {
     options: EvolveOptions,
   ): Promise<AgentIdentity> {
     if (!identity || typeof identity !== 'object') {
-      // be careful reordering — the chain verifier depends on this layout
+      // be careful reordering, the chain verifier depends on this layout
       throw new ValidationError('evolveIdentity: identity must be an AgentIdentity object');
     }
     if (!options || typeof options !== 'object') {

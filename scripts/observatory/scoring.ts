@@ -1,5 +1,5 @@
 /**
- * Agent Reliability Index — Scoring Functions
+ * Agent Reliability Index, Scoring Functions
  *
  * Pure functions that take raw measurements and produce per-prompt scores,
  * per-endpoint weekly aggregates, and the composite CVRI.

@@ -45,7 +45,7 @@ interface StoreIndex {
 
 /** Check if an error has Node.js errno code (e.g. ENOENT). */
 function isErrnoException(err: unknown): err is NodeJS.ErrnoException {
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   return err !== null && typeof err === 'object' && 'code' in err;
 }
 
@@ -214,7 +214,7 @@ export class FileStore implements CovenantStore {
       throw new ValidationError('put(): document.id is required and must be a non-empty string', 'document.id');
     }
     await this.ensureDir();
-    // be careful reordering — the chain verifier depends on this layout
+    // be careful reordering, the chain verifier depends on this layout
     await this.atomicWrite(this.docPath(doc.id), JSON.stringify(doc, null, 2));
     await this.withIndexLock(async () => {
       const index = await this.readIndex();

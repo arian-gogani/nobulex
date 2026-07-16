@@ -1,14 +1,14 @@
 #!/usr/bin/env npx tsx
 /**
- * Nobulex Covenant Protocol — Live Demo
+ * Nobulex Covenant Protocol, Live Demo
  *
  * Demonstrates the full pipeline:
  *   1. Create two agents with DIDs
  *   2. Agent A authors a covenant (forbid transfer > $500, require compliance)
  *   3. Agent A signs and publishes attestation
  *   4. Middleware wraps Agent A's actions
- *   5. Agent A attempts a $300 transfer — allowed, logged
- *   6. Agent A attempts a $600 transfer — blocked by middleware
+ *   5. Agent A attempts a $300 transfer, allowed, logged
+ *   6. Agent A attempts a $600 transfer, blocked by middleware
  *   7. Verification confirms compliance
  *   8. Results printed to console
  *
@@ -45,7 +45,7 @@ function result(label: string, value: unknown): void {
 // ─── Main Demo ──────────────────────────────────────────────────────────────
 
 async function main(): Promise<void> {
-  header('Nobulex Covenant Protocol — Live Demo');
+  header('Nobulex Covenant Protocol, Live Demo');
 
   // ── Step 1: Create two agents with DIDs ─────────────────────────────────
 
@@ -118,7 +118,7 @@ async function main(): Promise<void> {
   result('Middleware created', true);
   result('Agent DID', middleware.spec.name);
 
-  // ── Step 5: Agent A attempts a $300 transfer — ALLOWED ─────────────────
+  // ── Step 5: Agent A attempts a $300 transfer, ALLOWED ─────────────────
 
   step(5, 'Agent A attempts a $300 transfer');
 
@@ -133,7 +133,7 @@ async function main(): Promise<void> {
   result('Logged at index', transfer300.entry.index);
   console.log('      ✓ $300 transfer ALLOWED and logged');
 
-  // ── Step 6: Agent A attempts a $600 transfer — BLOCKED ─────────────────
+  // ── Step 6: Agent A attempts a $600 transfer, BLOCKED ─────────────────
 
   step(6, 'Agent A attempts a $600 transfer');
 
@@ -194,7 +194,7 @@ async function main(): Promise<void> {
   } else {
     console.log(`      ✗ Agent A has ${verification.violations.length} violations`);
     for (const v of verification.violations) {
-      console.log(`        - Entry ${v.entryIndex}: ${v.action} — ${v.reason}`);
+      console.log(`        - Entry ${v.entryIndex}: ${v.action}, ${v.reason}`);
     }
   }
 
@@ -204,7 +204,7 @@ async function main(): Promise<void> {
 
   console.log();
   console.log('      ┌──────────────────────────────────────────────────┐');
-  console.log('      │  Nobulex Covenant Protocol — Demo Results        │');
+  console.log('      │  Nobulex Covenant Protocol, Demo Results        │');
   console.log('      ├──────────────────────────────────────────────────┤');
   console.log(`      │  Agent A DID:     ${agentA.did.slice(0, 30)}...  │`);
   console.log(`      │  Agent B DID:     ${agentB.did.slice(0, 30)}...  │`);

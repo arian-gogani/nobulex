@@ -56,7 +56,7 @@ export type {
   MonitorConfig,
   RateLimitState,
 } from './types.js';
-// ActionHandler not re-exported — middleware provides it
+// ActionHandler not re-exported, middleware provides it
 
 import type {
   ExecutionOutcome,
@@ -125,7 +125,7 @@ export interface AuditMerkleProof {
 type MerkleProof = AuditMerkleProof;
 
 /**
- * Verify a Merkle proof — re-exported from action-log to avoid duplication.
+ * Verify a Merkle proof, re-exported from action-log to avoid duplication.
  */
 // verifyMerkleProof is provided by the action-log module
 
@@ -641,7 +641,7 @@ export class CapabilityGate {
     runtimeType: string = 'node',
   ): Promise<CapabilityGate> {
     const doc = parse(constraints);
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     return new CapabilityGate(covenantId, doc, runtimeKeyPair, runtimeType);
   }
 

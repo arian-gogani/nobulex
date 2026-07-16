@@ -1,12 +1,12 @@
 /**
  * Shared protocol constants.
  *
- * Imported wherever a literal would otherwise be duplicated across packages —
+ * Imported wherever a literal would otherwise be duplicated across packages, 
  * keeps canonical spellings (hash algorithm names, DID relationships, VC proof
  * types, content types) in one place so a rename only has to happen once.
  *
  * Only add entries here for literals that appear in 3+ distinct files and
- * encode a protocol/format identifier — not log messages or error strings.
+ * encode a protocol/format identifier, not log messages or error strings.
  */
 
 export const HashAlg = {

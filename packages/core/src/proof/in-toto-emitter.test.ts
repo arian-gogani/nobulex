@@ -1,5 +1,5 @@
 /**
- * @nobulex/in-toto-emitter — Tests
+ * @nobulex/in-toto-emitter, Tests
  *
  * Validates the schema alignment commitment made on
  * in-toto/attestation#549 with @aeoess:

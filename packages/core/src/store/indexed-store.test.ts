@@ -31,7 +31,7 @@ function makeDoc(overrides: Partial<CovenantDocument> & { id: string }): Covenan
 }
 
 // ---------------------------------------------------------------------------
-// IndexedStore — basic MemoryStore behaviors work through IndexedStore
+// IndexedStore, basic MemoryStore behaviors work through IndexedStore
 // ---------------------------------------------------------------------------
 describe('IndexedStore - basic CRUD (like MemoryStore)', () => {
   let backing: MemoryStore;
@@ -126,7 +126,7 @@ describe('IndexedStore - basic CRUD (like MemoryStore)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IndexedStore — filtered queries use indexes
+// IndexedStore, filtered queries use indexes
 // ---------------------------------------------------------------------------
 describe('IndexedStore - filtered queries use indexes', () => {
   let backing: MemoryStore;
@@ -229,7 +229,7 @@ describe('IndexedStore - filtered queries use indexes', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IndexedStore — hasChain filter (not indexed, falls back to scan)
+// IndexedStore, hasChain filter (not indexed, falls back to scan)
 // ---------------------------------------------------------------------------
 describe('IndexedStore - hasChain filter (not indexed)', () => {
   let store: IndexedStore;
@@ -271,7 +271,7 @@ describe('IndexedStore - hasChain filter (not indexed)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IndexedStore — index consistency after put/delete
+// IndexedStore, index consistency after put/delete
 // ---------------------------------------------------------------------------
 describe('IndexedStore - index consistency', () => {
   let backing: MemoryStore;
@@ -403,7 +403,7 @@ describe('IndexedStore - index consistency', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IndexedStore — rebuildIndexes
+// IndexedStore, rebuildIndexes
 // ---------------------------------------------------------------------------
 describe('IndexedStore - rebuildIndexes', () => {
   it('rebuildIndexes re-creates indexes from backing store', async () => {
@@ -460,7 +460,7 @@ describe('IndexedStore - rebuildIndexes', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IndexedStore — events delegate to backing store
+// IndexedStore, events delegate to backing store
 // ---------------------------------------------------------------------------
 describe('IndexedStore - events', () => {
   it('onEvent/offEvent delegate to backing store', async () => {
@@ -497,7 +497,7 @@ describe('IndexedStore - events', () => {
 });
 
 // ---------------------------------------------------------------------------
-// IndexedStore — custom index fields
+// IndexedStore, custom index fields
 // ---------------------------------------------------------------------------
 describe('IndexedStore - custom index fields', () => {
   it('only indexes specified fields', async () => {

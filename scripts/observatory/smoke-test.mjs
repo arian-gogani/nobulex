@@ -1,7 +1,7 @@
 /**
  * Smoke test for Agent Reliability Index scoring math.
  *
- * Runs with plain node — no test framework dependency. Verifies the core
+ * Runs with plain node, no test framework dependency. Verifies the core
  * statistical functions produce expected results on hand-computed inputs.
  *
  * Run with:  node scripts/observatory/smoke-test.mjs
@@ -101,7 +101,7 @@ const closeTo = (actual, expected, tolerance = 1e-5) => {
   );
 };
 
-console.log("\nAgent Reliability Index — scoring smoke tests\n");
+console.log("\nAgent Reliability Index, scoring smoke tests\n");
 
 console.log("Statistical helpers");
 test("mean of [1,2,3,4,5] = 3", () => closeTo(mean([1, 2, 3, 4, 5]), 3));

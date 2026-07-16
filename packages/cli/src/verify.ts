@@ -1,8 +1,8 @@
 /*
- * `nobulex verify <log-file>` — offline verification.
+ * `nobulex verify <log-file>`, offline verification.
  *
  * Runs the hash-chain integrity check against the log file on disk. No network
- * access, no keys needed. Exits 0 when the chain verifies, 1 when it doesn't —
+ * access, no keys needed. Exits 0 when the chain verifies, 1 when it doesn't, 
  * script-friendly so CI can gate merges on it.
  *
  * --json emits a machine-readable result; default is a short human summary.

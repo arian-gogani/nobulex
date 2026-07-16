@@ -161,7 +161,7 @@ describe('Parallel Store Operations', () => {
     expect(bResult!.id).toBe(docB.id);
   }, 15_000);
 
-  it('concurrent put and delete — final state is consistent', async () => {
+  it('concurrent put and delete, final state is consistent', async () => {
     const store = new MemoryStore();
     const issuerKp = await generateKeyPair();
     const beneficiaryKp = await generateKeyPair();
@@ -308,7 +308,7 @@ describe('Parallel Store Operations', () => {
     await store.put(doc);
 
     // Concurrently check has, put, delete, has
-    const [has1, , , has2] = await Promise.all([
+    const [has1,, has2] = await Promise.all([
       store.has(doc.id),
       store.put(doc),
       store.delete(doc.id),

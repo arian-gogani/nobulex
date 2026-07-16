@@ -1,5 +1,5 @@
 /**
- * @nobulex/evidence-core — Signed, hash-chained evidence items recording AI agent actions.
+ * @nobulex/evidence-core, Signed, hash-chained evidence items recording AI agent actions.
  *
  * An evidence item is a compact, signed record combining: timestamp, agent DID,
  * action type, tool name, input/output hashes, model version, delegation chain,

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Local dev server with API — run: node server.js */
+/* Local dev server with API, run: node server.js */
 const http = require('http');
 const fs = require('fs');
 const path = require('path');

@@ -68,7 +68,7 @@ import {
 import type { AuditMerkleProof } from '@nobulex/enforcement';
 
 /**
- * Local verifyMerkleProof helper — the function was moved out of enforcement
+ * Local verifyMerkleProof helper, the function was moved out of enforcement
  * during the monorepo consolidation. Re-implemented here for test use only.
  */
 function verifyMerkleProof(proof: AuditMerkleProof): boolean {

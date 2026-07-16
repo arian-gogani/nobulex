@@ -44,7 +44,7 @@ afterEach(async () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — instantiation
+// FileStore, instantiation
 // ---------------------------------------------------------------------------
 describe('FileStore - instantiation', () => {
   it('can be constructed with a directory path', () => {
@@ -77,7 +77,7 @@ describe('FileStore - instantiation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — put / get / has / delete
+// FileStore, put / get / has / delete
 // ---------------------------------------------------------------------------
 describe('FileStore - CRUD', () => {
   let store: FileStore;
@@ -175,7 +175,7 @@ describe('FileStore - CRUD', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — list
+// FileStore, list
 // ---------------------------------------------------------------------------
 describe('FileStore - list', () => {
   let store: FileStore;
@@ -299,7 +299,7 @@ describe('FileStore - list', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — count
+// FileStore, count
 // ---------------------------------------------------------------------------
 describe('FileStore - count', () => {
   let store: FileStore;
@@ -334,7 +334,7 @@ describe('FileStore - count', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — batch operations
+// FileStore, batch operations
 // ---------------------------------------------------------------------------
 describe('FileStore - batch operations', () => {
   let store: FileStore;
@@ -403,7 +403,7 @@ describe('FileStore - batch operations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — event system
+// FileStore, event system
 // ---------------------------------------------------------------------------
 describe('FileStore - events', () => {
   let store: FileStore;
@@ -510,7 +510,7 @@ describe('FileStore - events', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — persistence
+// FileStore, persistence
 // ---------------------------------------------------------------------------
 describe('FileStore - persistence', () => {
   it('data survives creating a new store instance', async () => {
@@ -587,7 +587,7 @@ describe('FileStore - persistence', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — error handling
+// FileStore, error handling
 // ---------------------------------------------------------------------------
 describe('FileStore - error handling', () => {
   it('get returns undefined when base directory does not exist', async () => {
@@ -651,7 +651,7 @@ describe('FileStore - error handling', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — concurrent operations
+// FileStore, concurrent operations
 // ---------------------------------------------------------------------------
 describe('FileStore - concurrent operations', () => {
   let store: FileStore;
@@ -709,7 +709,7 @@ describe('FileStore - concurrent operations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// FileStore — edge cases
+// FileStore, edge cases
 // ---------------------------------------------------------------------------
 describe('FileStore - edge cases', () => {
   let store: FileStore;

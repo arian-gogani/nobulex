@@ -63,7 +63,7 @@ describe('Cross-Agent Verification Handshake', () => {
       actionLog: victim.log,
     });
 
-    // Swap the DID document to the victim's — signature won't match
+    // Swap the DID document to the victim's, signature won't match
     const forged = { ...proof, didDocument: victim.identity.document };
 
     const result = await verifyCounterparty(forged);
@@ -128,11 +128,11 @@ describe('Cross-Agent Verification Handshake', () => {
     });
     expect(proof.audience).toBe('did:nobulex:agentB');
 
-    // Correct audience — trusted
+    // Correct audience, trusted
     const ok = await verifyCounterparty(proof, { expectedAudience: 'did:nobulex:agentB' });
     expect(ok.trusted).toBe(true);
 
-    // Wrong audience — rejected
+    // Wrong audience, rejected
     const bad = await verifyCounterparty(proof, { expectedAudience: 'did:nobulex:agentC' });
     expect(bad.trusted).toBe(false);
     expect(bad.reason).toContain('audience');
@@ -149,11 +149,11 @@ describe('Cross-Agent Verification Handshake', () => {
     });
     expect(proof.taskClass).toBe('data_read');
 
-    // Correct task class — trusted
+    // Correct task class, trusted
     const ok = await verifyCounterparty(proof, { requiredTaskClass: 'data_read' });
     expect(ok.trusted).toBe(true);
 
-    // Wrong task class — rejected
+    // Wrong task class, rejected
     const bad = await verifyCounterparty(proof, { requiredTaskClass: 'payment_execution' });
     expect(bad.trusted).toBe(false);
     expect(bad.reason).toContain('task class');
@@ -168,7 +168,7 @@ describe('Cross-Agent Verification Handshake', () => {
     const proof = await generateProof({ identity, covenant: spec, actionLog: log });
     expect(proof.audience).toBeUndefined();
 
-    // Require audience — rejected
+    // Require audience, rejected
     const result = await verifyCounterparty(proof, { expectedAudience: 'did:nobulex:agentB' });
     expect(result.trusted).toBe(false);
     expect(result.reason).toContain('no audience claim');

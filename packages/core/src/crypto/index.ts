@@ -46,7 +46,7 @@ export async function keyPairFromPrivateKey(privateKey: Uint8Array): Promise<Key
   };
 }
 
-// same thing but from hex — just decodes and delegates
+// same thing but from hex, just decodes and delegates
 export async function keyPairFromPrivateKeyHex(hex: string): Promise<KeyPair> {
   return keyPairFromPrivateKey(fromHex(hex));
 }
@@ -65,7 +65,7 @@ export async function signString(message: string, privateKey: PrivateKey): Promi
 }
 
 /**
- * Verify an Ed25519 signature. Safe with untrusted inputs —
+ * Verify an Ed25519 signature. Safe with untrusted inputs, 
  * never throws, returns false on any error (malformed key, bad sig, etc).
  */
 export async function verify(
@@ -91,9 +91,9 @@ export function sha256String(data: string): HashHex {
 }
 
 /**
- * Hash an object deterministically — sorts keys first (JCS/RFC 8785)
+ * Hash an object deterministically, sorts keys first (JCS/RFC 8785)
  * so { b: 2, a: 1 } and { a: 1, b: 2 } always produce the same hash.
- * Important for signatures — we need identical hashes across platforms.
+ * Important for signatures, we need identical hashes across platforms.
  */
 export function sha256Object(obj: unknown): HashHex {
   return sha256String(canonicalizeJson(obj));
@@ -149,7 +149,7 @@ function sortKeys(value: unknown): unknown {
   return value;
 }
 
-// base64url (RFC 4648 §5) — no padding, URL-safe chars
+// base64url (RFC 4648 §5), no padding, URL-safe chars
 export function base64urlEncode(data: Uint8Array): Base64Url {
   let binary = '';
   for (let i = 0; i < data.length; i++) {
@@ -158,7 +158,7 @@ export function base64urlEncode(data: Uint8Array): Base64Url {
   return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
 }
 
-// reverse of the above — handles missing padding
+// reverse of the above, handles missing padding
 export function base64urlDecode(encoded: Base64Url): Uint8Array {
   const base64 = encoded.replace(/-/g, '+').replace(/_/g, '/');
   const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4);
@@ -176,7 +176,7 @@ export function toHex(data: Uint8Array): string {
   for (let i = 0; i < data.length; i++) {
     hex += data[i]!.toString(16).padStart(2, '0');
   }
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   return hex;
 }
 
@@ -204,12 +204,12 @@ export function generateNonce(): Nonce {
   return randomBytes(32);
 }
 
-// random hex ID — default 16 bytes = 32 hex chars
+// random hex ID, default 16 bytes = 32 hex chars
 export function generateId(bytes: number = 16): string {
   return toHex(randomBytes(bytes));
 }
 
-// constant-time compare — prevents timing side channels when
+// constant-time compare, prevents timing side channels when
 // comparing hashes/sigs. always checks every byte even on mismatch.
 export function constantTimeEqual(a: Uint8Array, b: Uint8Array): boolean {
   if (a.length !== b.length) {

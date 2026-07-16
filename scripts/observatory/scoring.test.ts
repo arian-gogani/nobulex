@@ -1,7 +1,7 @@
 /**
  * Tests for Agent Reliability Index scoring functions.
  *
- * The scoring is methodologically sensitive — small bugs here would produce
+ * The scoring is methodologically sensitive, small bugs here would produce
  * wrong public weekly issues. Test coverage matters.
  */
 

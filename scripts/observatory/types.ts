@@ -1,5 +1,5 @@
 /**
- * Agent Reliability Index — Type Definitions
+ * Agent Reliability Index, Type Definitions
  *
  * Schema for the weekly observatory measurements. Public; intentionally open
  * so vendors and contributors can audit the methodology.
@@ -36,7 +36,7 @@ export interface VendorEndpoint {
   supportsZeroTemperature: boolean;
   /** Whether the endpoint supports a fixed seed */
   supportsFixedSeed: boolean;
-  /** Tool-use capability — whether tool-use reliability is measurable */
+  /** Tool-use capability, whether tool-use reliability is measurable */
   supportsToolUse: boolean;
 }
 
@@ -71,13 +71,13 @@ export interface PromptDescriptor {
    * even when the exact text varies.
    */
   expectedFormat: "free_text" | "json" | "code" | "structured_list" | "single_token" | "refusal";
-  /** Hash of the prompt text — published so anyone can verify the prompt set hasn't been modified between runs */
+  /** Hash of the prompt text, published so anyone can verify the prompt set hasn't been modified between runs */
   promptHash: string;
   /** Version of the prompt set this prompt belongs to */
   setVersion: string;
 }
 
-/** The full prompt set descriptor — published. The text itself is not. */
+/** The full prompt set descriptor, published. The text itself is not. */
 export interface PromptSetDescriptor {
   version: string;
   releasedAt: string;
@@ -85,7 +85,7 @@ export interface PromptSetDescriptor {
   frozenUntil: string;
   /** 10 prompts per task class, 10 task classes, 100 total */
   prompts: PromptDescriptor[];
-  /** Hash of all prompt hashes concatenated — a single fingerprint for the set */
+  /** Hash of all prompt hashes concatenated, a single fingerprint for the set */
   setFingerprint: string;
   /** Statistical properties of the set */
   statistics: {
@@ -112,7 +112,7 @@ export interface RawRunResult {
   };
   outputText: string;
   outputTokens: number;
-  /** Hash of the full response — for change detection without storing all history */
+  /** Hash of the full response, for change detection without storing all history */
   outputHash: string;
   /** Stated confidence extracted from the response (NaN if none stated) */
   statedConfidence: number;

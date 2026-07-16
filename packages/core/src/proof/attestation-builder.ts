@@ -1,5 +1,5 @@
 /**
- * Attestation builder — converts proof chains into attestation records.
+ * Attestation builder, converts proof chains into attestation records.
  *
  * Takes a session's proof chain (covenant + action log + verification result)
  * and produces a SessionDigest. Aggregates multiple digests into an
@@ -19,7 +19,7 @@ import type {
 
 /**
  * Extract a privacy-preserving digest from a single session's proof chain.
- * This is the "summary" — it captures metrics without exposing raw data.
+ * This is the "summary", it captures metrics without exposing raw data.
  */
 export function createSessionDigest(params: {
   covenant: CovenantSpec;
@@ -288,7 +288,7 @@ export function verifyAttestationChain(
 
 /**
  * Generate a privacy-preserving risk profile from an attestation record.
- * This is what insurers/auditors would see — aggregate metrics without
+ * This is what insurers/auditors would see, aggregate metrics without
  * any operational details.
  *
  * TODO: this will become its own package when we build the API

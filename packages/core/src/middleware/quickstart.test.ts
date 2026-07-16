@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import { protect, transformSyntax } from './index';
 
-describe('@nobulex/middleware — quickstart helpers', () => {
+describe('@nobulex/middleware, quickstart helpers', () => {
   // ── transformSyntax ───────────────────────────────────────────────────────
 
   describe('transformSyntax', () => {
@@ -141,15 +141,15 @@ describe('@nobulex/middleware — quickstart helpers', () => {
       const agent = protect(
         'permit read; permit transfer; forbid transfer where amount > 500; require log_all;',
       );
-      // Transfer 200 — not forbidden (200 < 500), permitted by permit transfer
+      // Transfer 200, not forbidden (200 < 500), permitted by permit transfer
       const result = agent.check({ action: 'transfer', amount: 200 });
       expect(result.action).toBe('allow');
 
-      // Transfer 600 — forbidden (600 > 500)
+      // Transfer 600, forbidden (600 > 500)
       const blocked = agent.check({ action: 'transfer', amount: 600 });
       expect(blocked.action).toBe('block');
 
-      // Read — permitted
+      // Read, permitted
       const read = agent.check({ action: 'read' });
       expect(read.action).toBe('allow');
     });

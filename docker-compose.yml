@@ -1,4 +1,4 @@
-# Kova — Local development
+# Kova, Local development
 # Usage: docker-compose run kova help
 #        docker-compose run kova audit ./
 

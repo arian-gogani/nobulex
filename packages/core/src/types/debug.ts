@@ -14,10 +14,10 @@
  *
  * Reads the `DEBUG` environment variable and checks for matching patterns.
  * Supported patterns:
- * - `nobulex`     — enables all Nobulex debug logging
- * - `nobulex:*`   — enables all Nobulex debug logging (wildcard)
- * - `nobulex:ccl` — enables only the `nobulex:ccl` namespace
- * - `*`         — enables all debug logging
+ * - `nobulex`, enables all Nobulex debug logging
+ * - `nobulex:*`, enables all Nobulex debug logging (wildcard)
+ * - `nobulex:ccl`, enables only the `nobulex:ccl` namespace
+ * - `*`, enables all debug logging
  *
  * Multiple patterns can be separated by commas.
  *

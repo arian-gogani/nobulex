@@ -7,7 +7,7 @@
  *
  * Run: npx tsx examples/demo.ts
  *
- * API-mapping notes (from reading the real source — see packages/sdk/src/handshake.ts
+ * API-mapping notes (from reading the real source, see packages/sdk/src/handshake.ts
  * and packages/sdk/src/handshake.test.ts):
  *   - "Agent identities" = DIDKeyPair from @nobulex/identity::createDID()
  *   - "Covenant doc w/ permit/forbid/limit rules" = a CovenantSpec parsed from
@@ -17,7 +17,7 @@
  *     exactly as the handshake.test.ts file does.
  *   - "Signing the covenant" happens inside generateProof() (it hashes the
  *     covenant and signs the hash with the agent's DID key). There is no
- *     standalone signCovenant() in this API — signing is folded into proof
+ *     standalone signCovenant() in this API, signing is folded into proof
  *     generation.
  *   - "Enforcement middleware" = EnforcementMiddleware from @nobulex/middleware.
  *     Each mw.execute() call appends a hash-chained ActionLogEntry.
@@ -75,14 +75,14 @@ function dim(text: string): void {
 // The 8 step labels, copied from packages/sdk/src/handshake.ts source comments.
 // Order and wording match the in-order checks inside verifyCounterparty().
 const HANDSHAKE_STEPS: readonly { id: number; label: string }[] = [
-  { id: 1, label: 'Covenant signature — did they actually sign this covenant?' },
-  { id: 2, label: 'Proof signature — was the whole payload tampered with?' },
-  { id: 3, label: 'Action log integrity — hash chain of every entry' },
-  { id: 4, label: 'Compliance — did they follow their own rules?' },
-  { id: 5, label: 'Minimum history — enough track record?' },
-  { id: 6, label: 'Required covenant — running the covenant we require?' },
-  { id: 7, label: 'Audience binding — is this proof meant for me?' },
-  { id: 8, label: 'Task scoping — is this the task class I need?' },
+  { id: 1, label: 'Covenant signature, did they actually sign this covenant?' },
+  { id: 2, label: 'Proof signature, was the whole payload tampered with?' },
+  { id: 3, label: 'Action log integrity, hash chain of every entry' },
+  { id: 4, label: 'Compliance, did they follow their own rules?' },
+  { id: 5, label: 'Minimum history, enough track record?' },
+  { id: 6, label: 'Required covenant, running the covenant we require?' },
+  { id: 7, label: 'Audience binding, is this proof meant for me?' },
+  { id: 8, label: 'Task scoping, is this the task class I need?' },
 ];
 
 /**
@@ -177,7 +177,7 @@ async function buildAgent(
 function tamperLog(log: ActionLog, index: number): ActionLog {
   const entries: ActionLogEntry[] = log.entries.map((e, i) => {
     if (i !== index) return e;
-    // flip the first hex char — still a valid-length hash, just the wrong value
+    // flip the first hex char, still a valid-length hash, just the wrong value
     const h = e.hash;
     const flipped = (h[0] === '0' ? '1' : '0') + h.slice(1);
     return { ...e, hash: flipped };
@@ -186,12 +186,12 @@ function tamperLog(log: ActionLog, index: number): ActionLog {
 }
 
 async function main(): Promise<void> {
-  banner('NOBULEX — proof-of-behavior protocol demo');
+  banner('NOBULEX, proof-of-behavior protocol demo');
   dim('Two autonomous agents. One verifies the other before transacting.\n');
   await tick();
 
   // ─── Scenario 1: honest agent ────────────────────────────────────────
-  sep('Scenario 1 — Agent A (honest) is verified by Agent B');
+  sep('Scenario 1, Agent A (honest) is verified by Agent B');
 
   const covenantSource = `covenant SafeTrader {
     permit read;
@@ -228,7 +228,7 @@ async function main(): Promise<void> {
     actionLog: agentA.log,
   });
   console.log(
-    `  ${CHECK} ${C.dim}proof generated — ${proofA.actionLog.entries.length} log entries, covenantHash=${proofA.covenantHash.slice(0, 12)}…${C.reset}\n`,
+    `  ${CHECK} ${C.dim}proof generated, ${proofA.actionLog.entries.length} log entries, covenantHash=${proofA.covenantHash.slice(0, 12)}…${C.reset}\n`,
   );
   await tick();
 
@@ -249,7 +249,7 @@ async function main(): Promise<void> {
   }
 
   // ─── Scenario 2: tampered log ────────────────────────────────────────
-  sep('Scenario 2 — Agent C presents a tampered log');
+  sep('Scenario 2, Agent C presents a tampered log');
 
   dim('Agent C starts with the same valid history Agent A had...');
   await tick();

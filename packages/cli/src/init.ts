@@ -1,11 +1,11 @@
 /*
- * `nobulex init` — scaffold a new covenant project.
+ * `nobulex init`, scaffold a new covenant project.
  *
  * Writes:
- *   covenant.dsl        — example covenant, hand-editable
- *   agent.ts            — runnable starter that wires the middleware
- *   nobulex.config.json — tool-discoverable metadata (logs path, framework)
- *   README.md           — one-page orientation
+ *   covenant.dsl, example covenant, hand-editable
+ *   agent.ts, runnable starter that wires the middleware
+ *   nobulex.config.json, tool-discoverable metadata (logs path, framework)
+ *   README.md, one-page orientation
  *
  * Refuses to overwrite existing files unless --force is set. Printing the
  * written paths lets CI / agents verify scaffolding deterministically.
@@ -23,7 +23,7 @@ const COVENANT_TEMPLATE = `covenant Starter {
   forbid delete;
   forbid transfer (amount > 1000);
 
-  // Required invariants — every action checks these.
+  // Required invariants, every action checks these.
   require agent.verified == true;
 }
 `;
@@ -70,9 +70,9 @@ This project was scaffolded by \`nobulex init\`.
 
 ## Files
 
-- \`covenant.dsl\` — the covenant your agent must honour. Edit freely.
-- \`agent.ts\` — a runnable agent that wires the covenant into \`EnforcementMiddleware\`.
-- \`nobulex.config.json\` — tool-discoverable settings (log path, compliance framework).
+- \`covenant.dsl\`, the covenant your agent must honour. Edit freely.
+- \`agent.ts\`, a runnable agent that wires the covenant into \`EnforcementMiddleware\`.
+- \`nobulex.config.json\`, tool-discoverable settings (log path, compliance framework).
 
 ## Typical flow
 

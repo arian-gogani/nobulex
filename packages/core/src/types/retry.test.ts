@@ -323,7 +323,7 @@ describe('CircuitBreaker', () => {
     // Wait for half-open
     vi.advanceTimersByTime(1001);
 
-    // First probe call — this consumes the halfOpenMax slot but fails
+    // First probe call, this consumes the halfOpenMax slot but fails
     await expect(breaker.execute(alwaysFail())).rejects.toThrow('always');
 
     // The breaker re-opens after the failure, so second call is rejected

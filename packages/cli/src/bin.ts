@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /*
  * Binary entry point. The only place in the package that talks to the real
- * process — everything below is a pure function.
+ * process, everything below is a pure function.
  */
 import { run } from './index.js';
 

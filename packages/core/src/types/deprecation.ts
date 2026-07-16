@@ -66,7 +66,7 @@ export function deprecated(warning: DeprecationWarning): void {
   }
   emitted.add(warning.api);
   const message = formatWarning(warning);
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   emittedMessages.push(message);
   console.warn(message);
 }
@@ -104,7 +104,7 @@ export function wrapDeprecated<T extends (...args: unknown[]) => unknown>(
 ): T {
   const wrapped = function (this: unknown, ...args: unknown[]): unknown {
     deprecated(warning);
-    // be careful reordering — the chain verifier depends on this layout
+    // be careful reordering, the chain verifier depends on this layout
     return fn.apply(this, args);
   } as unknown as T;
   // TODO: tighten this bound once we have real traffic numbers

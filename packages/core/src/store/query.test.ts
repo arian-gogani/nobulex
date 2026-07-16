@@ -47,7 +47,7 @@ function makeDocs(n: number, base?: Partial<CovenantDocument>): CovenantDocument
 }
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — instantiation & factory
+// QueryBuilder, instantiation & factory
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - instantiation', () => {
   it('can be constructed with a CovenantStore', () => {
@@ -64,7 +64,7 @@ describe('QueryBuilder - instantiation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — execute() basics
+// QueryBuilder, execute() basics
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - execute()', () => {
   let store: MemoryStore;
@@ -87,7 +87,7 @@ describe('QueryBuilder - execute()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — fluent filter chaining
+// QueryBuilder, fluent filter chaining
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - issuedBy()', () => {
   let store: MemoryStore;
@@ -262,7 +262,7 @@ describe('QueryBuilder - where()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — combining multiple filters
+// QueryBuilder, combining multiple filters
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - combined filters', () => {
   let store: MemoryStore;
@@ -316,7 +316,7 @@ describe('QueryBuilder - combined filters', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — sorting
+// QueryBuilder, sorting
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - sortBy()', () => {
   let store: MemoryStore;
@@ -357,7 +357,7 @@ describe('QueryBuilder - sortBy()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — limit() and offset()
+// QueryBuilder, limit() and offset()
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - limit() and offset()', () => {
   let store: MemoryStore;
@@ -409,7 +409,7 @@ describe('QueryBuilder - limit() and offset()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — count()
+// QueryBuilder, count()
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - count()', () => {
   let store: MemoryStore;
@@ -441,7 +441,7 @@ describe('QueryBuilder - count()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — first()
+// QueryBuilder, first()
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - first()', () => {
   let store: MemoryStore;
@@ -473,7 +473,7 @@ describe('QueryBuilder - first()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — exists()
+// QueryBuilder, exists()
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - exists()', () => {
   let store: MemoryStore;
@@ -498,7 +498,7 @@ describe('QueryBuilder - exists()', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — paginate() with offset
+// QueryBuilder, paginate() with offset
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - paginate() offset-based', () => {
   let store: MemoryStore;
@@ -564,7 +564,7 @@ describe('QueryBuilder - paginate() offset-based', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — paginate() cursor-based
+// QueryBuilder, paginate() cursor-based
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - paginate() cursor-based', () => {
   let store: MemoryStore;
@@ -623,7 +623,7 @@ describe('QueryBuilder - paginate() cursor-based', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — sort + paginate combined
+// QueryBuilder, sort + paginate combined
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - sort + paginate', () => {
   let store: MemoryStore;
@@ -661,7 +661,7 @@ describe('QueryBuilder - sort + paginate', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — sort + filter + paginate
+// QueryBuilder, sort + filter + paginate
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - filter + sort + paginate', () => {
   let store: MemoryStore;
@@ -715,7 +715,7 @@ describe('QueryBuilder - filter + sort + paginate', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — large dataset pagination
+// QueryBuilder, large dataset pagination
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - large dataset (100 docs)', () => {
   let store: MemoryStore;
@@ -781,7 +781,7 @@ describe('QueryBuilder - large dataset (100 docs)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — empty results edge cases
+// QueryBuilder, empty results edge cases
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - empty results', () => {
   it('execute() on empty store returns empty array', async () => {
@@ -827,7 +827,7 @@ describe('QueryBuilder - empty results', () => {
 });
 
 // ---------------------------------------------------------------------------
-// QueryBuilder — method chaining returns this
+// QueryBuilder, method chaining returns this
 // ---------------------------------------------------------------------------
 describe('QueryBuilder - fluent chaining returns this', () => {
   it('all filter/sort/limit methods return the same builder', () => {

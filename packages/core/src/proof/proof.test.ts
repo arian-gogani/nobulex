@@ -322,7 +322,7 @@ describe('verifyComplianceProof', () => {
       auditEntries: entries,
     });
 
-    // Tamper with the audit log commitment — also update publicInputs to stay internally consistent
+    // Tamper with the audit log commitment, also update publicInputs to stay internally consistent
     const tamperedCommitment = 'b'.repeat(64) as HashHex;
     proof.auditLogCommitment = tamperedCommitment;
     proof.publicInputs[1] = tamperedCommitment;

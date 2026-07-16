@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quickstart — The 3-line integration — Nobulex</title>
+  <title>Quickstart, The 3-line integration, Nobulex</title>
   <meta name="description" content="Add a paper trail to any LangChain agent in three lines. Get signed, hash-chained, independently verifiable evidence of every action.">
-  <meta property="og:title" content="The 3-line integration — Nobulex">
+  <meta property="og:title" content="The 3-line integration, Nobulex">
   <meta property="og:description" content="Wrap any LangChain runnable. Every action becomes signed evidence.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://nobulex.com/quickstart.html">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="The 3-line integration — Nobulex">
+  <meta name="twitter:title" content="The 3-line integration, Nobulex">
   <meta name="twitter:description" content="Wrap any LangChain runnable. Every action becomes signed evidence.">
   <link rel="icon" type="image/png" href="/icon.png">
   <link rel="apple-touch-icon" href="/icon.png">
@@ -322,13 +322,13 @@
 <span class="kw">const</span> integrity = <span class="kw">await</span> agent.<span class="fn">verifyIntegrity</span>()
 <span class="com">// → { valid, errors, totalItems, merkleRoot, signatureValid }</span></div>
 
-      <p>Every action is hash-chained into a Merkle tree. The root is signed with the agent's Ed25519 private key. Any third party — auditor, insurer, regulator, opposing counsel — can verify the integrity against the public key, independently, without trusting your logs.</p>
+      <p>Every action is hash-chained into a Merkle tree. The root is signed with the agent's Ed25519 private key. Any third party, auditor, insurer, regulator, opposing counsel, can verify the integrity against the public key, independently, without trusting your logs.</p>
 
       <hr class="qs-rule">
 
       <h2>See it run.</h2>
 
-      <p>Clone the repo and run the example. Hermetic — no API keys required, simulated LangChain runnable, real Ed25519 signing, real Merkle tree, real verification.</p>
+      <p>Clone the repo and run the example. Hermetic, no API keys required, simulated LangChain runnable, real Ed25519 signing, real Merkle tree, real verification.</p>
 
       <div class="qs-snippet"><span class="qs-label">bash</span><span class="com"># clone and run</span>
 git clone https://github.com/arian-gogani/nobulex
@@ -337,7 +337,7 @@ npx tsx examples/paper-trail.ts</div>
 
       <h3>Expected output (excerpt)</h3>
       <div class="qs-terminal"><span class="term-header">═══════════════════════════════════════════════════════════════════════
-  Nobulex — the paper trail for AI agents
+  Nobulex, the paper trail for AI agents
   Wrap any LangChain runnable. Every action becomes signed evidence.
 ═══════════════════════════════════════════════════════════════════════</span>
 
@@ -380,7 +380,7 @@ npx tsx examples/paper-trail.ts</div>
 
       <h2>Why this exists.</h2>
 
-      <p class="lead">Your AI agents are making consequential decisions — approvals, denials, recommendations, tool calls with real side effects. When something goes wrong, the first question every CEO, regulator, auditor, and opposing counsel asks is the same: <em>show me the paper trail.</em></p>
+      <p class="lead">Your AI agents are making consequential decisions, approvals, denials, recommendations, tool calls with real side effects. When something goes wrong, the first question every CEO, regulator, auditor, and opposing counsel asks is the same: <em>show me the paper trail.</em></p>
 
       <p>Right now you have server logs. Logs are what IT keeps for debugging. A paper trail is what the company keeps for accountability. The difference is not academic.</p>
 
@@ -388,7 +388,7 @@ npx tsx examples/paper-trail.ts</div>
         <div class="qs-vs-card qs-vs-card--bad">
           <h4>Server logs (CloudTrail, Datadog, LangSmith)</h4>
           <ul>
-            <li>You control them — therefore self-serving evidence</li>
+            <li>You control them, therefore self-serving evidence</li>
             <li>Tampering is not cryptographically prevented</li>
             <li>Discovery counsel attacks them first</li>
             <li>Insurance can't price them as evidence</li>
@@ -397,9 +397,9 @@ npx tsx examples/paper-trail.ts</div>
         <div class="qs-vs-card qs-vs-card--good">
           <h4>Nobulex bilateral receipts</h4>
           <ul>
-            <li>Hash-chained — tampering is detectable</li>
-            <li>Signed — origin is provable</li>
-            <li>Independently verifiable — no need to trust you</li>
+            <li>Hash-chained, tampering is detectable</li>
+            <li>Signed, origin is provable</li>
+            <li>Independently verifiable, no need to trust you</li>
             <li>Same evidence holds up in court, audit, and underwriting</li>
           </ul>
         </div>
@@ -411,7 +411,7 @@ npx tsx examples/paper-trail.ts</div>
 
       <h2>What's in the box.</h2>
 
-      <p>The <code>@nobulex/langchain</code> package ships now. It is MIT licensed, ~5KB minified, has one peer dependency (<code>@langchain/core</code>, optional), and uses Web Crypto for signing — no native modules.</p>
+      <p>The <code>@nobulex/langchain</code> package ships now. It is MIT licensed, ~5KB minified, has one peer dependency (<code>@langchain/core</code>, optional), and uses Web Crypto for signing, no native modules.</p>
 
       <h3>What's working today</h3>
       <ul style="font-size: 1.1rem; line-height: 1.6; color: var(--text-secondary, #ccc); margin: 0 0 1.5rem 1.5rem;">
@@ -431,7 +431,7 @@ npx tsx examples/paper-trail.ts</div>
       </ul>
 
       <div class="qs-honest">
-        <strong>Honest note.</strong> This is v0.2.1. The integration works end-to-end, but Nobulex is early. Receipts are currently signed with ephemeral per-session keys; the hosted registry that lets you re-verify a receipt months later from a stable public-key index is on the Q3 roadmap. If you are deploying agents in production today and want a paper trail, the integration is real. If you need third-party verification by a specific date for a specific regulatory deadline, talk to us first — we will be honest about what is shipped and what is in flight.
+        <strong>Honest note.</strong> This is v0.2.1. The integration works end-to-end, but Nobulex is early. Receipts are currently signed with ephemeral per-session keys; the hosted registry that lets you re-verify a receipt months later from a stable public-key index is on the Q3 roadmap. If you are deploying agents in production today and want a paper trail, the integration is real. If you need third-party verification by a specific date for a specific regulatory deadline, talk to us first, we will be honest about what is shipped and what is in flight.
       </div>
 
       <hr class="qs-rule">

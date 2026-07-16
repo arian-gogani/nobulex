@@ -1,5 +1,5 @@
 /**
- * @nobulex/langchain — Cryptographic audit trails for LangChain AI agents.
+ * @nobulex/langchain, Cryptographic audit trails for LangChain AI agents.
  *
  * Wraps any LangChain agent/chain/tool with a callback handler that intercepts
  * every LLM call, tool invocation, and chain step, creating signed evidence
@@ -206,7 +206,7 @@ export class NobulexAuditHandler implements LangChainCallbackHandler {
     runId: string,
     parentRunId?: string,
   ): void {
-    // intentionally swallowing — caller decides what to do with the Result
+    // intentionally swallowing, caller decides what to do with the Result
     this._items.push(
       createEvidenceItem(
         this._agentId,

@@ -1,5 +1,5 @@
 /*
- * Replay — reconstruct a chronological, human-readable timeline from
+ * Replay, reconstruct a chronological, human-readable timeline from
  * an action log. Built for incident investigations and auditor walkthroughs
  * where "what did the agent do, in what order, and what happened?" is
  * the first question asked.
@@ -68,14 +68,14 @@ function describeEntry(entry: ActionLogEntry): string {
 
   switch (entry.outcome) {
     case 'success':
-      return `#${entry.index} ${entry.timestamp} — ${subject} succeeded`;
+      return `#${entry.index} ${entry.timestamp}, ${subject} succeeded`;
     case 'failure':
-      return `#${entry.index} ${entry.timestamp} — ${subject} was attempted and failed`;
+      return `#${entry.index} ${entry.timestamp}, ${subject} was attempted and failed`;
     case 'blocked':
-      return `#${entry.index} ${entry.timestamp} — ${subject} was blocked by covenant enforcement`;
+      return `#${entry.index} ${entry.timestamp}, ${subject} was blocked by covenant enforcement`;
     case 'would_block':
-      return `#${entry.index} ${entry.timestamp} — ${subject} would have been blocked (observe mode) but executed`;
+      return `#${entry.index} ${entry.timestamp}, ${subject} would have been blocked (observe mode) but executed`;
     case 'halted':
-      return `#${entry.index} ${entry.timestamp} — ${subject} rejected by emergency halt`;
+      return `#${entry.index} ${entry.timestamp}, ${subject} rejected by emergency halt`;
   }
 }

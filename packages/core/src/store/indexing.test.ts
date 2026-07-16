@@ -30,7 +30,7 @@ function makeDoc(overrides: Partial<CovenantDocument> & { id: string }): Covenan
 }
 
 // ---------------------------------------------------------------------------
-// StoreIndex — build, add, remove
+// StoreIndex, build, add, remove
 // ---------------------------------------------------------------------------
 describe('StoreIndex - build, add, remove', () => {
   let index: StoreIndex;
@@ -139,7 +139,7 @@ describe('StoreIndex - build, add, remove', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — query with single field filter
+// StoreIndex, query with single field filter
 // ---------------------------------------------------------------------------
 describe('StoreIndex - single field queries', () => {
   let index: StoreIndex;
@@ -202,7 +202,7 @@ describe('StoreIndex - single field queries', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — query with multiple field filters (intersection)
+// StoreIndex, query with multiple field filters (intersection)
 // ---------------------------------------------------------------------------
 describe('StoreIndex - compound queries (intersection)', () => {
   let index: StoreIndex;
@@ -255,7 +255,7 @@ describe('StoreIndex - compound queries (intersection)', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — range query on createdAt
+// StoreIndex, range query on createdAt
 // ---------------------------------------------------------------------------
 describe('StoreIndex - createdAt range queries', () => {
   let index: StoreIndex;
@@ -317,7 +317,7 @@ describe('StoreIndex - createdAt range queries', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — tag queries
+// StoreIndex, tag queries
 // ---------------------------------------------------------------------------
 describe('StoreIndex - tag queries', () => {
   let index: StoreIndex;
@@ -378,7 +378,7 @@ describe('StoreIndex - tag queries', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — rebuild
+// StoreIndex, rebuild
 // ---------------------------------------------------------------------------
 describe('StoreIndex - rebuild', () => {
   let index: StoreIndex;
@@ -438,7 +438,7 @@ describe('StoreIndex - rebuild', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — stats
+// StoreIndex, stats
 // ---------------------------------------------------------------------------
 describe('StoreIndex - stats', () => {
   it('reports fields correctly', () => {
@@ -488,7 +488,7 @@ describe('StoreIndex - stats', () => {
 });
 
 // ---------------------------------------------------------------------------
-// StoreIndex — null return (no index available)
+// StoreIndex, null return (no index available)
 // ---------------------------------------------------------------------------
 describe('StoreIndex - no index available', () => {
   it('returns null when querying a field not covered by any index', () => {

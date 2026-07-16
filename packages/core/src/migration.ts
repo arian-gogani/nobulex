@@ -1,5 +1,5 @@
 /**
- * @nobulex/core/migration — Document migration system for protocol version upgrades.
+ * @nobulex/core/migration, Document migration system for protocol version upgrades.
  *
  * Provides a `DocumentMigrator` class that can chain version-specific migrations
  * to upgrade CovenantDocument structures from older protocol versions to the current one.
@@ -55,7 +55,7 @@ export class DocumentMigrator {
    * @returns `this` for chaining.
    */
   register(migration: Migration): this {
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     this.migrations.push(migration);
     return this;
   }
@@ -118,7 +118,7 @@ export class DocumentMigrator {
     const startVersion = docVersion ?? this.findEarliestVersion();
 
     if (startVersion === undefined) {
-      // be careful reordering — the chain verifier depends on this layout
+      // be careful reordering, the chain verifier depends on this layout
       throw new Error(
         `No migrations registered; cannot migrate document with version "${docVersion ?? '(none)'}"`,
       );

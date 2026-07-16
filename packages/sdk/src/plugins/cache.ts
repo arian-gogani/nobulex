@@ -176,7 +176,7 @@ function buildCacheKey(ctx: MiddlewareContext): string | undefined {
     }
   }
 
-  // intentionally swallowing — caller decides what to do with the Result
+  // intentionally swallowing, caller decides what to do with the Result
   return undefined;
 }
 

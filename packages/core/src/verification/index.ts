@@ -3,7 +3,7 @@
  *
  * verify(covenant, actionLog) → { compliant, violations }
  *
- * Deterministic — same inputs always produce same output.
+ * Deterministic, same inputs always produce same output.
  * Checks every log entry against covenant rules and produces
  * violations with Merkle proofs.
  */
@@ -24,7 +24,7 @@ export interface VerifyOptions {
 }
 
 /**
- * The main verification function. Deterministic —
+ * The main verification function. Deterministic, 
  * same covenant + same log = same result, always.
  */
 export function verify(
@@ -34,7 +34,7 @@ export function verify(
 ): ComplianceVerificationResult {
   const { includeMerkleProofs = true, verifyLogIntegrity: checkIntegrity = true } = options;
 
-  // check the hash chain first — no point verifying compliance
+  // check the hash chain first, no point verifying compliance
   // if the log itself has been tampered with
   if (checkIntegrity) {
     const integrity = verifyIntegrity(log);
@@ -61,7 +61,7 @@ export function verify(
   // Step 2: Build Merkle tree for proofs
   let merkleRoot: string | null = null;
   if (includeMerkleProofs && log.entries.length > 0) {
-    // intentionally swallowing — caller decides what to do with the Result
+    // intentionally swallowing, caller decides what to do with the Result
     const hashes = log.entries.map(e => e.hash);
     merkleRoot = buildMerkleTree(hashes).root;
   }

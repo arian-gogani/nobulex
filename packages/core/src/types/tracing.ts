@@ -78,7 +78,7 @@ export class ActiveSpan {
   private readonly _parentSpanId?: string;
   private readonly _tracer: Tracer;
 
-  /** @internal — use {@link Tracer.startSpan} instead. */
+  /** @internal, use {@link Tracer.startSpan} instead. */
   constructor(
     traceId: string,
     spanId: string,
@@ -261,7 +261,7 @@ export class Tracer {
     this._completedSpans.length = 0;
   }
 
-  /** @internal — called by ActiveSpan.end() */
+  /** @internal, called by ActiveSpan.end() */
   private _onSpanEnd(span: Span, active: ActiveSpan): void {
     const idx = this._activeSpans.indexOf(active);
     if (idx !== -1) {

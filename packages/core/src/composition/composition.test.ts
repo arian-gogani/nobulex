@@ -23,7 +23,7 @@ describe('covenant composition', () => {
   it('parent forbid cascades over a child permit (forbid-wins)', () => {
     const parent = parseSource('covenant OrgPolicy { forbid export; }');
     const child = parseSource('covenant Agent { permit export; }');
-    // Composition itself should refuse — child broadens parent.
+    // Composition itself should refuse, child broadens parent.
     expect(() => composeCovenants(parent, child)).toThrow(InheritanceError);
   });
 

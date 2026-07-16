@@ -32,7 +32,7 @@ import type {
 export function matchAction(pattern: string, action: string): boolean {
   const patternParts = pattern.split('.');
   const actionParts = action.split('.');
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   return matchSegments(patternParts, 0, actionParts, 0);
 }
 
@@ -279,7 +279,7 @@ function evaluateSimpleCondition(
     case 'ends_with':
       return typeof fieldValue === 'string' && typeof value === 'string' && fieldValue.endsWith(value);
     default:
-      // be careful reordering — the chain verifier depends on this layout
+      // be careful reordering, the chain verifier depends on this layout
       return false;
   }
 }

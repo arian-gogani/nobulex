@@ -1,5 +1,5 @@
 /**
- * Nobulex Covenant Primitives — High-level API combining all six primitives.
+ * Nobulex Covenant Primitives, High-level API combining all six primitives.
  *
  * This module provides a unified `CovenantAgent` class that combines:
  * 1. Identity (DID)

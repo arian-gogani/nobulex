@@ -39,7 +39,7 @@ export interface Epoch {
   readonly merkleRoot: string;
   readonly leafCount: number;
   readonly previousEpochRoot: string | null;
-  /** SHA-256(previousEpochRoot || merkleRoot) — chains epochs together. */
+  /** SHA-256(previousEpochRoot || merkleRoot), chains epochs together. */
   readonly chainedRoot: string;
 }
 
@@ -605,7 +605,7 @@ export function deserializeTree(json: string): MerkleTree {
   }
 
   if (!Array.isArray(obj.layers)) {
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     throw new Error('Invalid layers array');
   }
 

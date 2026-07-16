@@ -468,7 +468,7 @@ export function createCovenantRouter(options: CovenantRouterOptions): CovenantRo
  * to present a valid covenant before granting access. Protects API providers
  * from liability when agents misuse their API.
  *
- * @see docs/ADOPTION-STRATEGY.md — "Trust-Gated Access: The Liability Play"
+ * @see docs/ADOPTION-STRATEGY.md, "Trust-Gated Access: The Liability Play"
  */
 export interface KovaGatewayOptions {
   /** The NobulexClient instance for covenant verification and evaluation. */
@@ -511,7 +511,7 @@ function defaultCovenantExtractor(req: IncomingRequest): CovenantDocument | stri
 }
 
 /**
- * Kova API Gateway middleware — requires agents to present a valid covenant before API access.
+ * Kova API Gateway middleware, requires agents to present a valid covenant before API access.
  *
  * Drop-in middleware for Express/Connect. Every agent calling the API must present
  * a covenant (via `x-kova-covenant` header or `Authorization: Bearer <base64>`).

@@ -56,7 +56,7 @@ async function makeCovenant(constraints: string): Promise<{
 // ---------------------------------------------------------------------------
 
 describe('CCL regressions', () => {
-  it('severity is a RESERVED keyword — cannot be used as a when condition field', () => {
+  it('severity is a RESERVED keyword, cannot be used as a when condition field', () => {
     // "severity" is tokenized as a SEVERITY keyword, not as an IDENTIFIER,
     // so using it as a field name in a when-condition will fail to parse
     // or produce unexpected results.

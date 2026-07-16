@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Agent Reliability Index — Nobulex</title>
+  <title>Agent Reliability Index, Nobulex</title>
   <meta name="description" content="A weekly public observatory of AI agent behavior change across frontier vendors. Published by Nobulex.">
-  <meta property="og:title" content="Agent Reliability Index — Nobulex">
+  <meta property="og:title" content="Agent Reliability Index, Nobulex">
   <meta property="og:description" content="A weekly public observatory of AI agent behavior change across frontier vendors. Published by Nobulex.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://nobulex.com/observatory.html">
   <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Agent Reliability Index — Nobulex">
+  <meta name="twitter:title" content="Agent Reliability Index, Nobulex">
   <meta name="twitter:description" content="A weekly public observatory of AI agent behavior change across frontier vendors.">
   <link rel="icon" type="image/png" href="/icon.png">
   <link rel="apple-touch-icon" href="/icon.png">
@@ -254,13 +254,13 @@
 
       <p>The Agent Reliability Index is a public observatory. Each week, it publishes a standardized-prompt drift signal across the major frontier models, vendor-by-vendor reliability scorecards on the prior 7 days, notable incidents with structured severity classification, and methodology updates as the analytical model matures.</p>
 
-      <p>The index is free to read. The methodology is open and lives in the Nobulex repository. The premium tier — historical archives, machine-readable feeds, drill-down per task class, custom prompt queries — is paid.</p>
+      <p>The index is free to read. The methodology is open and lives in the Nobulex repository. The premium tier, historical archives, machine-readable feeds, drill-down per task class, custom prompt queries, is paid.</p>
 
       <p>This is the charter issue. It establishes the baseline and publishes the methodology in full. Subsequent issues will be denser, with real drift signal and incident catalogs. The methodology is being published <em>before</em> the first issue contains real findings, so that readers, vendors, regulators, and contributors can scrutinize the approach before it is loaded with results.</p>
 
       <hr class="ari-rule">
 
-      <h2>The Index — Charter Baseline</h2>
+      <h2>The Index, Charter Baseline</h2>
 
       <p>The headline figure for each issue is the <strong>Cross-Vendor Reliability Index (CVRI)</strong>, computed as a normalized composite across five behavioral dimensions for each tracked vendor.</p>
 
@@ -290,7 +290,7 @@
       <p>The index tracks five behavioral dimensions for each frontier agent endpoint. These dimensions were chosen because they are leading indicators most often cited in post-incident reviews of production agent failures, and because they are observable from the outside without privileged access.</p>
 
       <h3>1 · Output stability under fixed prompts</h3>
-      <p>100 standardized prompts spanning 10 task classes are run weekly with deterministic settings (temperature 0 where supported, fixed seed where supported). Outputs are scored on lexical, semantic, and structural similarity to the prior week. A statistically significant divergence — particularly when accompanied by no announced model update — is flagged as silent drift.</p>
+      <p>100 standardized prompts spanning 10 task classes are run weekly with deterministic settings (temperature 0 where supported, fixed seed where supported). Outputs are scored on lexical, semantic, and structural similarity to the prior week. A statistically significant divergence, particularly when accompanied by no announced model update, is flagged as silent drift.</p>
 
       <h3>2 · Stated confidence calibration</h3>
       <p>Where the agent provides confidence scores or hedge language, the empirical distribution is tracked. A shift in the mean or variance of stated confidence is a leading indicator that the underlying model has been retuned.</p>
@@ -306,32 +306,32 @@
 
       <hr class="ari-rule">
 
-      <h2>Drift signal — this week</h2>
+      <h2>Drift signal, this week</h2>
 
       <p>The charter issue establishes the baseline. There is, by definition, no drift signal yet.</p>
 
-      <p>Subsequent issues will populate this section with the week's flagged drift events, classified as <em>announced drift</em> (coinciding with vendor disclosure) or <em>silent drift</em> (no corresponding vendor disclosure). Silent drift is the editorially most significant signal the index produces — it surfaces behavior changes the vendor's customers have no other way to detect.</p>
+      <p>Subsequent issues will populate this section with the week's flagged drift events, classified as <em>announced drift</em> (coinciding with vendor disclosure) or <em>silent drift</em> (no corresponding vendor disclosure). Silent drift is the editorially most significant signal the index produces, it surfaces behavior changes the vendor's customers have no other way to detect.</p>
 
       <div class="ari-callout">
-        Silent drift — observable behavior change without corresponding vendor disclosure — is the structural problem the index exists to surface. The category receives the largest editorial weight in every weekly issue.
+        Silent drift, observable behavior change without corresponding vendor disclosure, is the structural problem the index exists to surface. The category receives the largest editorial weight in every weekly issue.
       </div>
 
       <hr class="ari-rule">
 
-      <h2>Notable incidents — this week</h2>
+      <h2>Notable incidents, this week</h2>
 
       <p>The index tracks publicly reported AI agent incidents and classifies them on a four-level severity scale. Source streams include the AI Incident Database, vendor status pages, regulatory filings, and verifiable press coverage. The charter issue does not yet include a catalog. Subsequent issues will. Classification rubric:</p>
 
       <ul>
-        <li><strong>Informational</strong> — reported behavioral oddity with no business or end-user impact.</li>
-        <li><strong>Advisory</strong> — behavior change that may affect specific deployment patterns; customers should review.</li>
-        <li><strong>Regression</strong> — measurable degradation in capability or reliability versus the prior week's behavior, affecting downstream production workflows.</li>
-        <li><strong>Critical</strong> — failure causing direct end-user harm, regulatory exposure, or material commercial loss.</li>
+        <li><strong>Informational</strong>, reported behavioral oddity with no business or end-user impact.</li>
+        <li><strong>Advisory</strong>, behavior change that may affect specific deployment patterns; customers should review.</li>
+        <li><strong>Regression</strong>, measurable degradation in capability or reliability versus the prior week's behavior, affecting downstream production workflows.</li>
+        <li><strong>Critical</strong>, failure causing direct end-user harm, regulatory exposure, or material commercial loss.</li>
       </ul>
 
       <hr class="ari-rule">
 
-      <h2>Methodology — at a glance</h2>
+      <h2>Methodology, at a glance</h2>
 
       <p>Full methodology lives at <a href="https://github.com/arian-gogani/nobulex/blob/main/docs/AGENT-RELIABILITY-INDEX.md">docs/AGENT-RELIABILITY-INDEX.md</a>. The CVRI composite is computed as:</p>
 

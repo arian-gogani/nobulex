@@ -55,9 +55,9 @@ function orderTrackingMiddleware(name: string, calls: string[]): NobulexMiddlewa
   };
 }
 
-// ─── MiddlewarePipeline — use / remove / list / clear ────────────────────────
+// ─── MiddlewarePipeline, use / remove / list / clear ────────────────────────
 
-describe('MiddlewarePipeline — use / remove / list / clear', () => {
+describe('MiddlewarePipeline, use / remove / list / clear', () => {
   let pipeline: MiddlewarePipeline;
 
   beforeEach(() => {
@@ -129,9 +129,9 @@ describe('MiddlewarePipeline — use / remove / list / clear', () => {
   });
 });
 
-// ─── MiddlewarePipeline — execute ────────────────────────────────────────────
+// ─── MiddlewarePipeline, execute ────────────────────────────────────────────
 
-describe('MiddlewarePipeline — execute passthrough', () => {
+describe('MiddlewarePipeline, execute passthrough', () => {
   let pipeline: MiddlewarePipeline;
 
   beforeEach(() => {
@@ -158,7 +158,7 @@ describe('MiddlewarePipeline — execute passthrough', () => {
 
 // ─── Before middleware ───────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — before hooks', () => {
+describe('MiddlewarePipeline, before hooks', () => {
   let pipeline: MiddlewarePipeline;
 
   beforeEach(() => {
@@ -249,7 +249,7 @@ describe('MiddlewarePipeline — before hooks', () => {
 
 // ─── After middleware ────────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — after hooks', () => {
+describe('MiddlewarePipeline, after hooks', () => {
   let pipeline: MiddlewarePipeline;
 
   beforeEach(() => {
@@ -299,7 +299,7 @@ describe('MiddlewarePipeline — after hooks', () => {
 
 // ─── Error middleware ────────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — error handling', () => {
+describe('MiddlewarePipeline, error handling', () => {
   let pipeline: MiddlewarePipeline;
 
   beforeEach(() => {
@@ -387,7 +387,7 @@ describe('MiddlewarePipeline — error handling', () => {
 
 // ─── Execution order ─────────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — execution order', () => {
+describe('MiddlewarePipeline, execution order', () => {
   let pipeline: MiddlewarePipeline;
 
   beforeEach(() => {
@@ -710,7 +710,7 @@ describe('rateLimitMiddleware', () => {
 
 // ─── Pipeline composition ────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — composition', () => {
+describe('MiddlewarePipeline, composition', () => {
   it('composes logging + timing + validation together', async () => {
     const entries: Array<{ message: string }> = [];
     const logger = new Logger({
@@ -775,7 +775,7 @@ describe('MiddlewarePipeline — composition', () => {
 
 // ─── Middleware error propagation ────────────────────────────────────────────
 
-describe('MiddlewarePipeline — error propagation', () => {
+describe('MiddlewarePipeline, error propagation', () => {
   it('propagates error from before hook', async () => {
     const pipeline = new MiddlewarePipeline();
     pipeline.use({
@@ -826,7 +826,7 @@ describe('MiddlewarePipeline — error propagation', () => {
 
 // ─── Async middleware ────────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — async middleware', () => {
+describe('MiddlewarePipeline, async middleware', () => {
   it('handles async before hooks', async () => {
     const pipeline = new MiddlewarePipeline();
     pipeline.use({
@@ -907,7 +907,7 @@ describe('MiddlewarePipeline — async middleware', () => {
 
 // ─── Edge cases ──────────────────────────────────────────────────────────────
 
-describe('MiddlewarePipeline — edge cases', () => {
+describe('MiddlewarePipeline, edge cases', () => {
   it('handles undefined return from after hook', async () => {
     const pipeline = new MiddlewarePipeline();
     pipeline.use({

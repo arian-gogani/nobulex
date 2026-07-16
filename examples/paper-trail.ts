@@ -1,8 +1,8 @@
 /**
- * paper-trail.ts — The 3-line integration in 60 seconds.
+ * paper-trail.ts, The 3-line integration in 60 seconds.
  *
  * The pitch: your AI agents are making consequential decisions with no paper
- * trail. Server logs are your own testimony — opposing counsel attacks them
+ * trail. Server logs are your own testimony, opposing counsel attacks them
  * first in discovery. Nobulex wraps any LangChain runnable and produces
  * bilateral cryptographic receipts: tamper-evident, hash-chained, independently
  * verifiable evidence of every LLM call, tool invocation, and chain step.
@@ -19,7 +19,7 @@
  *
  * Run with: npx tsx examples/paper-trail.ts
  *
- * No real LangChain dependency required — this file simulates a runnable
+ * No real LangChain dependency required, this file simulates a runnable
  * so the example is hermetic. In production you'd pass a real chain or
  * AgentExecutor; the wrap call is the same.
  */
@@ -77,7 +77,7 @@ function blank(): void {
 
 // ── a simulated LangChain runnable ──────────────────────────────────────
 // This stands in for a real LangChain AgentExecutor or LLMChain. In a real
-// project you'd swap this for your actual agent — the wrap() call is the
+// project you'd swap this for your actual agent, the wrap() call is the
 // same regardless.
 
 type LoanApplication = {
@@ -101,7 +101,7 @@ class LoanApprovalAgent implements Runnable<LoanApplication, Decision> {
     // LangChain's callback system passes our handler through `options.callbacks`.
     // We forward the lifecycle events the handler expects so this hermetic
     // example produces a realistic audit trail. With a real LangChain
-    // runnable, the framework emits these events for you — you don't write
+    // runnable, the framework emits these events for you, you don't write
     // this part.
     const handlers = (options?.callbacks as Array<{
       handleChainStart?: Function;
@@ -226,7 +226,7 @@ class LoanApprovalAgent implements Runnable<LoanApplication, Decision> {
 
 async function main(): Promise<void> {
   header(
-    'Nobulex — the paper trail for AI agents',
+    'Nobulex, the paper trail for AI agents',
     'Wrap any LangChain runnable. Every action becomes signed evidence.',
   );
 
@@ -330,16 +330,16 @@ async function main(): Promise<void> {
   header('Why this matters', 'The difference between logs and a paper trail.');
 
   console.log(`${C.bold}        Server logs (CloudTrail, Datadog, LangSmith):${C.reset}`);
-  console.log(`${C.red}        ✗${C.reset} You control them — therefore self-serving evidence`);
+  console.log(`${C.red}        ✗${C.reset} You control them, therefore self-serving evidence`);
   console.log(`${C.red}        ✗${C.reset} Tampering is not cryptographically prevented`);
   console.log(`${C.red}        ✗${C.reset} Discovery counsel attacks them first`);
   console.log(`${C.red}        ✗${C.reset} Insurance underwriters can't price them as evidence`);
   blank();
 
   console.log(`${C.bold}        Nobulex bilateral receipts:${C.reset}`);
-  console.log(`${C.green}        ✓${C.reset} Hash-chained — tampering is detectable`);
-  console.log(`${C.green}        ✓${C.reset} Signed — origin is provable`);
-  console.log(`${C.green}        ✓${C.reset} Independently verifiable — no need to trust you`);
+  console.log(`${C.green}        ✓${C.reset} Hash-chained, tampering is detectable`);
+  console.log(`${C.green}        ✓${C.reset} Signed, origin is provable`);
+  console.log(`${C.green}        ✓${C.reset} Independently verifiable, no need to trust you`);
   console.log(`${C.green}        ✓${C.reset} Same evidence holds up in court, audit, and underwriting`);
   blank();
 

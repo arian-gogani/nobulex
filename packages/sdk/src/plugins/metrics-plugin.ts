@@ -16,10 +16,10 @@ export interface MetricsPluginOptions {
  * Create a metrics middleware that records operational telemetry.
  *
  * Records the following metrics (prefixed with the configured prefix):
- * - `{prefix}.operations.total` — Counter: total operations by name
- * - `{prefix}.operations.errors` — Counter: total errors by name
- * - `{prefix}.operations.duration` — Histogram: operation duration in ms
- * - `{prefix}.operations.active` — Gauge: currently active operations
+ * - `{prefix}.operations.total`, Counter: total operations by name
+ * - `{prefix}.operations.errors`, Counter: total errors by name
+ * - `{prefix}.operations.duration`, Histogram: operation duration in ms
+ * - `{prefix}.operations.active`, Gauge: currently active operations
  *
  * @param options - Optional metrics configuration.
  * @returns A NobulexMiddleware with an exposed `registry` property.

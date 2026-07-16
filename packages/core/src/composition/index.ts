@@ -1,5 +1,5 @@
 /*
- * Parent/child covenant composition — "fleet governance".
+ * Parent/child covenant composition, "fleet governance".
  *
  * An org defines a parent covenant (e.g. "no PII exfiltration, no unsolicited
  * external calls"). Each individual agent covenant declares the parent as
@@ -30,7 +30,7 @@ export interface ComposedStatement extends CovenantStatement {
   readonly originCovenant: string;
 }
 
-/** A composed covenant — child extends parent with parent rules cascading. */
+/** A composed covenant, child extends parent with parent rules cascading. */
 export interface ComposedCovenantSpec extends CovenantSpec {
   /** The parent covenant's name, for audit/debug display. */
   readonly parentName: string;
@@ -40,7 +40,7 @@ export interface ComposedCovenantSpec extends CovenantSpec {
   readonly composedStatements: readonly ComposedStatement[];
 }
 
-/** A single inheritance violation — a child that tries to broaden a parent rule. */
+/** A single inheritance violation, a child that tries to broaden a parent rule. */
 export interface InheritanceViolation {
   readonly action: string;
   readonly reason: string;
@@ -91,7 +91,7 @@ export function validateInheritance(
           childRule: childStmt,
         });
       }
-      // If both are conditional we can't statically decide — runtime evaluation
+      // If both are conditional we can't statically decide, runtime evaluation
       // will catch actual cascading denials because the composed spec places
       // parent forbids before child permits (forbid-wins).
     }
@@ -156,7 +156,7 @@ export class InheritanceError extends Error {
 
 /**
  * Compiled enforcement for a composed covenant. On block, the decision is
- * annotated with which layer (parent or child) matched — so fleet operators
+ * annotated with which layer (parent or child) matched, so fleet operators
  * can tell at a glance whether an agent hit a parent-wide rule or its own.
  */
 export interface ComposedEnforcementDecision extends EnforcementDecision {

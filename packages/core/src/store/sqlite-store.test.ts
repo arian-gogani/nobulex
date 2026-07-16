@@ -219,7 +219,7 @@ function createMockDriver(): SQLiteDriver & { rows: Map<string, MockRow>; closed
 }
 
 // ---------------------------------------------------------------------------
-// SqliteStore — instantiation
+// SqliteStore, instantiation
 // ---------------------------------------------------------------------------
 describe('SqliteStore - instantiation', () => {
   it('can be created via the static factory method', async () => {
@@ -256,7 +256,7 @@ describe('SqliteStore - instantiation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — put / get / has / delete
+// SqliteStore, put / get / has / delete
 // ---------------------------------------------------------------------------
 describe('SqliteStore - CRUD', () => {
   let store: SqliteStore;
@@ -343,7 +343,7 @@ describe('SqliteStore - CRUD', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — list
+// SqliteStore, list
 // ---------------------------------------------------------------------------
 describe('SqliteStore - list', () => {
   let store: SqliteStore;
@@ -468,7 +468,7 @@ describe('SqliteStore - list', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — count
+// SqliteStore, count
 // ---------------------------------------------------------------------------
 describe('SqliteStore - count', () => {
   let store: SqliteStore;
@@ -505,7 +505,7 @@ describe('SqliteStore - count', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — batch operations
+// SqliteStore, batch operations
 // ---------------------------------------------------------------------------
 describe('SqliteStore - batch operations', () => {
   let store: SqliteStore;
@@ -629,7 +629,7 @@ describe('SqliteStore - batch operations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — event system
+// SqliteStore, event system
 // ---------------------------------------------------------------------------
 describe('SqliteStore - events', () => {
   let store: SqliteStore;
@@ -737,7 +737,7 @@ describe('SqliteStore - events', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — close
+// SqliteStore, close
 // ---------------------------------------------------------------------------
 describe('SqliteStore - close', () => {
   it('close delegates to the driver', async () => {
@@ -757,7 +757,7 @@ describe('SqliteStore - close', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — error handling
+// SqliteStore, error handling
 // ---------------------------------------------------------------------------
 describe('SqliteStore - error handling', () => {
   it('put rejects when document is null', async () => {
@@ -824,7 +824,7 @@ describe('SqliteStore - error handling', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — edge cases
+// SqliteStore, edge cases
 // ---------------------------------------------------------------------------
 describe('SqliteStore - edge cases', () => {
   let store: SqliteStore;
@@ -883,7 +883,7 @@ describe('SqliteStore - edge cases', () => {
 });
 
 // ---------------------------------------------------------------------------
-// SqliteStore — driver interaction
+// SqliteStore, driver interaction
 // ---------------------------------------------------------------------------
 describe('SqliteStore - driver interaction', () => {
   it('uses parameterized queries (no SQL injection)', async () => {

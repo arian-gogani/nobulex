@@ -601,11 +601,11 @@ export function computeCarryForward(
       return policy.operatorTransfer;
 
     case 'fork':
-      // Forks create a new lineage branch — moderate carry-forward
-      return policy.operatorTransfer;  // 0.50 — same risk as transfer
+      // Forks create a new lineage branch, moderate carry-forward
+      return policy.operatorTransfer;  // 0.50, same risk as transfer
 
     case 'merge':
-      // Merges combine lineages — use the lower of expansion and version change
+      // Merges combine lineages, use the lower of expansion and version change
       return Math.min(policy.capabilityExpansion, policy.modelVersionChange);
 
     default:

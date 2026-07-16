@@ -30,7 +30,7 @@ function makeDoc(overrides: Partial<CovenantDocument> & { id: string }): Covenan
 }
 
 // ---------------------------------------------------------------------------
-// MemoryStore — basic instantiation
+// MemoryStore, basic instantiation
 // ---------------------------------------------------------------------------
 describe('MemoryStore - instantiation', () => {
   it('can be constructed with no arguments', () => {
@@ -56,7 +56,7 @@ describe('MemoryStore - instantiation', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — put / get / has / delete
+// MemoryStore, put / get / has / delete
 // ---------------------------------------------------------------------------
 describe('MemoryStore - CRUD', () => {
   let store: MemoryStore;
@@ -125,7 +125,7 @@ describe('MemoryStore - CRUD', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — list
+// MemoryStore, list
 // ---------------------------------------------------------------------------
 describe('MemoryStore - list', () => {
   let store: MemoryStore;
@@ -249,7 +249,7 @@ describe('MemoryStore - list', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — count
+// MemoryStore, count
 // ---------------------------------------------------------------------------
 describe('MemoryStore - count', () => {
   let store: MemoryStore;
@@ -284,7 +284,7 @@ describe('MemoryStore - count', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — batch operations
+// MemoryStore, batch operations
 // ---------------------------------------------------------------------------
 describe('MemoryStore - batch operations', () => {
   let store: MemoryStore;
@@ -353,7 +353,7 @@ describe('MemoryStore - batch operations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — event system
+// MemoryStore, event system
 // ---------------------------------------------------------------------------
 describe('MemoryStore - events', () => {
   let store: MemoryStore;
@@ -460,7 +460,7 @@ describe('MemoryStore - events', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — clear utility
+// MemoryStore, clear utility
 // ---------------------------------------------------------------------------
 describe('MemoryStore - clear', () => {
   it('clear removes all documents', async () => {
@@ -474,7 +474,7 @@ describe('MemoryStore - clear', () => {
 });
 
 // ---------------------------------------------------------------------------
-// MemoryStore — edge cases
+// MemoryStore, edge cases
 // ---------------------------------------------------------------------------
 describe('MemoryStore - edge cases', () => {
   let store: MemoryStore;

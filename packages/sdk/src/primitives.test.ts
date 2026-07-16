@@ -30,7 +30,7 @@ const SAFE_AGENT_SOURCE = `
   }
 `;
 
-describe('@nobulex/sdk — Covenant Primitives', () => {
+describe('@nobulex/sdk, Covenant Primitives', () => {
   // ── CovenantAgent ─────────────────────────────────────────────────────────
 
   describe('CovenantAgent', () => {

@@ -10,7 +10,7 @@ import {
 import type { AuditEntry, AuditMerkleProof, RateLimitState, CapabilityManifest } from './index';
 
 /**
- * Local verifyMerkleProof helper — the function was moved out of enforcement
+ * Local verifyMerkleProof helper, the function was moved out of enforcement
  * during the monorepo consolidation. Re-implemented here for test use only.
  */
 function verifyMerkleProof(proof: AuditMerkleProof): boolean {
@@ -99,7 +99,7 @@ describe('CapabilityError', () => {
 // ─── Monitor ───────────────────────────────────────────────────────────────────
 
 describe('Monitor', () => {
-  describe('evaluate — enforce mode', () => {
+  describe('evaluate, enforce mode', () => {
     it('permits allowed actions', async () => {
       const monitor = new Monitor(COVENANT_ID, CONSTRAINTS, { mode: 'enforce' });
 
@@ -145,7 +145,7 @@ describe('Monitor', () => {
     });
   });
 
-  describe('evaluate — log_only mode', () => {
+  describe('evaluate, log_only mode', () => {
     it('permits denied actions without throwing', async () => {
       const monitor = new Monitor(COVENANT_ID, CONSTRAINTS, { mode: 'log_only' });
 

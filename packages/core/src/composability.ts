@@ -216,7 +216,7 @@ export function analyzeTopology(
 
   // Build edges from pairwise compatibility
   for (let i = 0; i < agents.length; i++) {
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     for (let j = i + 1; j < agents.length; j++) {
       const a = agents[i]!;
       const b = agents[j]!;

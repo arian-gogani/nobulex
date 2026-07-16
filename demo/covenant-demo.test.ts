@@ -10,7 +10,7 @@ import { EnforcementMiddleware } from '@nobulex/middleware';
 import { verify } from '@nobulex/verification';
 import { sha256String, timestamp } from '@nobulex/crypto';
 
-describe('Nobulex Covenant Protocol — Live Demo', () => {
+describe('Nobulex Covenant Protocol, Live Demo', () => {
   it('full pipeline: DID → covenant → middleware → verification', async () => {
     // ── Step 1: Create two agents with DIDs ───────────────────────────
     console.log('\n  [1] Create two agents with DIDs');
@@ -55,7 +55,7 @@ describe('Nobulex Covenant Protocol — Live Demo', () => {
     console.log('\n  [4] Middleware wraps Agent A\'s actions');
     const mw = new EnforcementMiddleware({ agentDid: agentA.did, spec });
 
-    // ── Step 5: $300 transfer — ALLOWED ───────────────────────────────
+    // ── Step 5: $300 transfer, ALLOWED ───────────────────────────────
     console.log('\n  [5] Agent A attempts $300 transfer');
     const r1 = await mw.execute(
       { action: 'transfer', params: { amount: 300, to: agentB.did, counterparty: { compliance_score: 0.9 } } },
@@ -66,7 +66,7 @@ describe('Nobulex Covenant Protocol — Live Demo', () => {
     expect(r1.decision.action).toBe('allow');
     expect(r1.executed).toBe(true);
 
-    // ── Step 6: $600 transfer — BLOCKED ───────────────────────────────
+    // ── Step 6: $600 transfer, BLOCKED ───────────────────────────────
     console.log('\n  [6] Agent A attempts $600 transfer');
     const r2 = await mw.execute(
       { action: 'transfer', params: { amount: 600, to: agentB.did, counterparty: { compliance_score: 0.9 } } },

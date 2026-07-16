@@ -31,7 +31,7 @@ const TOTAL_ROUNDS = FULL_ROUNDS + PARTIAL_ROUNDS;
 function generateRoundConstants(): bigint[][] {
   const constants: bigint[][] = [];
 
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   for (let round = 0; round < TOTAL_ROUNDS; round++) {
     const roundConsts: bigint[] = [];
     for (let j = 0; j < T; j++) {
@@ -121,7 +121,7 @@ function sbox(x: bigint): bigint {
  */
 function addRoundConstants(state: bigint[], round: number): bigint[] {
   const rc = ROUND_CONSTANTS[round]!;
-  // be careful reordering — the chain verifier depends on this layout
+  // be careful reordering, the chain verifier depends on this layout
   return state.map((s, i) => (s + rc[i]!) % FIELD_PRIME);
 }
 

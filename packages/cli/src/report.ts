@@ -1,5 +1,5 @@
 /*
- * `nobulex report <log-file> --framework <fw>` — compliance report.
+ * `nobulex report <log-file> --framework <fw>`, compliance report.
  *
  * Thin wrapper around generateComplianceReport(). Emits JSON by default
  * (auditor tooling reads this directly); pass --text for a human summary.
@@ -67,7 +67,7 @@ export function runReport(args: ParsedArgs, fs: FileSystem): CommandResult {
       '',
       'Requirements:',
       ...report.requirements.map(
-        (r) => `  [${r.met ? 'x' : ' '}] ${r.id}: ${r.title} — ${r.rationale}`,
+        (r) => `  [${r.met ? 'x' : ' '}] ${r.id}: ${r.title}, ${r.rationale}`,
       ),
     ];
     return { exitCode: 0, stdout: lines.join('\n') + '\n' };

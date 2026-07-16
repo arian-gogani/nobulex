@@ -22,7 +22,7 @@ export { nodeFs, memoryFs } from './fs.js';
 
 export const VERSION = '0.2.0';
 
-const HELP = `Nobulex CLI — the trust layer for autonomous agents
+const HELP = `Nobulex CLI, the trust layer for autonomous agents
 
 Usage:
   nobulex <command> [args]

@@ -166,9 +166,9 @@ function failingOp(message: string): () => Promise<never> {
   };
 }
 
-// ─── Telemetry middleware — span creation ────────────────────────────────────
+// ─── Telemetry middleware, span creation ────────────────────────────────────
 
-describe('telemetryMiddleware — span creation', () => {
+describe('telemetryMiddleware, span creation', () => {
   let tracer: MockTracer;
   let pipeline: MiddlewarePipeline;
 
@@ -205,9 +205,9 @@ describe('telemetryMiddleware — span creation', () => {
   });
 });
 
-// ─── Telemetry middleware — span attributes ─────────────────────────────────
+// ─── Telemetry middleware, span attributes ─────────────────────────────────
 
-describe('telemetryMiddleware — span attributes', () => {
+describe('telemetryMiddleware, span attributes', () => {
   let tracer: MockTracer;
   let pipeline: MiddlewarePipeline;
 
@@ -258,9 +258,9 @@ describe('telemetryMiddleware — span attributes', () => {
   });
 });
 
-// ─── Telemetry middleware — error handling ───────────────────────────────────
+// ─── Telemetry middleware, error handling ───────────────────────────────────
 
-describe('telemetryMiddleware — error handling', () => {
+describe('telemetryMiddleware, error handling', () => {
   let tracer: MockTracer;
   let pipeline: MiddlewarePipeline;
 
@@ -310,9 +310,9 @@ describe('telemetryMiddleware — error handling', () => {
   });
 });
 
-// ─── NobulexMetrics — event recording ─────────────────────────────────────────
+// ─── NobulexMetrics, event recording ─────────────────────────────────────────
 
-describe('NobulexMetrics — record()', () => {
+describe('NobulexMetrics, record()', () => {
   let meter: MockMeter;
   let metrics: NobulexMetrics;
 
@@ -430,9 +430,9 @@ describe('NobulexMetrics — record()', () => {
   });
 });
 
-// ─── NobulexMetrics — bindToClient ────────────────────────────────────────────
+// ─── NobulexMetrics, bindToClient ────────────────────────────────────────────
 
-describe('NobulexMetrics — bindToClient()', () => {
+describe('NobulexMetrics, bindToClient()', () => {
   let meter: MockMeter;
   let metrics: NobulexMetrics;
   let source: MockEventSource;
@@ -680,9 +680,9 @@ describe('createTelemetry()', () => {
   });
 });
 
-// ─── Telemetry middleware — uses NoopTracer by default ───────────────────────
+// ─── Telemetry middleware, uses NoopTracer by default ───────────────────────
 
-describe('telemetryMiddleware — defaults', () => {
+describe('telemetryMiddleware, defaults', () => {
   it('works without providing options', async () => {
     const mw = telemetryMiddleware();
     const pipeline = new MiddlewarePipeline();

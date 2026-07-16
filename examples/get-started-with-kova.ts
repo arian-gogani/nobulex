@@ -1,6 +1,6 @@
 #!/usr/bin/env npx tsx
 /**
- * Get Started with Kova — 3 lines of code
+ * Get Started with Kova, 3 lines of code
  *
  * Run: npx tsx examples/get-started-with-kova.ts
  *
@@ -30,7 +30,7 @@ const mockMCPServer = {
 };
 
 async function main() {
-  console.log('Kova — The trust layer for the agent economy\n');
+  console.log('Kova, The trust layer for the agent economy\n');
 
   // Three lines: wrap your MCP server with Kova
   const server = await withKova(mockMCPServer, 'data-isolation');

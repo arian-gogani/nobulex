@@ -31,7 +31,7 @@ function makeDoc(overrides: Partial<CovenantDocument> & { id: string }): Covenan
 }
 
 // ---------------------------------------------------------------------------
-// Transaction — put + commit
+// Transaction, put + commit
 // ---------------------------------------------------------------------------
 describe('Transaction - put + commit', () => {
   let store: MemoryStore;
@@ -84,7 +84,7 @@ describe('Transaction - put + commit', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Transaction — delete + commit
+// Transaction, delete + commit
 // ---------------------------------------------------------------------------
 describe('Transaction - delete + commit', () => {
   let store: MemoryStore;
@@ -119,7 +119,7 @@ describe('Transaction - delete + commit', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Transaction — rollback discards
+// Transaction, rollback discards
 // ---------------------------------------------------------------------------
 describe('Transaction - rollback', () => {
   let store: MemoryStore;
@@ -175,7 +175,7 @@ describe('Transaction - rollback', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Transaction — multiple operations in one transaction
+// Transaction, multiple operations in one transaction
 // ---------------------------------------------------------------------------
 describe('Transaction - multiple operations', () => {
   let store: MemoryStore;
@@ -222,7 +222,7 @@ describe('Transaction - multiple operations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Transaction — pendingCount tracking
+// Transaction, pendingCount tracking
 // ---------------------------------------------------------------------------
 describe('Transaction - pendingCount', () => {
   let store: MemoryStore;
@@ -286,7 +286,7 @@ describe('Transaction - pendingCount', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Transaction — has/get reflect staged operations
+// Transaction, has/get reflect staged operations
 // ---------------------------------------------------------------------------
 describe('Transaction - has/get reflect staged operations', () => {
   let store: MemoryStore;
@@ -346,7 +346,7 @@ describe('Transaction - has/get reflect staged operations', () => {
 });
 
 // ---------------------------------------------------------------------------
-// Transaction — error after finalized
+// Transaction, error after finalized
 // ---------------------------------------------------------------------------
 describe('Transaction - error on use after finalization', () => {
   let store: MemoryStore;

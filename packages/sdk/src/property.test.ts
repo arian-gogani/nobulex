@@ -3,7 +3,7 @@
  *
  * These use fast-check to exercise the generateProof / verifyCounterparty
  * pipeline against arbitrary but bounded inputs. APIs are taken directly
- * from packages/sdk/src/handshake.ts and examples/demo.ts — no invented
+ * from packages/sdk/src/handshake.ts and examples/demo.ts, no invented
  * surface area.
  */
 
@@ -118,7 +118,7 @@ describe('SDK property-based tests (fast-check)', () => {
           });
           const result = await verifyCounterparty(proof);
           expect(result.trusted).toBe(false);
-          // step 3 — "Action log integrity failed: ..."
+          // step 3, "Action log integrity failed: ..."
           expect(classifyFailure(result.reason)).toBe(3);
           expect(result.logIntegrityValid).toBe(false);
         },
@@ -243,10 +243,10 @@ describe('SDK property-based tests (fast-check)', () => {
             actionLog: log,
             audience: audienceX,
           });
-          // correct audience — still trusted
+          // correct audience, still trusted
           const ok = await verifyCounterparty(proof, { expectedAudience: audienceX });
           expect(ok.trusted).toBe(true);
-          // wrong audience — rejected at step 7
+          // wrong audience, rejected at step 7
           const bad = await verifyCounterparty(proof, { expectedAudience: audienceY });
           expect(bad.trusted).toBe(false);
           expect(classifyFailure(bad.reason)).toBe(7);

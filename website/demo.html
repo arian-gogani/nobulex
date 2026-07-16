@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Live Demo — Nobulex</title>
+  <title>Live Demo, Nobulex</title>
   <meta name="description" content="See Nobulex enforce a covenant: allowed transfer, blocked transfer, verifiable log.">
   <link rel="icon" type="image/png" href="/icon.png">
   <link rel="stylesheet" href="styles.css">
@@ -110,20 +110,20 @@
           <p class="demo-step__explain"><strong>Step 3:</strong> Agent tries to transfer $300. That's under $500, so middleware allows it and adds an entry to the log.</p>
           <div class="demo-step__code">
             <div class="demo-step__line"><span class="demo-step__prompt">></span> mw.execute({ action: 'transfer', params: { amount: 300 } }, ...)</div>
-            <div class="demo-step__line"><span class="demo-step__comment">← <span class="demo-step__allowed">ALLOWED</span> — within covenant</span></div>
+            <div class="demo-step__line"><span class="demo-step__comment">← <span class="demo-step__allowed">ALLOWED</span>, within covenant</span></div>
             <div class="demo-step__line"><span class="demo-step__comment">   Log: { action: "transfer", amount: 300, result: "allowed", hash: "0x2b..." }</span></div>
           </div>
         </div>
         <div class="demo-step" data-step="3">
-          <p class="demo-step__explain"><strong>Step 4:</strong> Agent tries to transfer $600. Over the limit — middleware blocks it. The transfer never executes. The block is logged.</p>
+          <p class="demo-step__explain"><strong>Step 4:</strong> Agent tries to transfer $600. Over the limit, middleware blocks it. The transfer never executes. The block is logged.</p>
           <div class="demo-step__code">
             <div class="demo-step__line"><span class="demo-step__prompt">></span> mw.execute({ action: 'transfer', params: { amount: 600 } }, ...)</div>
-            <div class="demo-step__line"><span class="demo-step__comment">← <span class="demo-step__blocked">BLOCKED</span> — covenant: amount > 500</span></div>
+            <div class="demo-step__line"><span class="demo-step__comment">← <span class="demo-step__blocked">BLOCKED</span>, covenant: amount > 500</span></div>
             <div class="demo-step__line"><span class="demo-step__comment">   Callback never runs. Log: { action: "transfer", amount: 600, result: "blocked", hash: "0x7a..." }</span></div>
           </div>
         </div>
         <div class="demo-step" data-step="4">
-          <p class="demo-step__explain"><strong>Step 5:</strong> Anyone can run <code>verify()</code> on the log. No need to trust the operator — the proof is in the data.</p>
+          <p class="demo-step__explain"><strong>Step 5:</strong> Anyone can run <code>verify()</code> on the log. No need to trust the operator, the proof is in the data.</p>
           <div class="demo-step__code">
             <div class="demo-step__line"><span class="demo-step__prompt">></span> verify(spec, mw.getLog())</div>
             <div class="demo-step__line"><span class="demo-step__comment">← { compliant: true, violations: [] } ✓</span></div>

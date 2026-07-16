@@ -1,5 +1,5 @@
 /**
- * Agent Reliability Index — Issue Renderer
+ * Agent Reliability Index, Issue Renderer
  *
  * Takes a structured Issue and renders it to publishable markdown matching
  * the Charter Issue format. This is the bridge between the measurement
@@ -44,7 +44,7 @@ export function renderIssueToMarkdown(issue: Issue): string {
 
 function renderMasthead(issue: Issue): string {
   return [
-    `# Agent Reliability Index — Issue ${pad3(issue.number)}`,
+    `# Agent Reliability Index, Issue ${pad3(issue.number)}`,
     ``,
     `**Volume ${issue.volume}, Issue ${pad3(issue.number)} · Week of ${formatWeek(issue.week)}**`,
     ``,
@@ -59,13 +59,13 @@ function renderHeadline(issue: Issue): string {
 
 function renderScorecards(issue: Issue): string {
   const rows = issue.vendors.map((v) => {
-    const delta = v.cvriDelta === 0 ? "—" : (v.cvriDelta > 0 ? "+" : "") + v.cvriDelta.toFixed(1);
+    const delta = v.cvriDelta === 0 ? ", " : (v.cvriDelta > 0 ? "+" : "") + v.cvriDelta.toFixed(1);
     const driftCount = v.drift.silentDriftEvents.length + v.drift.announcedDriftEvents.length;
     return `| ${formatVendor(v.vendor).padEnd(9)} | ${v.cvri.toFixed(1).padStart(5)} | ${delta.padStart(15)} | ${String(driftCount).padStart(12)} | ${v.status.padEnd(10)} |`;
   });
 
   return [
-    `## CVRI scorecards — this week`,
+    `## CVRI scorecards, this week`,
     ``,
     `| Vendor    | CVRI  | Δ vs. last week |  Drift events | Status     |`,
     `|-----------|-------|-----------------|---------------|------------|`,
@@ -76,7 +76,7 @@ function renderScorecards(issue: Issue): string {
 }
 
 function renderDriftSection(issue: Issue): string {
-  const parts: string[] = [`## Drift events — this week`, ``, `### Silent drift`, ``];
+  const parts: string[] = [`## Drift events, this week`, ``, `### Silent drift`, ``];
 
   const silent = issue.vendors.flatMap((v) =>
     v.drift.silentDriftEvents.map((e) => ({ vendor: v.vendor, event: e })),
@@ -117,7 +117,7 @@ function renderDriftEvent(
   const dimensions = event.dimensionsAffected.join(", ");
   const taskClasses = event.taskClasses.join(", ");
   const lines = [
-    `#### ${formatVendor(vendor)} \`${event.endpointId}\` — ${taskClasses}`,
+    `#### ${formatVendor(vendor)} \`${event.endpointId}\`, ${taskClasses}`,
     ``,
     `- **Detected**: ${event.detectedAt}`,
     `- **Dimensions affected**: ${dimensions}`,
@@ -135,7 +135,7 @@ function renderDriftEvent(
 }
 
 function renderIncidents(issue: Issue): string {
-  const parts: string[] = [`## Notable incidents — this week`, ``];
+  const parts: string[] = [`## Notable incidents, this week`, ``];
 
   const bySeverity = {
     critical: issue.incidents.filter((i) => i.severity === "critical"),

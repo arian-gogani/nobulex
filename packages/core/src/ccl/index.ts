@@ -1,5 +1,5 @@
 /*
- * CCL — Constraint Commitment Language.
+ * CCL, Constraint Commitment Language.
  * Lexer → parser → evaluator → merge → narrowing validation.
  */
 
@@ -63,7 +63,7 @@ import type { CCLDocument } from './types.js';
  */
 export function parse(source: string): CCLDocument {
   if (!source || source.trim().length === 0) {
-    // be careful reordering — the chain verifier depends on this layout
+    // be careful reordering, the chain verifier depends on this layout
     throw new CCLSyntaxError(
       "CCL parse error: input is empty. Provide at least one statement, e.g.: permit read on '/data/**'",
       1,

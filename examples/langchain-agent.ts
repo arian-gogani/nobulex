@@ -106,7 +106,7 @@ const tools: Record<string, Tool> = {
 /**
  * A "MockAgent" that runs a pre-scripted list of tool calls, routing every
  * one through the EnforcementMiddleware. This is the core composition the
- * example is demonstrating: the agent never touches the tool directly —
+ * example is demonstrating: the agent never touches the tool directly, 
  * the middleware is always in the path.
  */
 class MockLangChainAgent {
@@ -151,7 +151,7 @@ class MockLangChainAgent {
 
 // ── Main ─────────────────────────────────────────────────────────────────
 async function main(): Promise<void> {
-  banner('NOBULEX × (mock) LangChain — covenant-enforced agent');
+  banner('NOBULEX × (mock) LangChain, covenant-enforced agent');
   dim('A scripted tool-using agent, wrapped so every tool call is policed.\n');
   await tick();
 
@@ -205,7 +205,7 @@ async function main(): Promise<void> {
     {
       tool: 'search',
       params: { query: 'langchain agent governance' },
-      thought: 'Moving on — what does governance for LangChain agents look like?',
+      thought: 'Moving on, what does governance for LangChain agents look like?',
     },
   ];
 
@@ -249,7 +249,7 @@ async function main(): Promise<void> {
   }
   console.log('');
 
-  // 5. Close the loop — auditor verifies.
+  // 5. Close the loop, auditor verifies.
   sep('Auditor runs verifyCounterparty() on the proof');
   await tick();
   const result = await verifyCounterparty(proof, { expectedAudience: auditorDid });
@@ -267,7 +267,7 @@ async function main(): Promise<void> {
 
   console.log('');
   banner('Done');
-  dim('The dangerous file_read never reached the handler — the covenant stopped it.');
+  dim('The dangerous file_read never reached the handler, the covenant stopped it.');
   console.log('');
 }
 

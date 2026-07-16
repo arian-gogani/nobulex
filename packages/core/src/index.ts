@@ -390,7 +390,7 @@ export async function resignCovenant(
     id: '' as HashHex,
   };
 
-  // Strip countersignatures on re-sign — they are invalidated by the new canonical form
+  // Strip countersignatures on re-sign, they are invalidated by the new canonical form
   delete newDoc.countersignatures;
 
   const canonical = canonicalForm(newDoc);
@@ -459,17 +459,17 @@ const VALID_PROOF_TYPES: readonly string[] = [
  * Verify a covenant document by running all 11 specification checks.
  *
  * Checks:
- *  1. id_match         — Document ID matches SHA-256 of canonical form
- *  2. signature_valid  — Issuer's Ed25519 signature is valid
- *  3. not_expired      — Current time is before expiresAt (if set)
- *  4. active           — Current time is after activatesAt (if set)
- *  5. ccl_parses       — Constraints parse as valid CCL
- *  6. enforcement_valid — Enforcement config type is recognized (if set)
- *  7. proof_valid       — Proof config type is recognized (if set)
- *  8. chain_depth      — Chain depth does not exceed MAX_CHAIN_DEPTH
- *  9. document_size    — Serialized size does not exceed MAX_DOCUMENT_SIZE
- * 10. countersignatures — All countersignatures are valid
- * 11. nonce_present    — Nonce is present and non-empty
+ *  1. id_match, Document ID matches SHA-256 of canonical form
+ *  2. signature_valid, Issuer's Ed25519 signature is valid
+ *  3. not_expired, Current time is before expiresAt (if set)
+ *  4. active, Current time is after activatesAt (if set)
+ *  5. ccl_parses, Constraints parse as valid CCL
+ *  6. enforcement_valid, Enforcement config type is recognized (if set)
+ *  7. proof_valid, Proof config type is recognized (if set)
+ *  8. chain_depth, Chain depth does not exceed MAX_CHAIN_DEPTH
+ *  9. document_size, Serialized size does not exceed MAX_DOCUMENT_SIZE
+ * 10. countersignatures, All countersignatures are valid
+ * 11. nonce_present, Nonce is present and non-empty
  *
  * Returns a VerificationResult with per-check details; `valid` is true
  * only if every check passes.
@@ -1038,7 +1038,7 @@ export function deserializeCovenant(json: string): CovenantDocument {
 
 export * from './types/index';
 export * from './crypto/index';
-// ccl — selective to avoid parse/tokenize/serialize/Token/TokenType overlap with covenant-lang
+// ccl, selective to avoid parse/tokenize/serialize/Token/TokenType overlap with covenant-lang
 export {
   parse as cclParse, evaluate, matchAction, matchResource, merge, checkRateLimit,
   validateNarrowing, validateCCL, CCLSyntaxError, CCLValidationError,

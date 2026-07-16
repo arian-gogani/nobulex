@@ -1,6 +1,6 @@
 /*
  * Hash-chained action log.
- * Each entry links to the previous via SHA-256 — tamper with one
+ * Each entry links to the previous via SHA-256, tamper with one
  * and the whole chain breaks. Append-only by design.
  */
 
@@ -27,7 +27,7 @@ export function computeFailureHash(errorMessage: string): string {
  * A single entry in the action log, containing an action, its context, and a hash linking it to the chain.
  */
 // ActionLogEntry, ActionLog, MerkleProofNode, MerkleProof types
-// are re-exported from the types barrel — not duplicated here
+// are re-exported from the types barrel, not duplicated here
 
 
 /**
@@ -284,7 +284,7 @@ export function verifyPartial(
   const len = entries.length;
 
   if (lastN >= len) {
-    // Trusted prefix is empty — fall back to the full integrity check.
+    // Trusted prefix is empty, fall back to the full integrity check.
     const full = verifyIntegrity(actionLog);
     return { valid: full.valid, checked: len, errors: full.errors };
   }
@@ -311,7 +311,7 @@ export function verifyPartial(
       errors.push(`Entry ${i}: hash mismatch (expected ${expectedHash}, got ${entry.hash})`);
     }
 
-    // Chain linkage — including the boundary join into the trusted prefix.
+    // Chain linkage, including the boundary join into the trusted prefix.
     if (i > 0) {
       const prev = entries[i - 1]!;
       if (entry.previousHash !== prev.hash) {
@@ -341,7 +341,7 @@ export function buildMerkleTree(hashes: readonly string[]): {
 
   const layers: string[][] = [[...hashes]];
 
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   while (layers[layers.length - 1]!.length > 1) {
     const current = layers[layers.length - 1]!;
     const next: string[] = [];

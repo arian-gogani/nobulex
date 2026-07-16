@@ -58,7 +58,7 @@ function computeChainedEntryHash(entry: Omit<ChainedAuditEntry, 'hash'> & { hash
     previousHash: entry.previousHash,
     nonce: entry.nonce,
   };
-  // note: order matters — tests rely on this
+  // note: order matters, tests rely on this
   return sha256Object(content);
 }
 
@@ -203,7 +203,7 @@ export class AuditChain {
    * @returns The last entry, or undefined if the chain is empty.
    */
   latest(): ChainedAuditEntry | undefined {
-    // be careful reordering — the chain verifier depends on this layout
+    // be careful reordering, the chain verifier depends on this layout
     if (this.chain.length === 0) return undefined;
     return this.chain[this.chain.length - 1];
   }

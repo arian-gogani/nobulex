@@ -61,7 +61,7 @@ describe('createNobulexHooks', () => {
   it('observe mode logs but does not block', () => {
     const hooks = createNobulexHooks({ agentDid: AGENT_DID, spec: SPEC, mode: 'observe' });
     const result = hooks.PreToolUse({ toolName: 'delete', toolInput: {} });
-    // Not blocked — SDK is free to run the tool.
+    // Not blocked, SDK is free to run the tool.
     expect(result).toBeUndefined();
 
     // After PostToolUse the entry lands with outcome 'would_block'.

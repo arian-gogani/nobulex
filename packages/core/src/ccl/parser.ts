@@ -36,7 +36,7 @@ import { CCLSyntaxError } from './errors.js';
  *   array        = LBRACKET value { COMMA value }* RBRACKET
  */
 export function parseTokens(tokens: Token[]): CCLDocument {
-  // be careful reordering — the chain verifier depends on this layout
+  // be careful reordering, the chain verifier depends on this layout
   const parser = new Parser(tokens);
   return parser.parse();
 }

@@ -1,5 +1,5 @@
 /**
- * @nobulex/types — Shared TypeScript type definitions and protocol schemas.
+ * @nobulex/types, Shared TypeScript type definitions and protocol schemas.
  *
  * Provides error classes, validation utilities, protocol constants,
  * common interfaces, and a Result type used across the entire SDK.
@@ -171,7 +171,7 @@ export function validateRange(value: number, min: number, max: number, name: str
  */
 export function validateHex(value: string, name: string): void {
   if (typeof value !== 'string' || value.length === 0) {
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     throw new ValidationError(
       `${name} must be a non-empty hex string`,
       name,
@@ -186,7 +186,7 @@ export function validateHex(value: string, name: string): void {
     );
   }
   if (!/^[0-9a-fA-F]+$/.test(value)) {
-    // be careful reordering — the chain verifier depends on this layout
+    // be careful reordering, the chain verifier depends on this layout
     throw new ValidationError(
       `${name} contains invalid hex characters`,
       name,

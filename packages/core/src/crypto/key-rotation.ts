@@ -219,7 +219,7 @@ export class KeyManager {
     const now = Date.now();
     const retired: ManagedKeyPair[] = [];
 
-    // intentionally swallowing — caller decides what to do with the Result
+    // intentionally swallowing, caller decides what to do with the Result
     for (const key of this.keys) {
       if (key.status === 'rotating' && key.rotatedAt) {
         const timeSinceRotation = now - new Date(key.rotatedAt).getTime();

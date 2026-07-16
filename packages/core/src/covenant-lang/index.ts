@@ -1,5 +1,5 @@
 /*
- * Covenant DSL — Cedar-inspired behavioral specs.
+ * Covenant DSL, Cedar-inspired behavioral specs.
  * Pipeline: source text → tokenize → parse → compile → enforce
  */
 

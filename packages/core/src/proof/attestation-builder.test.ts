@@ -66,7 +66,7 @@ function makeVerification(agentDid: string, violations = 0): ComplianceVerificat
   };
 }
 
-// dummy key for testing — don't use in production obviously
+// dummy key for testing, don't use in production obviously
 const testPrivateKey = new Uint8Array(32).fill(1);
 
 // ─── Tests ──────────────────────────────────────────────────────────────────
@@ -168,7 +168,7 @@ describe('buildAttestationRecord', () => {
       agentDid: did, digest: d1, previous: null, privateKey: testPrivateKey,
     });
 
-    // second session — builds on first
+    // second session, builds on first
     const log2 = makeActionLog(did, 15, 0);
     const v2 = makeVerification(did, 0);
     const d2 = createSessionDigest({ covenant, actionLog: log2, verification: v2 });

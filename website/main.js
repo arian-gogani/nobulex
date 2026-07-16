@@ -1,18 +1,18 @@
-/* Nobulex — main.js */
+/* Nobulex, main.js */
 
 (function () {
   'use strict';
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  /* ——— Hero video (replace src with videos/hero.mp4 for branded video) ——— */
+  /*,, Hero video (replace src with videos/hero.mp4 for branded video),, */
   const heroVideo = document.querySelector('.hero__video');
   if (heroVideo && !prefersReducedMotion) {
     heroVideo.play().catch(() => {});
     document.addEventListener('click', () => heroVideo.play().catch(() => {}), { once: true });
   }
 
-  /* ——— Section background videos ——— */
+  /*,, Section background videos,, */
   document.querySelectorAll('.section__bg-video').forEach((v) => {
     v.addEventListener('error', () => {
       v.src = 'https://videos.pexels.com/video-files/4939677/4939677-uhd_2560_1440_30fps.mp4';
@@ -20,7 +20,7 @@
     v.play().catch(() => {});
   });
 
-  /* ——— Hamburger menu ——— */
+  /*,, Hamburger menu,, */
   const navToggle = document.querySelector('.nav-toggle');
   const navClose = document.querySelector('.nav-close');
   const headerNav = document.querySelector('.header__nav');
@@ -46,7 +46,7 @@
     });
   }
 
-  /* ——— Copy buttons ——— */
+  /*,, Copy buttons,, */
   function showCopied(btn, label = 'Copied!') {
     const prev = btn.textContent;
     btn.textContent = label;
@@ -95,7 +95,7 @@
     });
   });
 
-  /* ——— Live stats (GitHub stars, npm downloads) ——— */
+  /*,, Live stats (GitHub stars, npm downloads),, */
   const GITHUB_REPO = 'arian-gogani/nobulex';
   const NPM_PACKAGE = '@nobulex/sdk';
 
@@ -121,7 +121,7 @@
     fetch(`https://api.npmjs.org/downloads/point/last-week/${encodeURIComponent(NPM_PACKAGE)}`).then((r) => r.json()).then((d) => d.downloads).catch(() => null)
   ]).then(([stars, downloads]) => setLiveStats(stars, downloads));
 
-  /* ——— Help widget (AI assistance) ——— */
+  /*,, Help widget (AI assistance),, */
   const helpToggle = document.getElementById('help-toggle');
   const helpPanel = document.getElementById('help-panel');
   const helpClose = document.getElementById('help-close');
@@ -201,7 +201,7 @@
         try {
           data = text ? JSON.parse(text) : {};
         } catch {
-          addMessage('assistant', "Our chat isn't available right now. No worries — try these instead:");
+          addMessage('assistant', "Our chat isn't available right now. No worries, try these instead:");
           addFriendlyLinks();
           setHint('');
           return;
@@ -233,7 +233,7 @@
     });
   }
 
-  /* ——— EU countdown ——— */
+  /*,, EU countdown,, */
   const euCountdown = document.getElementById('eu-countdown');
   if (euCountdown) {
     const deadline = new Date('2026-08-02T00:00:00Z');
@@ -252,7 +252,7 @@
     setInterval(update, 36e5);
   }
 
-  /* ——— Scroll progress bar ——— */
+  /*,, Scroll progress bar,, */
   const scrollBar = document.querySelector('.scroll-bar');
   if (scrollBar) {
     function updateScrollBar() {
@@ -264,7 +264,7 @@
     updateScrollBar();
   }
 
-  /* ——— Scroll reveal ——— */
+  /*,, Scroll reveal,, */
   if (!prefersReducedMotion) {
     const reveal = document.querySelectorAll('[data-reveal], [data-section]');
     const io = new IntersectionObserver(
@@ -278,7 +278,7 @@
     reveal.forEach((el) => io.observe(el));
   }
 
-  /* ——— See it fail closed demo ——— */
+  /*,, See it fail closed demo,, */
   const demoRun = document.getElementById('demo-run');
   const demoLines = document.querySelectorAll('.demo__line--step');
   if (demoRun && demoLines.length) {
@@ -304,7 +304,7 @@
     demoRun.addEventListener('click', runDemo);
   }
 
-  /* ——— Hero word split animation ——— */
+  /*,, Hero word split animation,, */
   if (!prefersReducedMotion) {
     document.querySelectorAll('[data-split="words"]').forEach((line) => {
       const text = line.textContent;

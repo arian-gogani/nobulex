@@ -1,5 +1,5 @@
 /**
- * Trust Capital — machine reputation for AI agents.
+ * Trust Capital, machine reputation for AI agents.
  *
  * Trust Capital is calculated from a chain of bilateral cryptographic
  * receipts. Each receipt binds what was authorized (pre-execution) to

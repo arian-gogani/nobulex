@@ -8,7 +8,7 @@
  * signatures against the key that was active at the time.
  *
  * Without rotation, a leaked or retired key forces an agent to rebuild
- * identity from scratch — losing its reputation and chain. With rotation,
+ * identity from scratch, losing its reputation and chain. With rotation,
  * an operator can rotate a key mid-life and every downstream verifier can
  * still prove the continuity.
  */
@@ -77,7 +77,7 @@ function computeRotationHash(record: Omit<KeyRotationRecord, 'hash' | 'signature
  * Produce a signed rotation record. The caller holds the current (old) key
  * and is committing to the new public key.
  *
- * This function does NOT update the DID document — callers stitch the record
+ * This function does NOT update the DID document, callers stitch the record
  * into a new document via {@link applyRotation}.
  */
 export async function signRotation(params: {
@@ -157,7 +157,7 @@ export function applyRotation(
 
   return {
     ...document,
-    // Put the new key first — it's now authoritative — but retain older keys
+    // Put the new key first, it's now authoritative, but retain older keys
     // so historical signatures can still be verified.
     verificationMethod: [newVerificationMethod, ...document.verificationMethod],
     authentication: [newVerificationMethod.id, ...document.authentication],
@@ -311,7 +311,7 @@ export function keyAtTime(
 
 /**
  * Verify a signature against the DID's full rotation history. Tries each
- * historical key in turn — succeeds if any of them signed the message.
+ * historical key in turn, succeeds if any of them signed the message.
  *
  * The current authoritative key is preferred (checked first), so the fast
  * path for fresh messages stays fast.

@@ -1,9 +1,9 @@
 /**
- * @nobulex/attestation — Behavioral Attestation Records
+ * @nobulex/attestation, Behavioral Attestation Records
  *
  * Aggregates per-session proof chains into a portable, verifiable
  * behavioral history for an agent. Think of it as a "credit report"
- * for agent behavior — shows lifetime compliance without exposing
+ * for agent behavior, shows lifetime compliance without exposing
  * the raw covenant details or action logs.
  *
  */
@@ -26,7 +26,7 @@ export interface ViolationBreakdown {
 
 /**
  * Metrics from a single deployment/session.
- * This is what gets extracted from a proof chain — the summary
+ * This is what gets extracted from a proof chain, the summary
  * without the raw data.
  */
 export interface SessionDigest {
@@ -45,14 +45,14 @@ export interface SessionDigest {
   readonly covenantHash: string;
   /** Number of statements in the covenant (complexity signal) */
   readonly covenantStatementCount: number;
-  /** Head hash of the action log — proves integrity without exposing the log */
+  /** Head hash of the action log, proves integrity without exposing the log */
   readonly logHeadHash: string;
   // Platform or deployment context identifier
   readonly platform?: string;
 }
 
 /**
- * A single attestation record — a signed snapshot of an agent's
+ * A single attestation record, a signed snapshot of an agent's
  * cumulative behavioral history at a point in time.
  *
  * These chain together: each record references the hash of the
@@ -87,7 +87,7 @@ export interface AttestationRecord {
   readonly recentComplianceRate: number | null;
   /** Whether compliance is trending up, down, or stable */
   readonly complianceTrend: 'improving' | 'declining' | 'stable';
-  /** First session timestamp — how long this agent has been tracked */
+  /** First session timestamp, how long this agent has been tracked */
   readonly operationalSince: string;
 
   // violation analysis
@@ -118,7 +118,7 @@ export interface RiskProfile {
   readonly highSeverityViolations: number;
   readonly covenantComplexity: number;
   readonly complianceTrend: 'improving' | 'declining' | 'stable';
-  /** Hash of the latest attestation record — verifiers can check this */
+  /** Hash of the latest attestation record, verifiers can check this */
   readonly latestAttestationHash: string;
   /** When this profile was generated */
   readonly generatedAt: string;

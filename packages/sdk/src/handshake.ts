@@ -39,7 +39,7 @@ export interface ProofOfBehavior {
   readonly actionLog: ActionLog;
   readonly generatedAt: string;
   readonly proofSignature: string;
-  // prevents replay attacks — added after Rohit's feedback on RFC #1740
+  // prevents replay attacks, added after Rohit's feedback on RFC #1740
   readonly audience?: string;
   // scoped trust: "i trust you for payments but not for admin"
   readonly taskClass?: string;
@@ -137,12 +137,12 @@ export async function verifyCounterparty(
     return {
       ...base, trusted: false, signatureValid: false, logIntegrityValid: false,
       compliant: false, violationCount: 0, totalActions: 0,
-      reason: 'Covenant signature is invalid — agent did not commit to these rules',
+      reason: 'Covenant signature is invalid, agent did not commit to these rules',
       verification,
     };
   }
 
-  // 2. proof signature — make sure the whole payload wasn't tampered with
+  // 2. proof signature, make sure the whole payload wasn't tampered with
   const payloadString = JSON.stringify({
     agentDid: proof.agentDid,
     covenantHash: proof.covenantHash,
@@ -158,12 +158,12 @@ export async function verifyCounterparty(
     return {
       ...base, trusted: false, signatureValid: true, logIntegrityValid: false,
       compliant: false, violationCount: 0, totalActions: 0,
-      reason: 'Proof signature is invalid — proof may have been tampered with',
+      reason: 'Proof signature is invalid, proof may have been tampered with',
       verification,
     };
   }
 
-  // 3. hash chain integrity — if any log entry was modified, this catches it
+  // 3. hash chain integrity, if any log entry was modified, this catches it
   const integrity = verifyIntegrity(proof.actionLog);
   if (!integrity.valid) {
     const verification = verifyCovenant(proof.covenant, proof.actionLog);
@@ -175,7 +175,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // 4. compliance — did they actually follow their own rules?
+  // 4. compliance, did they actually follow their own rules?
   const verification = verifyCovenant(proof.covenant, proof.actionLog);
 
   if (!verification.compliant && verification.violations.length > maxViolations) {
@@ -210,7 +210,7 @@ export async function verifyCounterparty(
     };
   }
 
-  // 7. audience binding — is this proof actually meant for me?
+  // 7. audience binding, is this proof actually meant for me?
   // without this, someone could replay a proof meant for a different verifier
   if (expectedAudience && proof.audience !== expectedAudience) {
     return {
@@ -219,12 +219,12 @@ export async function verifyCounterparty(
       totalActions: verification.totalActions,
       reason: proof.audience
         ? `Proof audience '${proof.audience}' does not match expected '${expectedAudience}'`
-        : `Proof has no audience claim — expected '${expectedAudience}'`,
+        : `Proof has no audience claim, expected '${expectedAudience}'`,
       verification,
     };
   }
 
-  // 8. task scoping — "i trust you for payments" doesn't mean "i trust you for admin"
+  // 8. task scoping, "i trust you for payments" doesn't mean "i trust you for admin"
   if (requiredTaskClass && proof.taskClass !== requiredTaskClass) {
     return {
       ...base, trusted: false, signatureValid: true, logIntegrityValid: true,
@@ -232,17 +232,17 @@ export async function verifyCounterparty(
       totalActions: verification.totalActions,
       reason: proof.taskClass
         ? `Proof task class '${proof.taskClass}' does not match required '${requiredTaskClass}'`
-        : `Proof has no task class — expected '${requiredTaskClass}'`,
+        : `Proof has no task class, expected '${requiredTaskClass}'`,
       verification,
     };
   }
 
-  // all 8 checks passed — this agent is legit
+  // all 8 checks passed, this agent is legit
   return {
     ...base, trusted: true, signatureValid: true, logIntegrityValid: true,
     compliant: verification.compliant, violationCount: verification.violations.length,
     totalActions: verification.totalActions,
-    reason: 'All checks passed — agent is trusted',
+    reason: 'All checks passed, agent is trusted',
     verification,
   };
 }
@@ -272,7 +272,7 @@ export function resolveTrustLevel(level: TrustLevel): TrustThreshold {
 
 /**
  * Merge a {@link TrustLevel} preset into an existing {@link HandshakeOptions}
- * without overwriting explicit caller values. Explicit options always win —
+ * without overwriting explicit caller values. Explicit options always win, 
  * the preset only fills gaps. Returns a new options object.
  */
 export function withTrustLevel(
@@ -293,8 +293,8 @@ export function withTrustLevel(
 
 /**
  * Content-addressed cache for handshake results. Keyed by
- * sha256(proof || options) so any change — rotated covenant, new action,
- * different audience — invalidates automatically. Entries have a TTL
+ * sha256(proof || options) so any change, rotated covenant, new action,
+ * different audience, invalidates automatically. Entries have a TTL
  * (default 5 minutes) so stale results don't linger across long-running
  * verifier processes.
  */

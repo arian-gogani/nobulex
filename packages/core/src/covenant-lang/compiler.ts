@@ -1,5 +1,5 @@
 /**
- * Compiler — transforms a CovenantSpec into an enforcement function.
+ * Compiler, transforms a CovenantSpec into an enforcement function.
  *
  * The compiled function evaluates an action context against the covenant's
  * statements and requirements, returning an enforcement decision.
@@ -71,7 +71,7 @@ function checkRequirements(
   for (const req of requirements) {
     const fieldValue = resolveField(params, req.field);
     if (!compare(fieldValue, req.operator, req.value)) {
-      // note: order matters — tests rely on this
+      // note: order matters, tests rely on this
       return req;
     }
   }

@@ -1,4 +1,4 @@
-/* Nobulex — The trust layer for the agent economy */
+/* Nobulex, The trust layer for the agent economy */
 
 *,
 *::before,
@@ -104,7 +104,7 @@ body {
   transition: transform 0.15s var(--ease);
 }
 
-/* Header — minimal glass nav */
+/* Header, minimal glass nav */
 .header {
   position: fixed;
   top: 0;
@@ -747,7 +747,7 @@ main {
   margin: 0;
 }
 
-/* Buffer between image/video sections — no media touching */
+/* Buffer between image/video sections, no media touching */
 .section-buffer {
   min-height: 4rem;
   background: var(--bg);
@@ -862,7 +862,7 @@ main {
   text-align: center;
 }
 
-/* Section backgrounds — full bleed edge to edge */
+/* Section backgrounds, full bleed edge to edge */
 .section--bg {
   position: relative;
   overflow: hidden;
@@ -2464,7 +2464,7 @@ main {
   text-decoration: underline;
 }
 
-/* Help widget — AI assistance in corner */
+/* Help widget, AI assistance in corner */
 .help-widget__toggle {
   position: fixed;
   bottom: 1.5rem;
@@ -2920,7 +2920,7 @@ button:focus-visible {
   outline-offset: 2px;
 }
 
-/* ——— Redesign: Hero tagline & subline ——— */
+/*,, Redesign: Hero tagline & subline,, */
 .hero__tagline {
   font-size: 0.75rem;
   letter-spacing: 0.12em;
@@ -2968,7 +2968,7 @@ button:focus-visible {
   margin-top: 1rem;
 }
 
-/* ——— Six Primitives ——— */
+/*,, Six Primitives,, */
 .section--primitives {
   padding: 5rem 1.5rem;
 }
@@ -3045,7 +3045,7 @@ button:focus-visible {
   }
 }
 
-/* ——— How it works flow ——— */
+/*,, How it works flow,, */
 .section--flow {
   padding: 6rem 1.5rem;
 }
@@ -3055,7 +3055,7 @@ button:focus-visible {
   margin: 0 auto;
 }
 
-/* ——— Demo (see it fail closed) ——— */
+/*,, Demo (see it fail closed),, */
 .section--demo {
   padding: 5rem 1.5rem;
 }
@@ -3289,7 +3289,7 @@ button:focus-visible {
   }
 }
 
-/* ——— Two-tier guarantee ——— */
+/*,, Two-tier guarantee,, */
 .section--guarantee {
   padding: 5rem 1.5rem;
 }
@@ -3370,7 +3370,7 @@ button:focus-visible {
   }
 }
 
-/* ——— Compare (vs guardrails) ——— */
+/*,, Compare (vs guardrails),, */
 .section--compare {
   padding: 5rem 1.5rem;
 }
@@ -3415,7 +3415,7 @@ button:focus-visible {
   color: var(--text);
 }
 
-/* ——— Traction ——— */
+/*,, Traction,, */
 .section--traction {
   padding: 5rem 1.5rem;
 }

@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * Nobulex MCP Server — stdio transport.
+ * Nobulex MCP Server, stdio transport.
  *
  * Reads newline-delimited JSON-RPC 2.0 messages from stdin,
  * dispatches them to the NobulexServer, and writes responses to stdout.
@@ -47,9 +47,9 @@ process.stdin.on('end', () => {
 
 async function processLine(line: string): Promise<void> {
   try {
-    // note: order matters — tests rely on this
+    // note: order matters, tests rely on this
     const message = JSON.parse(line) as JsonRpcRequest;
-    // be careful reordering — the chain verifier depends on this layout
+    // be careful reordering, the chain verifier depends on this layout
     const response = await server.handleMessage(message);
     process.stdout.write(JSON.stringify(response) + '\n');
   } catch (err) {

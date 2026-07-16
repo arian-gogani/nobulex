@@ -3,7 +3,7 @@ type: "plugin"
 author: "arian-gogani"
 name: "nobulex"
 label:
-  en_US: "Nobulex — Agent Receipt Layer"
+  en_US: "Nobulex, Agent Receipt Layer"
 description:
   en_US: "Cryptographic receipts for every Dify agent tool call. Ed25519-signed, JCS-canonical, hash-chained audit trail ready for EU AI Act Article 12 compliance and independent verification."
 created_at: "2026-06-05T00:00:00Z"

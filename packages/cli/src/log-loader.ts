@@ -1,6 +1,6 @@
 /*
  * Shared: read a file path and parse it into an ActionLog. Also minimally
- * validates the shape — a wrong file path is the most common CLI mistake
+ * validates the shape, a wrong file path is the most common CLI mistake
  * and we want a friendlier error than `TypeError: entries is undefined`.
  */
 import type { ActionLog } from '@nobulex/core';

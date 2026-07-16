@@ -3,7 +3,7 @@
  *
  * Run: npx tsx benchmarks/bench.ts
  *
- * No external benchmarking libraries — pure Node + workspace packages.
+ * No external benchmarking libraries, pure Node + workspace packages.
  * Uses the same APIs the demo (examples/demo.ts) and real users take:
  *   - @nobulex/crypto:       generateKeyPair, sha256, sign, verify
  *   - @nobulex/covenant-lang: parseSource + compile (covenant evaluator entry point)
@@ -91,7 +91,7 @@ function fmtMs(ms: number): string {
 }
 
 function fmtOps(ops: number | null): string {
-  if (ops === null) return '—';
+  if (ops === null) return ', ';
   if (ops >= 1_000_000) return (ops / 1_000_000).toFixed(2) + 'M';
   if (ops >= 1000) return (ops / 1000).toFixed(1) + 'k';
   return ops.toFixed(0);
@@ -170,7 +170,7 @@ function makeLargeCovenantSource(ruleCount: number): string {
 
 /**
  * Build a valid ActionLog of `n` entries by driving real actions through
- * EnforcementMiddleware — same path the demo uses.
+ * EnforcementMiddleware, same path the demo uses.
  */
 async function buildValidLog(
   n: number,

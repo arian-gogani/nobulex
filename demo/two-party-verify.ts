@@ -4,7 +4,7 @@
  * Shows why cryptography matters:
  * 1. Operator creates a covenant for their AI agent
  * 2. Agent operates under those rules
- * 3. A THIRD PARTY (regulator) verifies the proof — without trusting the operator
+ * 3. A THIRD PARTY (regulator) verifies the proof, without trusting the operator
  */
 
 import { protect } from '@nobulex/sdk';
@@ -34,7 +34,7 @@ async function main() {
   console.log('  Operator: "Trust me, the agent was compliant."\n');
 
   // ── STEP 3: Regulator verifies independently ──
-  console.log('STEP 3: Regulator verifies — WITHOUT trusting the operator\n');
+  console.log('STEP 3: Regulator verifies, WITHOUT trusting the operator\n');
 
   // The regulator only has the covenant document. No access to the operator's systems.
   const result = await verifyCovenant(agent.covenant);

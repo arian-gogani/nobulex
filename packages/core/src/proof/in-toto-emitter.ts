@@ -1,5 +1,5 @@
 /**
- * @nobulex/in-toto-emitter — In-toto Decision Receipt Predicate Emitter
+ * @nobulex/in-toto-emitter, In-toto Decision Receipt Predicate Emitter
  *
  * Converts Nobulex's internal BilateralReceipt to the in-toto v1
  * Decision Receipt predicate format proposed in in-toto/attestation#549.
@@ -20,7 +20,7 @@ import type { BilateralReceipt } from '../middleware';
  * Single predicate with optional authorization/result signature fields.
  * Per aeoess (APS) and discussion on in-toto/attestation#549,
  * fragmenting into separate predicates forces verifiers to branch on
- * predicate name before processing — single predicate with optional
+ * predicate name before processing, single predicate with optional
  * fields is the right interop shape.
  */
 export interface DecisionReceiptPredicate {
@@ -94,7 +94,7 @@ export function bilateralReceiptToInTotoPredicate(
  *
  * The returned UTF-8 byte string is what gets signed. Two implementations
  * canonicalizing the same predicate object MUST produce byte-identical
- * output — that's the cross-language interop guarantee.
+ * output, that's the cross-language interop guarantee.
  */
 export async function predicateToCanonicalBytes(
   predicate: DecisionReceiptPredicate,

@@ -303,7 +303,7 @@ describe('@nobulex/action-log', () => {
 
     it('does NOT catch tamper deeper than one entry before the window', () => {
       // Intentional: partial verification trusts the prefix beyond the
-      // boundary join. This test documents that limitation — a tamper more
+      // boundary join. This test documents that limitation, a tamper more
       // than one entry before the window is invisible to verifyPartial.
       const log = makeChain(100);
       const N = 5;

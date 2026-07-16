@@ -38,9 +38,9 @@ export interface AuthOptions {
  *
  * On successful authentication, the middleware injects auth metadata into
  * the context:
- * - `ctx.metadata.authenticated` — `true`
- * - `ctx.metadata.authMethod` — `"apiKey"` or `"keyPair"`
- * - `ctx.metadata.publicKeyHex` — the public key hex (key pair auth only)
+ * - `ctx.metadata.authenticated`, `true`
+ * - `ctx.metadata.authMethod`, `"apiKey"` or `"keyPair"`
+ * - `ctx.metadata.publicKeyHex`, the public key hex (key pair auth only)
  *
  * @param options - Authentication configuration.
  * @returns A NobulexMiddleware that enforces authentication.

@@ -1,5 +1,5 @@
 /**
- * IndexedStore — A CovenantStore wrapper that maintains in-memory indexes
+ * IndexedStore, A CovenantStore wrapper that maintains in-memory indexes
  * for fast filtered queries.
  *
  * Wraps any {@link CovenantStore} implementation and transparently maintains

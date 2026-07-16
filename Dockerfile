@@ -1,4 +1,4 @@
-# Kova — Trust layer for the agent economy
+# Kova, Trust layer for the agent economy
 # Production image with full monorepo build
 
 FROM node:20-alpine

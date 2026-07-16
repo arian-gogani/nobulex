@@ -1,10 +1,10 @@
 /**
- * Nobulex Covenant Protocol — Sepolia Testnet Deploy Script
+ * Nobulex Covenant Protocol, Sepolia Testnet Deploy Script
  *
  * Deploys all three core contracts:
- *   1. CovenantRegistry  — on-chain covenant hash registry
- *   2. StakeManager       — ETH staking on covenants
- *   3. SlashingJudge      — violation reporting and slashing with escalation
+ *   1. CovenantRegistry, on-chain covenant hash registry
+ *   2. StakeManager, ETH staking on covenants
+ *   3. SlashingJudge, violation reporting and slashing with escalation
  *
  * Usage:
  *   export DEPLOYER_PRIVATE_KEY="your-private-key-without-0x"
@@ -22,7 +22,7 @@ async function main() {
   const balance = await ethers.provider.getBalance(deployer.address);
 
   console.log("═══════════════════════════════════════════════════════════");
-  console.log("  Nobulex Covenant Protocol — Sepolia Deployment");
+  console.log("  Nobulex Covenant Protocol, Sepolia Deployment");
   console.log("═══════════════════════════════════════════════════════════");
   console.log(`  Deployer:  ${deployer.address}`);
   console.log(`  Balance:   ${ethers.formatEther(balance)} ETH`);

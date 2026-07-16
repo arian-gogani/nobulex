@@ -69,6 +69,30 @@ def test_demo_endpoint():
     print("  PASS: demo endpoint working")
 
 
+def test_batch_verify():
+    """Batch of locally generated receipts should all verify as VALID."""
+    a = Agent("smoke-batch")
+    r1 = a.act("tool:search", scope="q=batch_test")
+    r2 = a.act("tool:read", scope="f=data.csv")
+    r3 = a.act("tool:write", scope="f=out.txt")
+
+    payload = json.dumps({"receipts": [r.to_dict() for r in [r1, r2, r3]]}).encode()
+    req = urllib.request.Request(
+        f"{API_URL}?action=batch",
+        data=payload,
+        headers={"Content-Type": "application/json"},
+        method="POST",
+    )
+    resp = urllib.request.urlopen(req, timeout=10)
+    result = json.loads(resp.read())
+
+    assert result["batch_size"] == 3
+    assert result["all_valid"] is True
+    assert len(result["merkle_root"]) == 64
+    assert all(r["verdict"] == "VALID" for r in result["results"])
+    print(f"  PASS: batch verify 3 receipts, merkle root {result['merkle_root'][:16]}...")
+
+
 if __name__ == "__main__":
     print("Nobulex live API smoke test")
     print(f"  endpoint: {API_URL}\n")
@@ -76,7 +100,9 @@ if __name__ == "__main__":
         test_valid_receipt()
         test_tampered_receipt()
         test_demo_endpoint()
-        print("\nAll 3 smoke tests passed.")
+        test_batch_verify()
+        print("\nAll 4 smoke tests passed.")
     except Exception as e:
         print(f"\nFAILED: {e}")
         sys.exit(1)
+

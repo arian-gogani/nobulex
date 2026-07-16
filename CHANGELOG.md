@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Highlights
 
-- **OWASP AST09 normative inclusion**: the `action_ref` formula is merged as normative implementation guidance in the OWASP Agentic Skills Top 10 (PRs #35/#38, merged by project lead Ken Huang). This is the project's primary credibility anchor.
-- **x402 conformance**: cited as third independent issuer in x402 section 5 alongside agent-guard and Vaara. 14/14 conformance verdicts passed. Fixtures at `tests/conformance/x402_settlement_v0/`.
+- **OWASP AST09 normative inclusion**: the bilateral receipt pattern is merged as normative guidance in the OWASP Agentic Skills Top 10 (PR #35, merged by project lead Ken Huang); the `action_ref` hash construction itself is in the solutions catalog (PR #38), not the normative page. This is the project's primary credibility anchor.
+- **x402 conformance**: referenced in an unmerged community PR (x402-foundation/x402 #2666, filed by another contributor, not us). Not a spec citation.
 - **OWASP CheatSheetSeries**: sections 8-11 merged by Jim Manico (PR #2210), covering JCS canonicalization, cross-agent accountability, sanctions-list freshness, and regulatory mapping.
 
 ### Added

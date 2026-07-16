@@ -326,7 +326,7 @@ Independent, verifiable signals (each links to evidence):
 | | What | Evidence |
 |---|---|---|
 | | **OWASP Agentic Skills Top 10 (AST09)** | `action_ref` formula merged as normative implementation guidance. PRs [#35](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35), [#38](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/38), and [#46](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/46) merged by project lead Ken Huang, Jun-Jul 2026 |
-| | **x402 Conformance** | Cited as third independent issuer in x402 section 5 alongside agent-guard and Vaara. 14/14 conformance verdicts passed |
+| | **x402 Conformance** | Cited as an implementation cited alongside other independent issuers. 14/
 | | **IETF Conformance** | draft-farley-acta-signed-receipts: 4/4 vectors pass. Implementation PR [#12](https://github.com/ScopeBlind/agent-governance-testvectors/pull/12) filed |
 | | **OWASP CheatSheetSeries** | Sections 8-11 (JCS canonicalization, cross-agent accountability, sanctions-list freshness, regulatory mapping) merged into master by Jim Manico, Jun 2026 ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210)) |
 | | **vaara v0.50** | Independent third-party adoption  - Henri Sirkkavaara shipped EU AI Act Article 12 audit trails citing the nobulex signed-receipt design ([GitHub](https://github.com/vaaraio/vaara)) |

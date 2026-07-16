@@ -28,10 +28,10 @@ verification API: managed keys, compliance reports, the audit infrastructure
 enterprises can't self-host. Credit-bureau economics: everyone has to check
 the score, we hold the record.
 
-The action_ref formula is normative implementation guidance in OWASP
+The action_ref reference implementation of the bilateral receipt pattern that is normative guidance in OWASP
 Agentic Skills Top 10 AST09 (3 PRs merged by project lead Ken Huang).
-Cited as third independent issuer in the x402 payment conformance spec
-(14/14 verdicts). IETF conformance: 4/4 vectors pass. Six framework
+Cited as an implementation cited alongside other independent issuers
+(
 integrations shipped. ~13,700 signed receipts/sec (Ed25519).
 
 ---
@@ -80,8 +80,8 @@ Nobulex milestones (all verifiable):
   Ken Huang. Three PRs merged total (#35, #38, #46).
 - Got four sections merged into the OWASP CheatSheetSeries on AML compliance
   for AI agent payments, approved by Jim Manico, credited to me.
-- Cited as third independent issuer in the x402 payment conformance spec
-  (14/14 verdicts passed, alongside agent-guard and Vaara).
+- Cited as an implementation cited alongside other independent issuers
+  (
 - Filed IETF conformance implementation (draft-farley-acta-signed-receipts,
   4/4 vectors pass). If merged: OWASP + x402 + IETF triple standards.
 - Built a hosted verification API with 6 endpoints, 3 pricing tiers, rate

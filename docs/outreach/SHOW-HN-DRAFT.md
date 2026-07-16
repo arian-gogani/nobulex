@@ -36,8 +36,8 @@ verifies offline with only the public key. No operator trust required.
 - Hosted verification API with trust scoring and compliance reports
 - Six framework integrations (LangChain, CrewAI, PydanticAI, ADK, Haystack, LlamaIndex)
 - Dify plugin merged into official marketplace (90K+ star ecosystem)
-- OWASP AST09: the action_ref formula is normative implementation guidance
-- x402 payment spec: cited as third independent issuer (14/14 verdicts)
+- OWASP AST09: the action_ref reference implementation of the bilateral receipt pattern that is normative guidance
+- x402 payment spec: cited as an implementation cited alongside other independent issuers
 - IETF conformance suite: 4/4 vectors pass
 
 **Business model:** Credit-bureau economics. The SDK is free and open

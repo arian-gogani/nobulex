@@ -10,6 +10,7 @@
 [![npm](https://img.shields.io/npm/v/@nobulex/core?style=flat-square&color=22c55e)](https://www.npmjs.com/package/@nobulex/core)
 [![License](https://img.shields.io/badge/License-MIT-22c55e?style=flat-square)](https://opensource.org/licenses/MIT)
 [![Spec](https://img.shields.io/badge/Spec-Proof_of_Behavior-22c55e?style=flat-square)](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt)
+[![OWASP AST09](https://img.shields.io/badge/OWASP_AST09-normative_guidance-6366f1?style=flat-square)](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35)
 
 <br/><br/>
 

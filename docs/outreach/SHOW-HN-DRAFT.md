@@ -16,12 +16,15 @@ track record becomes portable trust. The credit history follows the
 agent and determines what it's allowed to do.
 
 ```python
-from nobulex import Agent
+from nobulex import track
 
-agent = Agent("my-agent")
-receipt = agent.act(action_type="send_email", scope="user@example.com")
-print(agent.trust_score)   # builds over time
-print(receipt.verify())    # any third party can check
+@track(agent_id="my-agent")
+def send_payment(amount, to):
+    return stripe.charges.create(amount=amount, currency="usd")
+
+send_payment(500, "vendor")
+print(send_payment.receipts)     # signed, tamper-evident
+print(send_payment.trust_score)  # builds over time
 ```
 
 Each receipt is Ed25519-signed over RFC 8785 canonical JSON. An auditor

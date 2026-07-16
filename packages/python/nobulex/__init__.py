@@ -1,5 +1,5 @@
 """
-Nobulex - trust score for AI Agents
+Nobulex - credit scores for AI agents
 
 Tamper-proof receipts for everything your AI agent does.
 Credit scores for machines.
@@ -25,6 +25,17 @@ from nobulex.receipt import Receipt
 from nobulex.trust import TrustLedger
 from nobulex.crypto import KeyPair, ES256KeyPair
 from nobulex.decorator import track
+from nobulex.registry import OperatorRegistry, Operator, VerificationLevel
 
 __version__ = "0.1.1"
-__all__ = ["Agent", "Receipt", "TrustLedger", "KeyPair", "ES256KeyPair", "track"]
+__all__ = [
+    "Agent",
+    "Receipt",
+    "TrustLedger",
+    "KeyPair",
+    "ES256KeyPair",
+    "track",
+    "OperatorRegistry",
+    "Operator",
+    "VerificationLevel",
+]

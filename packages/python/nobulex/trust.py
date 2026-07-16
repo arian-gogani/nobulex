@@ -1,4 +1,4 @@
-"""trust score scoring for Nobulex agents."""
+"""Trust scoring for Nobulex agents."""
 
 from collections import defaultdict
 from typing import Dict, List, TYPE_CHECKING
@@ -9,9 +9,9 @@ if TYPE_CHECKING:
 
 class TrustLedger:
     """
-    Computes trust score scores from receipt history.
+    Computes trust scores from receipt history.
 
-    trust score is the credit score for machines.
+    The score is the credit rating for machines.
     It's earned through verified behavior, not granted.
     You can copy the code, but you can't copy the score.
 

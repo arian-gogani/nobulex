@@ -220,6 +220,54 @@ Action 8: approve_contract  - ALLOWED
 
 ---
 
+## Who is accountable?
+
+An agent key is free to generate. So if the score lives on the key, the
+score is theater: an agent with a bad record deletes the key, makes a new
+one, and starts clean in thirty seconds. A human can't do that with a
+credit score, because the SSN is scarce. That scarcity is what makes a
+score mean anything.
+
+So the file doesn't live on the key. It lives on the **operator**: the
+legal entity accountable for the agent. Agents inherit trust from their
+operator the way a corporate card inherits its limit from the company
+rather than from the plastic.
+
+```python
+from nobulex import Agent, OperatorRegistry, VerificationLevel
+
+registry = OperatorRegistry()
+registry.register("acme", "Acme Corporation", VerificationLevel.KYB)
+registry.bind_agent("acme", agent.public_key)
+
+# The question a relying party actually asks:
+registry.is_accountable(agent.public_key, VerificationLevel.KYB)  # True
+registry.operator_for(agent.public_key).legal_name                # "Acme Corporation"
+```
+
+Burning a key doesn't escape the record:
+
+| | before the burn | after |
+|---|---|---|
+| agent's own score | 8.0 | 0.0 (fresh key) |
+| **operator score** | 8.0 | **3.4** (history survived) |
+| **churn ratio** | 0.0 | **0.5** (the burn is visible) |
+| **new agent starts at** | | **2.72**, not 0 |
+
+And the attack doesn't work one level up either: an unverified operator
+can claim a score of 99 and passes exactly `0.0` to a new agent, so
+registering fake operators to farm trust fails by construction.
+
+Meanwhile the honest operator gets paid for it. Acme at 90 with zero
+churn means their *next* agent starts at 60 instead of 0. That's the
+reason to bind keys rather than stay anonymous.
+
+```bash
+python packages/python/examples/sybil_resistance.py
+```
+
+---
+
 ## The protocol
 
 ```

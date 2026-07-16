@@ -66,3 +66,15 @@ def test_llamaindex_example():
     assert "vector_search" in r.stdout
     assert "sql_query" in r.stdout
     assert "Chain verified: True" in r.stdout
+
+
+def test_sybil_resistance_example():
+    r = run_example("sybil_resistance.py")
+    assert r.returncode == 0, r.stderr
+    # The attack is shown and defeated
+    assert "the 8.0 survived the burn" in r.stdout
+    assert "churn ratio          0.5" in r.stdout
+    # Fake operators don't work either
+    assert "inherited by new agent   0.0" in r.stdout
+    # Honest operators are rewarded
+    assert "NEXT agent starts at 60.0" in r.stdout

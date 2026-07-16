@@ -19,11 +19,13 @@ class Agent:
         print(agent.trust_score)
     """
 
-    def __init__(self, agent_id: str, keys: Optional[KeyPair] = None):
+    def __init__(self, agent_id: str, keys: Optional[KeyPair] = None, publish: bool = False):
         self.agent_id = agent_id
         self.keys = keys or KeyPair()
         self._ledger = TrustLedger()
         self._receipts: List[Receipt] = []
+        self._publish = publish
+        self._api_url = "https://nobulex.com/api/verify"
 
     @property
     def public_key(self) -> str:
@@ -66,6 +68,8 @@ class Agent:
         )
         self._receipts.append(receipt)
         self._ledger.record(receipt)
+        if self._publish:
+            self._publish_receipt(receipt)
         return receipt
 
     def deny(
@@ -88,3 +92,19 @@ class Agent:
             f"receipts={n}, "
             f"trust_score={self.trust_score:.2f})"
         )
+
+    def _publish_receipt(self, receipt: Receipt) -> None:
+        """Publish a receipt to the hosted API (best-effort, non-blocking)."""
+        import json
+        import urllib.request
+        try:
+            data = json.dumps(receipt.to_dict()).encode()
+            req = urllib.request.Request(
+                self._api_url,
+                data=data,
+                headers={"Content-Type": "application/json"},
+                method="POST",
+            )
+            urllib.request.urlopen(req, timeout=5)
+        except Exception:
+            pass  # best-effort: never block the agent on a publish failure

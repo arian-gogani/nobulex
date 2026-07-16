@@ -26,6 +26,7 @@ from nobulex.trust import TrustLedger
 from nobulex.crypto import KeyPair, ES256KeyPair
 from nobulex.decorator import track
 from nobulex.registry import OperatorRegistry, Operator, VerificationLevel
+from nobulex.attestation import OperatorAttestation
 
 __version__ = "0.1.1"
 __all__ = [
@@ -38,4 +39,5 @@ __all__ = [
     "OperatorRegistry",
     "Operator",
     "VerificationLevel",
+    "OperatorAttestation",
 ]

@@ -51,6 +51,10 @@ receipt = agent.act("send_email", scope="user@example.com")
 assert receipt.verify()  # tamper-proof
 ```
 
+<div align="center">
+  <img src="./assets/demo.gif" alt="Nobulex demo: install, sign an agent action, verify it offline with no operator trust" width="760"/>
+</div>
+
 ---
 
 ## How it works

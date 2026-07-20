@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Audit Trails: FAQ, Nobulex</title>
+  <meta name="description" content="How to prove what an AI agent did: signed receipts, tamper-evident audit trails, and EU AI Act Article 12, answered in plain language.">
+  <meta property="og:title" content="AI Agent Audit Trails: FAQ, Nobulex">
+  <meta property="og:description" content="How to prove what an AI agent did: signed receipts, tamper-evident audit trails, and EU AI Act Article 12, answered in plain language.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/faq">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/faq">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI Agent Audit Trails: FAQ, Nobulex">
+  <meta name="twitter:description" content="How to prove what an AI agent did: signed receipts and tamper-evident audit trails, explained.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .faq-page { max-width: var(--w); margin: 0 auto; padding: 4rem 1.5rem; }
+    .faq-page h1 { font-family: var(--font-display); font-size: 1.9rem; font-weight: 600; color: var(--text); margin-bottom: 0.75rem; }
+    .faq-page__intro { font-size: 1rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; max-width: 44rem; }
+    .faq-item { padding: 1.5rem 0; border-bottom: 1px solid var(--border); }
+    .faq-item:last-child { border-bottom: none; }
+    .faq-item h2 { font-size: 1.0625rem; font-weight: 600; color: var(--text); margin-bottom: 0.6rem; }
+    .faq-item p { font-size: 0.9375rem; color: var(--text-secondary); line-height: 1.65; max-width: 46rem; }
+    .faq-item code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .faq-cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"FAQPage","mainEntity":[
+    {"@type":"Question","name":"How do you prove what an AI agent actually did?","acceptedAnswer":{"@type":"Answer","text":"An AI agent should produce a signed receipt for each action. Before it acts it emits an admission receipt (who is acting, what they intend to do, the authorized scope, and the policy version). After it acts it emits an outcome receipt linked to the admission by a content-derived hash. Both are signed with Ed25519 and canonicalized with JCS (RFC 8785). Anyone can verify a receipt offline with just the agent public key, so the proof does not depend on trusting the operator."}},
+    {"@type":"Question","name":"What is an AI agent audit trail?","acceptedAnswer":{"@type":"Answer","text":"An AI agent audit trail is a record of what an autonomous agent did, in what order, and under whose authority. A useful trail is tamper-evident and independently verifiable, meaning a third party can confirm it was not altered without trusting the party that produced it. Nobulex produces this as a hash-chained sequence of signed receipts."}},
+    {"@type":"Question","name":"Why are normal application logs not enough to audit an AI agent?","acceptedAnswer":{"@type":"Answer","text":"A normal log lives in the operator infrastructure and can be edited or deleted by that operator, so an auditor reviewing it has to trust the exact party being audited. Signed, content-addressed receipts remove that trust: deletion shows up as gaps in the hash chain, and an action outside the authorized scope makes the admission and outcome hashes diverge."}},
+    {"@type":"Question","name":"Does the EU AI Act require logging for AI agents?","acceptedAnswer":{"@type":"Answer","text":"The EU AI Act (Regulation (EU) 2024/1689), Article 12, requires high-risk AI systems to keep automatically generated logs that enable post-hoc verification of how the system operated. An operator-controlled log the operator can rewrite does not satisfy independent verification. Signed receipts that anyone can verify offline are designed for exactly this."}},
+    {"@type":"Question","name":"How does Nobulex verify an agent action without trusting the operator?","acceptedAnswer":{"@type":"Answer","text":"Verification recomputes the content-derived hash (action_ref) from the record and checks the Ed25519 signature against the agent published public key. If either fails, the receipt is rejected. No call to Nobulex, the operator, or the platform is needed. The bilateral receipt pattern behind this is normative guidance in OWASP AST09, and Nobulex is the reference implementation of it."}},
+    {"@type":"Question","name":"Do I need a blockchain for verifiable agent receipts?","acceptedAnswer":{"@type":"Answer","text":"No. A signed, content-addressed receipt is verifiable offline against a public key, which gives non-repudiation without a settlement layer. For long-term anchoring you can optionally batch receipts into an RFC 6962 Merkle tree, but the core verification needs no chain and no gas."}},
+    {"@type":"Question","name":"What is a bilateral receipt?","acceptedAnswer":{"@type":"Answer","text":"A bilateral receipt is a pair: an admission record emitted before an action (carrying who, what, scope, and policy version) and an outcome record emitted after, linked by a content-derived hash. The pair lets a verifier confirm that what was authorized and what was executed are the same action."}},
+    {"@type":"Question","name":"Is Nobulex open source, and how do I install it?","acceptedAnswer":{"@type":"Answer","text":"Yes. Nobulex is MIT licensed. Install the Python SDK with pip install nobulex or the TypeScript SDK with npm install @nobulex/core. The code and specification are on GitHub."}}
+  ]}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="docs/quickstart.html">Quickstart</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="faq-page" id="main">
+    <h1>AI agent audit trails, answered</h1>
+    <p class="faq-page__intro">Plain-language answers to the questions people ask about proving what an autonomous AI agent did: signed receipts, tamper-evident audit trails, offline verification, and the EU AI Act.</p>
+
+    <div class="faq-item"><h2>How do you prove what an AI agent actually did?</h2>
+    <p>An AI agent should produce a signed receipt for each action. Before it acts it emits an admission receipt (who is acting, what they intend to do, the authorized scope, and the policy version). After it acts it emits an outcome receipt linked to the admission by a content-derived hash. Both are signed with Ed25519 and canonicalized with JCS (RFC 8785). Anyone can verify a receipt offline with just the agent public key, so the proof does not depend on trusting the operator.</p></div>
+
+    <div class="faq-item"><h2>What is an AI agent audit trail?</h2>
+    <p>An AI agent audit trail is a record of what an autonomous agent did, in what order, and under whose authority. A useful trail is tamper-evident and independently verifiable, meaning a third party can confirm it was not altered without trusting the party that produced it. Nobulex produces this as a hash-chained sequence of signed receipts.</p></div>
+
+    <div class="faq-item"><h2>Why are normal application logs not enough to audit an AI agent?</h2>
+    <p>A normal log lives in the operator infrastructure and can be edited or deleted by that operator, so an auditor reviewing it has to trust the exact party being audited. Signed, content-addressed receipts remove that trust: deletion shows up as gaps in the hash chain, and an action outside the authorized scope makes the admission and outcome hashes diverge.</p></div>
+
+    <div class="faq-item"><h2>Does the EU AI Act require logging for AI agents?</h2>
+    <p>The EU AI Act (Regulation (EU) 2024/1689), Article 12, requires high-risk AI systems to keep automatically generated logs that enable post-hoc verification of how the system operated. An operator-controlled log the operator can rewrite does not satisfy independent verification. Signed receipts that anyone can verify offline are designed for exactly this.</p></div>
+
+    <div class="faq-item"><h2>How does Nobulex verify an agent action without trusting the operator?</h2>
+    <p>Verification recomputes the content-derived hash (<code>action_ref</code>) from the record and checks the Ed25519 signature against the agent published public key. If either fails, the receipt is rejected. No call to Nobulex, the operator, or the platform is needed. The bilateral receipt pattern behind this is normative guidance in OWASP AST09, and Nobulex is the reference implementation of it.</p></div>
+
+    <div class="faq-item"><h2>Do I need a blockchain for verifiable agent receipts?</h2>
+    <p>No. A signed, content-addressed receipt is verifiable offline against a public key, which gives non-repudiation without a settlement layer. For long-term anchoring you can optionally batch receipts into an RFC 6962 Merkle tree, but the core verification needs no chain and no gas.</p></div>
+
+    <div class="faq-item"><h2>What is a bilateral receipt?</h2>
+    <p>A bilateral receipt is a pair: an admission record emitted before an action (carrying who, what, scope, and policy version) and an outcome record emitted after, linked by a content-derived hash. The pair lets a verifier confirm that what was authorized and what was executed are the same action.</p></div>
+
+    <div class="faq-item"><h2>Is Nobulex open source, and how do I install it?</h2>
+    <p>Yes. Nobulex is MIT licensed. Install the Python SDK with <code>pip install nobulex</code> or the TypeScript SDK with <code>npm install @nobulex/core</code>. The code and specification are on <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">GitHub</a>.</p></div>
+
+    <p class="faq-cta"><a href="index.html#get-started" class="header__cta">Get started</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script src="main.js"></script>
+</body>
+</html>

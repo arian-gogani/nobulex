@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Build a Verifiable AI Agent Audit Trail (2026 Guide)</title>
+  <meta name="description" content="A practical guide to building a tamper-evident, independently verifiable audit trail for AI agents: signed receipts, offline verification, and EU AI Act Article 12.">
+  <meta property="og:title" content="How to Build a Verifiable AI Agent Audit Trail">
+  <meta property="og:description" content="Signed receipts, offline verification, and the bilateral receipt pattern, explained step by step.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/ai-agent-audit-trails">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/ai-agent-audit-trails">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="How to Build a Verifiable AI Agent Audit Trail">
+  <meta name="twitter:description" content="Signed receipts, offline verification, and the bilateral receipt pattern, explained step by step.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"How to Build a Verifiable AI Agent Audit Trail","description":"A practical guide to building a tamper-evident, independently verifiable audit trail for AI agents using signed receipts.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/ai-agent-audit-trails"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>How to build a verifiable AI agent audit trail</h1>
+    <p class="lede">If an AI agent takes real actions on your behalf, someone will eventually ask you to prove what it did. This guide covers how to build an audit trail that answers that question in a way a regulator or auditor can verify without trusting you.</p>
+
+    <h2>Why ordinary logs are not enough</h2>
+    <p>Most agent frameworks already log activity. The problem is where that log lives: in the operator's own infrastructure, editable and deletable by the operator. An auditor reviewing it has to trust the exact party whose work they are auditing. For software that moves money, reads records, or calls tools on your behalf, that is the wrong trust model.</p>
+    <p>The EU AI Act (Regulation (EU) 2024/1689), Article 12, makes this concrete for high-risk systems: they must keep automatically generated logs that enable post-hoc verification of how the system operated. A log the operator can silently rewrite does not clear that bar.</p>
+
+    <h2>What "verifiable" actually requires</h2>
+    <p>A verifiable audit trail has three properties:</p>
+    <ul>
+      <li><strong>Tamper-evident:</strong> altering or deleting a record is detectable after the fact.</li>
+      <li><strong>Independently verifiable:</strong> a third party can confirm the record with no access to the operator's systems and no trust in the operator.</li>
+      <li><strong>Bound to authority:</strong> each action is tied to what the agent was allowed to do, so out-of-scope actions stand out.</li>
+    </ul>
+    <p>Signatures give you the first two. A signed record cannot be altered without invalidating the signature, and anyone holding the public key can check it offline. Hash-chaining the records makes deletion show up as a gap.</p>
+
+    <h2>The bilateral receipt pattern</h2>
+    <p>The pattern that satisfies all three properties is a pair of signed receipts per action. It is normative guidance in the OWASP Agentic Skills Top 10 (AST09).</p>
+    <ul>
+      <li><strong>Admission receipt</strong> (before the action): who is acting, what they intend to do, the authorized scope, and the policy version in effect.</li>
+      <li><strong>Outcome receipt</strong> (after the action): what actually happened, linked to the admission by a content-derived hash called <code>action_ref</code>.</li>
+    </ul>
+    <p>Both records are canonicalized with JCS (RFC 8785) so any implementation serializes them to the same bytes, then signed with Ed25519. The <code>action_ref</code> is derived from the content of the action itself (agent id, action type, scope, timestamp), so it is recomputable by anyone and cannot be faked by the operator.</p>
+
+    <h2>Step by step</h2>
+    <h3>1. Instrument the action</h3>
+    <p>Wrap the function the agent calls so a receipt is emitted around it. With Nobulex that is one decorator:</p>
+    <pre><code>from nobulex import track
+
+@track(agent_id="billing-bot")
+def charge(invoice_id: str, amount_cents: int):
+    ...</code></pre>
+    <h3>2. Emit admission, then outcome</h3>
+    <p>Before execution, the admission receipt records intent and authority. After execution, the outcome receipt records the result and links back by <code>action_ref</code>. A denied action still produces a signed admission record, so "the agent was stopped" is auditable too, not a silent hole.</p>
+    <h3>3. Verify offline</h3>
+    <p>Verification recomputes <code>action_ref</code> from the record and checks the Ed25519 signature against the agent's published public key. Nothing else is needed: no call to the operator, the platform, or Nobulex.</p>
+    <pre><code>curl -X POST https://nobulex.com/api/verify \
+  -H "Content-Type: application/json" \
+  -d '{"agent_id":"billing-bot","action_type":"tool:charge", ...}'</code></pre>
+
+    <h2>What this catches</h2>
+    <ul>
+      <li><strong>Deletion</strong> breaks the hash chain, so removed records leave a detectable gap.</li>
+      <li><strong>Out-of-scope actions</strong> make the admission and outcome hashes diverge.</li>
+      <li><strong>Policy changes</strong> between admission and execution are recorded, so "the policy was different then" is answerable with evidence.</li>
+    </ul>
+
+    <h2>Do you need a blockchain?</h2>
+    <p>No. A signed, content-addressed receipt is verifiable offline against a public key, which gives you non-repudiation without a settlement layer. For long-term anchoring you can optionally batch receipts into an RFC 6962 Merkle tree, which keeps anchoring cost negligible, but the core verification needs no chain and no gas.</p>
+
+    <h2>Getting started</h2>
+    <p>Nobulex is the open-source (MIT) reference implementation of the bilateral receipt pattern.</p>
+    <pre><code>pip install nobulex
+# or
+npm install @nobulex/core</code></pre>
+    <p>There is a live tamper demo and a ten-line verify in the <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">repository</a>. For the regulatory mapping, see the <a href="eu-ai-act.html">EU AI Act compliance guide</a>, and for common questions, the <a href="faq.html">FAQ</a>.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script src="main.js"></script>
+</body>
+</html>

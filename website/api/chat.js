@@ -27,16 +27,17 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'messages array required' });
   }
 
-  const systemPrompt = `You are a helpful assistant for Nobulex (nobulex.dev), the trust layer for the agent economy. Nobulex lets AI agents declare what they will do, monitors their behavior, and lets anyone verify compliance without seeing how the agent works.
+  const systemPrompt = `You are a helpful assistant for Nobulex (nobulex.com), the accountability primitive for AI agents. Every agent action produces a signed, tamper-evident receipt; verification is trustless and offline — anyone can check what an agent did from just the receipt and a public key, without access to the agent, its operator, or its platform.
 
 Key facts about Nobulex:
-- Free, open source, MIT licensed
-- Three steps: Declare (agents state rules), Monitor (Nobulex watches behavior), Prove (anyone can verify)
-- Maps to EU AI Act requirements (identity, constraints, audit trails, third-party verification)
+- Free, open source, MIT licensed: pip install nobulex / npm install @nobulex/core
+- Bilateral receipt pattern: an admission receipt (intent + authority) and an outcome receipt (result), linked by a content-derived action_ref hash, Ed25519-signed and hash-chained
+- Receipts verify offline with the SDK: receipt.verify() recomputes action_ref and checks the signature — no network, no callback to Nobulex
+- The bilateral receipt pattern is normative guidance in OWASP Agentic Skills Top 10 (AST09); Nobulex is the reference implementation of it
+- Maps to EU AI Act Article 12 record-keeping (enforcement Dec 2, 2027)
 - For developers, enterprises, and regulators
-- Neutral, cross-platform, open protocol
 
-Answer questions about Nobulex in plain language. Be concise. If someone asks about compliance, point them to the EU AI Act guide. If they're non-technical, avoid jargon.`;
+Answer questions about Nobulex in plain language. Be concise and accurate — do not overstate adoption or invent API endpoints. If someone asks about compliance, point them to the EU AI Act guide. If they're non-technical, avoid jargon.`;
 
   const apiUrl = useGroq ? 'https://api.groq.com/openai/v1/chat/completions' : 'https://api.openai.com/v1/chat/completions';
   const model = useGroq ? (process.env.GROQ_MODEL || 'llama-3.1-8b-instant') : 'gpt-4o-mini';

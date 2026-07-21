@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EU AI Act Article 12: Record-Keeping for AI Agents (2026)</title>
+  <meta name="description" content="EU AI Act Article 12 requires high-risk AI systems to keep automatically generated logs that enable post-hoc traceability. Here is what the article requires and how signed execution receipts satisfy it.">
+  <meta property="og:title" content="EU AI Act Article 12: Record-Keeping for AI Agents">
+  <meta property="og:description" content="What Article 12 requires for automatic logging and traceability, and how verifiable receipts map to it.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/eu-ai-act-article-12-agent-records">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/eu-ai-act-article-12-agent-records">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="EU AI Act Article 12: Record-Keeping for AI Agents">
+  <meta name="twitter:description" content="What Article 12 requires for automatic logging and traceability, and how verifiable receipts map to it.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide .note { font-size: 0.85rem; color: var(--text-secondary); border-left: 2px solid var(--border); padding-left: 1rem; margin: 1.5rem 0; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"EU AI Act Article 12: Record-Keeping for AI Agents","description":"What EU AI Act Article 12 requires for automatic logging and traceability of high-risk AI systems, and how signed execution receipts satisfy it.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/eu-ai-act-article-12-agent-records"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>EU AI Act Article 12: record-keeping for AI agents</h1>
+    <p class="lede">Article 12 of the EU AI Act is the record-keeping obligation: high-risk AI systems must automatically record events over their lifetime so that what the system did can be traced and checked after the fact. This page covers what the article asks for and how verifiable execution receipts satisfy it.</p>
+
+    <p class="note">This is an engineering explainer, not legal advice. For a compliance determination, consult qualified counsel. Citations are to Regulation (EU) 2024/1689.</p>
+
+    <h2>What Article 12 requires</h2>
+    <p>Article 12 of Regulation (EU) 2024/1689 requires that high-risk AI systems technically allow for the automatic recording of events ("logs") over the lifetime of the system. The purpose stated in the article is traceability: the records must be appropriate to identify situations that may cause the system to present a risk or undergo a substantial modification, and to support post-market monitoring. In short, the system has to keep automatically generated logs that let someone reconstruct and verify how it operated.</p>
+    <p>For an AI agent that calls tools, moves money, or reads records on a user's behalf, the operative questions an auditor will ask are: what did the agent do, under what authority, and can that account be trusted without taking the operator's word for it?</p>
+
+    <h2>Where ordinary logging falls short</h2>
+    <p>Most agent stacks already write logs. The gap Article 12 exposes is not whether events are recorded but whether the record can be trusted after the fact. A log that lives in the operator's own database is editable and deletable by the operator. An auditor reviewing it has to trust the very party whose system they are auditing, and a record that can be silently rewritten does not provide the traceability the article is after.</p>
+
+    <h2>How verifiable receipts map to the requirement</h2>
+    <p>A signed execution receipt turns "we have a log" into "here is a record you can verify without trusting us." The bilateral receipt pattern &mdash; normative guidance in the OWASP Agentic Skills Top 10 (AST09) &mdash; produces two signed records per action:</p>
+    <ul>
+      <li><strong>Admission receipt:</strong> the agent, the intended action, the authorized scope, and the policy version in effect at that moment.</li>
+      <li><strong>Outcome receipt:</strong> what actually happened, linked to the admission by a content-derived hash (<code>action_ref</code>).</li>
+    </ul>
+    <p>Both are canonicalized with JCS (RFC 8785), signed with Ed25519, and hash-chained. That gives the three properties the article's traceability goal implies:</p>
+    <ul>
+      <li><strong>Automatic:</strong> receipts are emitted around each action by the runtime, not written by hand.</li>
+      <li><strong>Tamper-evident over the lifetime:</strong> editing a record invalidates its signature; deleting one leaves a gap in the chain, so the record retains integrity across the system's life.</li>
+      <li><strong>Independently verifiable:</strong> a regulator or auditor checks a receipt offline with just the receipt and a public key &mdash; the traceability does not depend on trusting the operator.</li>
+    </ul>
+
+    <h2>What this looks like in code</h2>
+    <p>Instrumenting an agent action to emit Article-12-friendly records is one decorator:</p>
+    <pre><code>from nobulex import track
+
+@track(agent_id="billing-bot")
+def charge(invoice_id: str, amount_cents: int):
+    ...  # your existing code, unchanged</code></pre>
+    <p>Verification is offline &mdash; no callback to the operator, the platform, or Nobulex:</p>
+    <pre><code>from nobulex.agent import Agent
+
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
+
+    <h2>Timeline</h2>
+    <p>The EU AI Act entered into force in 2024 with obligations phasing in over subsequent years. For the high-risk record-keeping obligations relevant here, the commonly cited enforcement milestone is December 2, 2027. Building verifiable records in now is cheaper than retrofitting them under deadline, and the same receipts serve internal audit and incident response long before any regulator asks.</p>
+
+    <h2>Getting started</h2>
+    <pre><code>pip install nobulex
+# or
+npm install @nobulex/core</code></pre>
+    <p>Nobulex is the open-source (MIT) reference implementation of the bilateral receipt pattern. For the broader mapping across the Act, see the <a href="eu-ai-act.html">EU AI Act compliance guide</a>; for the AST09 background, see <a href="owasp-ast09-execution-receipts.html">OWASP AST09 execution receipts</a>; for a step-by-step build, the <a href="ai-agent-audit-trails.html">verifiable audit trail guide</a>.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

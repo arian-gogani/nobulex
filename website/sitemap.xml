@@ -20,4 +20,6 @@
   <url><loc>https://nobulex.com/docs/ecosystem</loc><changefreq>monthly</changefreq><priority>0.65</priority></url>
   <url><loc>https://nobulex.com/faq</loc><changefreq>monthly</changefreq><priority>0.75</priority></url>
   <url><loc>https://nobulex.com/ai-agent-audit-trails</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nobulex.com/owasp-ast09-execution-receipts</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://nobulex.com/eu-ai-act-article-12-agent-records</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 </urlset>

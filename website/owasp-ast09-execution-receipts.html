@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OWASP AST09: Execution Receipts for AI Agents (2026)</title>
+  <meta name="description" content="OWASP Agentic Skills Top 10 AST09 covers missing execution receipts for AI agents. The bilateral receipt pattern is its normative guidance; Nobulex is the open-source reference implementation.">
+  <meta property="og:title" content="OWASP AST09: Execution Receipts for AI Agents">
+  <meta property="og:description" content="What AST09 requires, the bilateral receipt pattern behind it, and how to implement verifiable execution receipts in a few lines.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/owasp-ast09-execution-receipts">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/owasp-ast09-execution-receipts">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="OWASP AST09: Execution Receipts for AI Agents">
+  <meta name="twitter:description" content="What AST09 requires, the bilateral receipt pattern behind it, and how to implement it in a few lines.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"OWASP AST09: Execution Receipts for AI Agents","description":"What OWASP Agentic Skills Top 10 AST09 requires, the bilateral receipt pattern that is its normative guidance, and how to implement verifiable execution receipts.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/owasp-ast09-execution-receipts"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>OWASP AST09: execution receipts for AI agents</h1>
+    <p class="lede">AST09 is the "missing execution receipts" entry in the OWASP Agentic Skills Top 10 &mdash; the risk that an AI agent takes an action and leaves behind nothing a third party can trust. This page explains what the entry asks for, the bilateral receipt pattern that is its normative guidance, and how to satisfy it in a few lines of code.</p>
+
+    <h2>What AST09 is</h2>
+    <p>The OWASP Agentic Skills Top 10 catalogs the ways autonomous agent "skills" go wrong. AST09 is the accountability gap: when an agent invokes a tool, moves money, or reads a record, the operator usually keeps an ordinary log &mdash; on their own infrastructure, editable and deletable by them. Anyone auditing that log has to trust the exact party whose behavior they are auditing. AST09 names that as a distinct risk class and asks for records that survive scrutiny by an outside party.</p>
+
+    <h2>The bilateral receipt pattern (the normative guidance)</h2>
+    <p>The pattern that answers AST09 is a pair of signed receipts per action. It is normative guidance in the AST09 entry (<a href="https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35" rel="noopener noreferrer">PR #35</a>, merged by project lead Ken Huang):</p>
+    <ul>
+      <li><strong>Admission receipt</strong> (before the action): who is acting, what they intend, the authorized scope, and the policy version in effect.</li>
+      <li><strong>Outcome receipt</strong> (after the action): what actually happened, linked to the admission by a content-derived hash.</li>
+    </ul>
+    <p>Both records are canonicalized with JCS (RFC 8785) so any conformant implementation serializes them to identical bytes, then signed with Ed25519 and hash-chained. The concrete hash construction that links the two receipts &mdash; the <code>action_ref</code> &mdash; is published in the OWASP solutions catalog (<a href="https://github.com/OWASP/www-project-agentic-skills-top-10/pull/38" rel="noopener noreferrer">PR #38</a>) rather than the normative page itself. Because <code>action_ref</code> is derived from the content of the action (agent id, action type, scope, timestamp), anyone can recompute it, and the operator cannot forge or quietly re-point it.</p>
+
+    <h2>Why this clears the bar that a log does not</h2>
+    <ul>
+      <li><strong>Tamper-evident:</strong> altering a record invalidates its signature; deleting one leaves a gap in the hash chain.</li>
+      <li><strong>Independently verifiable:</strong> a third party checks a receipt offline with just the receipt and a public key &mdash; no access to the operator, and no trust in them.</li>
+      <li><strong>Bound to authority:</strong> the admission receipt pins the authorized scope, so an out-of-scope action is visible as a mismatch rather than buried in a log.</li>
+    </ul>
+
+    <h2>Implementing AST09 receipts</h2>
+    <p>Nobulex is the open-source (MIT) reference implementation of the bilateral receipt pattern. Adding conformant execution receipts to an existing agent function is one decorator:</p>
+    <pre><code>from nobulex import track
+
+@track(agent_id="billing-bot")
+def charge(invoice_id: str, amount_cents: int):
+    ...  # your existing code, unchanged</code></pre>
+    <p>Each call now emits an admission receipt and an outcome receipt, linked by <code>action_ref</code>, signed and chained. A denied action still produces a signed admission record, so "the agent was stopped" is auditable too &mdash; not a silent hole.</p>
+
+    <h3>Verifying a receipt</h3>
+    <p>Verification recomputes <code>action_ref</code> from the record and checks the Ed25519 signature against the agent's published public key. It runs fully offline &mdash; no callback to the operator, the platform, or Nobulex:</p>
+    <pre><code>from nobulex.agent import Agent
+
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
+    <p>Change one byte of a receipt and <code>verify()</code> returns false. That is the whole guarantee AST09 is after.</p>
+
+    <h2>How AST09 relates to regulation</h2>
+    <p>The same records that satisfy AST09 map cleanly onto the EU AI Act (Regulation (EU) 2024/1689), Article 12, which requires high-risk systems to keep automatically generated logs that enable post-hoc verification of how the system operated (enforcement from December 2, 2027). A log the operator can silently rewrite does not clear that bar; a signed, independently verifiable receipt does. See the <a href="eu-ai-act.html">EU AI Act compliance guide</a> for the article-by-article mapping.</p>
+
+    <h2>Getting started</h2>
+    <pre><code>pip install nobulex
+# or
+npm install @nobulex/core</code></pre>
+    <p>There is a live tamper demo and a ten-line verify in the <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">repository</a>. For a step-by-step build, see the <a href="ai-agent-audit-trails.html">verifiable audit trail guide</a>; for common questions, the <a href="faq.html">FAQ</a>.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

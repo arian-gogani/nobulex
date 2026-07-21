@@ -102,7 +102,7 @@ chain/bundle compliance reports — lives in `packages/verify-api/`
 It is **not yet deployed to nobulex.com**; verify offline with the SDK today.
 
 [Pricing](https://nobulex.com/pricing) |
-[Methodology](https://nobulex.com/methodology)
+[Methodology](https://github.com/arian-gogani/nobulex/blob/main/docs/trust-capital-methodology.md)
 
 ---
 

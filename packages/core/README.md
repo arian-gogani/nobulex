@@ -48,7 +48,7 @@ signature, id, and constraints with no network call. A hosted verification
 service (paid tiers, trust scores, compliance reports) is implemented in
 `packages/verify-api/` but is not yet deployed to nobulex.com.
 
-[Pricing](https://nobulex.com/pricing) | [Methodology](https://nobulex.com/methodology)
+[Pricing](https://nobulex.com/pricing) | [Methodology](https://github.com/arian-gogani/nobulex/blob/main/docs/trust-capital-methodology.md)
 
 ## Learn More
 

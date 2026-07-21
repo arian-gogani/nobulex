@@ -124,7 +124,7 @@ curl -X POST https://api.nobulex.com/v1/verify \
 
 [Pricing](https://nobulex.com/pricing) |
 [API docs](https://nobulex.com/api-docs) |
-[Methodology](https://nobulex.com/methodology)
+[Methodology](https://github.com/arian-gogani/nobulex/blob/main/docs/trust-capital-methodology.md)
 
 ## License
 

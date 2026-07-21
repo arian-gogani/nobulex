@@ -370,7 +370,7 @@ agent trust scores, and regulator-ready compliance reports. It is implemented in
 
 Planned pricing: Free 100/day · Pro ($99/mo) 10K/day · Scale ($499/mo) unlimited.
 
-[Pricing](https://nobulex.com/pricing) | [Methodology](https://nobulex.com/methodology)
+[Pricing](https://nobulex.com/pricing) | [Methodology](https://github.com/arian-gogani/nobulex/blob/main/docs/trust-capital-methodology.md)
 
 ---
 

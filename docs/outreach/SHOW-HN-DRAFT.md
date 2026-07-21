@@ -54,7 +54,7 @@ nobulex.com/arena. $7,400 bounty if you beat level 5. Nobody has.
 
 Repo: github.com/arian-gogani/nobulex
 Pricing: nobulex.com/pricing
-Methodology: nobulex.com/methodology
+Methodology: https://github.com/arian-gogani/nobulex/blob/main/docs/trust-capital-methodology.md
 
 I'm 16 and built this solo. Happy to answer questions on the scoring,
 the crypto, or the compliance angle.

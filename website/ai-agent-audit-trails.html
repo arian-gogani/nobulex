@@ -98,9 +98,11 @@ def charge(invoice_id: str, amount_cents: int):
     <p>Before execution, the admission receipt records intent and authority. After execution, the outcome receipt records the result and links back by <code>action_ref</code>. A denied action still produces a signed admission record, so "the agent was stopped" is auditable too, not a silent hole.</p>
     <h3>3. Verify offline</h3>
     <p>Verification recomputes <code>action_ref</code> from the record and checks the Ed25519 signature against the agent's published public key. Nothing else is needed: no call to the operator, the platform, or Nobulex.</p>
-    <pre><code>curl -X POST https://nobulex.com/api/verify \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id":"billing-bot","action_type":"tool:charge", ...}'</code></pre>
+    <pre><code>from nobulex.agent import Agent
+
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()  # True: recomputes action_ref, checks the Ed25519 signature, offline</code></pre>
 
     <h2>What this catches</h2>
     <ul>

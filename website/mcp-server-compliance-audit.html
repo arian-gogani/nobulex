@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nobulex MCP Server: Compliance &amp; Audit for MCP Agents (2026)</title>
+  <meta name="description" content="Add covenant rule-checking and signed, hash-chained audit records to any MCP-compatible agent (Claude Desktop, Cursor). A drop-in Model Context Protocol server for accountability.">
+  <meta property="og:title" content="Nobulex MCP Server: Compliance & Audit for MCP Agents">
+  <meta property="og:description" content="A drop-in Model Context Protocol server that adds covenant enforcement and verifiable audit records to MCP agents.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/mcp-server-compliance-audit">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/mcp-server-compliance-audit">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nobulex MCP Server: Compliance & Audit for MCP Agents">
+  <meta name="twitter:description" content="A drop-in Model Context Protocol server that adds covenant enforcement and verifiable audit records to MCP agents.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"Nobulex MCP Server: Compliance and Audit for MCP Agents","description":"A drop-in Model Context Protocol server that adds covenant rule-checking and signed, hash-chained audit records to any MCP-compatible agent.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/mcp-server-compliance-audit"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>Nobulex MCP server: compliance and audit for MCP agents</h1>
+    <p class="lede">The Model Context Protocol lets agents call tools, but MCP itself has no notion of what an agent is <em>allowed</em> to do, or of a record you can trust afterward. The Nobulex MCP server adds both: covenant rule-checking and signed, hash-chained audit records, to any MCP-compatible client &mdash; Claude Desktop, Cursor, and others.</p>
+
+    <h2>What it is</h2>
+    <p><code>@nobulex/mcp-server</code> is a Model Context Protocol server (stdio transport, JSON-RPC 2.0) that exposes Nobulex's covenant and verification tools to any MCP client. You point your client at it in config, and the agent gains tools to declare rules, check actions against them, and produce verifiable records &mdash; without changing the rest of your setup.</p>
+
+    <h2>Install and connect</h2>
+    <pre><code>npm install -g @nobulex/mcp-server</code></pre>
+    <p>Add it to your MCP client config (Claude Desktop, Cursor, and similar):</p>
+    <pre><code>{
+  "mcpServers": {
+    "nobulex": {
+      "command": "npx",
+      "args": ["nobulex-mcp"]
+    }
+  }
+}</code></pre>
+    <p>The server speaks newline-delimited JSON-RPC 2.0 over stdio, so any MCP-compatible client can drive it.</p>
+
+    <h2>The tools it exposes</h2>
+    <ul>
+      <li><code>create_covenant</code> &mdash; declare the rules an agent must follow (permitted and forbidden actions, scope limits).</li>
+      <li><code>parse_ccl</code> &mdash; parse a covenant written in CCL, the covenant constraint language.</li>
+      <li><code>evaluate_action</code> &mdash; check a proposed action against a covenant before it runs, so out-of-scope calls are caught up front.</li>
+      <li><code>verify_covenant</code> &mdash; verify a covenant document's signature and constraints, offline.</li>
+      <li><code>create_identity</code> &mdash; mint a signing identity for an agent.</li>
+      <li><code>list_covenants</code> &mdash; enumerate the covenants in the current store.</li>
+    </ul>
+
+    <h2>Why put this in front of MCP tool calls</h2>
+    <p>MCP standardized how agents reach tools, which is exactly why the accountability gap matters more: an agent that can call anything should leave behind a record that a third party can trust. Every covenant check and verification the server performs rests on the same primitives as the rest of Nobulex &mdash; Ed25519 signatures, JCS (RFC 8785) canonicalization, and hash-chaining &mdash; so the resulting records are tamper-evident and verifiable offline, with no trust in the operator.</p>
+    <p>That is the same bilateral receipt pattern that is normative guidance in the <a href="owasp-ast09-execution-receipts.html">OWASP Agentic Skills Top 10 (AST09)</a>, and the records map onto <a href="eu-ai-act-article-12-agent-records.html">EU AI Act Article 12</a> record-keeping. The MCP server is just the most convenient way to get it in front of a tool-calling agent.</p>
+
+    <h2>Getting started</h2>
+    <pre><code>npm install -g @nobulex/mcp-server
+npx nobulex-mcp</code></pre>
+    <p>Nobulex is open source (MIT). For the underlying SDK, <code>pip install nobulex</code> or <code>npm install @nobulex/core</code>. For a step-by-step audit-trail build, see the <a href="ai-agent-audit-trails.html">verifiable audit trail guide</a>; for common questions, the <a href="faq.html">FAQ</a>.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

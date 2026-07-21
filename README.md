@@ -345,17 +345,20 @@ EU AI Act Article 12 enforcement: December 2, 2027.
 
 ## Verify API
 
-The SDK is free. The hosted verification layer is the product.
+Receipts verify **offline** with the SDK today — no server, no network, no callback:
 
-```bash
-# Verify a receipt
-curl -X POST https://nobulex.com/api/verify \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id":"my-agent","action_type":"tool:search",...}'
+```python
+from nobulex.agent import Agent
 
-# Check an agent's trust score
-curl https://nobulex.com/api/verify?action=score&agent_id=my-agent
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()   # recomputes action_ref + checks the Ed25519 signature, offline
 ```
+
+The **hosted verification layer** is the paid product — rate-limited tiers,
+agent trust scores, and regulator-ready compliance reports. It is implemented in
+[`packages/verify-api/`](./packages/verify-api/) (Flask + Dockerfile) and is
+**not yet deployed to nobulex.com**.
 
 | Endpoint | What it does | Tier |
 |---|---|---|
@@ -365,9 +368,9 @@ curl https://nobulex.com/api/verify?action=score&agent_id=my-agent
 | `GET /agent/:id/score` | Trust score (A-F grade) | Free |
 | `GET /demo/tamper-test` | Live tamper detection demo | Free |
 
-Free: 100/day. Pro ($99/mo): 10K/day. Scale ($499/mo): unlimited.
+Planned pricing: Free 100/day · Pro ($99/mo) 10K/day · Scale ($499/mo) unlimited.
 
-[Pricing](https://nobulex.com/pricing) | [API docs](https://nobulex.com/api-docs) | [Methodology](https://nobulex.com/methodology)
+[Pricing](https://nobulex.com/pricing) | [Methodology](https://nobulex.com/methodology)
 
 ---
 

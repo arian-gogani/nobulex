@@ -77,21 +77,30 @@ npm install @nobulex/core
 
 ---
 
-## Verify API (live)
+## Verify a receipt
 
-The SDK produces receipts locally. The hosted API verifies them:
+Receipts verify **offline** — no server, no network, no callback to Nobulex.
+Verification recomputes `action_ref` from the record and checks the Ed25519
+signature against the agent's published public key:
 
-```bash
-# See a live tamper detection demo
-curl https://nobulex.com/api/verify?action=demo
+```python
+from nobulex.agent import Agent
 
-# Verify a receipt
-curl -X POST https://nobulex.com/api/verify \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id":"my-agent","action_type":"tool:search","scope":"q=test","timestamp_ms":1720000000000,"action_ref":"..."}'
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()   # recomputes action_ref + checks the signature, fully offline
 ```
 
-[API docs](https://nobulex.com/api-docs) |
+JavaScript/TypeScript verification uses `@nobulex/core`
+(`verifyCovenant`, `verify`, `verifyEvidenceChain`) — see `packages/core/README.md`.
+
+### Hosted verification API
+
+A hosted verification service — rate-limited tiers, agent trust scores, and
+chain/bundle compliance reports — lives in `packages/verify-api/`
+(`pip install flask nobulex && python server.py`, Dockerfile included).
+It is **not yet deployed to nobulex.com**; verify offline with the SDK today.
+
 [Pricing](https://nobulex.com/pricing) |
 [Methodology](https://nobulex.com/methodology)
 

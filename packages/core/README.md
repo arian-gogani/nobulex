@@ -41,17 +41,14 @@ field of the document and `valid` becomes `false`.
 - `resolveChain(doc, resolver)`  - walk a delegation chain
 - `serializeCovenant` / `deserializeCovenant`  - JSON round-trip
 
-## Verify API
+## Verify
 
-The SDK produces receipts locally. The hosted API verifies them:
+Receipts and covenants verify **offline** — `verifyCovenant(doc)` checks the
+signature, id, and constraints with no network call. A hosted verification
+service (paid tiers, trust scores, compliance reports) is implemented in
+`packages/verify-api/` but is not yet deployed to nobulex.com.
 
-```bash
-curl -X POST https://nobulex.com/api/verify \
-  -H "Content-Type: application/json" \
-  -d '{"agent_id":"my-agent","action_type":"tool:search",...}'
-```
-
-[API docs](https://nobulex.com/api-docs) | [Pricing](https://nobulex.com/pricing) | [Methodology](https://nobulex.com/methodology)
+[Pricing](https://nobulex.com/pricing) | [Methodology](https://nobulex.com/methodology)
 
 ## Learn More
 

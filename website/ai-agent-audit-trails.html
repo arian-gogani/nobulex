@@ -79,7 +79,7 @@
     <p>Signatures give you the first two. A signed record cannot be altered without invalidating the signature, and anyone holding the public key can check it offline. Hash-chaining the records makes deletion show up as a gap.</p>
 
     <h2>The bilateral receipt pattern</h2>
-    <p>The pattern that satisfies all three properties is a pair of signed receipts per action. It is normative guidance in the OWASP Agentic Skills Top 10 (AST09).</p>
+    <p>The pattern that satisfies all three properties is a pair of signed receipts per action. It is normative guidance in the <a href="owasp-ast09-execution-receipts.html">OWASP Agentic Skills Top 10 (AST09)</a>.</p>
     <ul>
       <li><strong>Admission receipt</strong> (before the action): who is acting, what they intend to do, the authorized scope, and the policy version in effect.</li>
       <li><strong>Outcome receipt</strong> (after the action): what actually happened, linked to the admission by a content-derived hash called <code>action_ref</code>.</li>

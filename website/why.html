@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Why Nobulex: Evidence, Not Just Governance, for AI Agents</title>
+  <meta name="description" content="Governance decides what an AI agent should do. Evidence proves what it actually did. Why signed, offline-verifiable receipts beat ordinary logs for AI agent accountability.">
+  <meta property="og:title" content="Why Nobulex: Evidence, Not Just Governance">
+  <meta property="og:description" content="Governance decides what an agent should do. Evidence proves what it actually did. Here's why that gap matters.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/why">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/why">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Why Nobulex: Evidence, Not Just Governance">
+  <meta name="twitter:description" content="Governance decides what an agent should do. Evidence proves what it actually did.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"Why Nobulex: Evidence, Not Just Governance","description":"Why signed, offline-verifiable receipts beat ordinary logs for AI agent accountability.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/why"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>Why Nobulex</h1>
+    <p class="lede">Governance decides what an AI agent <em>should</em> do. Evidence proves what it <em>actually</em> did. Almost the entire agent stack ships the first and skips the second. Nobulex is the evidence layer.</p>
+
+    <h2>The gap</h2>
+    <p>Every serious vendor now ships governance for AI agents: policies, guardrails, approval gates, permission scopes. All of it decides what an agent is allowed to do <em>before</em> it acts. None of it answers the question that matters after something goes wrong: what did the agent actually do, under what authority, and can you prove it to someone who wasn't there and doesn't trust you?</p>
+    <p>That is not a governance question. It is an evidence question, and evidence is what's missing.</p>
+
+    <h2>Why logs aren't enough</h2>
+    <p>Most agent stacks already log activity. The problem is where the log lives: in the operator's own infrastructure, editable and deletable by the operator. Anyone reviewing it has to trust the exact party whose behavior they are reviewing. For software that moves money, reads records, or calls tools on your behalf, that is the wrong trust model — and it does not survive an adversarial audit, an incident review, or a regulator who assumes the log could have been rewritten.</p>
+
+    <h2>What evidence actually requires</h2>
+    <p>An account you can trust has three properties:</p>
+    <ul>
+      <li><strong>Tamper-evident</strong> — altering or deleting a record is detectable after the fact.</li>
+      <li><strong>Independently verifiable</strong> — a third party can confirm it with no access to the operator's systems and no trust in the operator.</li>
+      <li><strong>Bound to authority</strong> — each action is tied to what the agent was permitted to do, so out-of-scope actions stand out instead of hiding in the noise.</li>
+    </ul>
+    <p>Signatures give you the first two; hash-chaining makes deletion show up as a gap; pairing each action with an admission record gives you the third.</p>
+
+    <h2>How Nobulex does it</h2>
+    <p>Every agent action produces a pair of signed receipts — an admission receipt (intent, authority, scope, policy version) before it runs, and an outcome receipt (what happened) after, linked by a content-derived hash called <code>action_ref</code>. Both are canonicalized with JCS (RFC 8785) and signed with Ed25519, so any third party can verify any receipt <strong>offline</strong> with just the receipt and a public key. No API call, no operator trust, ~13,700 receipts/sec on a single core.</p>
+    <pre><code>from nobulex.agent import Agent
+
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
+    <p>Change one byte of a receipt and verification fails. That is the whole guarantee.</p>
+
+    <h2>Not just our idea</h2>
+    <p>This pattern — the bilateral receipt pattern — is normative guidance in the <a href="owasp-ast09-execution-receipts.html">OWASP Agentic Skills Top 10 (AST09)</a>, and Nobulex is its open-source reference implementation. The same records map onto <a href="eu-ai-act-article-12-agent-records.html">EU AI Act Article 12</a> record-keeping (enforcement from December 2, 2027). Evidence is becoming a requirement, not a nice-to-have.</p>
+
+    <h2>Get started</h2>
+    <pre><code>pip install nobulex
+# or
+npm install @nobulex/core</code></pre>
+    <p>Nobulex is open source (MIT). Try the <a href="https://nobulex.com/demo">live tamper demo</a>, read the <a href="ai-agent-audit-trails.html">audit-trail guide</a>, or browse the <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">code and spec</a>.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

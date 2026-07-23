@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Agent Identity vs. Accountability: Why You Need Both (2026)</title>
+  <meta name="description" content="Agent identity tells you who is behind an AI agent. It doesn't prove what the agent actually did. Real accountability needs identity plus verifiable evidence — here's the difference.">
+  <meta property="og:title" content="AI Agent Identity vs. Accountability: Why You Need Both">
+  <meta property="og:description" content="Identity answers 'who'. Evidence answers 'what did it do, and can you prove it'. You need both — and the second half is the one almost everyone skips.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/ai-agent-identity-vs-accountability">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/ai-agent-identity-vs-accountability">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="AI Agent Identity vs. Accountability: Why You Need Both">
+  <meta name="twitter:description" content="Identity answers 'who'. Evidence answers 'what did it do, and can you prove it'. You need both.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide table { width: 100%; border-collapse: collapse; margin-bottom: 1.5rem; font-size: 0.9rem; }
+    .guide th, .guide td { border: 1px solid var(--border); padding: 0.6rem 0.8rem; text-align: left; color: var(--text-secondary); vertical-align: top; }
+    .guide th { color: var(--text); font-weight: 600; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"AI Agent Identity vs. Accountability: Why You Need Both","description":"Agent identity answers who is behind an AI agent; verifiable evidence answers what it did and lets anyone prove it. Real accountability needs both.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/ai-agent-identity-vs-accountability"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="why.html">Why it matters</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>AI agent identity vs. accountability: you need both</h1>
+    <p class="lede">As AI agents start moving money and calling tools on their own, two questions matter: who is behind this agent, and what did it actually do? Identity answers the first. It does not answer the second — and the second is the half almost everyone skips.</p>
+
+    <h2>What identity gives you</h2>
+    <p>Agent identity binds an agent to a real, accountable party. Decentralized identifiers (DIDs), verifiable credentials, KYC/KYB, and zero-knowledge attestations all answer the same question: is there a real entity standing behind this agent, and can I confirm it? That matters — an anonymous agent with no accountable owner is a dead end for trust, and identity closes that gap.</p>
+    <p>But identity is bounded. It tells you <em>who</em>. It says nothing about <em>what the agent did once it started acting</em>, and it gives you no record that a third party can check afterward.</p>
+
+    <h2>The gap identity leaves</h2>
+    <p>An agent can be fully identified and still take an action it was never authorized to take. Knowing a verified party is behind it does not tell you whether a specific tool call was in scope, what its result was, or whether the log describing it was quietly edited afterward. Identity authenticates the actor; it does not produce tamper-evident, independently verifiable proof of the act.</p>
+    <p>For software that moves money, reads records, or executes changes, that is the question an auditor, a regulator, or a counterparty actually asks after something goes wrong: not "who owns this agent," but "what exactly did it do, under what authority, and can you prove it without me trusting you?"</p>
+
+    <h2>Evidence: the second half</h2>
+    <p>The answer is a verifiable record of behavior, not just identity. Each agent action produces a pair of signed receipts:</p>
+    <ul>
+      <li><strong>Admission receipt</strong> (before the action): the agent, what it intends to do, the authorized scope, and the policy in effect — so out-of-scope actions are visible as a mismatch.</li>
+      <li><strong>Outcome receipt</strong> (after the action): what actually happened, linked to the admission by a content-derived hash.</li>
+    </ul>
+    <p>Both are canonicalized with JCS (RFC 8785) and Ed25519-signed, then hash-chained. Anyone can verify a receipt offline with just the receipt and a public key — no trust in the operator, and deletion leaves a detectable gap.</p>
+
+    <h2>Identity + evidence, side by side</h2>
+    <table>
+      <tr><th>Question</th><th>Identity</th><th>Evidence (receipts)</th></tr>
+      <tr><td>Who is behind the agent?</td><td>Yes</td><td>Binds to the agent's key/operator</td></tr>
+      <tr><td>What did the agent actually do?</td><td>No</td><td>Yes — per-action record</td></tr>
+      <tr><td>Was the action in authorized scope?</td><td>No</td><td>Yes — admission receipt pins scope</td></tr>
+      <tr><td>Can a third party verify it without trusting the operator?</td><td>Partly (the credential)</td><td>Yes — offline, any verifier</td></tr>
+      <tr><td>Is tampering or deletion detectable?</td><td>No</td><td>Yes — signatures + hash chain</td></tr>
+    </table>
+    <p>They are complementary, not competing. Bind the agent to an accountable party with identity, then produce a verifiable record of each action bound to its authorized scope with evidence. Skip the second and "accountability" stops at knowing whom to blame, with no way to prove what happened.</p>
+
+    <h2>Where Nobulex fits</h2>
+    <p>Nobulex is the evidence layer. The bilateral receipt pattern it implements is normative guidance in the <a href="owasp-ast09-execution-receipts.html">OWASP Agentic Skills Top 10 (AST09)</a>, and Nobulex is its open-source (MIT) reference implementation. The same records map onto <a href="eu-ai-act-article-12-agent-records.html">EU AI Act Article 12</a> record-keeping. It works alongside whatever identity layer you use.</p>
+    <pre><code>from nobulex.agent import Agent
+
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
+
+    <h2>Get started</h2>
+    <pre><code>pip install nobulex
+# or
+npm install @nobulex/core</code></pre>
+    <p>For the fuller argument, see <a href="why.html">why evidence, not just governance</a>; for the standard behind it, <a href="owasp-ast09-execution-receipts.html">OWASP AST09 execution receipts</a>; and the <a href="ai-agent-audit-trails.html">audit-trail guide</a> for a step-by-step build.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

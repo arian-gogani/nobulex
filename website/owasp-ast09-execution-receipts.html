@@ -102,7 +102,7 @@ assert receipt.verify()  # recomputes action_ref, checks the signature, offline<
     <p>Change one byte of a receipt and <code>verify()</code> returns false. That is the whole guarantee AST09 is after.</p>
 
     <h2>How AST09 relates to regulation</h2>
-    <p>The same records that satisfy AST09 map cleanly onto the EU AI Act (Regulation (EU) 2024/1689), Article 12, which requires high-risk systems to keep automatically generated logs that enable post-hoc verification of how the system operated (enforcement from December 2, 2027). A log the operator can silently rewrite does not clear that bar; a signed, independently verifiable receipt does. See the <a href="eu-ai-act.html">EU AI Act compliance guide</a> for the article-by-article mapping.</p>
+    <p>The same records that satisfy AST09 map cleanly onto the EU AI Act (Regulation (EU) 2024/1689), Article 12, which requires high-risk systems to keep automatically generated logs that enable post-hoc verification of how the system operated (enforcement from December 2, 2027). A log the operator can silently rewrite does not clear that bar; a signed, independently verifiable receipt does. See the <a href="eu-ai-act.html">EU AI Act compliance guide</a> for the article-by-article mapping, and <a href="iso-42001-ai-agent-logging.html">ISO 42001 event logging (A.6.2.8)</a> for the management-system mapping.</p>
 
     <h2>Getting started</h2>
     <pre><code>pip install nobulex

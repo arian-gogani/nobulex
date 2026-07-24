@@ -417,7 +417,7 @@ npx tsx benchmarks/bench.ts # benchmarks
 
 Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian-gogani/awesome-ai-agent-accountability) — standards, regulations, and tools for verifiable agent behavior.
 
-**[Star this repo](https://github.com/arian-gogani/nobulex/stargazers)** to follow the project
+**[Star this repo](https://github.com/arian-gogani/nobulex)** to follow the project
 
 MIT License
 

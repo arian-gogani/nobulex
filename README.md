@@ -23,6 +23,8 @@ Autonomy earned, not granted.
 
 [Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
+<sub>Reference implementation of the [**OWASP Agentic Skills Top 10 — AST09**](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35) execution-receipt pattern · listed in the OWASP solutions catalog · in the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1703) adopters · merged to the Dify marketplace</sub>
+
 </div>
 
 ---

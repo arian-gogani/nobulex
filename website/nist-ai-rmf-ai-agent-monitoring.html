@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NIST AI RMF: Monitoring & Records for AI Agents (2026)</title>
+  <meta name="description" content="The NIST AI Risk Management Framework asks organizations to monitor AI behavior in production (Measure 2.4) and track incidents (Manage 4.x). Here is how signed execution receipts serve those functions for AI agents.">
+  <meta property="og:title" content="NIST AI RMF: Monitoring & Records for AI Agents">
+  <meta property="og:description" content="How the AI RMF's Measure and Manage functions map to verifiable execution receipts for AI agents.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/nist-ai-rmf-ai-agent-monitoring">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/nist-ai-rmf-ai-agent-monitoring">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NIST AI RMF: Monitoring & Records for AI Agents">
+  <meta name="twitter:description" content="How the AI RMF's Measure and Manage functions map to verifiable execution receipts.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="apple-touch-icon" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .guide { max-width: 46rem; margin: 0 auto; padding: 4rem 1.5rem; }
+    .guide h1 { font-family: var(--font-display); font-size: 2rem; font-weight: 700; color: var(--text); margin-bottom: 0.75rem; line-height: 1.2; }
+    .guide .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 2.5rem; }
+    .guide h2 { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600; color: var(--text); margin: 2.5rem 0 0.75rem; }
+    .guide h3 { font-size: 1.05rem; font-weight: 600; color: var(--text); margin: 1.5rem 0 0.5rem; }
+    .guide p { font-size: 0.95rem; color: var(--text-secondary); line-height: 1.7; margin-bottom: 1rem; }
+    .guide ul { color: var(--text-secondary); font-size: 0.95rem; line-height: 1.7; padding-left: 1.2rem; margin-bottom: 1rem; }
+    .guide li { margin-bottom: 0.4rem; }
+    .guide code { font-family: var(--font-mono); font-size: 0.85em; color: var(--accent); }
+    .guide pre { background: var(--panel-2, #15151b); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; overflow-x: auto; margin-bottom: 1.25rem; }
+    .guide pre code { color: var(--text); font-size: 0.82rem; line-height: 1.5; }
+    .guide .note { font-size: 0.85rem; color: var(--text-secondary); border-left: 2px solid var(--border); padding-left: 1rem; margin: 1.5rem 0; }
+    .guide .cta { margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"NIST AI RMF and behavioral records for AI agents","description":"How the NIST AI Risk Management Framework's Measure and Manage functions map to signed execution receipts for AI agents.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/nist-ai-rmf-ai-agent-monitoring"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="docs/what-it-is.html">What it is</a>
+        <a href="docs/threat-model.html">Threat model</a>
+        <a href="docs/integrations.html">Integrations</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="guide" id="main">
+    <h1>NIST AI RMF and behavioral records for AI agents</h1>
+    <p class="lede">The NIST AI Risk Management Framework (AI RMF 1.0) is the United States&rsquo; voluntary framework for managing AI risk. Two of its four functions &mdash; Measure and Manage &mdash; ask organizations to monitor how an AI system behaves in production and to track incidents when they happen. This page covers what those functions ask for and how verifiable execution receipts serve them for AI agents.</p>
+
+    <p class="note">This is an engineering explainer, not a conformance determination. The AI RMF is voluntary guidance, not a regulation. Subcategory references are to NIST AI RMF 1.0.</p>
+
+    <h2>What the AI RMF asks for</h2>
+    <p>The AI RMF Core organizes practice into four functions &mdash; Govern, Map, Measure, and Manage. Govern establishes accountability: under Govern 2.1, roles and responsibilities for managing AI risk are documented and clear. The operational demand for behavioral records shows up in the last two functions:</p>
+    <ul>
+      <li><strong>Measure 2.4</strong> &mdash; the functionality and behavior of the AI system and its components are monitored when in production.</li>
+      <li><strong>Manage 4.1</strong> &mdash; post-deployment monitoring plans are in place, including mechanisms for capturing and evaluating input and for incident response and change management.</li>
+      <li><strong>Manage 4.3</strong> &mdash; incidents and errors are tracked, responded to, and documented through a followed process.</li>
+    </ul>
+    <p>For an AI agent that calls tools, moves money, or reads records on a user&rsquo;s behalf, satisfying these means being able to answer, after the fact: what did the agent actually do, under what authority, and can that account be trusted when an incident is under review?</p>
+
+    <h2>Where ordinary logging falls short</h2>
+    <p>Monitoring and incident tracking usually rest on ordinary application logs. The gap is trust: a log in the operator&rsquo;s own database is editable and deletable by the operator. When Manage 4.3 calls for incidents to be tracked and documented, a record that the responsible party can quietly rewrite is weak evidence &mdash; the exact moment you most need an unaltered account (an incident review) is the moment an editable log is least trustworthy.</p>
+
+    <h2>How verifiable receipts map to the framework</h2>
+    <p>A signed execution receipt turns monitoring output into evidence anyone can check. The bilateral receipt pattern &mdash; normative guidance in the OWASP Agentic Skills Top 10 (AST09) &mdash; emits two signed records per action:</p>
+    <ul>
+      <li><strong>Admission receipt:</strong> the agent, the intended action, the authorized scope, and the policy in effect &mdash; the accountability Govern is after.</li>
+      <li><strong>Outcome receipt:</strong> what actually happened, linked to the admission by a content-derived hash (<code>action_ref</code>).</li>
+    </ul>
+    <p>Both are canonicalized with JCS (RFC 8785), signed with Ed25519, and hash-chained. Mapped to the functions:</p>
+    <ul>
+      <li><strong>Measure 2.4 (monitor behavior in production):</strong> each action emits a signed record of what the agent did &mdash; behavioral monitoring that is itself tamper-evident.</li>
+      <li><strong>Manage 4.1 / 4.3 (post-deployment monitoring and incident tracking):</strong> during an incident review, the receipt chain is an unalterable timeline &mdash; editing a record breaks its signature, deleting one leaves a gap.</li>
+      <li><strong>Independently verifiable:</strong> an auditor or a customer checks a receipt offline with just the receipt and a public key &mdash; the account does not depend on trusting the operator.</li>
+    </ul>
+
+    <h2>What this looks like in code</h2>
+    <p>Instrumenting an agent action to emit AI-RMF-friendly records is one decorator:</p>
+    <pre><code>from nobulex import track
+
+@track(agent_id="billing-bot")
+def charge(invoice_id: str, amount_cents: int):
+    ...  # your existing code, unchanged</code></pre>
+    <p>Verification is offline &mdash; no callback to the operator, the platform, or Nobulex:</p>
+    <pre><code>from nobulex.agent import Agent
+
+agent = Agent("billing-bot")
+receipt = agent.act("charge", scope="invoice:042")
+assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
+
+    <h2>One implementation, three frameworks</h2>
+    <p>The AI RMF is voluntary, but the behavioral records it calls for are the same ones a regulation and a certifiable management system require. The identical receipts map onto the <a href="eu-ai-act-article-12-agent-records.html">EU AI Act, Article 12</a> (automatic logs for post-hoc traceability) and <a href="iso-42001-ai-agent-logging.html">ISO/IEC 42001, A.6.2.8</a> (event-log record-keeping) &mdash; so instrumenting once serves a US risk framework, an EU regulation, and an ISO management system at the same time. The AI RMF does not require cryptography; it asks for monitoring and incident records reliable enough to act on, and signed receipts are the strongest form of that evidence.</p>
+
+    <h2>Getting started</h2>
+    <pre><code>pip install nobulex
+# or
+npm install @nobulex/core</code></pre>
+    <p>Nobulex is the open-source (MIT) reference implementation of the bilateral receipt pattern. For the AST09 background, see <a href="owasp-ast09-execution-receipts.html">OWASP AST09 execution receipts</a>; for a step-by-step build, the <a href="ai-agent-audit-trails.html">verifiable audit trail guide</a>; for where this sits in the market, the <a href="ai-agent-accountability-landscape.html">accountability landscape</a>.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

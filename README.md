@@ -415,6 +415,8 @@ npx tsx benchmarks/bench.ts # benchmarks
 
 [Website](https://nobulex.com) · [Try it](https://nobulex.com/demo) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
 
+Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian-gogani/awesome-ai-agent-accountability) — standards, regulations, and tools for verifiable agent behavior.
+
 **[Star this repo](https://github.com/arian-gogani/nobulex/stargazers)** to follow the project
 
 MIT License

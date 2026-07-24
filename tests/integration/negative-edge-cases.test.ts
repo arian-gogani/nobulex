@@ -875,10 +875,13 @@ describe('Enforcement edge cases', () => {
       await monitor.evaluate('read', `/data/file-${i}`);
     }
     const proof = monitor.generateMerkleProof(0);
-    // Corrupt the entry hash
+    // Corrupt the entry hash — flip the first byte to a value guaranteed to
+    // differ from the original (using 'ff' unconditionally is a no-op when the
+    // hash already starts with 'ff', which made this test flaky ~1/256 runs).
     const corrupted = {
       ...proof,
-      entryHash: proof.entryHash.replace(/^../, 'ff') as any,
+      entryHash: ((proof.entryHash.slice(0, 2) === 'ff' ? '00' : 'ff') +
+        proof.entryHash.slice(2)) as any,
     };
     expect(verifyMerkleProof(corrupted)).toBe(false);
   });

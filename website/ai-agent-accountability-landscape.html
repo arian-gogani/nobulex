@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The AI Agent Accountability Landscape (2026)</title>
+  <meta name="description" content="A map of the AI agent accountability space: identity, governance, evidence/receipts, trust scoring, and the standards behind them — and where each category fits.">
+  <meta property="og:title" content="The AI Agent Accountability Landscape (2026)">
+  <meta property="og:description" content="Identity, governance, evidence, trust scoring, standards — the whole AI agent accountability space in one map.">
+  <meta property="og:type" content="article">
+  <meta property="og:url" content="https://nobulex.com/ai-agent-accountability-landscape">
+  <meta property="og:image" content="https://nobulex.com/images/og-card.png">
+  <link rel="canonical" href="https://nobulex.com/ai-agent-accountability-landscape">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The AI Agent Accountability Landscape (2026)">
+  <meta name="twitter:description" content="Identity, governance, evidence, trust scoring, standards — the whole space in one map.">
+  <link rel="icon" type="image/png" href="/icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@600;700&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .lscape { max-width: 68rem; margin: 0 auto; padding: 3.5rem 1.5rem 5rem; }
+    .lscape h1 { font-family: var(--font-display); font-size: 2.1rem; font-weight: 700; color: var(--text); margin-bottom: 0.6rem; line-height: 1.15; text-align: center; }
+    .lscape .lede { font-size: 1.05rem; color: var(--text-secondary); line-height: 1.65; margin: 0 auto 1rem; max-width: 44rem; text-align: center; }
+    .lscape .spectrum { font-family: var(--font-mono); font-size: 0.8rem; color: var(--text-secondary); text-align: center; margin-bottom: 2.5rem; }
+    .lscape .spectrum b { color: var(--accent); }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1rem; }
+    .cat { border: 1px solid var(--border); border-radius: 12px; padding: 1.15rem 1.15rem 1.35rem; background: var(--panel-2, #15151b); display: flex; flex-direction: column; }
+    .cat--hl { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 0 32px -8px var(--accent); }
+    .cat__q { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-secondary); margin-bottom: 0.35rem; }
+    .cat__q--hl { color: var(--accent); }
+    .cat__t { font-family: var(--font-display); font-size: 1.1rem; font-weight: 600; color: var(--text); margin-bottom: 0.5rem; }
+    .cat__d { font-size: 0.85rem; color: var(--text-secondary); line-height: 1.55; margin-bottom: 0.8rem; }
+    .cat__items { display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: auto; }
+    .chip { font-size: 0.76rem; color: var(--text-secondary); border: 1px solid var(--border); border-radius: 100px; padding: 0.15rem 0.6rem; text-decoration: none; }
+    .chip:hover { color: var(--text); border-color: var(--text-secondary); }
+    .chip--hl { color: var(--accent); border-color: var(--accent); font-weight: 600; }
+    .lscape .note { font-size: 0.82rem; color: var(--text-secondary); text-align: center; margin: 2.25rem auto 0; max-width: 46rem; line-height: 1.6; }
+    .lscape .note a { color: var(--accent); }
+    .lscape .cta { text-align: center; margin-top: 2.5rem; }
+  </style>
+  <script type="application/ld+json">
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"The AI Agent Accountability Landscape (2026)","description":"A category map of the AI agent accountability space: identity, governance, evidence, trust scoring, and standards.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/ai-agent-accountability-landscape"}
+  </script>
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="header" data-animate="header">
+    <div class="header__top">
+      <a href="index.html" class="header__logo" aria-label="Nobulex home"><img src="images/nobulex-logo.png" alt="Nobulex" class="header__logo-img"></a>
+      <button type="button" class="nav-toggle" aria-label="Toggle menu" aria-expanded="false">
+        <span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span><span class="nav-toggle__bar"></span>
+      </button>
+    </div>
+    <div class="nav-overlay" id="nav-overlay" aria-hidden="true"></div>
+    <nav class="header__nav" aria-label="Main">
+      <button type="button" class="nav-close" aria-label="Close menu"><span aria-hidden="true">&times;</span></button>
+      <div class="header__links">
+        <a href="why.html">Why it matters</a>
+        <a href="ai-agent-identity-vs-accountability.html">Identity vs Evidence</a>
+        <a href="faq.html">FAQ</a>
+        <a href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Code &amp; Spec</a>
+      </div>
+      <a href="index.html#get-started" class="header__cta">Get started</a>
+    </nav>
+  </header>
+
+  <main class="lscape" id="main">
+    <h1>The AI agent accountability landscape</h1>
+    <p class="lede">As AI agents start acting on their own, a whole category is forming around one question: can you trust what an agent did? Here is how the space breaks down — and where each piece fits.</p>
+    <p class="spectrum">who is it? &rarr; what's it allowed to do? &rarr; <b>what did it actually do?</b> &rarr; what's its track record? &rarr; by what rules?</p>
+
+    <div class="grid">
+      <article class="cat">
+        <div class="cat__q">Who is it?</div>
+        <div class="cat__t">Identity &amp; Provenance</div>
+        <div class="cat__d">Binds an agent to a real, accountable party. Answers <em>who</em> — not what the agent did.</div>
+        <div class="cat__items">
+          <a class="chip" href="https://www.concordium.com/" rel="noopener noreferrer">Concordium</a>
+          <a class="chip" href="https://www.sigstore.dev/" rel="noopener noreferrer">Sigstore</a>
+          <a class="chip" href="https://c2pa.org/" rel="noopener noreferrer">C2PA</a>
+          <a class="chip" href="https://www.w3.org/TR/did-core/" rel="noopener noreferrer">W3C DID/VC</a>
+        </div>
+      </article>
+
+      <article class="cat">
+        <div class="cat__q">What's it allowed to do?</div>
+        <div class="cat__t">Governance &amp; Guardrails</div>
+        <div class="cat__d">Policies and gates that decide, before execution, what an agent may do. Prevention, not proof.</div>
+        <div class="cat__items">
+          <a class="chip" href="https://github.com/Acacian/aegis" rel="noopener noreferrer">aegis</a>
+          <a class="chip" href="https://github.com/agentward-ai/agentward" rel="noopener noreferrer">agentward</a>
+          <a class="chip" href="https://github.com/rudraneel93/mcp-guardian" rel="noopener noreferrer">mcp-guardian</a>
+          <a class="chip" href="https://github.com/AperionAI/shield" rel="noopener noreferrer">shield</a>
+          <a class="chip" href="https://github.com/microsoft/agent-governance-toolkit" rel="noopener noreferrer">MS AGT</a>
+        </div>
+      </article>
+
+      <article class="cat cat--hl">
+        <div class="cat__q cat__q--hl">What did it actually do?</div>
+        <div class="cat__t">Evidence &amp; Receipts</div>
+        <div class="cat__d">Signed, tamper-evident, independently verifiable records of each action. Proof, not just policy — the half most of the stack skips.</div>
+        <div class="cat__items">
+          <a class="chip chip--hl" href="https://github.com/arian-gogani/nobulex" rel="noopener noreferrer">Nobulex — OWASP AST09 ref impl</a>
+        </div>
+      </article>
+
+      <article class="cat">
+        <div class="cat__q">What's its track record?</div>
+        <div class="cat__t">Trust Scoring &amp; Reputation</div>
+        <div class="cat__d">Turns a verified history of behavior into a portable score — a "credit score" for agents.</div>
+        <div class="cat__items">
+          <a class="chip" href="https://github.com/alexfleetcommander/agent-trust-stack-mcp" rel="noopener noreferrer">agent-trust-stack</a>
+          <a class="chip" href="https://github.com/KOVY/agentforge-trust-mcp" rel="noopener noreferrer">agentforge-trust</a>
+          <a class="chip" href="https://github.com/vinaybhosle/agentstamp" rel="noopener noreferrer">agentstamp</a>
+        </div>
+      </article>
+
+      <article class="cat">
+        <div class="cat__q">By what rules?</div>
+        <div class="cat__t">Standards &amp; Regulation</div>
+        <div class="cat__d">The specs and laws defining what a record must prove and when it's required.</div>
+        <div class="cat__items">
+          <a class="chip" href="https://github.com/OWASP/www-project-agentic-skills-top-10" rel="noopener noreferrer">OWASP AST09</a>
+          <a class="chip" href="https://eur-lex.europa.eu/eli/reg/2024/1689/oj" rel="noopener noreferrer">EU AI Act Art. 12</a>
+          <a class="chip" href="https://www.iso.org/standard/81230.html" rel="noopener noreferrer">ISO/IEC 42001</a>
+          <a class="chip" href="https://www.nist.gov/itl/ai-risk-management-framework" rel="noopener noreferrer">NIST AI RMF</a>
+        </div>
+      </article>
+    </div>
+
+    <p class="note">How to read it: identity and governance answer <em>who</em> and <em>what's allowed</em>; evidence answers <em>what actually happened</em> and lets a third party verify it without trusting the operator; trust scoring turns that history into reputation; standards set the rules. They're complementary — but the evidence layer is the one most teams skip. Full sourced list: <a href="https://github.com/arian-gogani/awesome-ai-agent-accountability" rel="noopener noreferrer">awesome-ai-agent-accountability</a>. Inclusion is by relevance, not endorsement.</p>
+
+    <p class="cta"><a href="index.html#get-started" class="header__cta">Get started</a>
+    <a class="github-button" href="https://github.com/arian-gogani/nobulex" data-color-scheme="no-preference: dark; light: dark; dark: dark;" data-size="large" data-show-count="true" aria-label="Star arian-gogani/nobulex on GitHub" style="margin-left:1rem;vertical-align:middle;">Star</a></p>
+  </main>
+
+  <script>if (location.protocol === 'file:' || (location.port && location.port !== '3333')) { window.NOBULEX_API_URL = 'http://localhost:3333/api/chat'; }</script>
+  <script async defer src="https://buttons.github.io/buttons.js"></script>
+  <script src="main.js"></script>
+</body>
+</html>

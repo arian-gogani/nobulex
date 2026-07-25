@@ -36,8 +36,15 @@ jobs:
       - name: Build core
         run: npm run build -w packages/core
 
-      - name: Publish
-        run: npm publish -w packages/core --provenance --access public
+      - name: Publish (skip if version already on npm)
+        run: |
+          LOCAL=$(node -p "require('./packages/core/package.json').version")
+          REMOTE=$(npm view @nobulex/core version 2>/dev/null || echo none)
+          if [ "$LOCAL" = "$REMOTE" ]; then
+            echo "@nobulex/core@$LOCAL already published — skipping."
+          else
+            npm publish -w packages/core --provenance --access public
+          fi
 
   pypi:
     name: Publish nobulex to PyPI
@@ -62,6 +69,7 @@ jobs:
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
           packages-dir: packages/python/dist
+          skip-existing: true
 
 # ---------------------------------------------------------------------------
 # One-time trusted-publisher setup (done once by the repo owner, no tokens):

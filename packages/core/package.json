@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/core",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Credit scores for AI agents. Every action builds a verifiable track record.",
   "license": "MIT",
   "main": "./dist/index.js",

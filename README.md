@@ -1,6 +1,16 @@
+> ### This repository is a prior direction, kept rather than deleted.
+>
+> Nobulex is now **the independent reliability registry for agent tools.** The current work is at **[arian-gogani/nobulex-registry](https://github.com/arian-gogani/nobulex-registry)** and **[nobulex.com](https://nobulex.com)**.
+>
+> Same name, different thing. This one was a protocol for agents to earn a trust score through verified behavior, which answers "can this agent be trusted with more access." The question that turned out to matter was one layer down: when an agent calls a tool, did the tool tell it the truth? A receipt proving that an agent faithfully acted on a wrong answer is a receipt for a wrong answer.
+>
+> Nothing below is retracted. The code runs, the spec draft says what it says, and the published packages do what they claim. It is simply not what is being built now, and a repository that goes on quietly describing a live product nobody is building is doing the exact thing the current project exists to grade.
+
+---
+
 <div align="center">
 
-<img src="./assets/banner.svg" alt="Nobulex - Credit scores for AI agents" width="100%"/>
+<img src="./assets/banner.svg" alt="Nobulex" width="100%"/>
 
 <br/>
 

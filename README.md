@@ -390,10 +390,10 @@ Planned pricing: Free 100/day · Pro ($99/mo) 10K/day · Scale ($499/mo) unlimit
 
 AI agents are being deployed into production with no accountability infrastructure.
 
-- **86%** of AI agents deployed without security approval (CSA, 2026)
+- **82%** of enterprises have unknown AI agents running in their infrastructure ([CSA, April 2026](https://cloudsecurityalliance.org/press-releases/2026/04/21/new-cloud-security-alliance-survey-reveals-82-of-enterprises-have-unknown-ai-agents-in-their-environments))
 - **UUMit** launched the first A2A marketplace with zero identity verification
 - **$138B+** committed to physical AI with zero accountability layer
-- Top models score **10-15%** on real problems (LemmaBench) with zero traceability on failure
+- Top models prove **41%** of research-level lemmas ([LemmaBench, April 2026](https://arxiv.org/abs/2602.24173)), with no traceability on failure
 
 The agents are deployed. The money is flowing. The accountability infrastructure doesn't exist yet. We're building it.
 

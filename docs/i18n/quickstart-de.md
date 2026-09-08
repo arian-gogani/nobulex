@@ -1,76 +1,73 @@
-# Quick Start  - 30 Minuten zum ersten verifizierten Covenant
+# Nobulex Schnellstart
 
-Von null zu einem signierten, verifizierten Covenant in unter 30 Minuten.
+Erzeugen Sie Ihre erste fälschungssichere Quittung in 60 Sekunden.
 
----
-
-## Voraussetzungen
-
-- Node.js 18+
-- npm 9+
-
----
-
-## Schnellster Weg: MCP-Server (5 Min)
+## Installation
 
 ```bash
-npm install kova
+# bis die PyPI-Veröffentlichung erfolgt ist, aus dem Quellcode installieren:
+git clone https://github.com/arian-gogani/nobulex.git
+cd nobulex/packages/python && pip install -e .
 ```
 
-```typescript
-import { withKova } from 'kova';
+## Eine Quittung erzeugen
 
-const server = await withKova(yourMCPServer, 'data-isolation');
-// Fertig. Covenant-Enforcement ist aktiv.
+```python
+from nobulex import Agent
+
+agent = Agent("my-agent")
+receipt = agent.act("send_email", scope="user@example.com")
+
+print(receipt.action_ref)    # SHA-256-Hash der Aktion
+print(receipt.verify())      # True, die Signatur ist gültig
+print(receipt.to_json())     # die vollständige Quittung als JSON
 ```
 
----
+## Manipulationserkennung
 
-## Vollständiger Pfad: Eigenes Covenant (30 Min)
-
-### Schritt 1: Installieren (2 Min)
-
-```bash
-npm install @nobulex/sdk
+```python
+receipt.scope = "TAMPERED"
+print(receipt.verify())      # False, die Signatur bricht
 ```
 
-### Schritt 2: Covenant erstellen (5 Min)
+## Quittungsketten
 
-```typescript
-import { NobulexClient } from '@nobulex/sdk';
+```python
+from nobulex.chain import ReceiptChain
 
-const client = new NobulexClient();
-await client.generateKeyPair();
+chain = ReceiptChain("my-agent")
+chain.append("authenticate", scope="api.stripe.com")
+chain.append("create_payment", scope="100_USD")
+chain.append("send_notification", scope="user@co.com")
 
-const covenant = await client.createCovenant({
-  issuer: { id: 'operator-1', publicKey: client.keyPair!.publicKeyHex, role: 'issuer' },
-  beneficiary: { id: 'user-1', publicKey: '0'.repeat(64), role: 'beneficiary' },
-  constraints: `
-    permit read on '/data/**'
-    deny write on '/system/**'
-    limit api.call 100 per 3600 seconds
-  `,
-});
+print(chain.verify())        # True, die gesamte Kette ist unversehrt
+chain.export("audit.json")   # Export für Prüferinnen und Prüfer
 ```
 
-### Schritt 3: Verifizieren (2 Min)
+## LangChain-Integration
 
-```typescript
-const result = await client.verifyCovenant(covenant);
-console.log('Gültig:', result.valid);
+```python
+from nobulex.langchain import NobuReceipts
+
+tracker = NobuReceipts(agent_id="langchain-bot")
+
+# Als Callback für einen beliebigen LangChain-Agenten verwenden
+agent.invoke(input, config={"callbacks": [tracker]})
+
+print(tracker.receipts)      # eine signierte Quittung pro Werkzeugaufruf
+print(tracker.trust_score)
 ```
 
-### Schritt 4: Aktionen bewerten (5 Min)
+## Testvektoren
 
-```typescript
-const eval_ = await client.evaluateAction(covenant, 'read', '/data/file.txt');
-console.log('Lesen erlaubt:', eval_.permitted);
+Kreuzweise validiert über 4 JCS-Implementierungen (Python, JS, Go, Java):
+
+```
+fixtures/bilateral-receipt/v0/vectors.json
 ```
 
----
+## Links
 
-## Nächste Schritte
-
-- [QUICK-START.md](../QUICK-START.md) (vollständig, Englisch)
-- [eu-ai-act-de.md](./eu-ai-act-de.md)  - EU KI-Verordnung
-- [docs/README.md](../README.md)  - Dokumentationsindex
+- [GitHub](https://github.com/arian-gogani/nobulex)
+- [Website](https://nobulex.com)
+- [Dokumentation](https://nobulex.com/docs)

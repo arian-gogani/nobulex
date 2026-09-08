@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/a2a",
   "version": "0.3.0",
-  "description": "A2A Agent Card behavioral evidence extension — bridge between Nobulex Trust Capital and the Google A2A protocol",
+  "description": "A2A Agent Card behavioral evidence extension \u2014 bridge between Nobulex Trust Capital and the Google A2A protocol",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -22,8 +22,8 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@nobulex/core": "*",
-    "@nobulex/sdk": "*"
+    "@nobulex/core": "^1.0.2",
+    "@nobulex/sdk": "^0.2.2"
   },
   "license": "MIT",
   "engines": {

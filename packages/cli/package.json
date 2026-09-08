@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/cli",
   "version": "0.2.0",
-  "description": "Nobulex CLI — scaffold, verify, inspect, and report on covenant action logs",
+  "description": "Nobulex CLI \u2014 scaffold, verify, inspect, and report on covenant action logs",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,7 +20,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/core": "*"
+    "@nobulex/core": "^1.0.2"
   },
   "license": "MIT",
   "engines": {

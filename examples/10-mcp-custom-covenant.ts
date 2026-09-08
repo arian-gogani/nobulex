@@ -7,7 +7,7 @@
  * Run: npx tsx examples/10-mcp-custom-covenant.ts
  */
 
-import { withKova } from 'kova';
+import { SteleGuard, PRESETS } from '@nobulex/mcp';
 
 // Custom CCL: permit read_file on /data, deny on /secrets, require audit
 const customCCL = `permit tool.read_file on '/data/**'
@@ -39,7 +39,7 @@ async function main() {
   console.log(customCCL);
   console.log('');
 
-  const server = await withKova(mockMCPServer, customCCL);
+  const server = await SteleGuard.wrap(mockMCPServer, { constraints: customCCL });
   console.log('✓ Server wrapped with custom covenant\n');
 
   const tests = [

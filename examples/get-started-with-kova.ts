@@ -7,7 +7,7 @@
  * This example shows the minimal integration: wrap any MCP server
  * with Kova trust enforcement. No covenant setup required.
  */
-import { withKova } from 'kova';
+import { SteleGuard, PRESETS } from '@nobulex/mcp';
 
 // Create a minimal mock MCP server for demonstration
 const mockMCPServer = {
@@ -33,7 +33,7 @@ async function main() {
   console.log('Kova, The trust layer for the agent economy\n');
 
   // Three lines: wrap your MCP server with Kova
-  const server = await withKova(mockMCPServer, 'data-isolation');
+  const server = await SteleGuard.wrap(mockMCPServer, { constraints: PRESETS['standard:data-isolation'] });
   console.log('✓ Server wrapped with Kova (data-isolation preset)');
   console.log('  Constraints: file.read on /data/**, deny writes, require audit');
 
@@ -41,7 +41,7 @@ async function main() {
   const result = await server.handleToolCall('read_file', { path: '/data/ok.txt' });
   console.log('✓ Permitted: read_file /data/ok.txt ->', (result as { content?: unknown[] })?.content?.[0] ? 'OK' : 'N/A');
 
-  console.log('\nNext: npm install kova && use withKova(yourMCPServer, "data-isolation") in your app');
+  console.log("\nNext: npm install @nobulex/mcp && wrap your own server with SteleGuard.wrap(server, { constraints: PRESETS['standard:data-isolation'] })");
 }
 
 main().catch(console.error);

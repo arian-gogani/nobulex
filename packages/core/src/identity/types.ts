@@ -1,3 +1,5 @@
+import type { KeyPair } from '../crypto/types';
+
 import type { HashHex } from '../crypto/index';
 
 /** The execution environment type for an AI agent. */
@@ -101,7 +103,7 @@ export interface EvolutionPolicy {
 // Options for creating a new agent identity via {@link createIdentity}
 export interface CreateIdentityOptions {
   // The operator's Ed25519 key pair for signing
-  operatorKeyPair: import('@nobulex/crypto').KeyPair;
+  operatorKeyPair: KeyPair;
   /** Optional human-readable operator name. */
   operatorIdentifier?: string;
   /** Model attestation for the AI model. */
@@ -164,9 +166,9 @@ export interface IssueSessionOptions {
   /** The agent's full identity. */
   identity: AgentIdentity;
   // The operator's long-lived key pair for signing
-  operatorKeyPair: import('@nobulex/crypto').KeyPair;
+  operatorKeyPair: KeyPair;
   // The ephemeral session key pair
-  sessionKeyPair: import('@nobulex/crypto').KeyPair;
+  sessionKeyPair: KeyPair;
   deployer: string;
   /** Session duration in seconds (default: 3600). */
   ttlSeconds?: number;
@@ -179,7 +181,7 @@ export interface IssueSessionOptions {
 // Options for evolving an existing identity via {@link evolveIdentity}
 export interface EvolveIdentityOptions {
   /** The operator's Ed25519 key pair for signing the evolution. */
-  operatorKeyPair: import('@nobulex/crypto').KeyPair;
+  operatorKeyPair: KeyPair;
   /** The type of change being made. */
   changeType: LineageEntry['changeType'];
   /** Human-readable description of the change. */

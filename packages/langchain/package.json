@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/langchain",
   "version": "0.2.1",
-  "description": "The paper trail for AI agents — wrap any LangChain runnable, get signed Ed25519 receipts for every action",
+  "description": "The paper trail for AI agents \u2014 wrap any LangChain runnable, get signed Ed25519 receipts for every action",
   "sideEffects": false,
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -23,7 +23,7 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/core": "*"
+    "@nobulex/core": "^1.0.2"
   },
   "peerDependencies": {
     "@langchain/core": ">=0.2.0"

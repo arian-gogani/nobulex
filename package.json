@@ -53,6 +53,18 @@
     "tsup": "^8.5.1",
     "typedoc": "^0.28.19",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.18"
+    "vitest": "^4.0.18",
+    "@nobulex/ccl": "^0.2.0",
+    "@nobulex/store": "^0.2.0",
+    "@nobulex/verification": "^0.2.0",
+    "@nobulex/crypto": "^0.2.0",
+    "@nobulex/enforcement": "^0.2.1",
+    "@nobulex/eu-compliance": "^0.2.0",
+    "@nobulex/identity": "^0.2.1",
+    "@nobulex/trust-futures": "^0.2.1",
+    "@noble/ed25519": "^2.3.0",
+    "@nobulex/reputation": "^0.2.1",
+    "@nobulex/breach": "^0.2.1",
+    "@nobulex/mcp": "^0.2.1"
   }
 }

@@ -1,3 +1,4 @@
+import { canonicalizeJson } from '../crypto';
 /**
  * @nobulex/in-toto-emitter, In-toto Decision Receipt Predicate Emitter
  *
@@ -99,7 +100,6 @@ export function bilateralReceiptToInTotoPredicate(
 export async function predicateToCanonicalBytes(
   predicate: DecisionReceiptPredicate,
 ): Promise<Uint8Array> {
-  const { canonicalizeJson } = await import('@nobulex/crypto');
   const canonical = canonicalizeJson(predicate as unknown as Record<string, unknown>);
   return new TextEncoder().encode(canonical);
 }

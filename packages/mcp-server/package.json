@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/mcp-server",
   "version": "0.2.1",
-  "description": "MCP compliance server — Trust Capital enforcement for any MCP-compatible agent",
+  "description": "MCP compliance server \u2014 Trust Capital enforcement for any MCP-compatible agent",
   "sideEffects": false,
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -20,8 +20,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@nobulex/core": "*",
-    "@nobulex/sdk": "*"
+    "@nobulex/core": "^1.0.2",
+    "@nobulex/sdk": "^0.2.2"
   },
   "license": "MIT",
   "engines": {

@@ -2,6 +2,7 @@
 
 import hashlib
 import json
+import unicodedata
 from typing import Optional, Union
 
 import rfc8785
@@ -132,17 +133,34 @@ def sha256_hex(data: str) -> str:
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
 
 
+def _nfc(value: str) -> str:
+    """Normalize a string field to Unicode NFC before it enters the preimage.
+
+    RFC 8785 canonicalizes serialization, not Unicode. It neither normalizes its
+    input nor requires normalized input, so two byte sequences naming the same
+    thing canonicalize differently and produce different content addresses. The
+    failure is silent: both receipts are well formed, both signatures verify, and
+    the cross-system join simply does not happen.
+
+    NFC is chosen because it is the web platform default and what did:web
+    hostnames resolve to in practice.
+    """
+    return unicodedata.normalize("NFC", value)
+
+
 def compute_action_ref(
     agent_id: str, action_type: str, scope: str, timestamp_ms: int
 ) -> str:
     """
     Compute the action_ref hash from receipt preimage fields.
     action_ref = SHA-256(JCS({agent_id, action_type, scope, timestamp_ms}))
+
+    Every string field is normalized to Unicode NFC first. See _nfc.
     """
     preimage = {
-        "agent_id": agent_id,
-        "action_type": action_type,
-        "scope": scope,
+        "agent_id": _nfc(agent_id),
+        "action_type": _nfc(action_type),
+        "scope": _nfc(scope),
         "timestamp_ms": timestamp_ms,
     }
     canonical = jcs_canonicalize(preimage)

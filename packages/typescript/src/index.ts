@@ -25,13 +25,34 @@ export function jcsCanonicalizeObj(obj: Record<string, unknown>): string {
   return result;
 }
 
+/**
+ * Normalize a string field to Unicode NFC before it enters the preimage.
+ *
+ * RFC 8785 canonicalizes serialization, not Unicode. It neither normalizes its
+ * input nor requires normalized input, so two byte sequences naming the same
+ * thing canonicalize differently and produce different content addresses. The
+ * failure is silent: both receipts are well formed, both signatures verify, and
+ * the cross-system join simply does not happen.
+ *
+ * NFC is chosen because it is the web platform default and what did:web
+ * hostnames resolve to in practice. It must match the Python SDK's _nfc.
+ */
+function nfc(value: string): string {
+  return value.normalize('NFC');
+}
+
 export function computeActionRef(
   agentId: string,
   actionType: string,
   scope: string,
   timestampMs: number
 ): string {
-  const preimage = { action_type: actionType, agent_id: agentId, scope, timestamp_ms: timestampMs };
+  const preimage = {
+    action_type: nfc(actionType),
+    agent_id: nfc(agentId),
+    scope: nfc(scope),
+    timestamp_ms: timestampMs,
+  };
   return sha256Hex(jcsCanonicalizeObj(preimage));
 }
 

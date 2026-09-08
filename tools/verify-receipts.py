@@ -16,6 +16,7 @@ Usage:
 
 import argparse
 import json
+import unicodedata
 import hashlib
 import sys
 
@@ -34,11 +35,36 @@ except ImportError:
 
 
 def jcs_canonical(obj):
-    """RFC 8785 JCS canonicalization."""
-    if HAS_JCS:
-        return rfc8785.dumps(obj)
-    # Fallback: sorted JSON (correct for ASCII-safe keys)
-    return json.dumps(obj, separators=(',', ':'), sort_keys=True, ensure_ascii=False).encode('utf-8')
+    """RFC 8785 JCS canonicalization. No fallback, on purpose.
+
+    This used to fall back to json.dumps(sort_keys=True, ensure_ascii=False)
+    when the rfc8785 package was missing, commented "correct for ASCII-safe
+    keys". That is an approximation, and the failure it produces is a false
+    INVALID: a correctly signed receipt reported as not matching its own
+    action_ref, because this tool canonicalized it differently than the signer
+    did. Number formatting and key ordering diverge too, not only escaping.
+
+    A verifier that silently degrades to an approximation is worse than one
+    that refuses, because the caller cannot tell the two apart from the output.
+    So it refuses.
+    """
+    if not HAS_JCS:
+        raise SystemExit(
+            "VERIFICATION_UNAVAILABLE: the rfc8785 package is not installed.\n"
+            "This tool will not verify with an approximation, because a wrong\n"
+            "canonicalization reports valid receipts as invalid.\n"
+            "  pip install rfc8785"
+        )
+    return rfc8785.dumps(obj)
+
+
+def _nfc(value):
+    """Match the SDK, which normalizes string fields to NFC before hashing.
+
+    RFC 8785 canonicalizes serialization, not Unicode. Without this the same
+    name written NFD hashes differently here than it did at the signer.
+    """
+    return unicodedata.normalize("NFC", value)
 
 
 def verify_signature(data_bytes, signature_hex, pubkey_hex):
@@ -58,9 +84,9 @@ def verify_signature(data_bytes, signature_hex, pubkey_hex):
 def verify_action_ref(entry):
     """Verify action_ref is correctly derived from preimage fields."""
     preimage = {
-        'agent_id': entry['agent_id'],
-        'action_type': entry['action_type'],
-        'scope': entry['scope'],
+        'agent_id': _nfc(entry['agent_id']),
+        'action_type': _nfc(entry['action_type']),
+        'scope': _nfc(entry['scope']),
         'timestamp_ms': entry['timestamp_ms'],
     }
     canonical = jcs_canonical(preimage)

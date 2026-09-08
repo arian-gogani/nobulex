@@ -21,7 +21,6 @@ Run:
 """
 
 import json
-import hashlib
 import time
 from flask import Flask, request, jsonify
 
@@ -29,7 +28,7 @@ import sys
 from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "python"))
 
-from nobulex.crypto import KeyPair
+from nobulex.crypto import KeyPair, compute_action_ref, jcs_canonicalize, sha256_hex
 from nobulex import Agent, Receipt
 
 app = Flask(__name__)
@@ -87,14 +86,19 @@ def rate_limit_response(remaining, reset_at):
     }), 429
 
 
-def jcs_canonical(obj):
-    return json.dumps(obj, sort_keys=True, separators=(",", ":"), ensure_ascii=True)
-
-
-def sha256_hex(data):
-    if isinstance(data, str):
-        data = data.encode("utf-8")
-    return hashlib.sha256(data).hexdigest()
+# jcs_canonical and sha256_hex used to be defined here. They were not the same
+# functions the SDK signs with.
+#
+# The local jcs_canonical was json.dumps(..., sort_keys=True, ensure_ascii=True).
+# RFC 8785 does not escape non-ASCII; it emits raw UTF-8. So for any receipt
+# whose agent_id, action_type or scope contained a non-ASCII character, this
+# service recomputed a different action_ref than the signer computed and
+# returned INVALID for a correctly signed receipt. A non-ASCII scope alone was
+# enough, and scope is the field most likely to carry a tenant-supplied string.
+#
+# A verifier that reaches its verdict with its own private implementation is not
+# verifying, it is comparing against a second guess. Everything below now calls
+# the same functions the SDK signs with.
 
 
 @app.route("/health", methods=["GET"])
@@ -125,13 +129,9 @@ def verify_single():
         return jsonify({"verdict": "INVALID", "error": str(e)}), 200
 
     # Recompute action_ref
-    preimage = jcs_canonical({
-        "agent_id": receipt.agent_id,
-        "action_type": receipt.action_type,
-        "scope": receipt.scope,
-        "timestamp_ms": receipt.timestamp_ms,
-    })
-    recomputed_ref = sha256_hex(preimage)
+    recomputed_ref = compute_action_ref(
+        receipt.agent_id, receipt.action_type, receipt.scope, receipt.timestamp_ms
+    )
     ref_match = recomputed_ref == receipt.action_ref
 
     verdict = "VALID" if (ref_match and sig_valid) else "INVALID"
@@ -196,7 +196,7 @@ def verify_chain():
     for i, receipt in enumerate(receipts):
         sig_hex = receipt.get("signature", "")
         payload = {k: v for k, v in receipt.items() if k != "signature"}
-        canonical = jcs_canonical(payload)
+        canonical = jcs_canonicalize(payload)
 
         try:
             sig_valid = KeyPair.verify_signature(
@@ -297,13 +297,9 @@ def verify_bundle():
             r = Receipt.from_dict(rd)
             sig_ok = r.verify()
 
-            preimage = jcs_canonical({
-                "agent_id": r.agent_id,
-                "action_type": r.action_type,
-                "scope": r.scope,
-                "timestamp_ms": r.timestamp_ms,
-            })
-            ref_ok = sha256_hex(preimage) == r.action_ref
+            ref_ok = compute_action_ref(
+                r.agent_id, r.action_type, r.scope, r.timestamp_ms
+            ) == r.action_ref
 
             if sig_ok and ref_ok:
                 verified.append({"seq": i + 1, "action_ref": r.action_ref, "verdict": "VALID"})
@@ -382,18 +378,10 @@ def tamper_test():
     tampered_receipt = R.from_dict(tampered)
     tampered_valid = tampered_receipt.verify()
 
-    preimage_original = jcs_canonical({
-        "agent_id": original["agent_id"],
-        "action_type": original["action_type"],
-        "scope": original["scope"],
-        "timestamp_ms": original["timestamp_ms"],
-    })
-    preimage_tampered = jcs_canonical({
-        "agent_id": tampered["agent_id"],
-        "action_type": tampered["action_type"],
-        "scope": tampered["scope"],
-        "timestamp_ms": tampered["timestamp_ms"],
-    })
+    ref_tampered = compute_action_ref(
+        tampered["agent_id"], tampered["action_type"],
+        tampered["scope"], tampered["timestamp_ms"],
+    )
 
     return jsonify({
         "demo": "tamper-test",
@@ -406,8 +394,8 @@ def tamper_test():
         "tampered": {
             "scope": tampered["scope"],
             "action_ref": tampered["action_ref"],
-            "action_ref_recomputed": sha256_hex(preimage_tampered),
-            "action_ref_match": sha256_hex(preimage_tampered) == tampered["action_ref"],
+            "action_ref_recomputed": ref_tampered,
+            "action_ref_match": ref_tampered == tampered["action_ref"],
             "signature_valid": tampered_valid,
             "verdict": "INVALID - tamper detected",
         },

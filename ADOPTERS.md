@@ -26,7 +26,7 @@
 - **AutoGen (Microsoft)**  - Engaged in HDP delegation provenance discussion ([microsoft/autogen#7667](https://github.com/microsoft/autogen/pull/7667))
 
 
-**Dify (LangGenius)** - Outreach in June 2026 led to an invitation to submit a plugin PR and template to langgenius/dify-plugins. Plugin built at `packages/dify-plugin/`.
+**Dify (LangGenius)** - Plugin merged into the official Dify Marketplace repository, [langgenius/dify-plugins#2500](https://github.com/langgenius/dify-plugins/pull/2500), 14 July 2026. Source at `packages/dify-plugin/`.
 
 ## Using Nobulex?
 

@@ -10,7 +10,8 @@
     "packages/mcp-server",
     "packages/a2a",
     "packages/langchain",
-    "packages/claude-agent-sdk"
+    "packages/claude-agent-sdk",
+    "packages/typescript"
   ],
   "scripts": {
     "build": "npm run build -w packages/core && npm run build -w packages/sdk -w packages/mcp-server -w packages/a2a -w packages/langchain",

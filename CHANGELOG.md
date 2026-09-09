@@ -60,7 +60,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Merged `@nobulex/composability` into `@nobulex/core` (covenant compatibility)
 - Merged `@nobulex/attestation` into `@nobulex/proof` (session digests, attestation records)
 - Merged `@nobulex/verifier` into `@nobulex/verification` (standalone verifier engine)
-- Merged `@nobulex/kova` into `@nobulex/mcp` (withKova convenience layer)
+- Merged `@nobulex/kova` into `@nobulex/mcp` (`SteleGuard.wrap(server, { constraints })` with presets in `PRESETS`; earlier draft name `withKova` never shipped)
 - Reduced package count from 32 to 26
 
 ## [0.2.2] - 2026-04-15

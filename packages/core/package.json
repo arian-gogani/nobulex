@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Credit scores for AI agents. Every action builds a verifiable track record.",
   "license": "MIT",
   "main": "./dist/index.js",
@@ -10,7 +10,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
   "files": [
     "dist",

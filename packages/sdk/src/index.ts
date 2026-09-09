@@ -249,7 +249,14 @@ export {
   checkRateLimit,
   merge as mergeCCL,
   validateNarrowing,
-  serialize as serializeCCL,
+  // cclSerialize, not serialize. @nobulex/core exports two serializers: the
+  // CCL one as cclSerialize, and covenant-lang's CovenantSpec serializer as
+  // plain `serialize` through `export * from './covenant-lang/index'`. This
+  // line imported the second and called it serializeCCL, so serializeCCL
+  // threw a TypeError on every CCLDocument ever passed to it. The round-trip
+  // test in index.test.ts did not catch it because it imports serialize from
+  // '@nobulex/ccl' directly and never touches this alias.
+  cclSerialize as serializeCCL,
   validateCCL,
   tokenize,
   parseTokens,

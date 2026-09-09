@@ -20,7 +20,11 @@ import {
   type CovenantDocument,
 } from '@nobulex/sdk';
 
-import { Verifier } from '@nobulex/verification';
+// Verifier lives in @nobulex/core. The published @nobulex/verification is a
+// February 0.2.0 package exporting only proveViolation, verify, verifyBatch
+// and verifyWithProofs, so this import resolved to a module with no Verifier
+// in it and the example threw on every run.
+import { Verifier } from '@nobulex/core';
 
 async function main() {
   console.log('========================================');
@@ -222,4 +226,12 @@ async function main() {
   console.log('========================================');
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  // Exit non-zero. `catch(console.error)` printed the failure and then
+  // exited 0, so two examples in this directory threw a TypeError and
+  // were still counted as passing by every check that reads exit codes,
+  // including this repository's CI. An example that fails must say so
+  // through the channel a machine reads.
+  console.error(err);
+  process.exit(1);
+});

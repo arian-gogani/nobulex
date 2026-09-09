@@ -20,7 +20,11 @@ import {
   type CovenantDocument,
 } from '@nobulex/sdk';
 
-import { Verifier } from '@nobulex/verification';
+// Verifier lives in @nobulex/core. The published @nobulex/verification is a
+// February 0.2.0 package exporting only proveViolation, verify, verifyBatch
+// and verifyWithProofs, so this import resolved to a module with no Verifier
+// in it and the example threw on every run.
+import { Verifier } from '@nobulex/core';
 
 async function main() {
   console.log('========================================');

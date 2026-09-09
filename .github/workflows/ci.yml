@@ -32,21 +32,34 @@ jobs:
       # examples/README.md calls these runnable and tells a reader to run them
       # with exactly this command. Twelve of twenty ran. Whatever the README
       # claims about them is now checked on every push.
+      # An exit code is not enough here, and this step used to trust one.
+      # Fifteen of these examples ended in `main().catch(console.error)`, which
+      # prints the failure and then exits 0, so 02-delegation-chain and
+      # 06-multi-party-audit threw a TypeError on every run and were counted as
+      # passing. That is the failure this whole repository is about: a well
+      # formed success that validates perfectly. The examples now exit non-zero,
+      # and this step also reads stderr, so neither half has to be right alone.
       - name: Examples run as documented
         run: |
-          set -e
           failed=""
           for f in examples/*.ts; do
-            if ! timeout 120 npx tsx "$f" > /dev/null 2>&1; then
-              failed="$failed $f"
+            timeout 120 npx tsx "$f" > /dev/null 2>/tmp/ex.err
+            rc=$?
+            if [ $rc -ne 0 ]; then
+              failed="$failed $f(exit $rc)"
+            elif grep -qE "TypeError|ReferenceError|SyntaxError|^Error:" /tmp/ex.err; then
+              failed="$failed $f(exit 0, threw)"
             fi
           done
           if [ -n "$failed" ]; then
-            echo "examples that do not run:$failed"
-            for f in $failed; do echo "--- $f"; npx tsx "$f" 2>&1 | tail -5; done
+            echo "examples that did not run clean:$failed"
+            for f in $failed; do
+              n=${f%%(*}
+              echo "--- $n"; npx tsx "$n" 2>&1 >/dev/null | tail -5
+            done
             exit 1
           fi
-          echo "all $(ls examples/*.ts | wc -l) examples ran"
+          echo "all $(ls examples/*.ts | wc -l) examples ran clean"
 
   # packages/typescript publishes as the unscoped name `nobulex`, which is the
   # name a reader types, and it was in no workspace and no CI. It did not

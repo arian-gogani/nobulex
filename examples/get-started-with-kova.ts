@@ -44,4 +44,12 @@ async function main() {
   console.log("\nNext: npm install @nobulex/mcp && wrap your own server with SteleGuard.wrap(server, { constraints: PRESETS['standard:data-isolation'] })");
 }
 
-main().catch(console.error);
+main().catch((err) => {
+  // Exit non-zero. `catch(console.error)` printed the failure and then
+  // exited 0, so two examples in this directory threw a TypeError and
+  // were still counted as passing by every check that reads exit codes,
+  // including this repository's CI. An example that fails must say so
+  // through the channel a machine reads.
+  console.error(err);
+  process.exit(1);
+});

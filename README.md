@@ -60,7 +60,7 @@ npm install @nobulex/core
 from nobulex.agent import Agent
 agent = Agent("my-agent")
 receipt = agent.act("send_email", scope="user@example.com")
-assert receipt.verify()  # tamper-proof
+assert receipt.verify()  # signature valid, chain unbroken
 ```
 
 <div align="center">

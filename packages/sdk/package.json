@@ -1,7 +1,7 @@
 {
   "name": "@nobulex/sdk",
   "version": "0.2.3",
-  "description": "Nobulex SDK \u2014 Trust Capital for autonomous AI agents. Bilateral receipts, earned reputation, verified behavior.",
+  "description": "Nobulex SDK: Trust Capital for autonomous AI agents. Bilateral receipts, earned reputation, verified behavior.",
   "sideEffects": false,
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",

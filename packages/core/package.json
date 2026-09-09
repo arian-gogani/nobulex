@@ -54,5 +54,6 @@
   "dependencies": {
     "@noble/ed25519": "^2.3.0",
     "@noble/hashes": "^1.8.0"
-  }
+  },
+  "homepage": "https://nobulex.com"
 }

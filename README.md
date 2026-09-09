@@ -33,7 +33,7 @@ Autonomy earned, not granted.
 
 [Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
-<sub>Reference implementation of the [**OWASP Agentic Skills Top 10 — AST09**](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35) execution-receipt pattern · listed in the OWASP solutions catalog · in the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1703) adopters · merged to the Dify marketplace</sub>
+<sub>Reference implementation of the [**OWASP Agentic Skills Top 10 (AST09)**](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35) execution-receipt pattern · listed in the OWASP solutions catalog · in the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1703) adopters · merged to the Dify marketplace</sub>
 
 </div>
 
@@ -345,8 +345,8 @@ Independent, verifiable signals (each links to evidence):
 | | **OWASP Agentic Skills Top 10 (AST09)** | Bilateral receipt pattern merged as normative guidance ([PR #35](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35)). Vendor listing in the solutions catalog ([PR #38](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/38)). Fixture-corpus proposal ([PR #46](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/46), merged as a discussion doc, not a normative spec). All merged by project lead Ken Huang, Jun-Jul 2026. The `action_ref` hash construction itself is in the solutions catalog, not the normative page |
 | | **IETF Conformance** | draft-farley-acta-signed-receipts: 4/4 vectors pass. Implementation PR [#12](https://github.com/ScopeBlind/agent-governance-testvectors/pull/12) filed |
 | | **OWASP CheatSheetSeries** | Sections 8-11 (JCS canonicalization, cross-agent accountability, sanctions-list freshness, regulatory mapping) merged into master by Jim Manico, Jun 2026 ([PR #2210](https://github.com/OWASP/CheatSheetSeries/pull/2210)) |
-| | **Dify Plugin Marketplace** | Plugin merged into official dify-plugins repository ([PR #2500](https://github.com/langgenius/dify-plugins/pull/2500)). Nobulex receipts available to 90K+ star Dify ecosystem |
-| | **Microsoft AI Agents for Beginners** | PR open to add nobulex as the Python production receipt library in Lesson 18  - Securing AI Agents with Cryptographic Receipts ([PR #571](https://github.com/microsoft/ai-agents-for-beginners/pull/571)) |
+| | **Dify Plugin Marketplace** | Plugin merged into official dify-plugins repository ([PR #2500](https://github.com/langgenius/dify-plugins/pull/2500)). Nobulex receipts available to the 155K+ star Dify ecosystem |
+| | **Microsoft AI Agents for Beginners** | Merged. nobulex is the Python production receipt library in Lesson 18, Securing AI Agents with Cryptographic Receipts ([PR #571](https://github.com/microsoft/ai-agents-for-beginners/pull/571)) |
 | | **AgentAudit AI** | Design-partner conversation. A signed specimen receipt verifies end-to-end in 10 lines of Python ([fixture](./fixtures/agentaudit-specimen-v1.json)) |
 | | **Microsoft AGT** | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged by Microsoft maintainers) |
 | | **builderz-labs / mission-control** | Cross-session trust score RFC accepted as open issue; TypeScript reference implementation delivered |
@@ -357,7 +357,7 @@ EU AI Act Article 12 enforcement: December 2, 2027.
 
 ## Verify API
 
-Receipts verify **offline** with the SDK today — no server, no network, no callback:
+Receipts verify **offline** with the SDK today. No server, no network, no callback:
 
 ```python
 from nobulex.agent import Agent
@@ -367,7 +367,7 @@ receipt = agent.act("charge", scope="invoice:042")
 assert receipt.verify()   # recomputes action_ref + checks the Ed25519 signature, offline
 ```
 
-The **hosted verification layer** is the paid product — rate-limited tiers,
+The **hosted verification layer** is the paid product: rate-limited tiers,
 agent trust scores, and regulator-ready compliance reports. It is implemented in
 [`packages/verify-api/`](./packages/verify-api/) (Flask + Dockerfile) and is
 **not yet deployed to nobulex.com**.
@@ -427,7 +427,7 @@ npx tsx benchmarks/bench.ts # benchmarks
 
 [Website](https://nobulex.com) · [Try it](https://nobulex.com/demo) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
 
-Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian-gogani/awesome-ai-agent-accountability) — standards, regulations, and tools for verifiable agent behavior.
+Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian-gogani/awesome-ai-agent-accountability): standards, regulations, and tools for verifiable agent behavior.
 
 **[Star this repo](https://github.com/arian-gogani/nobulex)** to follow the project
 

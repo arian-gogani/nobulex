@@ -6,7 +6,17 @@
     "outDir": "./dist",
     "strict": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "rootDir": "./src",
+    "types": [
+      "node"
+    ],
+    "lib": [
+      "ES2020",
+      "DOM"
+    ]
   },
-  "include": ["src/**/*"]
+  "include": [
+    "src/**/*"
+  ]
 }

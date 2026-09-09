@@ -19,7 +19,58 @@ jobs:
 
       - run: npm ci
 
+      # The build runs before the tests on purpose. vitest.config.ci.ts aliases
+      # the merged-into-core packages straight at packages/core/src, so a test
+      # run resolves imports the published build never sees. That is useful for
+      # tests and it is why a broken build shipped green: packages/core was
+      # importing @nobulex/crypto, which is not in this repository, and every
+      # test passed because the alias rewrote it. tsc has no aliases.
+      - run: npm run build
+
       - run: npx vitest run --config vitest.config.ci.ts
+
+      # examples/README.md calls these runnable and tells a reader to run them
+      # with exactly this command. Twelve of twenty ran. Whatever the README
+      # claims about them is now checked on every push.
+      - name: Examples run as documented
+        run: |
+          set -e
+          failed=""
+          for f in examples/*.ts; do
+            if ! timeout 120 npx tsx "$f" > /dev/null 2>&1; then
+              failed="$failed $f"
+            fi
+          done
+          if [ -n "$failed" ]; then
+            echo "examples that do not run:$failed"
+            for f in $failed; do echo "--- $f"; npx tsx "$f" 2>&1 | tail -5; done
+            exit 1
+          fi
+          echo "all $(ls examples/*.ts | wc -l) examples ran"
+
+  # packages/typescript publishes as the unscoped name `nobulex`, which is the
+  # name a reader types, and it was in no workspace and no CI. It did not
+  # compile: tsconfig set no rootDir and pulled no node types, so `npm run
+  # build` failed and test.js could not find ./dist at all.
+  unscoped-package:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: packages/typescript
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - run: npm install
+
+      - run: npm run build
+
+      - run: node test.js
+
+      - run: node test-action-ref-normalization.js
 
   python-tests:
     runs-on: ubuntu-latest

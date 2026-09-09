@@ -24,6 +24,12 @@ def _canonicalize(obj: Any) -> bytes:
     return json.dumps(
         obj,
         sort_keys=True,
+        # Does not conform to RFC 8785: JCS requires literal UTF-8 for
+        # non-ASCII code points, but ensure_ascii=True emits \uXXXX escapes
+        # (e.g. café → caf\u00e9). Two implementations of the same object
+        # then produce different bytes and receipts will not join. Kept as
+        # ensure_ascii=True deliberately: this file documents the upstream
+        # Microsoft implementation, it is not proposing a corrected one.
         ensure_ascii=True,
         separators=(",", ":"),
         allow_nan=False,

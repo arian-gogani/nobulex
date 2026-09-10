@@ -1,8 +1,12 @@
 # @nobulex/core
 
-Credit scores for AI agents. Cryptographic receipts for every agent action,
-Ed25519 signed over RFC 8785 canonical JSON. The verified track record
-becomes portable trust.
+Signed covenants and tamper-evident behavioral receipts for AI agent actions,
+using Ed25519 signatures over RFC 8785 canonical JSON.
+
+This package can prove who signed a record and whether it changed. It does not
+independently prove that the original account was complete or true. Nobulex's
+independent verification work is in the
+[reliability registry](https://github.com/arian-gogani/nobulex-registry).
 
 ## Install
 
@@ -48,7 +52,7 @@ signature, id, and constraints with no network call. A hosted verification
 service (paid tiers, trust scores, compliance reports) is implemented in
 `packages/verify-api/` but is not yet deployed to nobulex.com.
 
-[Pricing](https://nobulex.com/pricing) | [Methodology](https://github.com/arian-gogani/nobulex/blob/main/docs/trust-capital-methodology.md)
+[Specification](https://github.com/arian-gogani/nobulex/blob/main/drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) | [Independent verification](https://github.com/arian-gogani/nobulex-registry)
 
 ## Learn More
 

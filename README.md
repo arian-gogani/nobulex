@@ -5,6 +5,8 @@
 > Same name, different thing. This one was a protocol for agents to earn a trust score through verified behavior, which answers "can this agent be trusted with more access." The question that turned out to matter was one layer down: when an agent calls a tool, did the tool tell it the truth? A receipt proving that an agent faithfully acted on a wrong answer is a receipt for a wrong answer.
 >
 > Nothing below is retracted. The code runs, the spec draft says what it says, and the published packages do what they claim. It is simply not what is being built now, and a repository that goes on quietly describing a live product nobody is building is doing the exact thing the current project exists to grade.
+>
+> **Current project:** [read the method](https://github.com/arian-gogani/nobulex-registry#readme) · [run the self-test](https://github.com/arian-gogani/nobulex-registry#run-it) · [see the register](https://nobulex.com/register) · [follow the work](https://github.com/arian-gogani/nobulex-registry)
 
 ---
 

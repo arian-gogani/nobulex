@@ -80,7 +80,7 @@ import type {
  * const result = agent.verify();
  * console.log(result.compliant); // true
  *
- * // Get tamper-proof log
+ * // Get a log with detectable later changes
  * const log = agent.getLog();
  * ```
  */

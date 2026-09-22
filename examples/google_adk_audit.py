@@ -1,5 +1,5 @@
 # nobulex-google-adk-example.py
-# Article 12-grade audit trail for Google ADK agents.
+# Signed audit evidence for Google ADK agents.
 # pip install nobulex
 
 from nobulex.integrations.google_adk import NobulexADKCallback

@@ -1,5 +1,5 @@
 # nobulex-crewai-example.py
-# Article 12-grade audit trail for CrewAI crews.
+# Signed audit evidence for CrewAI crews.
 # pip install nobulex
 
 from nobulex.integrations.crewai import NobulexCrewAudit

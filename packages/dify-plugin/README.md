@@ -17,7 +17,7 @@ using only your agent's public key.
 |------|-------------|
 | `sign_receipt` | Sign a cryptographic receipt for one tool call |
 | `verify_receipt` | Verify a receipt's signature and chain integrity |
-| `export_article12` | Export a regulator-facing EU AI Act Article 12 evidence package |
+| `export_article12` | Export signed records and technical context for an Article 12 review |
 | `get_trust_score` | Get this agent's current trust score score (0-100) |
 
 ## Quick start
@@ -27,10 +27,10 @@ using only your agent's public key.
 3. Add `sign_receipt` as a node in your workflow after each tool call you
    want audited.
 4. Pass `action_type` (what the agent did) and `scope` (what it touched).
-5. At end of session, call `export_article12` to get the full evidence
-   package for compliance logging.
+5. At end of session, call `export_article12` to get the signed records
+   and integrity evidence for review.
 
-## Example: EU AI Act Article 12 compliance workflow
+## Example: evidence collection for an Article 12 review
 
 ```
 Tool Call Node (search_web)
@@ -44,9 +44,10 @@ End of session:
   → export_article12()  → store to immutable storage
 ```
 
-The exported package contains signed receipts, chain head hash, and an
-EU AI Act Article 12 obligation mapping. Any auditor can verify the
-complete chain independently.
+The exported package contains signed receipts, a chain head hash, and
+technical context about Article 12 logging capabilities. A reviewer can
+check the exported chain independently. The export does not by itself
+establish Article 12 compliance.
 
 ## Why this is different from standard audit logs
 
@@ -55,7 +56,7 @@ complete chain independently.
 | Tamper-evident | ❌ (mutable) | ✅ (signature fails) |
 | Independent verification | ❌ (trust operator) | ✅ (public key only) |
 | Chain integrity | ❌ | ✅ (hash chain) |
-| EU AI Act Article 12 | partial | ✅ |
+| Technical evidence for Article 12 review | application logs | signed record chain |
 
 ## Links
 

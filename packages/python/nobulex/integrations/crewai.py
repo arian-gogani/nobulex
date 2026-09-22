@@ -1,7 +1,7 @@
 """Nobulex CrewAI integration.
 
 Emits a signed, hash-chained Nobulex receipt for every task execution
-in a CrewAI crew. Produces Article 12-grade audit evidence.
+in a CrewAI crew. Produces signed audit evidence for later review.
 
 Usage:
     from nobulex.integrations.crewai import NobulexCrewAudit

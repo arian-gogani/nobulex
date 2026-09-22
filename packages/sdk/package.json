@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/sdk",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "description": "TypeScript SDK for signed agent covenants and tamper-evident behavioral receipts.",
   "sideEffects": false,
   "main": "./dist/index.js",

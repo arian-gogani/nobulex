@@ -1,7 +1,7 @@
 """Nobulex Google ADK integration.
 
 Emits a signed, hash-chained Nobulex receipt for every tool call in a
-Google ADK agent. Produces Article 12-grade audit evidence.
+Google ADK agent. Produces signed audit evidence for later review.
 
 Usage:
     from nobulex.integrations.google_adk import NobulexADKCallback

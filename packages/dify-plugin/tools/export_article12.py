@@ -20,7 +20,7 @@ except Exception:  # pragma: no cover
 
 
 class ExportArticle12Tool(Tool):
-    """Export a regulator-facing EU AI Act Article 12 evidence package."""
+    """Export technical evidence for an EU AI Act Article 12 review."""
 
     def _invoke(
         self,
@@ -60,11 +60,12 @@ class ExportArticle12Tool(Tool):
         }
 
         if include_policy_mapping:
-            package["obligation_mapping"] = {
+            package["article_12_context"] = {
                 "eu_ai_act_article_12": {
-                    "requirement": "Tamper-evident automatic logging of events",
-                    "satisfied_by": "Ed25519-signed, JCS-canonical, hash-chained receipts",
-                    "verification": "Any party with the agent's public key can verify offline",
+                    "requirement": "Automatic event logging for in-scope high-risk AI systems",
+                    "evidence_provided": "Ed25519-signed, JCS-canonical, hash-chained records",
+                    "verification": "A party with the agent's public key can check the exported records offline for later changes",
+                    "legal_effect": "This export does not by itself establish Article 12 compliance",
                     "chain_head_hash": chain.head_hash,
                     "receipt_count": receipt_count,
                 }

@@ -1,7 +1,7 @@
-# Dify Workflow Template: EU AI Act Article 12 Compliance Agent
+# Dify Workflow Template: Article 12 Evidence Collection
 
 This template shows how to wire nobulex into a Dify workflow that is
-EU AI Act Article 12 compliant out of the box.
+collecting signed technical records for an Article 12 review.
 
 ## Node structure
 
@@ -23,12 +23,14 @@ Input Node
 - `scope`: what resource it touched (URL, email, DB table, etc.)
 - `policy_version`: which policy governed this (optional but recommended)
 
-## Why this satisfies EU AI Act Article 12
+## What this contributes to an Article 12 review
 
 The export_article12 package contains:
 - All Ed25519-signed receipts for the session
 - Chain head hash (auditor recomputes from receipts to verify)
-- EU AI Act Article 12 obligation mapping
+- Technical context about Article 12 logging capabilities
 
-Any auditor can verify offline  - no vendor dependency, no operator trust required.
-The chain breaks if any receipt is altered. EU AI Act Article 12 enforcement: December 2, 2027.
+A reviewer can check the exported chain offline with the agent's public key.
+The chain breaks if an included receipt is altered. This does not prove that
+every event was captured, that an external action occurred, or that the system
+complies with Article 12.

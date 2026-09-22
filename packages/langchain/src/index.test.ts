@@ -502,11 +502,25 @@ describe('getComplianceReport', () => {
     const report = await wrapped.getComplianceReport();
 
     expect(report.findings).toHaveLength(4);
-    expect(report.findings[0]!.requirement).toContain('Article 12(1)');
-    expect(report.findings[0]!.status).toBe('pass');
-    expect(report.findings[1]!.requirement).toContain('Article 12(2)');
-    expect(report.findings[2]!.requirement).toContain('Article 12(3)');
-    expect(report.findings[3]!.requirement).toContain('Article 12(4)');
+    expect(report.findings[0]).toMatchObject({
+      requirement: 'Article 12(1) - Automatic event logging capability',
+      status: 'info',
+    });
+    expect(report.findings[1]).toMatchObject({
+      requirement: 'Article 12(2) - Traceability support',
+      status: 'info',
+    });
+    expect(report.findings[2]).toMatchObject({
+      requirement: 'Implementation evidence - Recorded event scope',
+      status: 'info',
+    });
+    expect(report.findings[3]!.requirement).toBe(
+      'Implementation evidence - Log integrity check',
+    );
+
+    const requirementText = report.findings.map((finding) => finding.requirement).join('\n');
+    expect(requirementText).not.toMatch(/Article 12\([34]\)/);
+    expect(requirementText).not.toContain('Tamper-evident audit trail');
   });
 
   it('should embed the full audit log', async () => {

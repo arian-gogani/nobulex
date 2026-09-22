@@ -67,7 +67,7 @@
 
     <h2>Why ordinary logs are not enough</h2>
     <p>Most agent frameworks already log activity. The problem is where that log lives: in the operator's own infrastructure, editable and deletable by the operator. An auditor reviewing it has to trust the exact party whose work they are auditing. For software that moves money, reads records, or calls tools on your behalf, that is the wrong trust model.</p>
-    <p>The EU AI Act (Regulation (EU) 2024/1689), Article 12, makes this concrete for high-risk systems: they must keep automatically generated logs that enable post-hoc verification of how the system operated. A log the operator can silently rewrite does not clear that bar.</p>
+    <p>The EU AI Act (Regulation (EU) 2024/1689), Article 12, requires automatic event logging capabilities for high-risk systems. It does not require signatures, hash chains, or independent verification. Those controls address a separate need to detect later changes to exported evidence.</p>
 
     <h2>What "verifiable" actually requires</h2>
     <p>A verifiable audit trail has three properties:</p>

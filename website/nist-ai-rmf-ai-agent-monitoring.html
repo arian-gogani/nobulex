@@ -108,7 +108,7 @@ receipt = agent.act("charge", scope="invoice:042")
 assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
 
     <h2>One implementation, three frameworks</h2>
-    <p>The AI RMF is voluntary, but the behavioral records it calls for are the same ones a regulation and a certifiable management system require. The identical receipts map onto the <a href="eu-ai-act-article-12-agent-records.html">EU AI Act, Article 12</a> (automatic logs for post-hoc traceability) and <a href="iso-42001-ai-agent-logging.html">ISO/IEC 42001, A.6.2.8</a> (event-log record-keeping) &mdash; so instrumenting once serves a US risk framework, an EU regulation, and an ISO management system at the same time. The AI RMF does not require cryptography; it asks for monitoring and incident records reliable enough to act on, and signed receipts are the strongest form of that evidence.</p>
+    <p>The AI RMF is voluntary. Its monitoring records may also contribute evidence to reviews under <a href="eu-ai-act-article-12-agent-records.html">EU AI Act Article 12</a> and <a href="iso-42001-ai-agent-logging.html">ISO/IEC 42001 A.6.2.8</a>, but each framework has separate scope and requirements. None of these references makes cryptographic receipts a compliance requirement.</p>
 
     <h2>Getting started</h2>
     <pre><code>pip install nobulex

@@ -1,6 +1,6 @@
 {
   "name": "@nobulex/langchain",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "The paper trail for AI agents: wrap any LangChain runnable, get signed Ed25519 receipts for every action",
   "sideEffects": false,
   "main": "./dist/index.js",

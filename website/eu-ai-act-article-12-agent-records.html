@@ -4,16 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EU AI Act Article 12: Record-Keeping for AI Agents (2026)</title>
-  <meta name="description" content="EU AI Act Article 12 requires high-risk AI systems to keep automatically generated logs that enable post-hoc traceability. Here is what the article requires and how signed execution receipts satisfy it.">
+  <meta name="description" content="EU AI Act Article 12 requires automatic event logging for high-risk AI systems. Here is what the article requires and what signed execution receipts add separately.">
   <meta property="og:title" content="EU AI Act Article 12: Record-Keeping for AI Agents">
-  <meta property="og:description" content="What Article 12 requires for automatic logging and traceability, and how verifiable receipts map to it.">
+  <meta property="og:description" content="What Article 12 requires for automatic logging and what integrity evidence signed receipts add separately.">
   <meta property="og:type" content="article">
   <meta property="og:url" content="https://nobulex.com/eu-ai-act-article-12-agent-records">
   <meta property="og:image" content="https://nobulex.com/images/og-card.png">
   <link rel="canonical" href="https://nobulex.com/eu-ai-act-article-12-agent-records">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="EU AI Act Article 12: Record-Keeping for AI Agents">
-  <meta name="twitter:description" content="What Article 12 requires for automatic logging and traceability, and how verifiable receipts map to it.">
+  <meta name="twitter:description" content="What Article 12 requires for automatic logging and what integrity evidence signed receipts add separately.">
   <link rel="icon" type="image/png" href="/icon.png">
   <link rel="apple-touch-icon" href="/icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -36,7 +36,7 @@
     .guide .cta { margin-top: 2.5rem; }
   </style>
   <script type="application/ld+json">
-  {"@context":"https://schema.org","@type":"TechArticle","headline":"EU AI Act Article 12: Record-Keeping for AI Agents","description":"What EU AI Act Article 12 requires for automatic logging and traceability of high-risk AI systems, and how signed execution receipts satisfy it.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/eu-ai-act-article-12-agent-records"}
+  {"@context":"https://schema.org","@type":"TechArticle","headline":"EU AI Act Article 12: Record-Keeping for AI Agents","description":"What EU AI Act Article 12 requires for automatic logging and traceability of high-risk AI systems, and what signed execution receipts add separately.","author":{"@type":"Organization","name":"Nobulex"},"publisher":{"@type":"Organization","name":"Nobulex","logo":{"@type":"ImageObject","url":"https://nobulex.com/images/nobulex-logo.png"}},"mainEntityOfPage":"https://nobulex.com/eu-ai-act-article-12-agent-records"}
   </script>
 </head>
 <body>
@@ -64,7 +64,7 @@
 
   <main class="guide" id="main">
     <h1>EU AI Act Article 12: record-keeping for AI agents</h1>
-    <p class="lede">Article 12 of the EU AI Act is the record-keeping obligation: high-risk AI systems must automatically record events over their lifetime so that what the system did can be traced and checked after the fact. This page covers what the article asks for and how verifiable execution receipts satisfy it.</p>
+    <p class="lede">Article 12 of the EU AI Act requires high-risk AI systems to support automatic event logging over their lifetime. This page separates that requirement from the additional integrity evidence that signed execution receipts can provide.</p>
 
     <p class="note">This is an engineering explainer, not legal advice. For a compliance determination, consult qualified counsel. Citations are to Regulation (EU) 2024/1689.</p>
 
@@ -73,15 +73,15 @@
     <p>For an AI agent that calls tools, moves money, or reads records on a user's behalf, the operative questions an auditor will ask are: what did the agent do, under what authority, and can that account be trusted without taking the operator's word for it?</p>
 
     <h2>Where ordinary logging falls short</h2>
-    <p>Most agent stacks already write logs. The gap Article 12 exposes is not whether events are recorded but whether the record can be trusted after the fact. A log that lives in the operator's own database is editable and deletable by the operator. An auditor reviewing it has to trust the very party whose system they are auditing, and a record that can be silently rewritten does not provide the traceability the article is after.</p>
+    <p>Most agent stacks already write logs. Article 12 does not require signatures, hash chains, or independent verification. Those controls address a separate evidence problem: a log in the operator's own database can be edited or deleted by the operator, so a later reviewer may want a way to detect changes.</p>
 
-    <h2>How verifiable receipts map to the requirement</h2>
+    <h2>What verifiable receipts add</h2>
     <p>A signed execution receipt turns "we have a log" into "here is a record you can verify without trusting us." The bilateral receipt pattern &mdash; normative guidance in the OWASP Agentic Skills Top 10 (AST09) &mdash; produces two signed records per action:</p>
     <ul>
       <li><strong>Admission receipt:</strong> the agent, the intended action, the authorized scope, and the policy version in effect at that moment.</li>
       <li><strong>Outcome receipt:</strong> what actually happened, linked to the admission by a content-derived hash (<code>action_ref</code>).</li>
     </ul>
-    <p>Both are canonicalized with JCS (RFC 8785), signed with Ed25519, and hash-chained. That gives the three properties the article's traceability goal implies:</p>
+    <p>Both are canonicalized with JCS (RFC 8785), signed with Ed25519, and hash-chained. That adds three technical properties beyond Article 12's text:</p>
     <ul>
       <li><strong>Automatic:</strong> receipts are emitted around each action by the runtime, not written by hand.</li>
       <li><strong>Tamper-evident over the lifetime:</strong> editing a record invalidates its signature; deleting one leaves a gap in the chain, so the record retains integrity across the system's life.</li>
@@ -103,7 +103,7 @@ receipt = agent.act("charge", scope="invoice:042")
 assert receipt.verify()  # recomputes action_ref, checks the signature, offline</code></pre>
 
     <h2>Timeline</h2>
-    <p>The EU AI Act entered into force in 2024 with obligations phasing in over subsequent years. For the high-risk record-keeping obligations relevant here, the commonly cited enforcement milestone is December 2, 2027. Building verifiable records in now is cheaper than retrofitting them under deadline, and the same receipts serve internal audit and incident response long before any regulator asks.</p>
+    <p>The EU AI Act entered into force in 2024 with obligations phasing in over subsequent years. Current application dates are December 2, 2027 for Annex III systems and August 2, 2028 for Annex I systems. Whether a system is in scope requires a separate legal analysis.</p>
 
     <h2>Getting started</h2>
     <pre><code>pip install nobulex

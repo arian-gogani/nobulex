@@ -4,7 +4,7 @@ identity:
   label:
     en_US: Nobulex
   description:
-    en_US: "Cryptographic receipt layer for Dify agents. Signs every tool call with Ed25519 over JCS-canonical JSON, chains receipts for tamper detection, and exports EU AI Act Article 12 evidence packages."
+    en_US: "Cryptographic receipt layer for Dify agents. Signs tool-call records, chains them for tamper detection, and exports technical evidence for Article 12 reviews."
   icon: icon.svg
   background: "#000000"
   tags:

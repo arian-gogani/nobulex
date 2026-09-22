@@ -76,10 +76,10 @@ Table of Contents
    trustless: any party can verify compliance using only publicly
    available data and deterministic computation.
 
-   The protocol satisfies EU AI Act Article 12 (record-keeping) and
-   Article 14 (human oversight) requirements for high-risk AI systems,
-   NIST AI RMF governance functions, and Colorado AI Act transparency
-   mandates.
+   The protocol can provide technical evidence that may be relevant to
+   reviews under EU AI Act Articles 12 and 14, the NIST AI RMF, and the
+   Colorado AI Act.  It does not by itself establish compliance with any
+   of them.
 
 2.  Terminology
 

@@ -353,7 +353,7 @@ Independent, verifiable signals (each links to evidence):
 | | **Microsoft AGT** | Listed in [ADOPTERS](https://github.com/microsoft/agent-governance-toolkit/pull/1703) (PR merged by Microsoft maintainers) |
 | | **builderz-labs / mission-control** | Cross-session trust score RFC accepted as open issue; TypeScript reference implementation delivered |
 
-EU AI Act Article 12 enforcement: December 2, 2027.
+Current Article 12 application dates are December 2, 2027 for Annex III systems and August 2, 2028 for Annex I systems.
 
 ---
 

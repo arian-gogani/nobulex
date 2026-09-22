@@ -112,7 +112,7 @@ This receipt format is also being discussed in:
 - AutoGen discussion #7609
 - CrewAI issue #5541
 - NousResearch hermes-agent #487
-- OpenLineage PR #4480 (proposed as a facet in the Linux Foundation spec)
+- OpenLineage PR #4480 (proposed by another contributor and closed without merge)
 - aeoess/agent-governance-vocabulary interop test #36 (4 independent implementations)
 
 Converging on one receipt format across AGT, these frameworks, and the OpenLineage spec would give the ecosystem a single evidence standard rather than N competing formats.

@@ -67,7 +67,7 @@ export interface AuditLog {
   readonly endTime: string;
 }
 
-/** EU AI Act Article 12 formatted compliance report. */
+/** Evidence report organized around EU AI Act Article 12 logging topics. */
 export interface ComplianceReport {
   readonly standard: string;
   readonly article: string;
@@ -398,8 +398,9 @@ export class NobulexWrapper<I = unknown, O = unknown> {
   }
 
   /**
-   * Generate an EU AI Act Article 12 formatted compliance report.
-   * Includes the full audit log, integrity verification, and compliance findings.
+   * Generate evidence organized around EU AI Act Article 12 logging topics.
+   * This reports technical capabilities and integrity checks. It does not make
+   * a legal compliance determination.
    */
   async getComplianceReport(): Promise<ComplianceReport> {
     const auditLog = await this.getAuditLog();
@@ -412,22 +413,22 @@ export class NobulexWrapper<I = unknown, O = unknown> {
 
     const findings: ComplianceFinding[] = [
       {
-        requirement: 'Article 12(1) - Automatic recording of events',
-        status: 'pass',
+        requirement: 'Article 12(1) - Automatic event logging capability',
+        status: 'info',
         detail: `${auditLog.items.length} events automatically recorded with cryptographic hashes`,
       },
       {
-        requirement: 'Article 12(2) - Traceability of AI system functioning',
-        status: 'pass',
+        requirement: 'Article 12(2) - Traceability support',
+        status: 'info',
         detail: `All LLM calls, tool invocations, and chain steps captured with input/output hashes`,
       },
       {
-        requirement: 'Article 12(3) - Logging capabilities appropriate to purpose',
-        status: 'pass',
+        requirement: 'Implementation evidence - Recorded event scope',
+        status: 'info',
         detail: `Merkle tree root ${auditLog.merkleRoot.substring(0, 16)}... provides tamper-evident integrity`,
       },
       {
-        requirement: 'Article 12(4) - Tamper-evident audit trail',
+        requirement: 'Implementation evidence - Log integrity check',
         status: integrity.valid ? 'pass' : 'info',
         detail: integrity.valid
           ? `Integrity verified: ${integrity.totalItems} items, signature valid`

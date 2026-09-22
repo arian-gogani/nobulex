@@ -1,7 +1,7 @@
 """Nobulex LangChain callback handler.
 
 Emits a signed, hash-chained Nobulex receipt for every tool call in a
-LangChain agent run. Produces Article 12-grade audit evidence.
+LangChain agent run. Produces signed audit evidence for later review.
 
 Usage:
     from nobulex.integrations.langchain import NobulexAuditHandler

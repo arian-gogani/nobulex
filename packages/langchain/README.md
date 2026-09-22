@@ -71,7 +71,7 @@ Returns a `NobulexWrapper` with the same `invoke()` signature as the original, p
 
 - `agent.invoke(input, options?)`  - forwards to the wrapped runnable, injecting the audit handler
 - `agent.getAuditLog()`  - full signed audit log with Merkle root
-- `agent.getComplianceReport()`  - EU AI Act Article 12 formatted compliance report
+- `agent.getComplianceReport()`  - technical evidence organized around EU AI Act Article 12 logging topics; not a legal compliance determination
 - `agent.verifyIntegrity()`  - independent verification of the entire receipt chain
 - `agent.handler`  - the underlying callback handler for advanced use
 - `agent.agentId`, `agent.covenant`  - identifiers
@@ -107,7 +107,7 @@ The handler is async and non-blocking. Hashing is SHA-256 (Web Crypto). Signing 
 - SHA-256 hashing per FIPS 180-4
 - JCS canonicalization per RFC 8785
 - Compatible with CTEF v0.3.x claim envelopes
-- EU AI Act Article 12 record-keeping aligned
+- Article 12 evidence support: automatic event records and separate integrity checks. Article 12 does not require cryptographic receipts, and this package alone does not establish compliance.
 
 ## License
 

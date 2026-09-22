@@ -5,8 +5,8 @@ identity:
     en_US: Export Article 12 Package
 description:
   human:
-    en_US: "Export a regulator-facing EU AI Act Article 12 evidence package from this session's receipt chain. Returns signed receipts, chain head hash, and an obligation mapping."
-  llm: "Export the full session audit trail as a tamper-evident EU AI Act Article 12 evidence package."
+    en_US: "Export signed session records and technical context for an EU AI Act Article 12 review. This is evidence, not a compliance determination."
+  llm: "Export signed session records, a chain head hash, and technical context for an Article 12 review. Do not describe the output as proof of compliance."
 parameters:
   - name: session_id
     type: string
@@ -24,7 +24,7 @@ parameters:
     label:
       en_US: Include Policy Mapping
     human_description:
-      en_US: "Include a mapping from receipts to EU AI Act Article 12 obligations. Default: true."
+      en_US: "Include technical context about Article 12 logging capabilities. Default: true."
     form: form
 output:
   type: object

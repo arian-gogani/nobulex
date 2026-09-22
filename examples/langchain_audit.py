@@ -1,5 +1,5 @@
 # nobulex-langchain-example.py
-# Article 12-grade audit trail for LangChain agents in 5 lines.
+# Signed audit evidence for LangChain agents in 5 lines.
 # pip install nobulex langchain-core
 
 from nobulex.integrations.langchain import NobulexAuditHandler

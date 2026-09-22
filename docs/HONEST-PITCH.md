@@ -1,11 +1,11 @@
-# Nobulex  - Honest Pitch Sheet
+# Nobulex - Honest Pitch Sheet
 ## Use this for all outreach. No inflated claims.
 
 ### One sentence
-Nobulex generates tamper-proof receipts for everything your AI agent does.
+Nobulex generates signed receipts for claims about AI agent actions. A verifier can detect later changes to a receipt, but the signature does not prove the claimed action happened.
 
 ### Three sentences
-AI agents are starting to do real things  - move money, handle data, sign contracts. There's no standardized way to verify what they actually did. Nobulex fixes that with cryptographic receipts that build into a trust score.
+AI agents are starting to do real things: move money, handle data, and sign contracts. Ordinary operator logs are weak evidence in a dispute. Nobulex records signed claims that another party can verify without using the original runtime.
 
 ### What it is
 - Open-source Python SDK: `pip install nobulex`
@@ -17,9 +17,9 @@ AI agents are starting to do real things  - move money, handle data, sign contra
 
 ### What it does (honestly)
 - Generates cryptographic receipts for AI agent actions
-- Receipts are tamper-proof (modify anything, signature breaks)
-- Receipts build into a trust score score
-- Denied actions generate proof the system caught violations
+- Changing a signed receipt invalidates its signature
+- Receipts can feed an experimental trust score
+- Denied actions record that the SDK was told a denial occurred
 - Works with any Python function via @track decorator
 
 ### Traction (honest version, June 2026)
@@ -31,13 +31,17 @@ AI agents are starting to do real things  - move money, handle data, sign contra
 - **Standards body:** Microsoft AGT ADOPTERS.md PR merged (PR #1703, May 2026)
 - **Two warm call requests** in one week from a 1517 Fund partner and a W3C Community Group chair
 - **Dify Marketplace submission accepted for review**  - langgenius/dify-plugins#2500. Dify (90K+ stars). Plugin MERGED. Architecture confirmed sound and differentiated from existing tools. Plugin built at packages/dify-plugin/.
-- **Microsoft AI Agents for Beginners PR**  - microsoft/ai-agents-for-beginners#571. Adds nobulex to Lesson 18 (Securing AI Agents with Cryptographic Receipts) as the only Python production receipt library listed in that lesson.
+- **Microsoft contributions:** Three pull requests authored by Arian were merged into Microsoft repositories. The substantive implementation is agent-governance-toolkit#1333, which added bilateral receipt signing. These are accepted contributions, not Microsoft endorsement of Nobulex.
 - **30 GitHub stars, 6 forks** (forkers include Red Sentinel  - "the ultimate AI security platform"  - and a Northrop Grumman senior engineer)
 - **Demo runs from clean clone:** tamper detection works, signature verification works, full audit trail reproducible
 
 ### What NOT to say
 - ❌ "Microsoft merged our code into AutoGen"
-  ✅ "Referenced in Microsoft AutoGen ecosystem discussions"
+  ✅ "A pull request I authored adding bilateral receipt signing was merged into Microsoft's Agent Governance Toolkit"
+- ❌ "OpenLineage accepted Nobulex into its ecosystem"
+  ✅ "OpenLineage has not accepted Nobulex"
+- ❌ "AAIF has Nobulex under staff review"
+  ✅ Do not make this claim without written confirmation that can be shown
 - ❌ "10 independent teams validated the protocol"
   ✅ "Active in cross-framework standards discussions"  
 - ❌ "OWASP references it"
@@ -49,7 +53,7 @@ AI agents are starting to do real things  - move money, handle data, sign contra
 "I'm 15. Credit scores exist for people. They don't exist for machines. I built them."
 
 ### For cold outreach
-"I built an open-source SDK that generates tamper-proof receipts for AI agent actions. 4 lines of Python. Would love your feedback."
+"I built an open-source SDK for signed claims about AI agent actions. A third party can verify who signed a receipt and whether it changed later. I would love your feedback."
 
 ### Links
 - GitHub: github.com/arian-gogani/nobulex

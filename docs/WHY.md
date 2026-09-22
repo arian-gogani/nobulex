@@ -1,6 +1,6 @@
 # Why AI agents need credit scores
 
-AI agents are starting to handle real things  - money, data, decisions, customer interactions. But there's no way to know which agents deserve trust and which ones don't.
+AI agents are starting to handle real things: money, data, decisions, and customer interactions. Their operators need records that can be checked outside the original runtime.
 
 ## The problem
 
@@ -10,14 +10,14 @@ When an AI agent handles money, you get logs. Self-reported logs. Written by the
 
 ## What we built
 
-Nobulex generates tamper-proof cryptographic receipts for every AI agent action. Each receipt is:
+Nobulex generates signed receipts for claims about AI agent actions. Each receipt is:
 
-- **Ed25519 signed**  - proves who generated it
-- **SHA-256 hashed**  - linked to the previous receipt in the chain
-- **JCS canonical**  - deterministic across implementations (RFC 8785)
-- **Independently verifiable**  - no trust in the operator required
+- **Ed25519 signed**: identifies the signing key
+- **SHA-256 hashed**: linked to the previous receipt in the chain
+- **JCS canonical**: deterministic serialization for supported values
+- **Independently checkable**: verification does not require the original runtime
 
-Modify anything after the fact and the signature breaks.
+Modify signed content after the fact and signature verification fails. This detects later alteration. It does not prove the action happened, that the fields were true when signed, or that omitted actions do not exist.
 
 ## 4 lines of Python
 
@@ -41,7 +41,7 @@ The score follows the agent, not the operator. You can copy the code but you can
 
 ## Why now
 
-- **EU AI Act Article 12** requires tamper-evident audit logs for high-risk AI systems. Deadline: December 2, 2027.
+- **EU AI Act Article 12** requires automatic event logging for high-risk AI systems. It does not require cryptographic signatures or independently verifiable receipts. Current application dates are December 2, 2027 for Annex III systems and August 2, 2028 for Annex I systems.
 - **Colorado AI Act** requires accountability for AI making consequential decisions. Deadline: June 30, 2026.
 - Salesforce, Microsoft, and Google are all building agent frameworks. None of them solve the accountability gap.
 

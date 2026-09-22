@@ -1,6 +1,8 @@
 # nobulex
 
-**Credit scores for AI agents. Every action builds a verifiable track record.**
+> **Status:** This package is a prior Nobulex direction and is maintained for compatibility. Current work is in the [Nobulex registry](https://github.com/arian-gogani/nobulex-registry). Version 0.1.2 corrects the claims published with 0.1.1. It does not add a claim that receipts prove real-world events.
+
+**Signed claims about AI agent actions.**
 
 Credit scores exist for people. They don't exist for machines. Until now.
 
@@ -21,7 +23,7 @@ from nobulex import track
 def send_email(to, subject, body):
     return smtp.send(to, subject, body)
 
-# Every call produces a signed receipt. Exceptions produce DENY receipts.
+# Every decorated call produces a signed receipt. Exceptions produce DENY receipts.
 send_email("user@example.com", "Hello", "Report attached")
 print(send_email.receipts)     # tamper-evident
 print(send_email.trust_score)  # accumulates over time
@@ -54,17 +56,17 @@ Every time an AI agent does something, Nobulex generates a **cryptographic recei
 - **ON WHAT** (scope)
 - **WHEN** (timestamp_ms)
 - **WHETHER** it was allowed (verdict)
-- **PROOF** it happened (Ed25519 signature + SHA-256 hash)
+- **SIGNED CLAIM** about the action (Ed25519 signature + SHA-256 hash)
 
 Receipts are tamper **evident**, not tamper proof. Editing one after the fact breaks the hash chain, so the edit is detectable by anyone holding a later receipt. That is a different and weaker property than being unfakeable, and the difference matters: an operator who chooses what to record can omit an action, misstate an outcome, or sign an inaccurate account at the moment it happens, and every cryptographic property here still holds. A signature proves who made a claim. It does not prove the claim was true.
 
-What this does give you is that an independent verifier can check any receipt without trusting the agent, and that nobody can quietly rewrite history afterwards.
+What this does give you is that an independent verifier can check the signature without running the original agent and detect changes to the signed content.
 
 Over time, receipts build into **trust score**  - a portable trust score that follows the agent across deployments. You can copy an agent's code, but you can't copy its credit score. The copy starts at zero.
 
 ## Use Cases
 
-- **Audit trails**: EU AI Act Article 12 obliges high-risk systems to record events and Article 26(6) to retain the logs for six months. Neither requires that anyone be able to verify them, and a plain log file satisfies both. Signed receipts are for the case where your log has to survive a dispute rather than a checklist.
+- **Audit trails**: EU AI Act Article 12 requires automatic event logging for high-risk systems. It does not require cryptographic signatures or independently verifiable receipts. Signed receipts address a separate need: detecting later changes when evidence must survive a dispute.
 - **Agent-to-agent trust**: Agents verify each other's track records before collaborating
 - **Disputes**: Records a counterparty can check themselves, for financial, healthcare and legal agents
 - **Accountability**: When something goes wrong, receipts show what was recorded at the time, and show whether that record has been altered since

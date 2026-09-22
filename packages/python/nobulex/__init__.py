@@ -28,7 +28,7 @@ from nobulex.decorator import track
 from nobulex.registry import OperatorRegistry, Operator, VerificationLevel
 from nobulex.attestation import OperatorAttestation
 
-__version__ = "0.1.1"
+__version__ = "0.1.2"
 __all__ = [
     "Agent",
     "Receipt",

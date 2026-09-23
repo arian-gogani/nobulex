@@ -93,6 +93,7 @@ jobs:
 
       - run: npm install -g npm@11
       - run: npm ci
+      - run: npm run build -w packages/core
       - run: npm run build -w packages/sdk
 
       - name: Publish (skip if version already on npm)
@@ -133,7 +134,8 @@ jobs:
 # ---------------------------------------------------------------------------
 # One-time trusted-publisher setup (done once by the repo owner, no tokens):
 #
-# npm  → npmjs.com → @nobulex/core → Settings → Trusted publishing → add:
+# npm  → npmjs.com → each of @nobulex/core, @nobulex/langchain, and
+#        @nobulex/sdk → Settings → Trusted publishing → add:
 #          Repository:  arian-gogani/nobulex
 #          Workflow:    release.yml
 #          Environment: (leave blank)

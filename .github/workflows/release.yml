@@ -9,12 +9,25 @@ name: Release
 
 on:
   workflow_dispatch:
+    inputs:
+      package:
+        description: Package to release
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - core
+          - langchain
+          - sdk
+          - python
   push:
     tags:
       - 'v*'
 
 jobs:
   npm:
+    if: github.event_name != 'workflow_dispatch' || inputs.package == 'all' || inputs.package == 'core'
     name: Publish @nobulex/core to npm
     runs-on: ubuntu-latest
     permissions:
@@ -40,14 +53,14 @@ jobs:
       - name: Publish (skip if version already on npm)
         run: |
           LOCAL=$(node -p "require('./packages/core/package.json').version")
-          REMOTE=$(npm view @nobulex/core version 2>/dev/null || echo none)
-          if [ "$LOCAL" = "$REMOTE" ]; then
-            echo "@nobulex/core@$LOCAL already published — skipping."
+          if npm view "@nobulex/core@$LOCAL" version >/dev/null 2>&1; then
+            echo "@nobulex/core@$LOCAL already published, skipping."
           else
             npm publish -w packages/core --provenance --access public
           fi
 
   npm-langchain:
+    if: github.event_name != 'workflow_dispatch' || inputs.package == 'all' || inputs.package == 'langchain'
     name: Publish @nobulex/langchain to npm
     runs-on: ubuntu-latest
     permissions:
@@ -64,19 +77,20 @@ jobs:
 
       - run: npm install -g npm@11
       - run: npm ci
+      - run: npm run build -w packages/core
       - run: npm run build -w packages/langchain
 
       - name: Publish (skip if version already on npm)
         run: |
           LOCAL=$(node -p "require('./packages/langchain/package.json').version")
-          REMOTE=$(npm view @nobulex/langchain version 2>/dev/null || echo none)
-          if [ "$LOCAL" = "$REMOTE" ]; then
+          if npm view "@nobulex/langchain@$LOCAL" version >/dev/null 2>&1; then
             echo "@nobulex/langchain@$LOCAL already published, skipping."
           else
             npm publish -w packages/langchain --provenance --access public
           fi
 
   npm-sdk:
+    if: github.event_name != 'workflow_dispatch' || inputs.package == 'all' || inputs.package == 'sdk'
     name: Publish @nobulex/sdk to npm
     runs-on: ubuntu-latest
     permissions:
@@ -99,14 +113,14 @@ jobs:
       - name: Publish (skip if version already on npm)
         run: |
           LOCAL=$(node -p "require('./packages/sdk/package.json').version")
-          REMOTE=$(npm view @nobulex/sdk version 2>/dev/null || echo none)
-          if [ "$LOCAL" = "$REMOTE" ]; then
+          if npm view "@nobulex/sdk@$LOCAL" version >/dev/null 2>&1; then
             echo "@nobulex/sdk@$LOCAL already published, skipping."
           else
             npm publish -w packages/sdk --provenance --access public
           fi
 
   pypi:
+    if: github.event_name != 'workflow_dispatch' || inputs.package == 'all' || inputs.package == 'python'
     name: Publish nobulex to PyPI
     runs-on: ubuntu-latest
     permissions:

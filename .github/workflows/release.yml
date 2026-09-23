@@ -8,6 +8,7 @@ name: Release
 # in this repo. One-time setup on each registry (see bottom of this file).
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
@@ -44,6 +45,64 @@ jobs:
             echo "@nobulex/core@$LOCAL already published — skipping."
           else
             npm publish -w packages/core --provenance --access public
+          fi
+
+  npm-langchain:
+    name: Publish @nobulex/langchain to npm
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - run: npm install -g npm@11
+      - run: npm ci
+      - run: npm run build -w packages/langchain
+
+      - name: Publish (skip if version already on npm)
+        run: |
+          LOCAL=$(node -p "require('./packages/langchain/package.json').version")
+          REMOTE=$(npm view @nobulex/langchain version 2>/dev/null || echo none)
+          if [ "$LOCAL" = "$REMOTE" ]; then
+            echo "@nobulex/langchain@$LOCAL already published, skipping."
+          else
+            npm publish -w packages/langchain --provenance --access public
+          fi
+
+  npm-sdk:
+    name: Publish @nobulex/sdk to npm
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          cache: npm
+
+      - run: npm install -g npm@11
+      - run: npm ci
+      - run: npm run build -w packages/sdk
+
+      - name: Publish (skip if version already on npm)
+        run: |
+          LOCAL=$(node -p "require('./packages/sdk/package.json').version")
+          REMOTE=$(npm view @nobulex/sdk version 2>/dev/null || echo none)
+          if [ "$LOCAL" = "$REMOTE" ]; then
+            echo "@nobulex/sdk@$LOCAL already published, skipping."
+          else
+            npm publish -w packages/sdk --provenance --access public
           fi
 
   pypi:

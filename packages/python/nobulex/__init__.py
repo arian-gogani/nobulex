@@ -1,7 +1,7 @@
 """
 Nobulex - credit scores for AI agents
 
-Tamper-proof receipts for everything your AI agent does.
+Signed, tamper-evident receipts for AI agent actions.
 Credit scores for machines.
 
 Usage:
@@ -28,7 +28,7 @@ from nobulex.decorator import track
 from nobulex.registry import OperatorRegistry, Operator, VerificationLevel
 from nobulex.attestation import OperatorAttestation
 
-__version__ = "0.1.2"
+__version__ = "0.1.3"
 __all__ = [
     "Agent",
     "Receipt",

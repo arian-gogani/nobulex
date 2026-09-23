@@ -9,7 +9,7 @@ Works with any Python function, any framework, any agent:
         # your code here
         return "sent"
 
-    # Every call now generates a tamper-proof receipt
+    # Every call now generates a signed, tamper-evident receipt
     result = send_email("user@example.com", "Hello", "World")
     
     # Access receipts

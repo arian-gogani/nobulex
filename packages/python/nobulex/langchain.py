@@ -1,6 +1,6 @@
 """LangChain middleware for Nobulex receipts.
 
-Add tamper-proof receipts to any LangChain agent in 2 lines:
+Add signed, tamper-evident receipts to any LangChain agent in 2 lines:
 
     from nobulex.integrations.langchain import NobuReceipts
     agent = NobuReceipts.wrap(your_agent, agent_id="my-agent")

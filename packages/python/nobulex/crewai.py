@@ -1,6 +1,6 @@
 """CrewAI integration for Nobulex receipts.
 
-Add tamper-proof receipts to any CrewAI crew:
+Add signed, tamper-evident receipts to any CrewAI crew:
 
     from nobulex.crewai import NobuCrewTracker
     tracker = NobuCrewTracker("my-crew")

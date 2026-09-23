@@ -16,7 +16,7 @@ from nobulex.crypto import (
 @dataclass
 class Receipt:
     """
-    A tamper-proof cryptographic receipt for an AI agent action.
+    A signed, tamper-evident receipt for an AI agent action.
     
     Every receipt proves:
     - WHO acted (agent_id)

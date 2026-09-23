@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "nobulex"
-version = "0.1.2"
+version = "0.1.3"
 description = "Legacy signed-receipt SDK for recording claims about AI agent actions."
 readme = "README.md"
 license = {text = "MIT"}

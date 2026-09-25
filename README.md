@@ -1,12 +1,12 @@
 > ### This repository is a prior direction, kept rather than deleted.
 >
-> Nobulex is now **the independent reliability registry for agent tools.** The current work is at **[arian-gogani/nobulex-registry](https://github.com/arian-gogani/nobulex-registry)** and **[nobulex.com](https://nobulex.com)**.
+> The current work is a **financial decision-integrity gateway prototype** at **[arian-gogani/nobulex-registry](https://github.com/arian-gogani/nobulex-registry)**. It separates evidence checks from the policy decision to permit, block or escalate a proposed action.
 >
-> Same name, different thing. This one was a protocol for agents to earn a trust score through verified behavior, which answers "can this agent be trusted with more access." The question that turned out to matter was one layer down: when an agent calls a tool, did the tool tell it the truth? A receipt proving that an agent faithfully acted on a wrong answer is a receipt for a wrong answer.
+> This repository contains the earlier receipt and trust-score implementation. The reliability registry was an intermediate direction; its repository now houses the gateway and the underlying verification harness. The name of that repository has not changed.
 >
-> Nothing below is retracted. The code runs, the spec draft says what it says, and the published packages do what they claim. It is simply not what is being built now, and a repository that goes on quietly describing a live product nobody is building is doing the exact thing the current project exists to grade.
+> **Correction:** this notice previously described the registry as the current product and said "Nothing below is retracted." That blanket assurance was too broad. The material below is historical material, not a current offer, a fresh verification of its claims, or evidence that the gateway protects live financial actions. The current prototype is not a production trading service. A signature authenticates signed content; it does not establish that the underlying financial data is correct.
 >
-> **Current project:** [read the method](https://github.com/arian-gogani/nobulex-registry#readme) · [run the self-test](https://github.com/arian-gogani/nobulex-registry#run-it) · [see the register](https://nobulex.com/register) · [follow the work](https://github.com/arian-gogani/nobulex-registry)
+> **Start here:** [current project and instructions](https://github.com/arian-gogani/nobulex-registry#readme) · [offline wrong-window example](https://github.com/arian-gogani/nobulex-registry/blob/main/examples/wrong_window.py) · [methodology](https://nobulex.com/methodology). The example uses fictional data; it is not a live broker test. To follow the current work, watch or star the linked repository.
 
 ---
 

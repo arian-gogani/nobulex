@@ -1,3 +1,5 @@
+> **New research:** [What did PASS actually check?](research/verification-boundaries/README.md) Six paired historical parser cases, 27 synthetic fixtures, and explicit limits. Includes corrections to our own benchmark.
+
 > ### This repository is a prior direction, kept rather than deleted.
 >
 > The current work is a **financial decision-integrity gateway prototype** at **[arian-gogani/nobulex-registry](https://github.com/arian-gogani/nobulex-registry)**. It separates evidence checks from the policy decision to permit, block or escalate a proposed action.

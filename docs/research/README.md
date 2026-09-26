@@ -4,6 +4,7 @@ Small, executable explanations of what a verification result establishes and wha
 
 | Note | Reproduction | Scope |
 |---|---|---|
+| [What did PASS actually check?](../../research/verification-boundaries/README.md) | Node benchmark plus opt-in pinned Python replay | 27 synthetic fixtures and six paired historical parser cases |
 | [Hash-chain consistency is not event completeness](chain-consistency.md) | `python3 examples/receipt_chain_limits.py` from repository root | Eight fictional cases, no external dependencies |
 
 ## Contributing a case

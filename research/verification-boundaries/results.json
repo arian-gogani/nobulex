@@ -1,0 +1,545 @@
+{
+  "schema": "nobulex-verification-boundaries-v1",
+  "scope": "synthetic fixtures, not sampled production systems",
+  "summary": {
+    "coverage": {
+      "cases": 6,
+      "weak_matches": 2,
+      "reference_matches": 6
+    },
+    "key-origin": {
+      "cases": 4,
+      "weak_matches": 1,
+      "reference_matches": 4
+    },
+    "policy": {
+      "cases": 5,
+      "weak_matches": 3,
+      "reference_matches": 5
+    },
+    "log": {
+      "cases": 8,
+      "weak_matches": 4,
+      "reference_matches": 8
+    },
+    "preservation": {
+      "cases": 4,
+      "weak_matches": 1,
+      "reference_matches": 4
+    }
+  },
+  "rows": [
+    {
+      "id": "C01",
+      "family": "coverage",
+      "input": {
+        "tamper": []
+      },
+      "expected": "PASS",
+      "role": "clean",
+      "weak": {
+        "verdict": "PASS",
+        "checked": 1
+      },
+      "reference": {
+        "verdict": "PASS",
+        "checked": 4
+      }
+    },
+    {
+      "id": "C02",
+      "family": "coverage",
+      "input": {
+        "tamper": [
+          0
+        ]
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS",
+        "checked": 1
+      },
+      "reference": {
+        "verdict": "FAIL",
+        "checked": 1
+      }
+    },
+    {
+      "id": "C03",
+      "family": "coverage",
+      "input": {
+        "tamper": [
+          1
+        ]
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS",
+        "checked": 1
+      },
+      "reference": {
+        "verdict": "FAIL",
+        "checked": 2
+      }
+    },
+    {
+      "id": "C04",
+      "family": "coverage",
+      "input": {
+        "tamper": [
+          2
+        ]
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS",
+        "checked": 1
+      },
+      "reference": {
+        "verdict": "FAIL",
+        "checked": 3
+      }
+    },
+    {
+      "id": "C05",
+      "family": "coverage",
+      "input": {
+        "tamper": [
+          3
+        ]
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "FAIL",
+        "checked": 1
+      },
+      "reference": {
+        "verdict": "FAIL",
+        "checked": 4
+      }
+    },
+    {
+      "id": "C06",
+      "family": "coverage",
+      "input": {
+        "empty": true
+      },
+      "expected": "UNKNOWN",
+      "role": "missing-evidence",
+      "weak": {
+        "verdict": "PASS",
+        "checked": 0
+      },
+      "reference": {
+        "verdict": "UNKNOWN",
+        "checked": 0
+      }
+    },
+    {
+      "id": "K01",
+      "family": "key-origin",
+      "input": {
+        "signer": "trusted",
+        "anchor": "trusted"
+      },
+      "expected": "PASS",
+      "role": "clean",
+      "weak": {
+        "verdict": "PASS",
+        "signatureChecked": true
+      },
+      "reference": {
+        "verdict": "PASS",
+        "signatureChecked": true
+      }
+    },
+    {
+      "id": "K02",
+      "family": "key-origin",
+      "input": {
+        "signer": "attacker",
+        "anchor": null
+      },
+      "expected": "UNKNOWN",
+      "role": "missing-evidence",
+      "weak": {
+        "verdict": "PASS",
+        "signatureChecked": true
+      },
+      "reference": {
+        "verdict": "UNKNOWN",
+        "signatureChecked": false
+      }
+    },
+    {
+      "id": "K03",
+      "family": "key-origin",
+      "input": {
+        "signer": "attacker",
+        "anchor": "trusted"
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS",
+        "signatureChecked": true
+      },
+      "reference": {
+        "verdict": "FAIL",
+        "signatureChecked": true
+      }
+    },
+    {
+      "id": "K04",
+      "family": "key-origin",
+      "input": {
+        "signer": "trusted",
+        "anchor": "bystander"
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS",
+        "signatureChecked": true
+      },
+      "reference": {
+        "verdict": "FAIL",
+        "signatureChecked": true
+      }
+    },
+    {
+      "id": "P01",
+      "family": "policy",
+      "input": {
+        "policy": {
+          "effect": "permit",
+          "action": "read"
+        },
+        "request": {
+          "action": "read",
+          "actor": "alice",
+          "blocked": false
+        }
+      },
+      "expected": "PASS",
+      "role": "clean",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "PASS"
+      }
+    },
+    {
+      "id": "P02",
+      "family": "policy",
+      "input": {
+        "policy": {
+          "effect": "deny",
+          "action": "read"
+        },
+        "request": {
+          "action": "read",
+          "actor": "alice",
+          "blocked": false
+        }
+      },
+      "expected": "FAIL",
+      "role": "control",
+      "weak": {
+        "verdict": "FAIL"
+      },
+      "reference": {
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "id": "P03",
+      "family": "policy",
+      "input": {
+        "policy": {
+          "effect": "permit",
+          "action": "read",
+          "principal": "alice"
+        },
+        "request": {
+          "action": "read",
+          "actor": "bob",
+          "blocked": false
+        }
+      },
+      "expected": "UNKNOWN",
+      "role": "unsupported",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "UNKNOWN"
+      }
+    },
+    {
+      "id": "P04",
+      "family": "policy",
+      "input": {
+        "policy": {
+          "effect": "permit",
+          "action": "read",
+          "unless": "blocked"
+        },
+        "request": {
+          "action": "read",
+          "actor": "alice",
+          "blocked": true
+        }
+      },
+      "expected": "UNKNOWN",
+      "role": "unsupported",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "UNKNOWN"
+      }
+    },
+    {
+      "id": "P05",
+      "family": "policy",
+      "input": {
+        "policy": {
+          "effect": "permit",
+          "action": "read"
+        },
+        "request": {
+          "action": "write",
+          "actor": "alice",
+          "blocked": false
+        }
+      },
+      "expected": "FAIL",
+      "role": "control",
+      "weak": {
+        "verdict": "FAIL"
+      },
+      "reference": {
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "id": "L01",
+      "family": "log",
+      "input": {
+        "variant": "original"
+      },
+      "expected": "PASS",
+      "role": "clean",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "PASS"
+      }
+    },
+    {
+      "id": "L02",
+      "family": "log",
+      "input": {
+        "variant": "edit"
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "FAIL"
+      },
+      "reference": {
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "id": "L03",
+      "family": "log",
+      "input": {
+        "variant": "interior"
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "FAIL"
+      },
+      "reference": {
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "id": "L04",
+      "family": "log",
+      "input": {
+        "variant": "tail"
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "id": "L05",
+      "family": "log",
+      "input": {
+        "variant": "rewrite"
+      },
+      "expected": "FAIL",
+      "role": "adversarial",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "FAIL"
+      }
+    },
+    {
+      "id": "L06",
+      "family": "log",
+      "input": {
+        "variant": "empty"
+      },
+      "expected": "UNKNOWN",
+      "role": "missing-evidence",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "UNKNOWN"
+      }
+    },
+    {
+      "id": "L07",
+      "family": "log",
+      "input": {
+        "variant": "no-checkpoint"
+      },
+      "expected": "UNKNOWN",
+      "role": "missing-evidence",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "UNKNOWN"
+      }
+    },
+    {
+      "id": "L08",
+      "family": "log",
+      "input": {
+        "variant": "omitted-before-recording"
+      },
+      "expected": "PASS",
+      "role": "known-blind-spot",
+      "weak": {
+        "verdict": "PASS"
+      },
+      "reference": {
+        "verdict": "PASS"
+      }
+    },
+    {
+      "id": "S01",
+      "family": "preservation",
+      "input": {
+        "failure": null
+      },
+      "expected": "PASS",
+      "role": "clean",
+      "weak": {
+        "verdict": "PASS",
+        "operation": "COMPLETED",
+        "stored": [
+          "new-1",
+          "new-2"
+        ]
+      },
+      "reference": {
+        "verdict": "PASS",
+        "operation": "COMPLETED",
+        "stored": [
+          "new-1",
+          "new-2"
+        ]
+      }
+    },
+    {
+      "id": "S02",
+      "family": "preservation",
+      "input": {
+        "failure": "policy"
+      },
+      "expected": "PASS",
+      "role": "failure-path",
+      "weak": {
+        "verdict": "FAIL",
+        "operation": "REFUSED",
+        "stored": []
+      },
+      "reference": {
+        "verdict": "PASS",
+        "operation": "REFUSED",
+        "stored": [
+          "old-1",
+          "old-2"
+        ]
+      }
+    },
+    {
+      "id": "S03",
+      "family": "preservation",
+      "input": {
+        "failure": "signer"
+      },
+      "expected": "PASS",
+      "role": "failure-path",
+      "weak": {
+        "verdict": "FAIL",
+        "operation": "REFUSED",
+        "stored": []
+      },
+      "reference": {
+        "verdict": "PASS",
+        "operation": "REFUSED",
+        "stored": [
+          "old-1",
+          "old-2"
+        ]
+      }
+    },
+    {
+      "id": "S04",
+      "family": "preservation",
+      "input": {
+        "failure": "second-record"
+      },
+      "expected": "PASS",
+      "role": "failure-path",
+      "weak": {
+        "verdict": "FAIL",
+        "operation": "REFUSED",
+        "stored": [
+          "new-1"
+        ]
+      },
+      "reference": {
+        "verdict": "PASS",
+        "operation": "REFUSED",
+        "stored": [
+          "old-1",
+          "old-2"
+        ]
+      }
+    }
+  ]
+}

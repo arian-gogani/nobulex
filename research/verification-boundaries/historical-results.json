@@ -1,0 +1,77 @@
+{
+  "scope": "six cases against historical PR22 modules, not a current upstream audit or Cedar conformance test",
+  "sources": {
+    "before": {
+      "commit": "c6d90ee52b82a055b8e68a2b8d2afcb6c53975cb",
+      "sha256": "8dd2260c8fad53e11915a9009a6fe58b23675a57d123d0dc9292fef6ee09b6af",
+      "path": "implementations/nobulex/cedar_lite.py"
+    },
+    "after": {
+      "commit": "d6889f6ba1ea60a62ea88aea7ce2afc69cc319ec",
+      "sha256": "a87db5a79dff472343325c337856fcd6b7a2222f11b85567ae0713de6fdafbbf",
+      "path": "implementations/nobulex/cedar_lite.py"
+    }
+  },
+  "rows": [
+    {
+      "case": "principal restriction",
+      "policy": "permit (principal == User::\"alice\", action == Action::\"X\", resource);",
+      "tool": "X",
+      "context": {},
+      "before": "allow",
+      "after": "REFUSED",
+      "matches_expected": true
+    },
+    {
+      "case": "resource restriction",
+      "policy": "permit (principal, action == Action::\"X\", resource == File::\"/p\");",
+      "tool": "X",
+      "context": {},
+      "before": "allow",
+      "after": "REFUSED",
+      "matches_expected": true
+    },
+    {
+      "case": "unless restriction",
+      "policy": "permit (principal, action == Action::\"X\", resource) unless { context.d == \"y\" };",
+      "tool": "X",
+      "context": {
+        "d": "y"
+      },
+      "before": "allow",
+      "after": "REFUSED",
+      "matches_expected": true
+    },
+    {
+      "case": "supported unconditional",
+      "policy": "permit (principal, action == Action::\"Read\", resource);",
+      "tool": "Read",
+      "context": {},
+      "before": "allow",
+      "after": "allow",
+      "matches_expected": true
+    },
+    {
+      "case": "supported matching condition",
+      "policy": "permit (principal, action == Action::\"Bash\", resource) when { context.command_pattern == \"git\" };",
+      "tool": "Bash",
+      "context": {
+        "command_pattern": "git"
+      },
+      "before": "allow",
+      "after": "allow",
+      "matches_expected": true
+    },
+    {
+      "case": "supported nonmatching condition",
+      "policy": "permit (principal, action == Action::\"Bash\", resource) when { context.command_pattern == \"git\" };",
+      "tool": "Bash",
+      "context": {
+        "command_pattern": "rm"
+      },
+      "before": "deny",
+      "after": "deny",
+      "matches_expected": true
+    }
+  ]
+}

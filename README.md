@@ -1,4 +1,4 @@
-> **New research:** [What did PASS actually check?](research/verification-boundaries/README.md) Six paired historical parser cases, 27 synthetic fixtures, and explicit limits. Includes corrections to our own benchmark.
+> **New research:** [What did PASS actually check?](research/verification-boundaries/README.md) Six paired historical parser cases, 27 synthetic fixtures, explicit limits, and corrections to our own benchmark. [![Verification boundaries](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml)
 
 > ### This repository is a prior direction, kept rather than deleted.
 >

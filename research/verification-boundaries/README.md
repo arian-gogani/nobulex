@@ -90,6 +90,29 @@ python3 research/verification-boundaries/reproduce_parser.py --source-dir /path/
 
 Tested locally with Python 3.14.7. A changed source hash refuses execution. [results.json](results.json) contains the deterministic synthetic results. The test suite compares them with a fresh run. Each of five deliberate regressions to a weak model must produce CLI exit 1; a malformed CLI request exits 2.
 
+## Review without cloning this repository
+
+Download [run_review.py](run_review.py) and read it before execution. It downloads four benchmark files from the fixed publication commit `b9ef946f87858d120bba9c70730fc3ae1631fc93`, verifies their hardcoded SHA-256 hashes, and executes them in a temporary directory. Python 3, Node, and network access are required. No package installation is needed. It does not execute the historical parser modules or send results anywhere.
+
+From the directory where you saved the script:
+
+```sh
+python3 run_review.py --output my-review-results.json
+```
+
+Expected: `EXPECTED_RESULTS` and exit 0, with seven recorded runs. The benchmark and tests must exit 0; each of the five deliberately weakened variants must exit 1. Hashes identify the declared baseline; they do not establish an independent trust endorsement. The result file must not already exist.
+
+The author tested this runner against the published files and checked refusal of altered bytes, explicit failure when Node is missing, and preservation of an existing output file. These are self-checks, not outside validation.
+
+A useful review can be small:
+
+- Give the runtime version and command you ran.
+- Identify a case or sentence you disagree with.
+- Explain what was observed and why the expectation is wrong.
+- Say whether you permit attribution of your reproduction.
+
+Inspect the generated JSON before sharing it. It contains runtime information, commands, and captured output. Running the code supports only the tested cases; agreement with every conclusion requires a separate review. A failure or counterexample is useful feedback too.
+
 ## What public upstream evidence supports
 
 All four pull requests below were merged. Source inspection checked nine changed-file occurrences against merged content. **Only #22 was executed again for this report.** Test results stated in the other PRs remain attributed historical reports, not fresh reproductions here.

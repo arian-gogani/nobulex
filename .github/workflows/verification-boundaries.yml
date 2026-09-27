@@ -19,16 +19,18 @@ permissions:
 jobs:
   synthetic-study:
     runs-on: ubuntu-latest
+    timeout-minutes: 5
     steps:
       - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Reproduce the published synthetic results
         run: node research/verification-boundaries/benchmark.mjs
 
       - name: Run fixtures and deliberate-regression checks
         run: node --test research/verification-boundaries/test.mjs
-

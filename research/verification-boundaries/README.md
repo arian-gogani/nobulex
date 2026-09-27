@@ -1,5 +1,7 @@
 # What did PASS actually check?
 
+[![Verification boundaries](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml)
+
 **A reproducible study of five verification boundaries.** Arian Gogani / Nobulex, September 26, 2026. Version 1.
 
 A successful verification result answers a bounded question. It can establish that a signature matches a key while leaving the key's authority unresolved. It can establish that a supplied log is internally consistent while saying nothing about events omitted before recording. Treating either result as a wider guarantee creates false confidence.
@@ -74,7 +76,7 @@ node research/verification-boundaries/benchmark.mjs
 node --test research/verification-boundaries/test.mjs
 ```
 
-No package installation, financial credentials, or customer data is required. The synthetic run is offline. Tested locally with Node v25.1.0; compatibility with other versions has not been measured.
+No package installation, financial credentials, or customer data is required. The synthetic run is offline. Tested locally with Node v25.1.0. The linked public workflow tests Node 24; its run history is the evidence for that environment.
 
 The historical replay is a separate, explicit opt-in. Review [reproduce_parser.py](reproduce_parser.py) and its pinned source URLs first. It downloads and **executes two hash-pinned public Python modules**, using the standard library:
 

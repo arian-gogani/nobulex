@@ -1,0 +1,34 @@
+name: Verification boundaries
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - research/verification-boundaries/**
+      - .github/workflows/verification-boundaries.yml
+  pull_request:
+    branches: [main]
+    paths:
+      - research/verification-boundaries/**
+      - .github/workflows/verification-boundaries.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synthetic-study:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Reproduce the published synthetic results
+        run: node research/verification-boundaries/benchmark.mjs
+
+      - name: Run fixtures and deliberate-regression checks
+        run: node --test research/verification-boundaries/test.mjs
+

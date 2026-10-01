@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "line_id": "BILL-1", "batch_id": "B-SAMPLE-001", "fill_id": "FILL-001", "qty_filled": 40 },
+    { "line_id": "BILL-2", "batch_id": "B-SAMPLE-001", "fill_id": "FILL-002", "qty_filled": 10 }
+  ]
+}

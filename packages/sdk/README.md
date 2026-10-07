@@ -4,9 +4,12 @@ High-level TypeScript SDK for embedding Nobulex into agent frameworks and apps.
 The fastest way to put a verifiable behavioral covenant around an agent.
 
 This package verifies signed records and covenants. It does not independently
-prove that an operator's account of an action was complete or true. Nobulex's
-independent verification work is in the
-[reliability registry](https://github.com/arian-gogani/nobulex-registry).
+prove that an operator's account of an action was complete or true.
+
+Verification against an external data source is a separate prototype in the
+same author's [nobulex-registry](https://github.com/arian-gogani/nobulex-registry)
+repository. It is not third-party verification: same author, same vendor.
+Nothing here has been independently verified by anyone.
 
 ## Install
 

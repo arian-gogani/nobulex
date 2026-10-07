@@ -4,9 +4,12 @@ Signed covenants and tamper-evident behavioral receipts for AI agent actions,
 using Ed25519 signatures over RFC 8785 canonical JSON.
 
 This package can prove who signed a record and whether it changed. It does not
-independently prove that the original account was complete or true. Nobulex's
-independent verification work is in the
-[reliability registry](https://github.com/arian-gogani/nobulex-registry).
+independently prove that the original account was complete or true.
+
+Verification against an external data source is a separate prototype in the
+same author's [nobulex-registry](https://github.com/arian-gogani/nobulex-registry)
+repository. It is not third-party verification: same author, same vendor.
+Nothing here has been independently verified by anyone.
 
 ## Install
 

@@ -47,7 +47,10 @@ describe('generateComplianceReport', () => {
     expect(report.logIntegrity.valid).toBe(true);
     const traceability = report.requirements.find((r) => r.id === 'art-12(2)');
     expect(traceability?.met).toBe(true);
-    const risk = report.requirements.find((r) => r.id === 'art-12(3)');
+    // Was art-12(3), which pinned the mislabelled citation as required
+    // behaviour. 12(3) is the Annex III point 1(a) biometric provision; this
+    // requirement is 12(2)(a).
+    const risk = report.requirements.find((r) => r.id === 'art-12(2)(a)');
     expect(risk?.evidence).toContain(2);
   });
 
@@ -93,5 +96,45 @@ describe('generateComplianceReport', () => {
     const report = generateComplianceReport(log, { framework: 'eu-ai-act-article-12' });
     const expected = Math.round((report.summary.met / report.requirements.length) * 100);
     expect(report.summary.coveragePercent).toBe(expected);
+  });
+
+  it('cites no Article 12 paragraph that does not say what we claim', () => {
+    const log = buildLog([
+      { action: 'a', outcome: 'success' },
+      { action: 'b', outcome: 'blocked' },
+    ]);
+    const report = generateComplianceReport(log, { framework: 'eu-ai-act-article-12' });
+    const ids = report.requirements.map((r) => r.id);
+
+    // Article 12(3) applies only to Annex III point 1(a) biometric systems and
+    // lists period of use, reference database, matched input data and the
+    // persons verifying results. This package shipped a general logging
+    // requirement under that id through v1.0.3. The requirement it describes is
+    // 12(2)(a): "identifying situations that may result in the high-risk AI
+    // system presenting a risk within the meaning of Article 79(1) or in a
+    // substantial modification". There is no Article 12(4) at all.
+    expect(ids).not.toContain('art-12(3)');
+    expect(ids).not.toContain('art-12(4)');
+    expect(ids).toContain('art-12(2)(a)');
+
+    const text = report.requirements
+      .map((r) => `${r.id} ${r.title} ${r.rationale}`)
+      .join('\n');
+    expect(text).not.toMatch(/Article 12\([34]\)/);
+  });
+
+  it('never asserts tamper-evidence without naming its limit', () => {
+    const log = buildLog([{ action: 'a', outcome: 'success' }]);
+    const report = generateComplianceReport(log, { framework: 'eu-ai-act-article-12' });
+    const rationales = report.requirements.map((r) => r.rationale).join('\n');
+
+    // A hash chain detects modification by a party that does not hold the whole
+    // log. It does not detect a wholesale rewrite by the log's own holder, and
+    // a machine-readable rationale that says "entries are tamper-evident" with
+    // no qualifier is the claim this project has retracted everywhere else.
+    if (/tamper[- ]?evident/i.test(rationales)) {
+      expect(rationales).toMatch(/independently held|earlier chain head|rewrite/i);
+    }
+    expect(rationales).not.toContain('entries are tamper-evident');
   });
 });

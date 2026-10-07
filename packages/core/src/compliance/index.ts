@@ -128,13 +128,18 @@ function euAiActArticle12(log: ActionLog, integrityValid: boolean): ComplianceRe
       title: 'Logs ensure traceability of the system\'s functioning',
       met: integrityValid && hasAnyLogs,
       rationale: integrityValid
-        ? 'Action log hash chain verifies, entries are tamper-evident'
+        ? 'Action log hash chain recomputes consistently. Modification is ' +
+          'detectable only relative to an independently held earlier chain ' +
+          'head; a holder of the whole log can rewrite it and it re-verifies'
         : 'Action log integrity check failed',
       evidence: timestamped,
     },
     {
-      id: 'art-12(3)',
-      title: 'Recording of situations that may result in risk / substantial modification',
+      id: 'art-12(2)(a)',
+      title:
+        'Logging enables recording of events relevant for identifying situations ' +
+        'that may result in a risk within the meaning of Article 79(1) or a ' +
+        'substantial modification',
       met: hasAnyLogs,
       rationale: blocks.length > 0
         ? `${blocks.length} enforcement events recorded (blocked / would_block / halted)`

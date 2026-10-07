@@ -1,7 +1,7 @@
 {
   "name": "nobulex",
   "version": "0.1.0",
-  "description": "Tamper-proof receipts for AI agents. Credit scores for machines.",
+  "description": "Tamper-evident signed receipts for AI agents. An edit is detectable, not impossible.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "scripts": {

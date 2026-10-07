@@ -1,6 +1,6 @@
 # Nobulex Quickstart
 
-Generate your first tamper-proof receipt in 60 seconds.
+Generate your first signed receipt in 60 seconds. Receipts are tamper evident, not tamper proof: editing one breaks the hash chain, so the edit is detectable by anyone holding a later receipt.
 
 ## Install
 

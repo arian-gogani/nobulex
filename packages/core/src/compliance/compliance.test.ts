@@ -123,18 +123,35 @@ describe('generateComplianceReport', () => {
     expect(text).not.toMatch(/Article 12\([34]\)/);
   });
 
-  it('never asserts tamper-evidence without naming its limit', () => {
+  it('never asserts tamper-evidence without naming its limit, in any framework', () => {
+    // Checked PER REQUIREMENT, not over a joined string. The first version of
+    // this guard concatenated every title and rationale and asked whether THE
+    // STRING contained a qualifier. One qualified claim anywhere then satisfied
+    // the check for every other claim, so restoring the bare ISO 42001 title
+    // "AI system records are tamper-evident" left all nine tests green. An
+    // aggregate standing in for a per-item check is the defect this package is
+    // being corrected for, committed in the test written to prevent it.
+    const frameworks = [
+      'eu-ai-act-article-12',
+      'colorado-ai-act',
+      'soc2',
+      'iso-42001',
+    ] as const;
     const log = buildLog([{ action: 'a', outcome: 'success' }]);
-    const report = generateComplianceReport(log, { framework: 'eu-ai-act-article-12' });
-    const rationales = report.requirements.map((r) => r.rationale).join('\n');
+    const qualifier = /independently held|earlier chain head|rewrite|does not detect/i;
 
-    // A hash chain detects modification by a party that does not hold the whole
-    // log. It does not detect a wholesale rewrite by the log's own holder, and
-    // a machine-readable rationale that says "entries are tamper-evident" with
-    // no qualifier is the claim this project has retracted everywhere else.
-    if (/tamper[- ]?evident/i.test(rationales)) {
-      expect(rationales).toMatch(/independently held|earlier chain head|rewrite/i);
+    for (const framework of frameworks) {
+      const report = generateComplianceReport(log, { framework });
+      for (const requirement of report.requirements) {
+        for (const field of [requirement.title, requirement.rationale]) {
+          if (!/tamper[- ]?evident/i.test(field ?? '')) continue;
+          expect(
+            qualifier.test(field ?? ''),
+            `${framework} ${requirement.id} claims tamper-evidence without ` +
+              `stating its limit: ${field}`,
+          ).toBe(true);
+        }
+      }
     }
-    expect(rationales).not.toContain('entries are tamper-evident');
   });
 });

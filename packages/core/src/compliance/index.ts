@@ -244,10 +244,12 @@ function iso42001(log: ActionLog, integrityValid: boolean): ComplianceRequiremen
     },
     {
       id: 'A.9.4',
-      title: 'AI system records are tamper-evident',
+      title: 'AI system records carry a verifiable integrity chain',
       met: integrityValid,
       rationale: integrityValid
-        ? 'Hash-chain verification passes'
+        ? 'Hash-chain verification passes. This detects modification by a ' +
+          'party that does not hold the whole log; it does not detect a ' +
+          'rewrite by the log\'s own holder'
         : 'Hash-chain verification failed',
       evidence: [],
     },

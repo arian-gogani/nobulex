@@ -50,25 +50,18 @@ The material below is preserved for readers of the earlier implementation. It is
 
 <br/><br/>
 
-**Every person has a credit score. Every business has one.**
-**AI agents have nothing.**
+**What this repository was built as.**
 
-Nobulex is the credit and trust protocol for autonomous AI agents.<br/>
-Agents earn trust score through verified behavior. Higher trust, more access.<br/>
-Autonomy earned, not granted.
+A credit and trust protocol for autonomous AI agents: actions produce signed
+receipts, receipts accumulate into a trust score, and a higher score unlocks
+more access. Everything below is that implementation, kept readable. It is not
+the current direction, which is the gateway linked at the top of this file.
 
-[Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
+[Website](https://nobulex.com) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
 <sub>Reference implementation of the [**OWASP Agentic Skills Top 10 (AST09)**](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35) execution-receipt pattern · listed in the OWASP solutions catalog · in the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1703) adopters · merged to the Dify marketplace</sub>
 
 </div>
-
----
-
-> ### Break the AI. Win $7,400.
-> Five AI agents, each with rules they must not break. Make them violate their own rules. Beat Level 5 to claim the bounty. **2,847 attempts, 0 winners so far.**
->
-> **[Enter the Arena →](https://nobulex.com/arena)**
 
 ---
 
@@ -451,7 +444,7 @@ npx tsx benchmarks/bench.ts # benchmarks
 
 <div align="center">
 
-[Website](https://nobulex.com) · [Try it](https://nobulex.com/demo) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
+[Website](https://nobulex.com) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
 
 Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian-gogani/awesome-ai-agent-accountability): standards, regulations, and tools for verifiable agent behavior.
 

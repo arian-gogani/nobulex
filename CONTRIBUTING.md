@@ -7,9 +7,12 @@ Thanks for your interest. Here's how to get started.
 ```bash
 git clone https://github.com/arian-gogani/nobulex.git
 cd nobulex/packages/python
-pip install cryptography rfc8785
-python tests.py  # 13 tests, all should pass
+python3 -m pip install -e . pytest flask langchain-core
+python3 tests.py  # quick smoke suite
+PYTHONPATH=. python3 -m pytest -v  # full suite used in CI
 ```
+
+The full-suite command matches the Python test job in `.github/workflows/ci.yml`.
 
 ## Architecture
 
@@ -37,6 +40,18 @@ python tests.py  # 13 tests, all should pass
 - Every function should be testable
 - Comments explain why, not what
 - Lowercase commit messages, imperative mood
+
+## Evidence and verification
+
+Use the pull request checklist in `.github/PULL_REQUEST_TEMPLATE.md`. Do not
+claim a fix, test result, or measured rate unless the corresponding command was
+run against this revision. For behavior fixes, show the regression check failing
+on the base revision and passing after the change. State clearly when evidence
+is missing or a check could not run.
+
+For AI assistance, disclose it consistently when AI materially contributed to
+code, tests, or technical analysis. Keep the note brief and specific; routine
+spelling or formatting help does not need a disclosure.
 
 ## Test vectors
 

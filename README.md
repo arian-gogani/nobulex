@@ -1,16 +1,36 @@
+# Nobulex
+
 > **Current billing research:** [When a billing dry run agrees with the wrong invoice](https://nobulex.com/research-killbill-catalog-replay). On released Kill Bill 0.24.19, embedded-H2 regressions reproduced two catalog-change amount errors before separate proposed fixes in [PR #2320](https://github.com/killbill/killbill/pull/2320) and [PR #2321](https://github.com/killbill/killbill/pull/2321), then passed with those fixes. Both PRs are open. This is research, not a deployed Nobulex billing control or a customer result. If you own a billing release process, the note asks one concrete question about how you independently check expected invoices.
 
 > **Verification-boundaries research:** [What did PASS actually check?](research/verification-boundaries/README.md) Six paired historical parser cases, 27 synthetic fixtures, explicit limits, and corrections to our own benchmark. [![Verification boundaries](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml)
 
-> ### This repository is a prior direction, kept rather than deleted.
->
-> The current work is a **financial decision-integrity gateway prototype** at **[arian-gogani/nobulex-registry](https://github.com/arian-gogani/nobulex-registry)**. It separates evidence checks from the policy decision to permit, block or escalate a proposed action.
->
-> This repository contains the earlier receipt and trust-score implementation. The reliability registry was an intermediate direction; its repository now houses the gateway and the underlying verification harness. The name of that repository has not changed.
->
-> **Correction:** this notice previously described the registry as the current product and said "Nothing below is retracted." That blanket assurance was too broad. The material below is historical material, not a current offer, a fresh verification of its claims, or evidence that the gateway protects live financial actions. The current prototype is not a production trading service. A signature authenticates signed content; it does not establish that the underlying financial data is correct.
->
-> **Start here:** [current project and instructions](https://github.com/arian-gogani/nobulex-registry#readme) · [offline wrong-window example](https://github.com/arian-gogani/nobulex-registry/blob/main/examples/wrong_window.py) · [methodology](https://nobulex.com/methodology). The example uses fictional data; it is not a live broker test. To follow the current work, watch or star the linked repository.
+**Decision integrity for automated financial actions.** A market-data response can be well formed and still contain stale prices, missing sessions or the wrong instrument. The current Nobulex prototype checks evidence about a proposed action, evaluates a bounded policy, and returns `PERMIT`, `BLOCK` or `ESCALATE` with a receipt.
+
+The active code and instructions live in **[nobulex-registry](https://github.com/arian-gogani/nobulex-registry)**. Despite its name, that repository now houses the gateway and its verification harness. This repository preserves our earlier agent-receipt and trust-score implementation; it is no longer the product landing page.
+
+| Start with | What you can check |
+|---|---|
+| [Offline wrong-window example](https://github.com/arian-gogani/nobulex-registry/blob/main/examples/wrong_window.py) | Three fictional time-series cases through a real classifier, including a case that must abstain. |
+| [Gateway code and tests](https://github.com/arian-gogani/nobulex-registry/tree/main/gateway) | How evidence status and execution decision are kept separate. |
+| [Verification-boundaries study](research/verification-boundaries/README.md) | Where a `PASS` verdict stops being justified, including corrections to our own benchmark. |
+| [Methodology](https://nobulex.com/methodology) | What a signed receipt proves, and what it cannot prove. |
+
+Run the offline example after cloning the active repository:
+
+```bash
+git clone https://github.com/arian-gogani/nobulex-registry.git
+cd nobulex-registry
+python3 examples/wrong_window.py
+```
+
+**Current limit:** the published prototype is not connected to a customer's production execution path. The offline example uses fictional data. A signature authenticates a decision record; it does not establish that the financial data in it is true.
+
+If your team has seen valid-looking data produce a wrong financial action, [email a short example](mailto:nobulex.dev@gmail.com?subject=Decision%20integrity%20example). A description without credentials or customer data is enough. You can also [open a reproducible issue](https://github.com/arian-gogani/nobulex-registry/issues/new/choose) against the prototype.
+
+<details>
+<summary>Earlier Nobulex receipt and trust-score direction (historical)</summary>
+
+The material below is preserved for readers of the earlier implementation. It is not the current offer, a fresh verification of its claims, or evidence of production trading protection. The old notice incorrectly said that nothing below was retracted; that blanket assurance was too broad.
 
 ---
 
@@ -30,25 +50,18 @@
 
 <br/><br/>
 
-**Every person has a credit score. Every business has one.**
-**AI agents have nothing.**
+**What this repository was built as.**
 
-Nobulex is the credit and trust protocol for autonomous AI agents.<br/>
-Agents earn trust score through verified behavior. Higher trust, more access.<br/>
-Autonomy earned, not granted.
+A credit and trust protocol for autonomous AI agents: actions produce signed
+receipts, receipts accumulate into a trust score, and a higher score unlocks
+more access. Everything below is that implementation, kept readable. It is not
+the current direction, which is the gateway linked at the top of this file.
 
-[Website](https://nobulex.com) · [Try it live](https://nobulex.com/demo) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
+[Website](https://nobulex.com) · [Quickstart](./GETTING-STARTED.md) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [PyPI](https://pypi.org/project/nobulex/) · [npm](https://www.npmjs.com/package/@nobulex/core)
 
 <sub>Reference implementation of the [**OWASP Agentic Skills Top 10 (AST09)**](https://github.com/OWASP/www-project-agentic-skills-top-10/pull/35) execution-receipt pattern · listed in the OWASP solutions catalog · in the [Microsoft Agent Governance Toolkit](https://github.com/microsoft/agent-governance-toolkit/pull/1703) adopters · merged to the Dify marketplace</sub>
 
 </div>
-
----
-
-> ### Break the AI. Win $7,400.
-> Five AI agents, each with rules they must not break. Make them violate their own rules. Beat Level 5 to claim the bounty. **2,847 attempts, 0 winners so far.**
->
-> **[Enter the Arena →](https://nobulex.com/arena)**
 
 ---
 
@@ -431,7 +444,7 @@ npx tsx benchmarks/bench.ts # benchmarks
 
 <div align="center">
 
-[Website](https://nobulex.com) · [Try it](https://nobulex.com/demo) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
+[Website](https://nobulex.com) · [npm](https://www.npmjs.com/package/@nobulex/core) · [Spec](./drafts/draft-gogani-nobulex-proof-of-behavior-00.txt) · [X @nobulexlabs](https://x.com/nobulexlabs)
 
 Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian-gogani/awesome-ai-agent-accountability): standards, regulations, and tools for verifiable agent behavior.
 
@@ -440,3 +453,5 @@ Curated resource: [**Awesome AI Agent Accountability**](https://github.com/arian
 MIT License
 
 </div>
+
+</details>

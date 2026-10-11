@@ -33,8 +33,11 @@ class NobulexAuditHandler(BaseCallbackHandler):
     """LangChain callback that produces Nobulex receipts per tool call.
 
     Each tool invocation generates a signed, content-addressed receipt.
-    The receipts form a hash-chained audit trail that can be exported
-    and independently verified without trusting the operator.
+    The receipts form a hash-chained audit trail that can be exported and
+    recomputed by a third party without rerunning the agent. That checks the
+    signatures and the linkage. It does not establish that every tool call was
+    recorded, because the operator decides what to record, and it does not
+    detect a wholesale rewrite by whoever holds the chain.
     """
 
     def __init__(self, agent_id: str, chain: Optional[ReceiptChain] = None):

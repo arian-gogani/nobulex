@@ -47,7 +47,10 @@ describe('generateComplianceReport', () => {
     expect(report.logIntegrity.valid).toBe(true);
     const traceability = report.requirements.find((r) => r.id === 'art-12(2)');
     expect(traceability?.met).toBe(true);
-    const risk = report.requirements.find((r) => r.id === 'art-12(3)');
+    // Was art-12(3), which pinned the mislabelled citation as required
+    // behaviour. 12(3) is the Annex III point 1(a) biometric provision; this
+    // requirement is 12(2)(a).
+    const risk = report.requirements.find((r) => r.id === 'art-12(2)(a)');
     expect(risk?.evidence).toContain(2);
   });
 
@@ -93,5 +96,62 @@ describe('generateComplianceReport', () => {
     const report = generateComplianceReport(log, { framework: 'eu-ai-act-article-12' });
     const expected = Math.round((report.summary.met / report.requirements.length) * 100);
     expect(report.summary.coveragePercent).toBe(expected);
+  });
+
+  it('cites no Article 12 paragraph that does not say what we claim', () => {
+    const log = buildLog([
+      { action: 'a', outcome: 'success' },
+      { action: 'b', outcome: 'blocked' },
+    ]);
+    const report = generateComplianceReport(log, { framework: 'eu-ai-act-article-12' });
+    const ids = report.requirements.map((r) => r.id);
+
+    // Article 12(3) applies only to Annex III point 1(a) biometric systems and
+    // lists period of use, reference database, matched input data and the
+    // persons verifying results. This package shipped a general logging
+    // requirement under that id through v1.0.3. The requirement it describes is
+    // 12(2)(a): "identifying situations that may result in the high-risk AI
+    // system presenting a risk within the meaning of Article 79(1) or in a
+    // substantial modification". There is no Article 12(4) at all.
+    expect(ids).not.toContain('art-12(3)');
+    expect(ids).not.toContain('art-12(4)');
+    expect(ids).toContain('art-12(2)(a)');
+
+    const text = report.requirements
+      .map((r) => `${r.id} ${r.title} ${r.rationale}`)
+      .join('\n');
+    expect(text).not.toMatch(/Article 12\([34]\)/);
+  });
+
+  it('never asserts tamper-evidence without naming its limit, in any framework', () => {
+    // Checked PER REQUIREMENT, not over a joined string. The first version of
+    // this guard concatenated every title and rationale and asked whether THE
+    // STRING contained a qualifier. One qualified claim anywhere then satisfied
+    // the check for every other claim, so restoring the bare ISO 42001 title
+    // "AI system records are tamper-evident" left all nine tests green. An
+    // aggregate standing in for a per-item check is the defect this package is
+    // being corrected for, committed in the test written to prevent it.
+    const frameworks = [
+      'eu-ai-act-article-12',
+      'colorado-ai-act',
+      'soc2',
+      'iso-42001',
+    ] as const;
+    const log = buildLog([{ action: 'a', outcome: 'success' }]);
+    const qualifier = /independently held|earlier chain head|rewrite|does not detect/i;
+
+    for (const framework of frameworks) {
+      const report = generateComplianceReport(log, { framework });
+      for (const requirement of report.requirements) {
+        for (const field of [requirement.title, requirement.rationale]) {
+          if (!/tamper[- ]?evident/i.test(field ?? '')) continue;
+          expect(
+            qualifier.test(field ?? ''),
+            `${framework} ${requirement.id} claims tamper-evidence without ` +
+              `stating its limit: ${field}`,
+          ).toBe(true);
+        }
+      }
+    }
   });
 });

@@ -1,6 +1,6 @@
 # Nobulex Schnellstart
 
-Erzeugen Sie Ihre erste fälschungssichere Quittung in 60 Sekunden.
+Erzeugen Sie Ihre erste signierte Quittung in 60 Sekunden. Quittungen sind manipulationserkennbar, nicht manipulationssicher: Eine nachträgliche Änderung bricht die Hash-Kette und ist daher für jeden nachweisbar, der eine spätere Quittung besitzt.
 
 ## Installation
 

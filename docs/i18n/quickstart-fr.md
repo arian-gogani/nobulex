@@ -1,6 +1,6 @@
 # Démarrage rapide Nobulex
 
-Générez votre premier reçu infalsifiable en 60 secondes.
+Générez votre premier reçu signé en 60 secondes. Les reçus sont à falsification détectable, et non infalsifiables : modifier un reçu rompt la chaîne de hachage, donc la modification est détectable par quiconque détient un reçu ultérieur.
 
 ## Installation
 

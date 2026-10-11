@@ -1,9 +1,16 @@
 /**
  * @nobulex/sdk -- Performance benchmark suite with SLA targets.
  *
- * Defines production-quality SLA targets for all critical protocol operations
- * and provides a benchmark runner that validates them. This proves the protocol
- * is fast enough for real-world use.
+ * Defines latency targets for critical protocol operations and runs each one
+ * against them.
+ *
+ * What a pass means: on the machine running the suite, under this workload,
+ * each operation met the target written below. It is not evidence about any
+ * production deployment, any other hardware, or any real traffic pattern, and
+ * the targets are chosen by this project rather than derived from a measured
+ * requirement. Previously this said it "proves the protocol is fast enough for
+ * real-world use", which a benchmark cannot establish about a workload it has
+ * never seen.
  *
  */
 

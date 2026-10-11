@@ -1,5 +1,9 @@
 # Nobulex
 
+> **Current billing research:** [When a billing dry run agrees with the wrong invoice](https://nobulex.com/research-killbill-catalog-replay). On released Kill Bill 0.24.19, embedded-H2 regressions reproduced two catalog-change amount errors before separate proposed fixes in [PR #2320](https://github.com/killbill/killbill/pull/2320) and [PR #2321](https://github.com/killbill/killbill/pull/2321), then passed with those fixes. Both PRs are open. This is research, not a deployed Nobulex billing control or a customer result. If you own a billing release process, the note asks one concrete question about how you independently check expected invoices.
+
+> **Verification-boundaries research:** [What did PASS actually check?](research/verification-boundaries/README.md) Six paired historical parser cases, 27 synthetic fixtures, explicit limits, and corrections to our own benchmark. [![Verification boundaries](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml/badge.svg)](https://github.com/arian-gogani/nobulex/actions/workflows/verification-boundaries.yml)
+
 **Decision integrity for automated financial actions.** A market-data response can be well formed and still contain stale prices, missing sessions or the wrong instrument. The current Nobulex prototype checks evidence about a proposed action, evaluates a bounded policy, and returns `PERMIT`, `BLOCK` or `ESCALATE` with a receipt.
 
 The active code and instructions live in **[nobulex-registry](https://github.com/arian-gogani/nobulex-registry)**. Despite its name, that repository now houses the gateway and its verification harness. This repository preserves our earlier agent-receipt and trust-score implementation; it is no longer the product landing page.

@@ -2,7 +2,8 @@
 Nobulex + AgentAudit AI Integration Example
 
 Demonstrates the end-to-end flow:
-1. Agent generates a tamper-proof receipt (Nobulex)
+1. Agent generates a signed receipt (Nobulex). Tamper EVIDENT, not
+#    tamper proof: an edit is detectable, not impossible.
 2. Receipt is prepared for on-chain anchoring (AgentAudit)
 3. The action_ref serves as the primary binding key
 

@@ -128,13 +128,18 @@ function euAiActArticle12(log: ActionLog, integrityValid: boolean): ComplianceRe
       title: 'Logs ensure traceability of the system\'s functioning',
       met: integrityValid && hasAnyLogs,
       rationale: integrityValid
-        ? 'Action log hash chain verifies, entries are tamper-evident'
+        ? 'Action log hash chain recomputes consistently. Modification is ' +
+          'detectable only relative to an independently held earlier chain ' +
+          'head; a holder of the whole log can rewrite it and it re-verifies'
         : 'Action log integrity check failed',
       evidence: timestamped,
     },
     {
-      id: 'art-12(3)',
-      title: 'Recording of situations that may result in risk / substantial modification',
+      id: 'art-12(2)(a)',
+      title:
+        'Logging enables recording of events relevant for identifying situations ' +
+        'that may result in a risk within the meaning of Article 79(1) or a ' +
+        'substantial modification',
       met: hasAnyLogs,
       rationale: blocks.length > 0
         ? `${blocks.length} enforcement events recorded (blocked / would_block / halted)`
@@ -239,10 +244,12 @@ function iso42001(log: ActionLog, integrityValid: boolean): ComplianceRequiremen
     },
     {
       id: 'A.9.4',
-      title: 'AI system records are tamper-evident',
+      title: 'AI system records carry a verifiable integrity chain',
       met: integrityValid,
       rationale: integrityValid
-        ? 'Hash-chain verification passes'
+        ? 'Hash-chain verification passes. This detects modification by a ' +
+          'party that does not hold the whole log; it does not detect a ' +
+          'rewrite by the log\'s own holder'
         : 'Hash-chain verification failed',
       evidence: [],
     },

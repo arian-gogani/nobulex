@@ -1,6 +1,6 @@
 # Guía rápida de Nobulex
 
-Genera tu primer recibo a prueba de manipulaciones en 60 segundos.
+Genera tu primer recibo firmado en 60 segundos. Los recibos son de manipulación detectable, no a prueba de manipulaciones: editar uno rompe la cadena de hash, por lo que la edición es detectable por cualquiera que tenga un recibo posterior.
 
 ## Instalación
 

@@ -15,6 +15,26 @@ function result(status, reason, details = {}) {
   };
 }
 
+// The reason string below says "separate", and separateness was the one thing
+// not checked. Both call sites tested only that each key was 64 hex
+// characters, so passing the same key for the gate and the fill signer
+// returned PASS while the premise of the comparison is that the party signing
+// the fills is not the party operating the gate. Same key means the evidence
+// is self-attested and the comparison establishes nothing it claims to.
+//
+// One function because there were two identical copies of this rule and
+// neither enforced it. A third copy is how one of them gets fixed and the
+// other does not.
+function unusableKeys(gateKey, fillKey) {
+  if (!HEX_KEY.test(gateKey ?? '') || !HEX_KEY.test(fillKey ?? '')) {
+    return 'separate_gate_and_fill_keys_required';
+  }
+  if (gateKey.toLowerCase() === fillKey.toLowerCase()) {
+    return 'gate_and_fill_keys_must_differ';
+  }
+  return null;
+}
+
 function validBill(bill) {
   if (!bill || !Array.isArray(bill.items) || bill.items.length === 0) return false;
   const lines = new Set();
@@ -34,9 +54,8 @@ function validBill(bill) {
 
 function compareVerifiedBundle(bill, bundle, verification, { gateKey, fillKey }) {
   if (!validBill(bill)) return result('INDETERMINATE', 'invalid_or_duplicate_bill_items');
-  if (!HEX_KEY.test(gateKey ?? '') || !HEX_KEY.test(fillKey ?? '')) {
-    return result('INDETERMINATE', 'separate_gate_and_fill_keys_required');
-  }
+  const keyProblem = unusableKeys(gateKey, fillKey);
+  if (keyProblem) return result('INDETERMINATE', keyProblem);
   if (!verification || verification.valid !== true ||
       verification.format !== 'gate-evidence-bundle' ||
       verification.manifestValid !== true ||
@@ -94,9 +113,8 @@ function compareVerifiedBundle(bill, bundle, verification, { gateKey, fillKey })
 
 export function checkBill({ bill, bundleBytes, verifierCli, gateKey, fillKey }) {
   if (!Buffer.isBuffer(bundleBytes)) return result('INDETERMINATE', 'bundle_bytes_required');
-  if (!HEX_KEY.test(gateKey ?? '') || !HEX_KEY.test(fillKey ?? '')) {
-    return result('INDETERMINATE', 'separate_gate_and_fill_keys_required');
-  }
+  const keyProblem = unusableKeys(gateKey, fillKey);
+  if (keyProblem) return result('INDETERMINATE', keyProblem);
   let bundle;
   try { bundle = JSON.parse(bundleBytes.toString('utf8')); }
   catch { return result('INDETERMINATE', 'unreadable_bundle'); }

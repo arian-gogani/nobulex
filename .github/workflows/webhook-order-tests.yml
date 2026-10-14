@@ -1,0 +1,48 @@
+name: Stage webhook-order-tests
+
+# Manual only. A push, including a version tag, does not run this.
+# It stages webhook-order-tests for review. It does not publish.
+# Approval is a separate 2FA step Arian runs: npm stage approve <stage-id>
+#
+# Refuses while package.json still has "private": true.
+#
+# One-time setup on npmjs.com, by the account owner, no token in this repo:
+#   package: webhook-order-tests
+#   publisher: GitHub Actions
+#   organization or user: arian-gogani
+#   repository: nobulex
+#   workflow filename: webhook-order-tests.yml
+#   environment: blank
+#   allow npm stage publish only. Do not allow direct npm publish.
+# Requires npm CLI 11.15.0 or later and Node 22.14 or later.
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  stage:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: tools/stripe-webhook-order-tests
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - run: npm install -g npm@11.15.0
+
+      - run: node selftest.mjs
+
+      - name: Refuse while the package is private
+        run: |
+          node -e 'const p=JSON.parse(require("fs").readFileSync("package.json","utf8")); if(p.private){console.error("refusing: private is still true"); process.exit(1)}'
+
+      - run: npm stage publish --access public --provenance

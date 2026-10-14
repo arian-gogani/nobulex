@@ -19,7 +19,10 @@
     "invariant"
   ],
   "license": "MIT",
-  "author": "Arian Gogani",
+  "author": {
+    "name": "Arian Gogani",
+    "email": "nobulex.dev@gmail.com"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/arian-gogani/nobulex.git",

@@ -1,0 +1,15 @@
+{
+  "name": "stripe-webhook-order-tests",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Assert your Stripe webhook handler reaches the correct resulting state under duplicated and reordered event delivery, not merely that it returned 2xx.",
+  "license": "MIT",
+  "exports": "./harness.mjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node selftest.mjs"
+  }
+}

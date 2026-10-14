@@ -1,11 +1,41 @@
 {
-  "name": "stripe-webhook-order-tests",
+  "name": "webhook-order-tests",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Assert your Stripe webhook handler reaches the correct resulting state under duplicated and reordered event delivery, not merely that it returned 2xx.",
+  "description": "Assert your webhook handler reaches the correct resulting state under duplicated and reordered event delivery, not merely that it returned 2xx.",
+  "keywords": [
+    "webhook",
+    "webhooks",
+    "stripe",
+    "stripe-webhooks",
+    "idempotency",
+    "out-of-order",
+    "event-ordering",
+    "billing",
+    "subscription",
+    "testing",
+    "test-harness",
+    "invariant"
+  ],
   "license": "MIT",
+  "author": "Arian Gogani",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arian-gogani/nobulex.git",
+    "directory": "tools/stripe-webhook-order-tests"
+  },
+  "bugs": {
+    "url": "https://github.com/arian-gogani/nobulex/issues"
+  },
+  "homepage": "https://github.com/arian-gogani/nobulex/tree/main/tools/stripe-webhook-order-tests#readme",
   "exports": "./harness.mjs",
+  "files": [
+    "harness.mjs",
+    "examples/",
+    "README.md",
+    "LICENSE"
+  ],
   "engines": {
     "node": ">=18"
   },

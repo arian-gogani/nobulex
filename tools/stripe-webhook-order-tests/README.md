@@ -1,4 +1,4 @@
-# stripe-webhook-order-tests
+# webhook-order-tests
 
 A dependency-free test harness that asserts your Stripe webhook handler reaches
 the CORRECT RESULTING STATE under adversarial event delivery (duplicates and
@@ -78,6 +78,14 @@ Precedence is VIOLATED over INDETERMINATE over HELD. One violating ordering is
 not averaged away by many clean ones, and an undecidable ordering never counts
 as a pass.
 
+## Install
+
+```
+npm install --save-dev webhook-order-tests
+```
+
+No dependencies and no build step. Node 18 or newer.
+
 ## Core API
 
 ```
@@ -91,8 +99,11 @@ import {
   runScenario,
   runSuite,
   formatScenarioResult,
-} from "./harness.mjs";
+} from "webhook-order-tests";
 ```
+
+Reading this inside the `nobulex` repository instead of from an installed
+package? Import from `"./harness.mjs"` there.
 
 Build events:
 
@@ -125,17 +136,22 @@ Adapter you provide:
 - `apply(event)` applies one event to your state.
 - `read()` returns the current resulting state.
 
-Running:
+Running. **Both are `async`, so `await` them.** Arguments are positional, and
+the invariant attaches to each scenario object rather than being passed
+separately:
 
-- `runScenario(adapter, { ...generator, invariant })` runs one scenario.
-- `runSuite(adapter, [scenario, ...])` rolls several up to one verdict.
+- `runScenario(adapter, { ...generator, invariant })` runs one scenario and
+  returns `{ scenario, orderingsTested, results, verdict }`.
+- `runSuite(adapter, [scenario, ...])` rolls several up and returns
+  `{ scenarios, overall }`, where `overall` is `"PASS"`, `"FAIL"` or
+  `"INDETERMINATE"`.
 - `formatScenarioResult(result)` renders printable text; only non-HELD orderings
   are printed, each with its exact sequence and the resulting state read.
 
 ### Smallest real use
 
 ```
-import { staleAfterTerminal, onceTerminalStaysTerminal, runScenario, event, formatScenarioResult } from "./harness.mjs";
+import { staleAfterTerminal, onceTerminalStaysTerminal, runScenario, event, formatScenarioResult } from "webhook-order-tests";
 
 const scenario = {
   ...staleAfterTerminal(

@@ -171,3 +171,6 @@ EMAILS_TO_SEND.md
 deprecate-old-packages.sh
 CONSOLIDATION_PROMPT.md
 .vercel
+__pycache__/
+*.pyc
+.pytest_cache/
